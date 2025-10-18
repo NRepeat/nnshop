@@ -1,6 +1,19 @@
+import { useTranslations } from 'next-intl';
+import { setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
+import { use } from 'react';
 
-export default function Home() {
+export default function Home({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = use(params);
+
+  setRequestLocale(locale);
+
+  const t = useTranslations('HomePage');
+  console.log('t', t('title'));
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
