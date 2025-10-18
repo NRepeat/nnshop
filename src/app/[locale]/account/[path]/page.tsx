@@ -52,7 +52,11 @@ export default async function AccountPage({
 
   return (
     <SettingsPageLayout title={title} description={description}>
-      {renderView(path)}
+      <AccountView
+        path={path}
+        hideNav
+        localization={localization(tBetterAuth)}
+      />
     </SettingsPageLayout>
   );
 }
