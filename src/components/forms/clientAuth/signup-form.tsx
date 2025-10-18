@@ -10,25 +10,63 @@ import {
   FieldSeparator,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { signUpSchema, SignUpFormData } from './shema';
+import { onSignUpSubmit, onGoogleSignIn, onShopifySignIn } from './action';
 import { useForm } from 'react-hook-form';
-import { authClientShema } from './shema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import z from 'zod';
-import { onSubmit } from './action';
-import { Form } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
-  const form = useForm<z.infer<typeof authClientShema>>({
-    resolver: zodResolver(authClientShema),
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
-      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
     },
   });
+
+  const handleSubmit = async (data: SignUpFormData) => {
+    setIsLoading(true);
+    try {
+      await onSignUpSubmit(data);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    try {
+      await onGoogleSignIn();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleShopifySignIn = async () => {
+    setIsLoading(true);
+    try {
+      await onShopifySignIn();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div
       className={cn('flex flex-col gap-6 w-full max-w-3xl', className)}
@@ -38,7 +76,7 @@ export function SignupForm({
         <CardContent className="grid p-0 md:grid-cols-2">
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-8 p-4"
             >
               <FieldGroup>
@@ -48,44 +86,98 @@ export function SignupForm({
                     Enter your email below to create your account
                   </p>
                 </div>
-                <Field>
-                  <FieldLabel htmlFor="email">Email</FieldLabel>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Field>
+                        <FieldLabel htmlFor="email">Email</FieldLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            id="email"
+                            type="email"
+                            placeholder="m@example.com"
+                            disabled={isLoading}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                        <FieldDescription>
+                          We&apos;ll use this to contact you. We will not share
+                          your email with anyone else.
+                        </FieldDescription>
+                      </Field>
+                    </FormItem>
+                  )}
+                />
+
+                <Field className="grid grid-cols-1 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <Field>
+                          <FieldLabel htmlFor="password">Password</FieldLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              id="password"
+                              type="password"
+                              disabled={isLoading}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </Field>
+                      </FormItem>
+                    )}
                   />
-                  <FieldDescription>
-                    We&apos;ll use this to contact you. We will not share your
-                    email with anyone else.
-                  </FieldDescription>
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <Field>
+                          <FieldLabel htmlFor="confirm-password">
+                            Confirm Password
+                          </FieldLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              id="confirm-password"
+                              type="password"
+                              disabled={isLoading}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </Field>
+                      </FormItem>
+                    )}
+                  />
                 </Field>
+                <FieldDescription>
+                  Must be at least 8 characters long.
+                </FieldDescription>
+
                 <Field>
-                  <Field className="grid grid-cols-2 gap-4">
-                    <Field>
-                      <FieldLabel htmlFor="password">Password</FieldLabel>
-                      <Input id="password" type="password" required />
-                    </Field>
-                    <Field>
-                      <FieldLabel htmlFor="confirm-password">
-                        Confirm Password
-                      </FieldLabel>
-                      <Input id="confirm-password" type="password" required />
-                    </Field>
-                  </Field>
-                  <FieldDescription>
-                    Must be at least 8 characters long.
-                  </FieldDescription>
+                  <Button type="submit" disabled={isLoading}>
+                    {isLoading ? 'Creating Account...' : 'Create Account'}
+                  </Button>
                 </Field>
-                <Field>
-                  <Button type="submit">Create Account</Button>
-                </Field>
+
                 <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                   Or continue with
                 </FieldSeparator>
+
                 <Field className="grid grid-cols-2 gap-4">
-                  <Button variant="outline" type="button">
+                  <Button
+                    variant="outline"
+                    type="button"
+                    disabled={isLoading}
+                    onClick={handleShopifySignIn}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="12.26px"
@@ -110,7 +202,12 @@ export function SignupForm({
                     </svg>
                     <span className="sr-only">Sign up with Shopify</span>
                   </Button>
-                  <Button variant="outline" type="button">
+                  <Button
+                    variant="outline"
+                    type="button"
+                    disabled={isLoading}
+                    onClick={handleGoogleSignIn}
+                  >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                       <path
                         d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
@@ -120,18 +217,22 @@ export function SignupForm({
                     <span className="sr-only">Sign up with Google</span>
                   </Button>
                 </Field>
+
                 <FieldDescription className="text-center">
-                  Already have an account? <Link href="/sign-in">Sign in</Link>
+                  Already have an account?{' '}
+                  <Link href="/auth/sign-in" className="underline">
+                    Sign in
+                  </Link>
                 </FieldDescription>
               </FieldGroup>
             </form>
           </Form>
           <div className="bg-muted relative hidden md:block">
             <Image
-              src="/placeholder.svg"
+              src="/auth_image.jpeg"
               alt="Image"
-              width={'800'}
-              height={'500'}
+              width={800}
+              height={500}
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
             />
           </div>
@@ -139,8 +240,14 @@ export function SignupForm({
       </Card>
       <FieldDescription className="px-6 text-center">
         By clicking continue, you agree to our{' '}
-        <Link href="/terms-of-service">Terms of Service</Link> and{' '}
-        <Link href="privacy-policy">Privacy Policy</Link>.
+        <Link href="/terms-of-service" className="underline">
+          Terms of Service
+        </Link>{' '}
+        and{' '}
+        <Link href="/privacy-policy" className="underline">
+          Privacy Policy
+        </Link>
+        .
       </FieldDescription>
     </div>
   );

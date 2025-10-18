@@ -10,7 +10,7 @@ export default async function LocaleLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="h-screen flex-col items-center justify-center flex w-full">
+    <div className=" flex-col items-center justify-center flex w-full">
       {children}
     </div>
   );
