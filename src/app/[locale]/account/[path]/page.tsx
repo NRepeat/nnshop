@@ -3,6 +3,7 @@ import { accountViewPaths } from '@daveyplate/better-auth-ui/server';
 import { SettingsPageLayout } from '@/components/navigation/settings-nav';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { localization } from '@/lib/betterAuthLocaliztions/account';
 
 export const dynamicParams = false;
 
@@ -30,12 +31,24 @@ const getPageInfo = (path: string, t: (key: string) => string) => {
   }
 };
 
-const renderView = (path: string) => {
+const renderView = (path: string, tBetterAuth: (key: string) => string) => {
   switch (path) {
     case 'settings':
-      return <AccountView path={path} hideNav />;
+      return (
+        <AccountView
+          path={path}
+          hideNav
+          localization={localization(tBetterAuth)}
+        />
+      );
     case 'security':
-      return <AccountView path={path} hideNav />;
+      return (
+        <AccountView
+          path={path}
+          hideNav
+          localization={localization(tBetterAuth)}
+        />
+      );
     default:
       return notFound();
   }
@@ -48,15 +61,12 @@ export default async function AccountPage({
 }) {
   const { path } = await params;
   const t = await getTranslations('Settings.pages');
+  const tBetterAuth = await getTranslations('BetterAuthUI');
   const { title, description } = getPageInfo(path, t);
 
   return (
     <SettingsPageLayout title={title} description={description}>
-      <AccountView
-        path={path}
-        hideNav
-        localization={localization(tBetterAuth)}
-      />
+      {renderView(path, tBetterAuth)}
     </SettingsPageLayout>
   );
 }
