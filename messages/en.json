@@ -1,5 +1,124 @@
 {
   "HomePage": {
     "title": "Hello world!"
+  },
+  "Auth": {
+    "signIn": {
+      "title": "Welcome back",
+      "description": "Login to your account",
+      "email": "Email",
+      "emailPlaceholder": "m@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Password",
+      "forgotPassword": "Forgot your password?",
+      "signInButton": "Sign In",
+      "signingIn": "Signing in...",
+      "orContinueWith": "Or continue with",
+      "signInWithGoogle": "Sign in with Google",
+      "signInWithShopify": "Sign in with Shopify",
+      "dontHaveAccount": "Don't have an account?",
+      "signUp": "Sign up"
+    },
+    "signUp": {
+      "title": "Create your account",
+      "description": "Enter your email below to create your account",
+      "email": "Email",
+      "emailPlaceholder": "m@example.com",
+      "emailDescription": "We'll use this to contact you. We will not share your email with anyone else.",
+      "password": "Password",
+      "passwordPlaceholder": "Password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm Password",
+      "passwordDescription": "Must be at least 8 characters long.",
+      "createAccountButton": "Create Account",
+      "creatingAccount": "Creating Account...",
+      "orContinueWith": "Or continue with",
+      "signUpWithGoogle": "Sign up with Google",
+      "signUpWithShopify": "Sign up with Shopify",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign in"
+    },
+    "forgotPassword": {
+      "title": "Forgot your password?",
+      "description": "Enter your email address and we'll send you a link to reset your password",
+      "email": "Email",
+      "emailPlaceholder": "m@example.com",
+      "sendResetLink": "Send reset link",
+      "sending": "Sending...",
+      "rememberPassword": "Remember your password?",
+      "signIn": "Sign in",
+      "checkEmail": "Check your email",
+      "emailSent": "We've sent a password reset link to",
+      "didntReceive": "Didn't receive the email? Check your spam folder or",
+      "tryAgain": "try again",
+      "backToSignIn": "Back to sign in"
+    },
+    "common": {
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "name": "Name",
+      "loading": "Loading...",
+      "cancel": "Cancel",
+      "continue": "Continue",
+      "save": "Save",
+      "delete": "Delete",
+      "edit": "Edit",
+      "close": "Close",
+      "termsOfService": "Terms of Service",
+      "privacyPolicy": "Privacy Policy",
+      "byClickingContinue": "By clicking continue, you agree to our",
+      "and": "and"
+    },
+    "errors": {
+      "emailRequired": "Email address is required",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least 8 characters long",
+      "passwordsDontMatch": "Passwords don't match",
+      "nameRequired": "Name is required",
+      "signInFailed": "Sign in failed",
+      "signUpFailed": "Sign up failed",
+      "resetPasswordFailed": "Failed to send reset email",
+      "unexpectedError": "An unexpected error occurred",
+      "tooManyRequests": "Too many requests. Please try again later.",
+      "googleSignInFailed": "Google sign in failed",
+      "shopifySignInFailed": "Shopify sign in failed"
+    },
+    "success": {
+      "welcomeBack": "Welcome back!",
+      "accountCreated": "Account created successfully!",
+      "passwordResetSent": "Password reset email sent! Please check your inbox."
+    }
+  },
+  "Settings": {
+    "title": "Settings",
+    "description": "Manage your account settings and preferences",
+    "navigation": {
+      "allSettings": "All Settings",
+      "allSettingsDescription": "Comprehensive settings overview",
+      "customLayout": "Custom Layout",
+      "customLayoutDescription": "Example of individual components",
+      "profile": "Profile",
+      "profileDescription": "Personal information and preferences",
+      "security": "Security",
+      "securityDescription": "Password, 2FA, and session management",
+      "apiKeys": "API Keys",
+      "apiKeysDescription": "Manage your API access keys",
+      "organizations": "Organizations",
+      "organizationsDescription": "Manage organizations and memberships"
+    },
+    "pages": {
+      "profileSettings": "Profile Settings",
+      "profileDescription": "Manage your personal information and preferences",
+      "securitySettings": "Security",
+      "securityDescription": "Manage your password, two-factor authentication, and sessions",
+      "apiKeysSettings": "API Keys",
+      "apiKeysDescription": "Create and manage API keys for programmatic access",
+      "organizationsSettings": "Organizations",
+      "organizationsDescription": "Manage your organizations and team memberships",
+      "customSettings": "Custom Settings",
+      "customDescription": "Example of individual settings components for custom layouts"
+    }
   }
 }

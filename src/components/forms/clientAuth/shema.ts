@@ -1,8 +1,38 @@
 import { z } from 'zod';
 
-// Schema for sign-in form
+// Helper function to create sign-in schema with translations
+export const createSignInSchema = (t: (key: string) => string) =>
+  z.object({
+    email: z.string().email({
+      message: t('emailInvalid'),
+    }),
+    password: z.string().min(1, {
+      message: t('passwordRequired'),
+    }),
+  });
+
+// Helper function to create sign-up schema with translations
+export const createSignUpSchema = (t: (key: string) => string) =>
+  z
+    .object({
+      email: z.string().email({
+        message: t('emailInvalid'),
+      }),
+      password: z.string().min(8, {
+        message: t('passwordTooShort'),
+      }),
+      confirmPassword: z.string().min(8, {
+        message: t('passwordTooShort'),
+      }),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t('passwordsDontMatch'),
+      path: ['confirmPassword'],
+    });
+
+// Default schemas (for backward compatibility)
 export const signInSchema = z.object({
-  email: z.email({
+  email: z.string().email({
     message: 'Please enter a valid email address.',
   }),
   password: z.string().min(1, {
@@ -10,10 +40,9 @@ export const signInSchema = z.object({
   }),
 });
 
-// Schema for sign-up form
 export const signUpSchema = z
   .object({
-    email: z.email({
+    email: z.string().email({
       message: 'Please enter a valid email address.',
     }),
     password: z.string().min(8, {

@@ -1,3 +1,4 @@
+import { ForgotPasswordForm } from '@/components/forms/clientAuth/forgot-password-form';
 import LoginForm from '@/components/forms/clientAuth/login-form';
 import { SignupForm } from '@/components/forms/clientAuth/signup-form';
 import { AuthView } from '@daveyplate/better-auth-ui';
@@ -26,7 +27,7 @@ export default async function AuthPage({
       case 'register':
         return <SignupForm />;
       case 'forgot-password':
-      // return <ForgotPasswordForm />;
+        return <ForgotPasswordForm />;
       case 'reset-password':
       case 'magic-link':
       case 'verify-email':

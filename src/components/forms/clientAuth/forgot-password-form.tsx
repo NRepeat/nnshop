@@ -24,9 +24,10 @@ import { useState } from 'react';
 import { z } from 'zod';
 import { client } from '@/service/auth/client';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email({
+  email: z.email({
     message: 'Please enter a valid email address.',
   }),
 });
@@ -39,6 +40,8 @@ export function ForgotPasswordForm({
 }: React.ComponentProps<'div'>) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const t = useTranslations('Auth.forgotPassword');
+  const tCommon = useTranslations('Auth.common');
 
   const form = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -95,15 +98,14 @@ export function ForgotPasswordForm({
                     />
                   </svg>
                 </div>
-                <h1 className="text-2xl font-bold">Check your email</h1>
+                <h1 className="text-2xl font-bold">{t('checkEmail')}</h1>
                 <p className="text-muted-foreground text-balance">
-                  We&apos;ve sent a password reset link to{' '}
-                  <strong>{form.getValues('email')}</strong>
+                  {t('emailSent')} <strong>{form.getValues('email')}</strong>
                 </p>
               </div>
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground text-center">
-                  Didn&apos;t receive the email? Check your spam folder or{' '}
+                  {t('didntReceive')}{' '}
                   <Button
                     variant="link"
                     className="p-0 h-auto font-normal"
@@ -112,15 +114,15 @@ export function ForgotPasswordForm({
                       form.reset();
                     }}
                   >
-                    try again
+                    {t('tryAgain')}
                   </Button>
                 </p>
                 <div className="text-center">
                   <Link
-                    href="/sign-in"
+                    href="/auth/sign-in"
                     className="text-sm underline underline-offset-2 hover:no-underline"
                   >
-                    Back to sign in
+                    {t('backToSignIn')}
                   </Link>
                 </div>
               </div>
@@ -154,10 +156,9 @@ export function ForgotPasswordForm({
             >
               <FieldGroup>
                 <div className="flex flex-col items-center gap-2 text-center">
-                  <h1 className="text-2xl font-bold">Forgot your password?</h1>
+                  <h1 className="text-2xl font-bold">{t('title')}</h1>
                   <p className="text-muted-foreground text-balance">
-                    Enter your email address and we&apos;ll send you a link to
-                    reset your password
+                    {t('description')}
                   </p>
                 </div>
 
@@ -167,13 +168,13 @@ export function ForgotPasswordForm({
                   render={({ field }) => (
                     <FormItem>
                       <Field>
-                        <FieldLabel htmlFor="email">Email</FieldLabel>
+                        <FieldLabel htmlFor="email">{t('email')}</FieldLabel>
                         <FormControl>
                           <Input
                             {...field}
                             id="email"
                             type="email"
-                            placeholder="m@example.com"
+                            placeholder={t('emailPlaceholder')}
                             disabled={isLoading}
                           />
                         </FormControl>
@@ -185,14 +186,14 @@ export function ForgotPasswordForm({
 
                 <Field>
                   <Button type="submit" disabled={isLoading} className="w-full">
-                    {isLoading ? 'Sending...' : 'Send reset link'}
+                    {isLoading ? t('sending') : t('sendResetLink')}
                   </Button>
                 </Field>
 
                 <FieldDescription className="text-center">
-                  Remember your password?{' '}
-                  <Link href="/sign-in" className="underline">
-                    Sign in
+                  {t('rememberPassword')}{' '}
+                  <Link href="/auth/sign-in" className="underline">
+                    {t('signIn')}
                   </Link>
                 </FieldDescription>
               </FieldGroup>
@@ -211,13 +212,13 @@ export function ForgotPasswordForm({
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our{' '}
+        {tCommon('byClickingContinue')}{' '}
         <Link href="/terms-of-service" className="underline">
-          Terms of Service
+          {tCommon('termsOfService')}
         </Link>{' '}
-        and{' '}
+        {tCommon('and')}{' '}
         <Link href="/privacy-policy" className="underline">
-          Privacy Policy
+          {tCommon('privacyPolicy')}
         </Link>
         .
       </FieldDescription>

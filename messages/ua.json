@@ -1,5 +1,124 @@
 {
   "HomePage": {
     "title": "Ку"
+  },
+  "Auth": {
+    "signIn": {
+      "title": "Ласкаво просимо назад",
+      "description": "Увійдіть до свого акаунта",
+      "email": "Електронна пошта",
+      "emailPlaceholder": "m@example.com",
+      "password": "Пароль",
+      "passwordPlaceholder": "Пароль",
+      "forgotPassword": "Забули пароль?",
+      "signInButton": "Увійти",
+      "signingIn": "Входимо...",
+      "orContinueWith": "Або продовжити з",
+      "signInWithGoogle": "Увійти через Google",
+      "signInWithShopify": "Увійти через Shopify",
+      "dontHaveAccount": "Немає акаунта?",
+      "signUp": "Зареєструватися"
+    },
+    "signUp": {
+      "title": "Створіть свій акаунт",
+      "description": "Введіть свою електронну пошту, щоб створити акаунт",
+      "email": "Електронна пошта",
+      "emailPlaceholder": "m@example.com",
+      "emailDescription": "Ми використаємо її для зв'язку з вами. Ми не будемо ділитися вашою поштою з іншими.",
+      "password": "Пароль",
+      "passwordPlaceholder": "Пароль",
+      "confirmPassword": "Підтвердіть пароль",
+      "confirmPasswordPlaceholder": "Підтвердіть пароль",
+      "passwordDescription": "Має бути не менше 8 символів.",
+      "createAccountButton": "Створити акаунт",
+      "creatingAccount": "Створюємо акаунт...",
+      "orContinueWith": "Або продовжити з",
+      "signUpWithGoogle": "Зареєструватися через Google",
+      "signUpWithShopify": "Зареєструватися через Shopify",
+      "alreadyHaveAccount": "Вже маєте акаунт?",
+      "signIn": "Увійти"
+    },
+    "forgotPassword": {
+      "title": "Забули пароль?",
+      "description": "Введіть свою адресу електронної пошти, і ми надішлемо вам посилання для скидання пароля",
+      "email": "Електронна пошта",
+      "emailPlaceholder": "m@example.com",
+      "sendResetLink": "Надіслати посилання",
+      "sending": "Надсилаємо...",
+      "rememberPassword": "Пам'ятаєте пароль?",
+      "signIn": "Увійти",
+      "checkEmail": "Перевірте електронну пошту",
+      "emailSent": "Ми надіслали посилання для скидання пароля на",
+      "didntReceive": "Не отримали листа? Перевірте папку \"Спам\" або",
+      "tryAgain": "спробуйте знову",
+      "backToSignIn": "Повернутися до входу"
+    },
+    "common": {
+      "email": "Електронна пошта",
+      "password": "Пароль",
+      "confirmPassword": "Підтвердіть пароль",
+      "name": "Ім'я",
+      "loading": "Завантаження...",
+      "cancel": "Скасувати",
+      "continue": "Продовжити",
+      "save": "Зберегти",
+      "delete": "Видалити",
+      "edit": "Редагувати",
+      "close": "Закрити",
+      "termsOfService": "Умови використання",
+      "privacyPolicy": "Політика конфіденційності",
+      "byClickingContinue": "Натискаючи \"Увійти\", ви погоджуєтесь з нашими",
+      "and": "та"
+    },
+    "errors": {
+      "emailRequired": "Електронна пошта обов'язкова",
+      "emailInvalid": "Будь ласка, введіть дійсну адресу електронної пошти",
+      "passwordRequired": "Пароль обов'язковий",
+      "passwordTooShort": "Пароль має бути не менше 8 символів",
+      "passwordsDontMatch": "Паролі не співпадають",
+      "nameRequired": "Ім'я обов'язкове",
+      "signInFailed": "Помилка входу",
+      "signUpFailed": "Помилка реєстрації",
+      "resetPasswordFailed": "Не вдалося надіслати лист для скидання",
+      "unexpectedError": "Сталася неочікувана помилка",
+      "tooManyRequests": "Занадто багато запитів. Будь ласка, спробуйте пізніше.",
+      "googleSignInFailed": "Помилка входу через Google",
+      "shopifySignInFailed": "Помилка входу через Shopify"
+    },
+    "success": {
+      "welcomeBack": "Ласкаво просимо назад!",
+      "accountCreated": "Акаунт успішно створено!",
+      "passwordResetSent": "Лист для скидання пароля надіслано! Перевірте свою поштову скриньку."
+    }
+  },
+  "Settings": {
+    "title": "Налаштування",
+    "description": "Керуйте налаштуваннями акаунта та вподобаннями",
+    "navigation": {
+      "allSettings": "Всі налаштування",
+      "allSettingsDescription": "Повний огляд налаштувань",
+      "customLayout": "Власний макет",
+      "customLayoutDescription": "Приклад окремих компонентів",
+      "profile": "Профіль",
+      "profileDescription": "Особиста інформація та вподобання",
+      "security": "Безпека",
+      "securityDescription": "Пароль, 2FA та управління сеансами",
+      "apiKeys": "API ключі",
+      "apiKeysDescription": "Керування ключами доступу до API",
+      "organizations": "Організації",
+      "organizationsDescription": "Керування організаціями та членством"
+    },
+    "pages": {
+      "profileSettings": "Налаштування профілю",
+      "profileDescription": "Керуйте особистою інформацією та вподобаннями",
+      "securitySettings": "Безпека",
+      "securityDescription": "Керуйте паролем, двофакторною автентифікацією та сеансами",
+      "apiKeysSettings": "API ключі",
+      "apiKeysDescription": "Створюйте та керуйте API ключами для програмного доступу",
+      "organizationsSettings": "Організації",
+      "organizationsDescription": "Керуйте своїми організаціями та командним членством",
+      "customSettings": "Власні налаштування",
+      "customDescription": "Приклад окремих компонентів налаштувань для власних макетів"
+    }
   }
 }

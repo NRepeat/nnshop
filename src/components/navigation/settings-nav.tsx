@@ -4,21 +4,26 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Shield, User, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
-const settingsNavItems = [
-  {
-    title: 'Profile',
-    href: '/account/settings',
-    icon: User,
-    description: 'Personal information and preferences',
-  },
-  {
-    title: 'Security',
-    href: '/account/security',
-    icon: Shield,
-    description: 'Password, 2FA, and session management',
-  },
-];
+const useSettingsNavItems = () => {
+  const t = useTranslations('Settings.navigation');
+
+  return [
+    {
+      title: t('profile'),
+      href: '/account/settings',
+      icon: User,
+      description: t('profileDescription'),
+    },
+    {
+      title: t('security'),
+      href: '/account/security',
+      icon: Shield,
+      description: t('securityDescription'),
+    },
+  ];
+};
 
 interface SettingsNavProps {
   className?: string;
@@ -30,6 +35,8 @@ export function SettingsNav({
   variant = 'sidebar',
 }: SettingsNavProps) {
   const pathname = usePathname();
+  const settingsNavItems = useSettingsNavItems();
+  const tSettings = useTranslations('Settings');
 
   if (variant === 'breadcrumb') {
     const currentItem = settingsNavItems.find((item) => item.href === pathname);
@@ -42,10 +49,10 @@ export function SettingsNav({
         )}
       >
         <Link
-          href="/settings"
+          href="/account/settings"
           className="hover:text-foreground transition-colors"
         >
-          Settings
+          {tSettings('title')}
         </Link>
         {currentItem && currentItem.href !== '/settings' && (
           <>
@@ -123,6 +130,8 @@ export function SettingsPageLayout({
   title?: string;
   description?: string;
 }) {
+  const tSettings = useTranslations('Settings');
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="max-w-6xl mx-auto">
@@ -137,10 +146,13 @@ export function SettingsPageLayout({
             </div>
           )}
         </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <aside className="lg:col-span-1">
             <div className="sticky top-8">
-              <h2 className="text-lg font-semibold mb-4">Settings</h2>
+              <h2 className="text-lg font-semibold mb-4">
+                {tSettings('title')}
+              </h2>
               <SettingsNav />
             </div>
           </aside>

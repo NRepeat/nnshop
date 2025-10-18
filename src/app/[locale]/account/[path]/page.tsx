@@ -1,6 +1,8 @@
 import { AccountView } from '@daveyplate/better-auth-ui';
 import { accountViewPaths } from '@daveyplate/better-auth-ui/server';
 import { SettingsPageLayout } from '@/components/navigation/settings-nav';
+import { getTranslations } from 'next-intl/server';
+import { notFound } from 'next/navigation';
 
 export const dynamicParams = false;
 
@@ -8,24 +10,34 @@ export function generateStaticParams() {
   return Object.values(accountViewPaths).map((path) => ({ path }));
 }
 
-const getPageInfo = (path: string) => {
+const getPageInfo = (path: string, t: (key: string) => string) => {
   switch (path) {
     case 'settings':
       return {
-        title: 'Profile Settings',
-        description: 'Manage your personal information and preferences',
+        title: t('profileSettings'),
+        description: t('profileDescription'),
       };
     case 'security':
       return {
-        title: 'Security',
-        description:
-          'Manage your password, two-factor authentication, and sessions',
+        title: t('securitySettings'),
+        description: t('securityDescription'),
       };
     default:
       return {
-        title: 'Account Settings',
-        description: 'Manage your account configuration',
+        title: t('profileSettings'),
+        description: t('profileDescription'),
       };
+  }
+};
+
+const renderView = (path: string) => {
+  switch (path) {
+    case 'settings':
+      return <AccountView path={path} hideNav />;
+    case 'security':
+      return <AccountView path={path} hideNav />;
+    default:
+      return notFound();
   }
 };
 
@@ -35,11 +47,12 @@ export default async function AccountPage({
   params: Promise<{ path: string }>;
 }) {
   const { path } = await params;
-  const { title, description } = getPageInfo(path);
+  const t = await getTranslations('Settings.pages');
+  const { title, description } = getPageInfo(path, t);
 
   return (
     <SettingsPageLayout title={title} description={description}>
-      <AccountView path={path} hideNav />
+      {renderView(path)}
     </SettingsPageLayout>
   );
 }

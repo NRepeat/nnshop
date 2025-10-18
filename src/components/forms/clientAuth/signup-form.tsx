@@ -11,7 +11,11 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { signUpSchema, SignUpFormData } from './shema';
-import { onSignUpSubmit, onGoogleSignIn, onShopifySignIn } from './action';
+import {
+  createSignUpHandler,
+  createGoogleSignInHandler,
+  createShopifySignInHandler,
+} from './action';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -24,12 +28,17 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
   const [isLoading, setIsLoading] = useState(false);
+  const t = useTranslations('Auth.signUp');
+  const tCommon = useTranslations('Auth.common');
+  const tErrors = useTranslations('Auth.errors');
+  const tSuccess = useTranslations('Auth.success');
 
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
@@ -40,32 +49,11 @@ export function SignupForm({
     },
   });
 
-  const handleSubmit = async (data: SignUpFormData) => {
-    setIsLoading(true);
-    try {
-      await onSignUpSubmit(data);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const handleSubmit = createSignUpHandler(tErrors, tSuccess);
 
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true);
-    try {
-      await onGoogleSignIn();
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const handleGoogleSignIn = createGoogleSignInHandler(tErrors);
 
-  const handleShopifySignIn = async () => {
-    setIsLoading(true);
-    try {
-      await onShopifySignIn();
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const handleShopifySignIn = createShopifySignInHandler(tErrors);
 
   return (
     <div
@@ -76,14 +64,21 @@ export function SignupForm({
         <CardContent className="grid p-0 md:grid-cols-2">
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(handleSubmit)}
+              onSubmit={form.handleSubmit(async (data) => {
+                setIsLoading(true);
+                try {
+                  await handleSubmit(data);
+                } finally {
+                  setIsLoading(false);
+                }
+              })}
               className="space-y-8 p-4"
             >
               <FieldGroup>
                 <div className="flex flex-col items-center gap-2 text-center">
-                  <h1 className="text-2xl font-bold">Create your account</h1>
+                  <h1 className="text-2xl font-bold">{t('title')}</h1>
                   <p className="text-muted-foreground text-sm text-balance">
-                    Enter your email below to create your account
+                    {t('description')}
                   </p>
                 </div>
 
@@ -93,20 +88,19 @@ export function SignupForm({
                   render={({ field }) => (
                     <FormItem>
                       <Field>
-                        <FieldLabel htmlFor="email">Email</FieldLabel>
+                        <FieldLabel htmlFor="email">{t('email')}</FieldLabel>
                         <FormControl>
                           <Input
                             {...field}
                             id="email"
                             type="email"
-                            placeholder="m@example.com"
+                            placeholder={t('emailPlaceholder')}
                             disabled={isLoading}
                           />
                         </FormControl>
                         <FormMessage />
                         <FieldDescription>
-                          We&apos;ll use this to contact you. We will not share
-                          your email with anyone else.
+                          {t('emailDescription')}
                         </FieldDescription>
                       </Field>
                     </FormItem>
@@ -120,12 +114,15 @@ export function SignupForm({
                     render={({ field }) => (
                       <FormItem>
                         <Field>
-                          <FieldLabel htmlFor="password">Password</FieldLabel>
+                          <FieldLabel htmlFor="password">
+                            {t('password')}
+                          </FieldLabel>
                           <FormControl>
                             <Input
                               {...field}
                               id="password"
                               type="password"
+                              placeholder={t('passwordPlaceholder')}
                               disabled={isLoading}
                             />
                           </FormControl>
@@ -141,13 +138,14 @@ export function SignupForm({
                       <FormItem>
                         <Field>
                           <FieldLabel htmlFor="confirm-password">
-                            Confirm Password
+                            {t('confirmPassword')}
                           </FieldLabel>
                           <FormControl>
                             <Input
                               {...field}
                               id="confirm-password"
                               type="password"
+                              placeholder={t('confirmPasswordPlaceholder')}
                               disabled={isLoading}
                             />
                           </FormControl>
@@ -157,18 +155,18 @@ export function SignupForm({
                     )}
                   />
                 </Field>
-                <FieldDescription>
-                  Must be at least 8 characters long.
-                </FieldDescription>
+                <FieldDescription>{t('passwordDescription')}</FieldDescription>
 
                 <Field>
                   <Button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Creating Account...' : 'Create Account'}
+                    {isLoading
+                      ? t('creatingAccount')
+                      : t('createAccountButton')}
                   </Button>
                 </Field>
 
                 <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                  Or continue with
+                  {t('orContinueWith')}
                 </FieldSeparator>
 
                 <Field className="grid grid-cols-2 gap-4">
@@ -176,7 +174,14 @@ export function SignupForm({
                     variant="outline"
                     type="button"
                     disabled={isLoading}
-                    onClick={handleShopifySignIn}
+                    onClick={async () => {
+                      setIsLoading(true);
+                      try {
+                        await handleShopifySignIn();
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    }}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -200,13 +205,20 @@ export function SignupForm({
                         />
                       </g>
                     </svg>
-                    <span className="sr-only">Sign up with Shopify</span>
+                    <span className="sr-only">{t('signUpWithShopify')}</span>
                   </Button>
                   <Button
                     variant="outline"
                     type="button"
                     disabled={isLoading}
-                    onClick={handleGoogleSignIn}
+                    onClick={async () => {
+                      setIsLoading(true);
+                      try {
+                        await handleGoogleSignIn();
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    }}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                       <path
@@ -214,14 +226,14 @@ export function SignupForm({
                         fill="currentColor"
                       />
                     </svg>
-                    <span className="sr-only">Sign up with Google</span>
+                    <span className="sr-only">{t('signUpWithGoogle')}</span>
                   </Button>
                 </Field>
 
                 <FieldDescription className="text-center">
-                  Already have an account?{' '}
+                  {t('alreadyHaveAccount')}{' '}
                   <Link href="/auth/sign-in" className="underline">
-                    Sign in
+                    {t('signIn')}
                   </Link>
                 </FieldDescription>
               </FieldGroup>
@@ -239,13 +251,13 @@ export function SignupForm({
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our{' '}
+        {tCommon('byClickingContinue')}{' '}
         <Link href="/terms-of-service" className="underline">
-          Terms of Service
+          {tCommon('termsOfService')}
         </Link>{' '}
-        and{' '}
+        {tCommon('and')}{' '}
         <Link href="/privacy-policy" className="underline">
-          Privacy Policy
+          {tCommon('privacyPolicy')}
         </Link>
         .
       </FieldDescription>
