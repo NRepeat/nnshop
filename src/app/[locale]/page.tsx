@@ -1,17 +1,7 @@
 import { useTranslations } from 'next-intl';
-import { setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
-import { use } from 'react';
 
-export default function Home({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = use(params);
-
-  setRequestLocale(locale);
-
+export default function Home({}) {
   const t = useTranslations('HomePage');
   console.log('t', t('title'));
   return (

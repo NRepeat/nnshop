@@ -1,5 +1,4 @@
 import { hasLocale } from 'next-intl';
-import '@/app/globals.css';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { setRequestLocale } from 'next-intl/server';
@@ -21,5 +20,5 @@ export default async function LocaleLayout({
     notFound();
   }
   setRequestLocale(locale);
-  return <div>{children}</div>;
+  return <div className="container">{children}</div>;
 }

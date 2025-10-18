@@ -112,11 +112,13 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
+@utility container {
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+@layer components {
+  .ui-container-primary {
+    @apply flex flex-col p-[10px] gap-2.5 bg-card rounded-[16px] shadow;
   }
 }
