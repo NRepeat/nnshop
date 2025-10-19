@@ -9,12 +9,16 @@ export default async function authShopifyCustomer(head: ReadonlyHeaders) {
   });
   const accounts = await client.listAccounts({}, { headers: head });
   if (!accounts.data) {
-    throw new Error('No accounts found');
+    console.error('No accounts found');
+    return null;
   }
   const accountId = accounts.data.find(
     (account) => account.providerId === 'shopify',
   );
-
+  if (!accountId) {
+    console.error('No shopify account found');
+    return null;
+  }
   const user = await auth.api.getAccessToken({
     body: {
       providerId: 'shopify',

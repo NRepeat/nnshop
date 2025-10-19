@@ -11,9 +11,9 @@ export class StorefrontClient implements ShopifyClient {
   private apiVersion: string;
 
   constructor(config: ShopifyClientConfig & { customFetchApi?: typeof fetch }) {
-    this.accessToken = config.accessToken;
-    this.shopDomain = config.shopDomain;
-    this.apiVersion = config.apiVersion;
+    this.accessToken = config.accessToken!;
+    this.shopDomain = config.shopDomain!;
+    this.apiVersion = config.apiVersion!;
 
     this.validateConfig();
 
@@ -63,11 +63,8 @@ export class StorefrontClient implements ShopifyClient {
     try {
       const response = await this.client.request(query, { variables });
 
-      if (response.errors && response.errors.length > 0) {
-        const errorMessages = response.errors
-          .map((error) => error.message)
-          .join(', ');
-        throw new Error(`Storefront API GraphQL Error: ${errorMessages}`);
+      if (response.errors) {
+        throw new Error(`Storefront API GraphQL`);
       }
 
       return response.data as T;
