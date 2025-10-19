@@ -45,5 +45,9 @@ export const POST_QUERY =
   author->{
     name,
     image
+  },
+  relatedPosts[]{
+    _key,
+    ...@->{_id, title, slug}
   }
 }`);
