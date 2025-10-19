@@ -34,6 +34,14 @@ export const postType = defineType({
           name: 'alt',
           type: 'string',
           title: 'Alternative text',
+          validation: (rule) =>
+            rule.custom((value, context) => {
+              const parent = context?.parent as { asset?: { _ref?: string } };
+
+              return !value && parent?.asset?._ref
+                ? 'Alt text is required when an image is present'
+                : true;
+            }),
         }),
       ],
     }),
@@ -49,6 +57,15 @@ export const postType = defineType({
     defineField({
       name: 'body',
       type: 'blockContent',
+    }),
+    defineField({
+      name: 'relatedPosts',
+      type: 'array',
+      of: [{ type: 'reference', to: { type: 'post' } }],
+    }),
+    defineField({
+      name: 'seo',
+      type: 'seo',
     }),
   ],
   preview: {

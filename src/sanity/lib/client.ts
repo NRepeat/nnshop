@@ -6,5 +6,6 @@ export const sanityClient = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: false, // Set to false if statically generating pages, using ISR or tag-based revalidation
+  useCdn: true,
+  stega: { studioUrl: '/studio' },
 });

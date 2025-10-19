@@ -13,6 +13,156 @@
  */
 
 // Source: schema.json
+export type SplitImage = {
+  _type: 'splitImage';
+  orientation?: 'imageLeft' | 'imageRight';
+  title?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: 'image';
+  };
+};
+
+export type Hero = {
+  _type: 'hero';
+  title?: string;
+  text?: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: 'span';
+          _key: string;
+        }>;
+        style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'blockquote';
+        listItem?: 'bullet';
+        markDefs?: Array<{
+          href?: string;
+          _type: 'link';
+          _key: string;
+        }>;
+        level?: number;
+        _type: 'block';
+        _key: string;
+      }
+    | {
+        asset?: {
+          _ref: string;
+          _type: 'reference';
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+        };
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: 'image';
+        _key: string;
+      }
+  >;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: 'image';
+  };
+};
+
+export type Features = {
+  _type: 'features';
+  title?: string;
+  features?: Array<{
+    title?: string;
+    text?: string;
+    _type: 'feature';
+    _key: string;
+  }>;
+};
+
+export type Faqs = {
+  _type: 'faqs';
+  title?: string;
+  faqs?: Array<{
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: 'faq';
+  }>;
+};
+
+export type Faq = {
+  _id: string;
+  _type: 'faq';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  body?: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: 'span';
+          _key: string;
+        }>;
+        style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'blockquote';
+        listItem?: 'bullet';
+        markDefs?: Array<{
+          href?: string;
+          _type: 'link';
+          _key: string;
+        }>;
+        level?: number;
+        _type: 'block';
+        _key: string;
+      }
+    | {
+        asset?: {
+          _ref: string;
+          _type: 'reference';
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+        };
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: 'image';
+        _key: string;
+      }
+  >;
+};
+
+export type PageBuilder = Array<
+  | ({
+      _key: string;
+    } & Hero)
+  | ({
+      _key: string;
+    } & SplitImage)
+  | ({
+      _key: string;
+    } & Features)
+  | ({
+      _key: string;
+    } & Faqs)
+>;
+
 export type Post = {
   _id: string;
   _type: 'post';
@@ -82,6 +232,14 @@ export type Post = {
         _key: string;
       }
   >;
+  relatedPosts?: Array<{
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: 'post';
+  }>;
+  seo?: Seo;
 };
 
 export type Author = {
@@ -122,6 +280,63 @@ export type Author = {
     _type: 'block';
     _key: string;
   }>;
+};
+
+export type SiteSettings = {
+  _id: string;
+  _type: 'siteSettings';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  homePage?: {
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: 'page';
+  };
+};
+
+export type Page = {
+  _id: string;
+  _type: 'page';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  content?: PageBuilder;
+  mainImage?: {
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: 'image';
+  };
+  seo?: Seo;
+};
+
+export type Seo = {
+  _type: 'seo';
+  title?: string;
+  description?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: 'image';
+  };
+  noIndex?: boolean;
 };
 
 export type Category = {
@@ -289,8 +504,17 @@ export type SanityAssetSourceData = {
 };
 
 export type AllSanitySchemaTypes =
+  | SplitImage
+  | Hero
+  | Features
+  | Faqs
+  | Faq
+  | PageBuilder
   | Post
   | Author
+  | SiteSettings
+  | Page
+  | Seo
   | Category
   | BlockContent
   | SanityImagePaletteSwatch
@@ -307,15 +531,91 @@ export type AllSanitySchemaTypes =
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./src/sanity/lib/query.ts
 // Variable: POSTS_QUERY
-// Query: *[_type == "post" && defined(slug.current)][0...12]{  _id, title, slug}
+// Query: *[_type == "post" && defined(slug.current)]|order(publishedAt desc)[0...12]{  _id,  title,  slug,  body,  mainImage,  publishedAt,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  }}
 export type POSTS_QUERYResult = Array<{
   _id: string;
   title: string | null;
   slug: Slug | null;
+  body: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: 'span';
+          _key: string;
+        }>;
+        style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'normal';
+        listItem?: 'bullet';
+        markDefs?: Array<{
+          href?: string;
+          _type: 'link';
+          _key: string;
+        }>;
+        level?: number;
+        _type: 'block';
+        _key: string;
+      }
+    | {
+        asset?: {
+          _ref: string;
+          _type: 'reference';
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+        };
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        _type: 'image';
+        _key: string;
+      }
+  > | null;
+  mainImage: {
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: 'image';
+  } | null;
+  publishedAt: string | null;
+  categories:
+    | Array<{
+        _id: string;
+        slug: Slug | null;
+        title: string | null;
+      }>
+    | Array<never>;
+  author: {
+    name: string | null;
+    image: {
+      asset?: {
+        _ref: string;
+        _type: 'reference';
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+      };
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: 'image';
+    } | null;
+  } | null;
+}>;
+// Variable: POSTS_SLUGS_QUERY
+// Query: *[_type == "post" && defined(slug.current)]{  "slug": slug.current}
+export type POSTS_SLUGS_QUERYResult = Array<{
+  slug: string | null;
 }>;
 // Variable: POST_QUERY
-// Query: *[_type == "post" && slug.current == $slug][0]{  title, body, mainImage}
+// Query: *[_type == "post" && slug.current == $slug][0]{  _id,  title,  body,  mainImage,  publishedAt,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  },  relatedPosts[]{    _key,    ...@->{_id, title, slug}  },  "seo": {  "title": coalesce(seo.title, title, ""),    "description": coalesce(seo.description,  ""),    "image": seo.image,    "noIndex": seo.noIndex == true   },}
 export type POST_QUERYResult = {
+  _id: string;
   title: string | null;
   body: Array<
     | {
@@ -364,13 +664,397 @@ export type POST_QUERYResult = {
     alt?: string;
     _type: 'image';
   } | null;
+  publishedAt: string | null;
+  categories:
+    | Array<{
+        _id: string;
+        slug: Slug | null;
+        title: string | null;
+      }>
+    | Array<never>;
+  author: {
+    name: string | null;
+    image: {
+      asset?: {
+        _ref: string;
+        _type: 'reference';
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+      };
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: 'image';
+    } | null;
+  } | null;
+  relatedPosts: Array<{
+    _key: string;
+    _id: string;
+    title: string | null;
+    slug: Slug | null;
+  }> | null;
+  seo: {
+    title: string | '';
+    description: string | '';
+    image: {
+      asset?: {
+        _ref: string;
+        _type: 'reference';
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+      };
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: 'image';
+    } | null;
+    noIndex: boolean | false;
+  };
 } | null;
+// Variable: PAGE_QUERY
+// Query: *[_type == "page" && slug.current == $slug][0]{  ...,  "seo": {  "title": coalesce(seo.title, title, ""),    "description": coalesce(seo.description,  ""),    "image": seo.image,    "noIndex": seo.noIndex == true   },  content[]{    ...,    _type == "faqs" => {      ...,      faqs[]->    }  }}
+export type PAGE_QUERYResult = {
+  _id: string;
+  _type: 'page';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  content: Array<
+    | {
+        _key: string;
+        _type: 'faqs';
+        title?: string;
+        faqs: Array<{
+          _id: string;
+          _type: 'faq';
+          _createdAt: string;
+          _updatedAt: string;
+          _rev: string;
+          title?: string;
+          body?: Array<
+            | {
+                children?: Array<{
+                  marks?: Array<string>;
+                  text?: string;
+                  _type: 'span';
+                  _key: string;
+                }>;
+                style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'normal';
+                listItem?: 'bullet';
+                markDefs?: Array<{
+                  href?: string;
+                  _type: 'link';
+                  _key: string;
+                }>;
+                level?: number;
+                _type: 'block';
+                _key: string;
+              }
+            | {
+                asset?: {
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+                };
+                media?: unknown;
+                hotspot?: SanityImageHotspot;
+                crop?: SanityImageCrop;
+                alt?: string;
+                _type: 'image';
+                _key: string;
+              }
+          >;
+        }> | null;
+      }
+    | {
+        _key: string;
+        _type: 'features';
+        title?: string;
+        features?: Array<{
+          title?: string;
+          text?: string;
+          _type: 'feature';
+          _key: string;
+        }>;
+      }
+    | {
+        _key: string;
+        _type: 'hero';
+        title?: string;
+        text?: Array<
+          | {
+              children?: Array<{
+                marks?: Array<string>;
+                text?: string;
+                _type: 'span';
+                _key: string;
+              }>;
+              style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'normal';
+              listItem?: 'bullet';
+              markDefs?: Array<{
+                href?: string;
+                _type: 'link';
+                _key: string;
+              }>;
+              level?: number;
+              _type: 'block';
+              _key: string;
+            }
+          | {
+              asset?: {
+                _ref: string;
+                _type: 'reference';
+                _weak?: boolean;
+                [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+              };
+              media?: unknown;
+              hotspot?: SanityImageHotspot;
+              crop?: SanityImageCrop;
+              alt?: string;
+              _type: 'image';
+              _key: string;
+            }
+        >;
+        image?: {
+          asset?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+          };
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: 'image';
+        };
+      }
+    | {
+        _key: string;
+        _type: 'splitImage';
+        orientation?: 'imageLeft' | 'imageRight';
+        title?: string;
+        image?: {
+          asset?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+          };
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: 'image';
+        };
+      }
+  > | null;
+  mainImage?: {
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: 'image';
+  };
+  seo: {
+    title: string | '';
+    description: string | '';
+    image: {
+      asset?: {
+        _ref: string;
+        _type: 'reference';
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+      };
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: 'image';
+    } | null;
+    noIndex: boolean | false;
+  };
+} | null;
+// Variable: HOME_PAGE_QUERY
+// Query: *[_id == "siteSettings"][0]{    homePage->{      ...,      content[]{        ...,        _type == "faqs" => {          ...,          faqs[]->        }      }    }  }
+export type HOME_PAGE_QUERYResult =
+  | {
+      homePage: null;
+    }
+  | {
+      homePage: {
+        _id: string;
+        _type: 'page';
+        _createdAt: string;
+        _updatedAt: string;
+        _rev: string;
+        title?: string;
+        slug?: Slug;
+        content: Array<
+          | {
+              _key: string;
+              _type: 'faqs';
+              title?: string;
+              faqs: Array<{
+                _id: string;
+                _type: 'faq';
+                _createdAt: string;
+                _updatedAt: string;
+                _rev: string;
+                title?: string;
+                body?: Array<
+                  | {
+                      children?: Array<{
+                        marks?: Array<string>;
+                        text?: string;
+                        _type: 'span';
+                        _key: string;
+                      }>;
+                      style?:
+                        | 'blockquote'
+                        | 'h1'
+                        | 'h2'
+                        | 'h3'
+                        | 'h4'
+                        | 'normal';
+                      listItem?: 'bullet';
+                      markDefs?: Array<{
+                        href?: string;
+                        _type: 'link';
+                        _key: string;
+                      }>;
+                      level?: number;
+                      _type: 'block';
+                      _key: string;
+                    }
+                  | {
+                      asset?: {
+                        _ref: string;
+                        _type: 'reference';
+                        _weak?: boolean;
+                        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+                      };
+                      media?: unknown;
+                      hotspot?: SanityImageHotspot;
+                      crop?: SanityImageCrop;
+                      alt?: string;
+                      _type: 'image';
+                      _key: string;
+                    }
+                >;
+              }> | null;
+            }
+          | {
+              _key: string;
+              _type: 'features';
+              title?: string;
+              features?: Array<{
+                title?: string;
+                text?: string;
+                _type: 'feature';
+                _key: string;
+              }>;
+            }
+          | {
+              _key: string;
+              _type: 'hero';
+              title?: string;
+              text?: Array<
+                | {
+                    children?: Array<{
+                      marks?: Array<string>;
+                      text?: string;
+                      _type: 'span';
+                      _key: string;
+                    }>;
+                    style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'normal';
+                    listItem?: 'bullet';
+                    markDefs?: Array<{
+                      href?: string;
+                      _type: 'link';
+                      _key: string;
+                    }>;
+                    level?: number;
+                    _type: 'block';
+                    _key: string;
+                  }
+                | {
+                    asset?: {
+                      _ref: string;
+                      _type: 'reference';
+                      _weak?: boolean;
+                      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+                    };
+                    media?: unknown;
+                    hotspot?: SanityImageHotspot;
+                    crop?: SanityImageCrop;
+                    alt?: string;
+                    _type: 'image';
+                    _key: string;
+                  }
+              >;
+              image?: {
+                asset?: {
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+                };
+                media?: unknown;
+                hotspot?: SanityImageHotspot;
+                crop?: SanityImageCrop;
+                _type: 'image';
+              };
+            }
+          | {
+              _key: string;
+              _type: 'splitImage';
+              orientation?: 'imageLeft' | 'imageRight';
+              title?: string;
+              image?: {
+                asset?: {
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+                };
+                media?: unknown;
+                hotspot?: SanityImageHotspot;
+                crop?: SanityImageCrop;
+                _type: 'image';
+              };
+            }
+        > | null;
+        mainImage?: {
+          asset?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+          };
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: 'image';
+        };
+        seo?: Seo;
+      } | null;
+    }
+  | null;
 
 // Query TypeMap
 import '@sanity/client';
 declare module '@sanity/client' {
   interface SanityQueries {
-    '*[_type == "post" && defined(slug.current)][0...12]{\n  _id, title, slug\n}': POSTS_QUERYResult;
-    '*[_type == "post" && slug.current == $slug][0]{\n  title, body, mainImage\n}': POST_QUERYResult;
+    '*[_type == "post" && defined(slug.current)]|order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage,\n  publishedAt,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_QUERYResult;
+    '*[_type == "post" && defined(slug.current)]{\n  "slug": slug.current\n}': POSTS_SLUGS_QUERYResult;
+    '*[_type == "post" && slug.current == $slug][0]{\n  _id,\n  title,\n  body,\n  mainImage,\n  publishedAt,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  },\n  relatedPosts[]{\n    _key,\n    ...@->{_id, title, slug}\n  },\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n}': POST_QUERYResult;
+    '*[_type == "page" && slug.current == $slug][0]{\n  ...,\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n  content[]{\n    ...,\n    _type == "faqs" => {\n      ...,\n      faqs[]->\n    }\n  }\n}': PAGE_QUERYResult;
+    '*[_id == "siteSettings"][0]{\n    homePage->{\n      ...,\n      content[]{\n        ...,\n        _type == "faqs" => {\n          ...,\n          faqs[]->\n        }\n      }\n    }\n  }': HOME_PAGE_QUERYResult;
   }
 }
