@@ -91,7 +91,6 @@ export function PageBuilder({
               </DragHandle>
             );
           default:
-            // This is a fallback for when we don't have a block type
             return notFound();
         }
       })}
