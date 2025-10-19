@@ -40,18 +40,8 @@ export default async function authShopifyCustomer(head: ReadonlyHeaders) {
     },
   );
 
-  const cq = `{ customer { id ,   firstName
-  lastName} }`;
-  const shopifyCustomer = (await customerClient.request(cq)) as {
-    customer: {
-      id: string;
-      firstName: string;
-      lastName: string;
-    };
-  };
   return {
     ...user,
-    ...shopifyCustomer,
     client: customerClient,
   };
 }
