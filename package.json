@@ -11,7 +11,7 @@
     "format:check": "prettier --check .",
     "prepare": "husky",
     "predev": "npm run typegen",
-    "prebuild": "npm run typegen",
+    "prebuild": "prisma generate && npm run typegen",
     "typegen": "sanity schema extract --path=./src/sanity/extract.json && sanity typegen generate"
   },
   "lint-staged": {
