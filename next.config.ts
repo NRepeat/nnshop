@@ -12,7 +12,13 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
     domains: ['cdn.shopify.com'],
-    remotePatterns: [new URL('https://cdn.shopify.com')],
+    remotePatterns: [
+      new URL('https://cdn.shopify.com'),
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+      },
+    ],
   },
 };
 const withNextIntl = createNextIntlPlugin();
