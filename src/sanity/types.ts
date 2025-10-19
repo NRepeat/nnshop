@@ -239,6 +239,7 @@ export type Post = {
     _key: string;
     [internalGroqTypeReferenceTo]?: 'post';
   }>;
+  seo?: Seo;
 };
 
 export type Author = {
@@ -316,6 +317,26 @@ export type Page = {
     crop?: SanityImageCrop;
     _type: 'image';
   };
+  seo?: Seo;
+};
+
+export type Seo = {
+  _type: 'seo';
+  title?: string;
+  description?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: 'image';
+  };
+  noIndex?: boolean;
 };
 
 export type Category = {
@@ -493,6 +514,7 @@ export type AllSanitySchemaTypes =
   | Author
   | SiteSettings
   | Page
+  | Seo
   | Category
   | BlockContent
   | SanityImagePaletteSwatch
@@ -591,7 +613,7 @@ export type POSTS_SLUGS_QUERYResult = Array<{
   slug: string | null;
 }>;
 // Variable: POST_QUERY
-// Query: *[_type == "post" && slug.current == $slug][0]{  _id,  title,  body,  mainImage,  publishedAt,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  },  relatedPosts[]{    _key,    ...@->{_id, title, slug}  }}
+// Query: *[_type == "post" && slug.current == $slug][0]{  _id,  title,  body,  mainImage,  publishedAt,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  },  relatedPosts[]{    _key,    ...@->{_id, title, slug}  },  "seo": {  "title": coalesce(seo.title, title, ""),    "description": coalesce(seo.description,  ""),    "image": seo.image,    "noIndex": seo.noIndex == true   },}
 export type POST_QUERYResult = {
   _id: string;
   title: string | null;
@@ -671,9 +693,26 @@ export type POST_QUERYResult = {
     title: string | null;
     slug: Slug | null;
   }> | null;
+  seo: {
+    title: string | '';
+    description: string | '';
+    image: {
+      asset?: {
+        _ref: string;
+        _type: 'reference';
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+      };
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: 'image';
+    } | null;
+    noIndex: boolean | false;
+  };
 } | null;
 // Variable: PAGE_QUERY
-// Query: *[_type == "page" && slug.current == $slug][0]{  ...,  content[]{    ...,    _type == "faqs" => {      ...,      faqs[]->    }  }}
+// Query: *[_type == "page" && slug.current == $slug][0]{  ...,  "seo": {  "title": coalesce(seo.title, title, ""),    "description": coalesce(seo.description,  ""),    "image": seo.image,    "noIndex": seo.noIndex == true   },  content[]{    ...,    _type == "faqs" => {      ...,      faqs[]->    }  }}
 export type PAGE_QUERYResult = {
   _id: string;
   _type: 'page';
@@ -822,6 +861,23 @@ export type PAGE_QUERYResult = {
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     _type: 'image';
+  };
+  seo: {
+    title: string | '';
+    description: string | '';
+    image: {
+      asset?: {
+        _ref: string;
+        _type: 'reference';
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+      };
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: 'image';
+    } | null;
+    noIndex: boolean | false;
   };
 } | null;
 // Variable: HOME_PAGE_QUERY
@@ -986,6 +1042,7 @@ export type HOME_PAGE_QUERYResult =
           crop?: SanityImageCrop;
           _type: 'image';
         };
+        seo?: Seo;
       } | null;
     }
   | null;
@@ -996,8 +1053,8 @@ declare module '@sanity/client' {
   interface SanityQueries {
     '*[_type == "post" && defined(slug.current)]|order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage,\n  publishedAt,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_QUERYResult;
     '*[_type == "post" && defined(slug.current)]{\n  "slug": slug.current\n}': POSTS_SLUGS_QUERYResult;
-    '*[_type == "post" && slug.current == $slug][0]{\n  _id,\n  title,\n  body,\n  mainImage,\n  publishedAt,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  },\n  relatedPosts[]{\n    _key,\n    ...@->{_id, title, slug}\n  }\n}': POST_QUERYResult;
-    '*[_type == "page" && slug.current == $slug][0]{\n  ...,\n  content[]{\n    ...,\n    _type == "faqs" => {\n      ...,\n      faqs[]->\n    }\n  }\n}': PAGE_QUERYResult;
+    '*[_type == "post" && slug.current == $slug][0]{\n  _id,\n  title,\n  body,\n  mainImage,\n  publishedAt,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  },\n  relatedPosts[]{\n    _key,\n    ...@->{_id, title, slug}\n  },\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n}': POST_QUERYResult;
+    '*[_type == "page" && slug.current == $slug][0]{\n  ...,\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n  content[]{\n    ...,\n    _type == "faqs" => {\n      ...,\n      faqs[]->\n    }\n  }\n}': PAGE_QUERYResult;
     '*[_id == "siteSettings"][0]{\n    homePage->{\n      ...,\n      content[]{\n        ...,\n        _type == "faqs" => {\n          ...,\n          faqs[]->\n        }\n      }\n    }\n  }': HOME_PAGE_QUERYResult;
   }
 }

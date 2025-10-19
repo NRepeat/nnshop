@@ -12,12 +12,14 @@ import { splitImageType } from './blokcs/splitImageType';
 import { pageBuilderType } from './pageBuilderType';
 import { pageType } from './pageType';
 import { siteSettingsType } from './siteSettingsType';
+import { seoType } from './seoType';
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
     blockContentType,
     categoryType,
     siteSettingsType,
+    seoType,
     postType,
     authorType,
     pageType,
