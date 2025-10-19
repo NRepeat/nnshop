@@ -10,5 +10,11 @@ export default async function Page({
     query: PAGE_QUERY,
     params: await params,
   });
-  return page?.content ? <PageBuilder content={page.content} /> : null;
+  return page?.content ? (
+    <PageBuilder
+      content={page.content}
+      documentId={page._id}
+      documentType={page._type}
+    />
+  ) : null;
 }

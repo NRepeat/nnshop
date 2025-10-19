@@ -35,5 +35,9 @@ const sanityConfig = defineConfig({
     visionTool({ defaultApiVersion: apiVersion }),
     presentation,
   ],
+  document: {
+    newDocumentOptions: (prev) =>
+      prev.filter((item) => item.templateId !== 'siteSettings'),
+  },
 });
 export default sanityConfig;

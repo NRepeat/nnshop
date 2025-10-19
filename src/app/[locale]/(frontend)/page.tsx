@@ -1,12 +1,17 @@
-import { Title } from '@/components/blog/Title';
-import Link from 'next/link';
+import { PageBuilder } from '@/components/sanity/PageBuilder';
+import { sanityFetch } from '@/sanity/lib/live';
+import { HOME_PAGE_QUERY } from '@/sanity/lib/query';
 
-export default async function Home({}) {
-  return (
-    <section className="container mx-auto grid grid-cols-1 gap-6 p-12">
-      <Title>Layer Caker Home Page</Title>
-      <hr />
-      <Link href="/posts">Posts index &rarr;</Link>
-    </section>
-  );
+export default async function Page() {
+  const { data: page } = await sanityFetch({
+    query: HOME_PAGE_QUERY,
+  });
+
+  return page?.homePage?.content ? (
+    <PageBuilder
+      content={page?.homePage.content}
+      documentId={page.homePage._id}
+      documentType={page.homePage._type}
+    />
+  ) : null;
 }
