@@ -1,6 +1,57 @@
+import { ShopifyClientType, shopifyFactory } from '@/lib/shopify/clients';
+import authShopifyCustomer from '@/service/auth/shopify/customer-auth';
+import { headers } from 'next/headers';
 import Image from 'next/image';
 
 export default async function Home({}) {
+  if (
+    !process.env.SHOPIFY_ADMIN_API_SECRET_KEY ||
+    !process.env.SHOPIFY_STOREFRONT_SECRET_TOKEN
+  ) {
+    throw new Error('Missing Shopify admin API secret key');
+  }
+  const { client: adminClient } =
+    await shopifyFactory.createAuthenticatedClient(
+      ShopifyClientType.ADMIN,
+      process.env.SHOPIFY_ADMIN_API_SECRET_KEY,
+    );
+
+  const storefrontClient = await shopifyFactory.createClient(
+    ShopifyClientType.STOREFRONT,
+    {
+      accessToken: process.env.SHOPIFY_STOREFRONT_SECRET_TOKEN,
+    },
+  );
+
+  const head = await headers();
+  const dd = await authShopifyCustomer(head);
+
+  console.log(dd);
+  // const customer = await new CustomerAccountClient(user.accessToken).getCustomer()
+  const query = `
+    query {
+      products(first: 10) {
+        edges {
+          node {
+            id
+            title
+            description
+            images(first: 1) {
+              edges {
+                node {
+                  url
+                  altText
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+  const products = await adminClient.request(query);
+  const stProducucts = await storefrontClient.request(query);
+  console.log(products, stProducucts);
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
