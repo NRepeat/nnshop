@@ -7,6 +7,7 @@ import { SplitImage } from './blocks/SplitImage';
 import { createDataAttribute } from 'next-sanity';
 import { sanityClient } from '@/sanity/lib/client';
 import { useOptimistic } from 'next-sanity/hooks';
+import { notFound } from 'next/navigation';
 type PageBuilderProps = {
   content: NonNullable<PAGE_QUERYResult>['content'];
   documentId: string;
@@ -91,7 +92,7 @@ export function PageBuilder({
             );
           default:
             // This is a fallback for when we don't have a block type
-            return <div key={block._key}>Block not found: {block._type}</div>;
+            return notFound();
         }
       })}
     </main>
