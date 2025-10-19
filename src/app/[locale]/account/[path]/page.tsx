@@ -34,13 +34,6 @@ const getPageInfo = (path: string, t: (key: string) => string) => {
 const renderView = (path: string, tBetterAuth: (key: string) => string) => {
   switch (path) {
     case 'settings':
-      return (
-        <AccountView
-          path={path}
-          hideNav
-          localization={localization(tBetterAuth)}
-        />
-      );
     case 'security':
       return (
         <AccountView

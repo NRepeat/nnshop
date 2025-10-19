@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   allowedDevOrigins: [
     'dev.nninc.uk',
+    'close-dane-shining.ngrok-free.app',
     'http://localhost:3000',
     'http://localhost:3333',
   ],

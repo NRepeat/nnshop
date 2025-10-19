@@ -50,9 +50,10 @@ export const oauthShopifyClient = genericOAuth({
           return {
             emailVerified: Boolean(userData.email_verified),
             email: String(userData.email ?? ''),
-            id: userData.sub?.toString() || (userData.id?.toString() as string),
-            name: userData.email as string,
-            image: userData.image as string,
+            id:
+              userData?.sub?.toString() || (userData.id?.toString() as string),
+            name: userData?.email as string,
+            image: userData?.image as string,
           };
         }
 

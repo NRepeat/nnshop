@@ -19,6 +19,7 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
+
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
@@ -39,6 +40,12 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    },
+  },
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ['shopify', 'google'],
     },
   },
   trustedOrigins: [betterAuthUrl],
