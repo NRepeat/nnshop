@@ -73,3 +73,13 @@ model Verification {
 
   @@map("verification")
 }
+
+model ShopifySession {
+  id          String   @id @default(cuid())
+  clientId    String   @unique
+  accessToken String
+  scope       String
+  expiresIn   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
