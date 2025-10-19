@@ -1,4 +1,3 @@
-import StoreFrontClient from '@/lib/shopify/shopify-store-front';
 import Image from 'next/image';
 
 export default async function Home({}) {
