@@ -4,12 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "predev": "npm run typegen",
+    "prebuild": "npm run typegen",
+    "typegen": "sanity schema extract --path=./src/sanity/extract.json && sanity typegen generate"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
