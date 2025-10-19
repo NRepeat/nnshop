@@ -70,12 +70,12 @@ class Client {
   session: ShopifySession;
   url: string;
   constructor(session: ShopifySession) {
-    if (!process.env.SHOPIFY_STOREFRONT_API_VERSION || !SHOPIFY_STORE_DOMAIN) {
+    if (!process.env.SHOPIFY_API_VERSION || !SHOPIFY_STORE_DOMAIN) {
       throw new Error(
         'SHOPIFY_ADMIN_API_VERSION or SHOPIFY_STORE_DOMAIN is not set',
       );
     }
-    this.url = `https://${SHOPIFY_STORE_DOMAIN}/admin/api/${process.env.SHOPIFY_STOREFRONT_API_VERSION}/graphql.json`;
+    this.url = `https://${SHOPIFY_STORE_DOMAIN}/admin/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`;
     this.session = session;
   }
 
