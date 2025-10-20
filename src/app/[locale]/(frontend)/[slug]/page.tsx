@@ -1,12 +1,13 @@
 import { PageBuilder } from '@/components/sanity/PageBuilder';
+import { sanityFetch } from '@/sanity/lib/client';
 import { urlFor } from '@/sanity/lib/image';
-import { sanityFetch } from '@/sanity/lib/live';
 import { PAGE_QUERY } from '@/sanity/lib/query';
 import { Metadata } from 'next';
 
 type RouteProps = {
   params: Promise<{ slug: string }>;
 };
+
 const getPage = async (params: RouteProps['params']) =>
   sanityFetch({
     query: PAGE_QUERY,
@@ -16,7 +17,7 @@ const getPage = async (params: RouteProps['params']) =>
 export async function generateMetadata({
   params,
 }: RouteProps): Promise<Metadata> {
-  const { data: page } = await getPage(params);
+  const page = await getPage(params);
 
   if (!page) {
     return {};

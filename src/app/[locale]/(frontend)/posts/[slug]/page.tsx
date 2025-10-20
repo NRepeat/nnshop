@@ -1,25 +1,35 @@
-import { sanityFetch } from '@/sanity/lib/live';
 import { notFound } from 'next/navigation';
 
-import { POST_QUERY } from '@/sanity/lib/query';
+import { POST_QUERY, POSTS_SLUGS_QUERY } from '@/sanity/lib/query';
 
 import { Post } from '@/components/blog/Post';
 import { urlFor } from '@/sanity/lib/image';
 import { Metadata } from 'next';
+import { client, sanityFetch } from '@/sanity/lib/client';
 
 type RouteProps = {
   params: Promise<{ slug: string }>;
 };
-const getPage = async (params: RouteProps['params']) =>
-  await sanityFetch({
-    query: POST_QUERY,
-    params: await params,
-  });
+const getPage = async (params: RouteProps['params']) => {
+  const { slug } = await params;
 
+  return await sanityFetch({
+    query: POST_QUERY,
+    params: { slug },
+    revalidate: 3600,
+  });
+};
+export async function generateStaticParams() {
+  const slugs = await client
+    .withConfig({ useCdn: false })
+    .fetch(POSTS_SLUGS_QUERY);
+
+  return slugs;
+}
 export async function generateMetadata({
   params,
 }: RouteProps): Promise<Metadata> {
-  const { data: page } = await getPage(params);
+  const page = await getPage(params);
 
   if (!page) {
     return {};
@@ -53,7 +63,7 @@ export default async function Page({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { data: post } = await getPage(params);
+  const post = await getPage(params);
 
   if (!post) {
     notFound();

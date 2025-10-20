@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { createDataAttribute } from 'next-sanity';
 import { POST_QUERYResult } from '@/sanity/types';
-import { sanityClient } from '@/sanity/lib/client';
+import { client } from '@/sanity/lib/client';
 import { useOptimistic } from 'next-sanity/hooks';
 
-const { projectId, dataset, stega } = sanityClient.config();
+const { projectId, dataset, stega } = client.config();
 export const createDataAttributeConfig = {
   projectId,
   dataset,

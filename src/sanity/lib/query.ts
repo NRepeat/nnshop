@@ -70,7 +70,7 @@ export const PAGE_QUERY =
     ...,
     _type == "faqs" => {
       ...,
-      faqs[]->{ 
+      faqs[]->{
         _id,
         title,
         body,

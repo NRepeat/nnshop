@@ -1,4 +1,4 @@
-import { sanityClient } from '@/sanity/lib/client';
+import { client as sanityClient } from '@/sanity/lib/client';
 import { urlFor } from '@/sanity/lib/image';
 import { OG_IMAGE_QUERY } from '@/sanity/lib/query';
 import { notFound } from 'next/navigation';

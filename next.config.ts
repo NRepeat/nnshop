@@ -4,6 +4,11 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const nextConfig: NextConfig = {
   /* config options here */
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
   allowedDevOrigins: [
     'dev.nninc.uk',
     'close-dane-shining.ngrok-free.app',

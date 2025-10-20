@@ -5,7 +5,7 @@ import { Features } from './blocks/Features';
 import { Hero } from './blocks/hero';
 import { SplitImage } from './blocks/SplitImage';
 import { createDataAttribute } from 'next-sanity';
-import { sanityClient } from '@/sanity/lib/client';
+import { client as sanityClient } from '@/sanity/lib/client';
 import { useOptimistic } from 'next-sanity/hooks';
 import { notFound } from 'next/navigation';
 type PageBuilderProps = {
