@@ -12,6 +12,7 @@ const getPage = async (params: RouteProps['params']) =>
     query: PAGE_QUERY,
     params: await params,
   });
+
 export async function generateMetadata({
   params,
 }: RouteProps): Promise<Metadata> {
@@ -22,19 +23,20 @@ export async function generateMetadata({
   }
 
   const metadata: Metadata = {
+    metadataBase: new URL('https://close-dane-shining.ngrok-free.app'),
     title: page.seo.title,
     description: page.seo.description,
   };
 
-  if (page.seo.image) {
-    metadata.openGraph = {
-      images: {
-        url: urlFor(page.seo.image).width(1200).height(630).url(),
-        width: 1200,
-        height: 630,
-      },
-    };
-  }
+  metadata.openGraph = {
+    images: {
+      url: page.seo.image
+        ? urlFor(page.seo.image).width(1200).height(630).url()
+        : `/api/og?id=${page._id}`,
+      width: 1200,
+      height: 630,
+    },
+  };
 
   if (page.seo.noIndex) {
     metadata.robots = 'noindex';

@@ -1,3 +1,4 @@
+import { fetchRedirects } from '@/sanity/lib/fetchRedirects';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
@@ -19,6 +20,21 @@ const nextConfig: NextConfig = {
         hostname: 'cdn.sanity.io',
       },
     ],
+  },
+  async redirects() {
+    const redirectsData = await fetchRedirects();
+    return redirectsData
+      .filter(
+        (redirect) =>
+          redirect.source &&
+          redirect.destination &&
+          redirect.permanent !== null,
+      )
+      .map((redirect) => ({
+        source: redirect.source!,
+        destination: redirect.destination!,
+        permanent: redirect.permanent!,
+      }));
   },
 };
 const withNextIntl = createNextIntlPlugin();

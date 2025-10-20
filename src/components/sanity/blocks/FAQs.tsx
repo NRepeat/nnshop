@@ -1,14 +1,31 @@
 import { PAGE_QUERYResult } from '@/sanity/types';
 import { PortableText } from 'next-sanity';
+import { FAQPage, WithContext } from 'schema-dts';
 
 type FAQsProps = Extract<
   NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],
   { _type: 'faqs' }
 >;
-
+const generateFaqData = (faqs: FAQsProps['faqs']): WithContext<FAQPage> => ({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs?.map((faq) => ({
+    '@type': 'Question',
+    name: faq.title!,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.text!,
+    },
+  })),
+});
 export function FAQs({ _key, title, faqs }: FAQsProps) {
+  const faqData = generateFaqData(faqs);
   return (
     <section className="container mx-auto flex flex-col gap-8 py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqData) }}
+      />
       {title ? (
         <h2 className="text-xl mx-auto md:text-2xl lg:text-5xl font-semibold text-slate-800 text-pretty max-w-3xl">
           {title}
