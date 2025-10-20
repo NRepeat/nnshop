@@ -15,9 +15,13 @@ import { siteSettingsType } from './siteSettingsType';
 import { seoType } from './seoType';
 import { redirectType } from './redirectType';
 import { socialType } from './socialType';
+import { localeType } from './localeType';
+import simpleBlockContent from './simpleBlockContent';
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
+    simpleBlockContent,
+    localeType,
     socialType,
     blockContentType,
     redirectType,

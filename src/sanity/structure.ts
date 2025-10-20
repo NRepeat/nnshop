@@ -1,8 +1,12 @@
 import type { StructureResolver } from 'sanity/structure';
 
 // https://www.sanity.io/docs/structure-builder-cheat-sheet
-export const structure: StructureResolver = (S) =>
-  S.list()
+export const structure: StructureResolver = (S, context) => {
+  const { currentUser } = context;
+  const isAdmin = currentUser?.roles.some(
+    (role) => role.name === 'administrator',
+  );
+  return S.list()
     .title('Blog')
     .items([
       S.documentTypeListItem('post').title('Posts'),
@@ -20,9 +24,13 @@ export const structure: StructureResolver = (S) =>
             .schemaType('siteSettings')
             .documentId('siteSettings'),
         ),
+
       S.divider(),
-      ...S.documentTypeListItems().filter(
-        (item) =>
+      ...S.documentTypeListItems().filter((item) => {
+        if (['locale'].includes(item.getId()!)) {
+          return isAdmin;
+        }
+        return (
           item.getId() &&
           ![
             'post',
@@ -31,6 +39,8 @@ export const structure: StructureResolver = (S) =>
             'page',
             'faq',
             'siteSettings',
-          ].includes(item.getId()!),
-      ),
+          ].includes(item.getId()!)
+        );
+      }),
     ]);
+};

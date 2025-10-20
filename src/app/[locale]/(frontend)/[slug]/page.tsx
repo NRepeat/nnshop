@@ -47,7 +47,7 @@ export async function generateMetadata({
 }
 
 export default async function Page({ params }: RouteProps) {
-  const { data: page } = await getPage(params);
+  const page = await getPage(params);
   return page?.content ? (
     <PageBuilder
       content={page.content}

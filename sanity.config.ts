@@ -13,6 +13,8 @@ import { apiVersion, dataset, projectId } from './src/sanity/env';
 import { schema } from './src/sanity/schemaTypes';
 import { structure } from './src/sanity/structure';
 import { resolve } from '@/sanity/presentation/resolve';
+import { documentInternationalization } from '@sanity/document-internationalization';
+import { internationalizedArray } from 'sanity-plugin-internationalized-array';
 
 const presentation = presentationTool({
   resolve,
@@ -26,10 +28,35 @@ const sanityConfig = defineConfig({
   basePath: '/studio',
   projectId,
   dataset,
-  // Add and edit the content schema in the './sanity/schemaTypes' folder
   schema,
   plugins: [
-    assist(),
+    internationalizedArray({
+      // Use client to fetch locales or import from local locale file
+      languages: (client) =>
+        client.fetch(`*[_type == "locale"]{"id": tag, "title":name}`),
+      // Define field types to localize as-needed
+      fieldTypes: ['string', 'simpleBlockContent'],
+    }),
+    documentInternationalization({
+      // fetch locales from Content Lake or load from your locale file
+      supportedLanguages: (client) =>
+        client.fetch(`*[_type == "locale"]{"id": tag, "title":name}`),
+      // define schema types using document level localization
+      schemaTypes: ['post'],
+    }),
+    assist({
+      translate: {
+        document: {
+          // Specify the field containing the language for the document
+          languageField: 'language',
+        },
+        field: {
+          languages: (client) =>
+            client.fetch(`*[_type == "locale"]{"id": tag, "title":name}`),
+          documentTypes: ['post'],
+        },
+      },
+    }),
     structureTool({ structure }),
     // Vision is for querying with GROQ from inside the Studio
     // https://www.sanity.io/docs/the-vision-plugin
