@@ -8,8 +8,12 @@ import { Categories } from './Categories';
 import { PublishedAt } from './PublishedAt';
 import { Title } from './Title';
 import { RelatedPosts } from './RelatedPosts';
+import { getContentLanguageInfo } from '@/lib/locale';
+import { LanguageFallbackNotice } from './LanguageFallbackNotice';
 
-export function Post(props: NonNullable<POST_QUERYResult>) {
+export function Post(
+  props: NonNullable<POST_QUERYResult> & { currentLocale?: string },
+) {
   const {
     _id,
     title,
@@ -19,13 +23,28 @@ export function Post(props: NonNullable<POST_QUERYResult>) {
     publishedAt,
     categories,
     relatedPosts,
+    language,
+    currentLocale,
   } = props;
+
+  // Get content language info including fallback detection
+  const languageInfo = getContentLanguageInfo(language, currentLocale || 'en');
   return (
     <article className="grid lg:grid-cols-12 gap-y-12">
+      <LanguageFallbackNotice
+        contentLanguage={language}
+        requestedLocale={currentLocale || 'en'}
+        className="lg:col-span-12"
+      />
       <header className="lg:col-span-12 flex flex-col gap-4 items-start">
         <div className="flex gap-4 items-center">
           <Categories categories={categories} />
           <PublishedAt publishedAt={publishedAt} />
+          {languageInfo.shouldShowIndicator && (
+            <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
+              {languageInfo.indicatorText}
+            </span>
+          )}
         </div>
         <Title>{title}</Title>
         <Author author={author} />
