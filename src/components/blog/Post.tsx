@@ -9,7 +9,6 @@ import { PublishedAt } from './PublishedAt';
 import { Title } from './Title';
 import { RelatedPosts } from './RelatedPosts';
 import { getContentLanguageInfo } from '@/lib/locale';
-import { LanguageFallbackNotice } from './LanguageFallbackNotice';
 
 export function Post(
   props: NonNullable<POST_QUERYResult> & { currentLocale?: string },
@@ -27,15 +26,9 @@ export function Post(
     currentLocale,
   } = props;
 
-  // Get content language info including fallback detection
   const languageInfo = getContentLanguageInfo(language, currentLocale || 'en');
   return (
     <article className="grid lg:grid-cols-12 gap-y-12">
-      <LanguageFallbackNotice
-        contentLanguage={language}
-        requestedLocale={currentLocale || 'en'}
-        className="lg:col-span-12"
-      />
       <header className="lg:col-span-12 flex flex-col gap-4 items-start">
         <div className="flex gap-4 items-center">
           <Categories categories={categories} />

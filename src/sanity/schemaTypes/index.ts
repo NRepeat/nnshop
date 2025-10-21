@@ -17,9 +17,11 @@ import { redirectType } from './redirectType';
 import { socialType } from './socialType';
 import { localeType } from './localeType';
 import simpleBlockContent from './simpleBlockContent';
+import { shopifySchemaTypes } from './shopify/shemas';
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
+    ...shopifySchemaTypes,
     simpleBlockContent,
     localeType,
     socialType,

@@ -302,6 +302,18 @@ export type SimpleBlockContent = Array<{
   _key: string;
 }>;
 
+export type ProxyString = string;
+
+export type Product = {
+  _id: string;
+  _type: 'product';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hidden?: string;
+  titleProxy?: ProxyString;
+};
+
 export type SanityAssistInstructionTask = {
   _type: 'sanity.assist.instructionTask';
   path?: string;
@@ -720,6 +732,8 @@ export type AllSanitySchemaTypes =
   | Social
   | Locale
   | SimpleBlockContent
+  | ProxyString
+  | Product
   | SanityAssistInstructionTask
   | SanityAssistTaskStatus
   | SanityAssistSchemaTypeAnnotations

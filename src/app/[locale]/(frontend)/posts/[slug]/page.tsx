@@ -10,7 +10,7 @@ import { Post } from '@/components/blog/Post';
 import { urlFor } from '@/sanity/lib/image';
 import { Metadata } from 'next';
 import { client, sanityFetch } from '@/sanity/lib/client';
-import { normalizeLocaleForSanity, getDefaultLocale } from '@/lib/locale';
+import { normalizeLocaleForSanity } from '@/lib/locale';
 
 type RouteProps = {
   params: Promise<{ slug: string; locale: string }>;
@@ -18,17 +18,14 @@ type RouteProps = {
 const getPage = async (params: RouteProps['params']) => {
   const { slug, locale } = await params;
 
-  // Normalize locale for Sanity (ensures it exists in Sanity)
   const sanityLocale = await normalizeLocaleForSanity(locale);
 
-  // Get post for current locale first
   let post = await sanityFetch({
     query: POST_BY_LANGUAGE_QUERY,
     params: { slug, language: sanityLocale },
     revalidate: 3600,
   });
 
-  // If no post found in current locale and it's not English, try English fallback
   if (!post && sanityLocale !== 'en') {
     post = await sanityFetch({
       query: POST_WITH_FALLBACK_QUERY,
