@@ -22,10 +22,6 @@ const GROUPS = [
     title: 'Shopify sync',
     icon: ShopifyIcon,
   },
-  {
-    name: 'seo',
-    title: 'SEO',
-  },
 ];
 
 export default defineType({
@@ -61,14 +57,7 @@ export default defineType({
       type: 'proxyString',
       options: { field: 'store.slug.current' },
     }),
-    // Color theme
-    defineField({
-      name: 'colorTheme',
-      title: 'Color theme',
-      type: 'reference',
-      to: [{ type: 'colorTheme' }],
-      group: 'theme',
-    }),
+
     // Vector
     defineField({
       name: 'vector',
@@ -132,12 +121,6 @@ export default defineType({
       group: 'shopifySync',
     }),
     // SEO
-    defineField({
-      name: 'seo',
-      title: 'SEO',
-      type: 'seo.shopify',
-      group: 'seo',
-    }),
   ],
   orderings: [
     {

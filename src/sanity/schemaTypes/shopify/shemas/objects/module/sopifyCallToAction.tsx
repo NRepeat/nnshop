@@ -1,7 +1,7 @@
 import { BlockElementIcon, ImageIcon } from '@sanity/icons';
 import { defineField } from 'sanity';
 
-export default defineField({
+export const callToAction = defineField({
   name: 'module.callToAction',
   title: 'Call to action',
   type: 'object',
@@ -51,15 +51,7 @@ export default defineField({
       rows: 2,
       fieldset: 'copy',
     }),
-    // Link
-    defineField({
-      name: 'links',
-      title: 'Link',
-      type: 'array',
-      of: [{ type: 'linkInternal' }, { type: 'linkExternal' }],
-      validation: (Rule) => Rule.max(1),
-      fieldset: 'copy',
-    }),
+
     // Content
     defineField({
       name: 'content',

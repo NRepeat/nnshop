@@ -10,12 +10,7 @@ export default defineField({
   },
   fields: [
     // Links
-    defineField({
-      name: 'links',
-      title: 'Links',
-      type: 'array',
-      of: [{ type: 'linkInternal' }, { type: 'linkExternal' }],
-    }),
+
     // Text
     defineField({
       name: 'text',
@@ -25,26 +20,7 @@ export default defineField({
         {
           lists: [],
           marks: {
-            annotations: [
-              // Email
-              {
-                title: 'Email',
-                name: 'annotationLinkEmail',
-                type: 'annotationLinkEmail',
-              },
-              // Internal link
-              {
-                title: 'Internal page',
-                name: 'annotationLinkInternal',
-                type: 'annotationLinkInternal',
-              },
-              // URL
-              {
-                title: 'URL',
-                name: 'annotationLinkExternal',
-                type: 'annotationLinkExternal',
-              },
-            ],
+            annotations: [],
             decorators: [],
           },
           // Block styles

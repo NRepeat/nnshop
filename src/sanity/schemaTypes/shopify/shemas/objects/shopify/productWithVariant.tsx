@@ -26,22 +26,17 @@ export default defineField({
       description: 'First variant will be selected if left empty',
       options: {
         filter: ({ parent }) => {
-          // @ts-expect-error @ts-ignore
+          //@ts-expect-error @ts-ignore
           const productId = parent?.product?._ref;
-          const shopifyProductId = Number(
-            productId?.replace('shopifyProduct-', ''),
-          );
 
-          if (!shopifyProductId) {
+          if (!productId) {
             return { filter: '', params: {} };
           }
 
-          // TODO: once variants are correctly marked as deleted, this could be made a little more efficient
-          // e.g. filter: 'store.productId == $shopifyProductId && !store.isDeleted',
           return {
-            filter: `_id in *[_id == $shopifyProductId][0].store.variants[]._ref`,
+            filter: `store.productGid == *[_id == $productId][0].store.gid && !store.isDeleted`,
             params: {
-              shopifyProductId: productId,
+              productId: productId,
             },
           };
         },
@@ -53,12 +48,12 @@ export default defineField({
       validation: (Rule) =>
         Rule.custom(async (value, { parent, getClient }) => {
           // Selected product in adjacent `product` field
-          //@ts-expect-error @ts-ignore
+          //@ts-expect-error  @ts-ignore
           const productId = parent?.product?._ref;
-
           // Selected product variant
           const productVariantId = value?._ref;
 
+          console.log(productId, productVariantId);
           if (!productId || !productVariantId) {
             return true;
           }

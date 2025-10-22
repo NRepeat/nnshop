@@ -20,14 +20,6 @@ export default defineField({
         ),
       ],
     }),
-    // Link
-    defineField({
-      name: 'links',
-      title: 'Link',
-      type: 'array',
-      of: [{ type: 'linkInternal' }, { type: 'linkExternal' }],
-      validation: (Rule) => Rule.max(1),
-    }),
   ],
   preview: {
     select: {
@@ -35,7 +27,7 @@ export default defineField({
       url: 'url',
     },
     prepare(selection) {
-      const { text, url } = selection;
+      const { text } = selection;
       return {
         subtitle: 'Callout',
         title: text,

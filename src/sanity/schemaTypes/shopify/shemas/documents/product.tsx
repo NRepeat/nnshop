@@ -52,61 +52,55 @@ export default defineType({
       options: { field: 'store.title' },
     }),
     // Slug (proxy)
-    // defineField({
-    //   name: 'slugProxy',
-    //   title: 'Slug',
-    //   type: 'proxyString',
-    //   options: { field: 'store.slug.current' },
-    // }),
+    defineField({
+      name: 'slugProxy',
+      title: 'Slug',
+      type: 'proxyString',
+      options: { field: 'store.slug.current' },
+    }),
     // Color theme
-    //   defineField({
-    //     name: 'colorTheme',
-    //     title: 'Color theme',
-    //     type: 'reference',
-    //     to: [{ type: 'colorTheme' }],
-    //     group: 'editorial',
-    //   }),
-    //   defineField({
-    //     name: 'body',
-    //     title: 'Body',
-    //     type: 'body',
-    //     group: 'editorial',
-    //   }),
-    //   defineField({
-    //     name: 'store',
-    //     title: 'Shopify',
-    //     type: 'shopifyProduct',
-    //     description: 'Product data from Shopify (read-only)',
-    //     group: 'shopifySync',
-    //   }),
-    //   defineField({
-    //     name: 'seo',
-    //     title: 'SEO',
-    //     type: 'seo.shopify',
-    //     group: 'seo',
-    //   }),
-    // ],
-    // orderings: [
-    //   {
-    //     name: 'titleAsc',
-    //     title: 'Title (A-Z)',
-    //     by: [{ field: 'store.title', direction: 'asc' }],
-    //   },
-    //   {
-    //     name: 'titleDesc',
-    //     title: 'Title (Z-A)',
-    //     by: [{ field: 'store.title', direction: 'desc' }],
-    //   },
-    //   {
-    //     name: 'priceDesc',
-    //     title: 'Price (Highest first)',
-    //     by: [{ field: 'store.priceRange.minVariantPrice', direction: 'desc' }],
-    //   },
-    //   {
-    //     name: 'priceAsc',
-    //     title: 'Price (Lowest first)',
-    //     by: [{ field: 'store.priceRange.minVariantPrice', direction: 'asc' }],
-    //   },
+
+    defineField({
+      name: 'body',
+      title: 'Body',
+      type: 'body',
+      group: 'editorial',
+    }),
+    defineField({
+      name: 'store',
+      title: 'Shopify',
+      type: 'shopifyProduct',
+      description: 'Product data from Shopify (read-only)',
+      group: 'shopifySync',
+    }),
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'seo.shopify',
+      group: 'seo',
+    }),
+  ],
+  orderings: [
+    {
+      name: 'titleAsc',
+      title: 'Title (A-Z)',
+      by: [{ field: 'store.title', direction: 'asc' }],
+    },
+    {
+      name: 'titleDesc',
+      title: 'Title (Z-A)',
+      by: [{ field: 'store.title', direction: 'desc' }],
+    },
+    {
+      name: 'priceDesc',
+      title: 'Price (Highest first)',
+      by: [{ field: 'store.priceRange.minVariantPrice', direction: 'desc' }],
+    },
+    {
+      name: 'priceAsc',
+      title: 'Price (Lowest first)',
+      by: [{ field: 'store.priceRange.minVariantPrice', direction: 'asc' }],
+    },
   ],
   preview: {
     select: {

@@ -21,50 +21,29 @@ export default defineField({
             value: 'strong',
           },
         ],
-        annotations: [
-          // product
-          {
-            name: 'annotationProduct',
-            type: 'annotationProduct',
-          },
-          // Email
-          {
-            name: 'annotationLinkEmail',
-            type: 'annotationLinkEmail',
-          },
-          // Internal link
-          {
-            name: 'annotationLinkInternal',
-            type: 'annotationLinkInternal',
-          },
-          // URL
-          {
-            name: 'annotationLinkExternal',
-            type: 'annotationLinkExternal',
-          },
-        ],
+        annotations: [],
       },
       // Paragraphs
       type: 'block',
     },
     // Custom blocks
-    {
-      type: 'module.accordion',
-    },
-    {
-      type: 'module.callout',
-    },
-    {
-      type: 'module.grid',
-    },
-    {
-      type: 'module.images',
-    },
-    {
-      type: 'module.instagram',
-    },
-    {
-      type: 'module.products',
-    },
+    // {
+    //   type: 'module.accordion',
+    // },
+    // {
+    //   type: 'module.callout',
+    // },
+    // {
+    //   type: 'module.grid',
+    // },
+    // {
+    //   type: 'module.images',
+    // },
+    // {
+    //   type: 'module.instagram',
+    // },
+    // {
+    //   type: 'module.products',
+    // },
   ],
 });

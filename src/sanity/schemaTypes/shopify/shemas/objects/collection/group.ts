@@ -13,11 +13,7 @@ export default defineField({
       type: 'string',
       validation: (Rule) => Rule.required(),
     },
-    {
-      name: 'collectionLinks',
-      title: 'Collection links',
-      type: 'collectionLinks',
-    },
+
     {
       name: 'collectionProducts',
       title: 'Collection products',

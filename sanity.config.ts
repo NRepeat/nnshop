@@ -15,6 +15,7 @@ import { structure } from './src/sanity/structure';
 import { resolve } from '@/sanity/presentation/resolve';
 import { documentInternationalization } from '@sanity/document-internationalization';
 import { internationalizedArray } from 'sanity-plugin-internationalized-array';
+import { colorInput } from '@sanity/color-input';
 
 const presentation = presentationTool({
   resolve,
@@ -62,6 +63,7 @@ const sanityConfig = defineConfig({
     // https://www.sanity.io/docs/the-vision-plugin
     visionTool({ defaultApiVersion: apiVersion }),
     presentation,
+    colorInput(),
   ],
   document: {
     newDocumentOptions: (prev) =>

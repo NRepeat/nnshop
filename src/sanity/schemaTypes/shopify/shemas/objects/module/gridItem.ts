@@ -42,10 +42,7 @@ export default defineField({
                 type: 'annotationLinkEmail',
               },
               // Internal link
-              {
-                name: 'annotationLinkInternal',
-                type: 'annotationLinkInternal',
-              },
+
               // URL
               {
                 name: 'annotationLinkExternal',

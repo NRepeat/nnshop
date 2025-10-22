@@ -11,13 +11,5 @@ export default defineField({
       title: 'Title',
       type: 'string',
     },
-    // Link
-    {
-      name: 'links',
-      title: 'Link',
-      type: 'array',
-      of: [{ type: 'linkInternal' }, { type: 'linkExternal' }],
-      validation: (Rule) => Rule.max(1),
-    },
   ],
 });

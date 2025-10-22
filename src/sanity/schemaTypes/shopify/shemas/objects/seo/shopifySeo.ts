@@ -1,7 +1,7 @@
 import { defineField } from 'sanity';
 
 export default defineField({
-  name: 'seo',
+  name: 'seo.shopify',
   title: 'SEO',
   type: 'object',
   group: 'seo',
