@@ -271,6 +271,18 @@ export type SimpleBlockContent = Array<{
   _key: string;
 }>;
 
+export type ProductCarousel = {
+  _type: 'productCarousel';
+  title?: string;
+  products?: Array<{
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: 'product';
+  }>;
+};
+
 export type Body = Array<{
   children?: Array<{
     marks?: Array<string>;
@@ -1341,6 +1353,7 @@ export type AllSanitySchemaTypes =
   | BlockContent
   | Locale
   | SimpleBlockContent
+  | ProductCarousel
   | Body
   | ModuleCallToAction
   | ModuleCallout

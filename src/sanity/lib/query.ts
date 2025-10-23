@@ -283,6 +283,21 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings"][0]{
       ...,
       content[]{
         ...,
+        _type == "productCarousel" => {
+          products[]->{
+            _id,
+            store{
+              title,
+              previewImageUrl,
+              priceRange{
+              maxVariantPrice,
+              minVariantPrice
+              },
+              productType
+
+            }
+          }
+        },
         _type == "faqs" => {
           ...,
           faqs[]->{

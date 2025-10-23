@@ -18,10 +18,12 @@ import { socialType } from './socialType';
 import { localeType } from './localeType';
 import simpleBlockContent from './simpleBlockContent';
 import { shopifySchemaTypes } from './shopify/shemas';
+import { productCarousel } from './blokcs/productCarousel';
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
     ...shopifySchemaTypes,
+    productCarousel,
     simpleBlockContent,
     localeType,
     socialType,

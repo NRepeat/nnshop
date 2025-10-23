@@ -8,6 +8,7 @@ import { createDataAttribute } from 'next-sanity';
 import { client as sanityClient } from '@/sanity/lib/client';
 import { useOptimistic } from 'next-sanity/hooks';
 import { notFound } from 'next/navigation';
+import ProductCarousel from './blocks/ProductCarousel';
 type PageBuilderProps = {
   content: NonNullable<PAGE_QUERYResult>['content'];
   documentId: string;
@@ -50,6 +51,7 @@ export function PageBuilder({
         type: documentType,
         path: 'content',
       }).toString()}
+      className="w-full flex justify-center"
     >
       {blocks.map((block) => {
         const DragHandle = ({ children }: { children: React.ReactNode }) => (
@@ -90,9 +92,15 @@ export function PageBuilder({
                 <FAQs {...block} />
               </DragHandle>
             );
+          case 'productCarousel':
+            return (
+              <DragHandle key={block._key}>
+                <ProductCarousel {...block} />
+              </DragHandle>
+            );
           default:
             // This is a fallback for when we don't have a block type
-            return notFound();
+            return <>Something went wrong</>;
         }
       })}
     </main>
