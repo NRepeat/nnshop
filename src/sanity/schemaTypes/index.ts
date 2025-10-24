@@ -21,10 +21,14 @@ import { shopifySchemaTypes } from './shopify/shemas';
 import { productCarousel } from './blokcs/productCarousel';
 import { collectionsCarousel } from './blokcs/collectionsCarouselWithActionButton';
 import { localizedString } from './localizedStringType';
+import { localizedText } from './localizedText';
+import { sliderBlock } from './blokcs/slider';
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
     ...shopifySchemaTypes,
+    localizedText,
+    sliderBlock,
     collectionsCarousel,
     productCarousel,
     simpleBlockContent,

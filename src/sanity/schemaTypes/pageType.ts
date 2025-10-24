@@ -14,9 +14,6 @@ export const pageType = defineType({
     defineField({
       name: 'slug',
       type: 'slug',
-      options: {
-        source: 'title',
-      },
     }),
     defineField({
       name: 'language',
@@ -24,6 +21,7 @@ export const pageType = defineType({
       readOnly: true,
       hidden: true,
     }),
+
     defineField({
       name: 'content',
       type: 'pageBuilder',
@@ -46,7 +44,7 @@ export const pageType = defineType({
   ],
   preview: {
     select: {
-      title: 'title',
+      title: 'title.en',
       subtitle: 'slug.current',
     },
   },

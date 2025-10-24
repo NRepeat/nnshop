@@ -9,6 +9,7 @@ import { client as sanityClient } from '@/sanity/lib/client';
 import { useOptimistic } from 'next-sanity/hooks';
 import ProductCarousel from './blocks/ProductCarousel';
 import CollectionsCarousel from './blocks/CollectionsCarousel';
+import { HeroSwiper } from './blocks/Slider';
 type PageBuilderProps = {
   content: NonNullable<PAGE_QUERYResult>['content'];
   documentId: string;
@@ -38,7 +39,6 @@ export function PageBuilder({
     }
     return state;
   });
-
   if (!Array.isArray(blocks)) {
     return null;
   }
@@ -103,6 +103,12 @@ export function PageBuilder({
               <DragHandle key={block._key}>
                 {/** @ts-expect-error sanity */}
                 <CollectionsCarousel {...block} />
+              </DragHandle>
+            );
+          case 'sliderBlock':
+            return (
+              <DragHandle key={block._key}>
+                <HeroSwiper {...block} />
               </DragHandle>
             );
           default:
