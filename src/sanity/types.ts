@@ -161,6 +161,9 @@ export type PageBuilder = Array<
   | ({
       _key: string;
     } & Faqs)
+  | ({
+      _key: string;
+    } & ProductCarousel)
 >;
 
 export type SiteSettings = {
@@ -2023,6 +2026,18 @@ export type PAGE_QUERYResult = {
       }
     | {
         _key: string;
+        _type: 'productCarousel';
+        title?: string;
+        products?: Array<{
+          _ref: string;
+          _type: 'reference';
+          _weak?: boolean;
+          _key: string;
+          [internalGroqTypeReferenceTo]?: 'product';
+        }>;
+      }
+    | {
+        _key: string;
         _type: 'splitImage';
         orientation?: 'imageLeft' | 'imageRight';
         title?: string;
@@ -2072,7 +2087,7 @@ export type PAGE_QUERYResult = {
   social?: Social;
 } | null;
 // Variable: HOME_PAGE_QUERY
-// Query: *[_id == "siteSettings"][0]{    homePage->{      ...,      content[]{        ...,        _type == "faqs" => {          ...,          faqs[]->{            _id,            title,            body,            "text": pt::text(body)          }        }      }    }  }
+// Query: *[_id == "siteSettings"][0]{    homePage->{      ...,      content[]{        ...,        _type == "productCarousel" => {          products[]->{            _id,            store{              title,              previewImageUrl,              priceRange{              maxVariantPrice,              minVariantPrice              },              productType            }          }        },        _type == "faqs" => {          ...,          faqs[]->{            _id,            title,            body,            "text": pt::text(body)          }        }      }    }  }
 export type HOME_PAGE_QUERYResult =
   | {
       homePage: null;
@@ -2201,6 +2216,23 @@ export type HOME_PAGE_QUERYResult =
             }
           | {
               _key: string;
+              _type: 'productCarousel';
+              title?: string;
+              products: Array<{
+                _id: string;
+                store: {
+                  title: string | null;
+                  previewImageUrl: string | null;
+                  priceRange: {
+                    maxVariantPrice: number | null;
+                    minVariantPrice: number | null;
+                  } | null;
+                  productType: string | null;
+                } | null;
+              }> | null;
+            }
+          | {
+              _key: string;
               _type: 'splitImage';
               orientation?: 'imageLeft' | 'imageRight';
               title?: string;
@@ -2296,7 +2328,7 @@ declare module '@sanity/client' {
     '*[_type == "post" && defined(slug.current) && (language == "en" || !defined(language))] | order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_EN_FALLBACK_QUERYResult;
     '*[_type == "post" && slug.current == $slug && (language == "en" || !defined(language))][0]{\n  _id,\n  title,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  },\n  relatedPosts[]{\n    _key,\n    ...@->{_id, title, slug, language}\n  },\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n}': POST_WITH_FALLBACK_QUERYResult;
     '*[_type == "page" && slug.current == $slug][0]{\n  ...,\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n  content[]{\n    ...,\n    _type == "faqs" => {\n      ...,\n      faqs[]->{\n        _id,\n        title,\n        body,\n        "text": pt::text(body)\n      }\n    }\n  }\n}': PAGE_QUERYResult;
-    '*[_id == "siteSettings"][0]{\n    homePage->{\n      ...,\n      content[]{\n        ...,\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        }\n      }\n    }\n  }': HOME_PAGE_QUERYResult;
+    '*[_id == "siteSettings"][0]{\n    homePage->{\n      ...,\n      content[]{\n        ...,\n        _type == "productCarousel" => {\n          products[]->{\n            _id,\n            store{\n              title,\n              previewImageUrl,\n              priceRange{\n              maxVariantPrice,\n              minVariantPrice\n              },\n              productType\n\n            }\n          }\n        },\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        }\n      }\n    }\n  }': HOME_PAGE_QUERYResult;
     '\n  *[_type == "redirect" && isEnabled == true] {\n      source,\n      destination,\n      permanent\n  }\n': REDIRECTS_QUERYResult;
     '\n  *[_id == $id][0]{\n    title,\n    "image": mainImage.asset->{\n      url,\n      metadata {\n        palette\n      }\n    }\n  }\n': OG_IMAGE_QUERYResult;
     '\n*[_type in ["page", "post"] && defined(slug.current)] {\n    "href": select(\n      _type == "page" => "/" + slug.current,\n      _type == "post" => select(\n        defined(language) => "/" + language + "/posts/" + slug.current,\n        "/posts/" + slug.current\n      ),\n      slug.current\n    ),\n    _updatedAt,\n    language\n}\n': SITEMAP_QUERYResult;

@@ -7,7 +7,6 @@ import { SplitImage } from './blocks/SplitImage';
 import { createDataAttribute } from 'next-sanity';
 import { client as sanityClient } from '@/sanity/lib/client';
 import { useOptimistic } from 'next-sanity/hooks';
-import { notFound } from 'next/navigation';
 import ProductCarousel from './blocks/ProductCarousel';
 type PageBuilderProps = {
   content: NonNullable<PAGE_QUERYResult>['content'];

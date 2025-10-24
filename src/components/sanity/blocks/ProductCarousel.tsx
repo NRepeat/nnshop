@@ -1,4 +1,3 @@
-import { Product } from '@/sanity/types';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Carousel,
@@ -11,13 +10,19 @@ import Image from 'next/image';
 import { useRef } from 'react';
 import AutoHeight from 'embla-carousel-auto-height';
 import Link from 'next/link';
+import { PAGE_QUERYResult, Product } from '@/sanity/types';
+
+type ProductCarouselProps = Extract<
+  NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],
+  { _type: 'productCarousel' }
+>;
 
 const ProductCarousel = ({
   products,
   title,
 }: {
+  title: ProductCarouselProps['title'];
   products: Product[];
-  title: string;
 }) => {
   const plugin = useRef(AutoHeight({ active: true }));
   return (
@@ -36,7 +41,7 @@ const ProductCarousel = ({
         opts={{ loop: true, dragFree: true }}
       >
         <CarouselContent className="-ml-1 ">
-          {products.map((product, index) => (
+          {products?.map((product, index) => (
             <CarouselItem
               key={index}
               className="pl-1 basis-1/2 md:basis-1/3 lg:basis-1/4"

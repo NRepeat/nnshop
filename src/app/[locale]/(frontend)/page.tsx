@@ -6,9 +6,9 @@ export default async function Page() {
   const { data: page } = await sanityFetch({
     query: HOME_PAGE_QUERY,
   });
-  console.log(page);
   return page?.homePage?.content ? (
     <PageBuilder
+      //@ts-expect-error @ts-ignore
       content={page?.homePage.content}
       documentId={page.homePage._id}
       documentType={page.homePage._type}
