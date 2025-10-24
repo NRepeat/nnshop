@@ -298,6 +298,20 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings"][0]{
             }
           }
         },
+        _type == "collectionsCarousel" => {
+          collections[]->{
+            _id,
+            title,
+            store{
+             imageUrl,
+             isDeleted,
+             slug{
+             current
+             },
+             title
+            }
+          }
+        },
         _type == "faqs" => {
           ...,
           faqs[]->{

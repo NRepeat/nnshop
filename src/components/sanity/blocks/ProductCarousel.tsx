@@ -11,6 +11,8 @@ import { useRef } from 'react';
 import AutoHeight from 'embla-carousel-auto-height';
 import Link from 'next/link';
 import { PAGE_QUERYResult, Product } from '@/sanity/types';
+import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
 
 type ProductCarouselProps = Extract<
   NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],
@@ -20,18 +22,22 @@ type ProductCarouselProps = Extract<
 const ProductCarousel = ({
   products,
   title,
+  locale,
 }: {
   title: ProductCarouselProps['title'];
   products: Product[];
+  locale: string;
 }) => {
   const plugin = useRef(AutoHeight({ active: true }));
+  const tBetterAuth = useTranslations('productCarousel');
+  console.log('ProductCarousel', tBetterAuth('VIEW_ALL'));
   return (
     <div className="w-full">
       <div className="flex justify-between items-end   container pb-4">
-        <h2 className="text-5xl font-bold mb-8">{title}</h2>
+        <h2 className="text-5xl font-bold mb-8">{title[locale]}</h2>
         <div className="flex h-full justify-end">
           <Link href="/products" className="text-md underline">
-            View All
+            {tBetterAuth('VIEW_ALL')}
           </Link>
         </div>
       </div>

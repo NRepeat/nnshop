@@ -8,13 +8,30 @@ export const productCarousel = defineType({
     {
       name: 'title',
       title: 'Title',
-      type: 'string',
+      type: 'localizedString',
     },
     {
       name: 'products',
       title: 'Products',
       type: 'array',
       of: [{ type: 'reference', to: [{ type: 'product' }] }],
+    },
+    {
+      name: 'enableAction',
+      title: 'Enable Action',
+      type: 'boolean',
+    },
+    {
+      name: 'actionName',
+      title: 'Action Name',
+      type: 'localizedString',
+      hidden: ({ parent }) => !parent?.enableAction,
+    },
+    {
+      name: 'actionLink',
+      title: 'Action Link',
+      type: 'localizedString',
+      hidden: ({ parent }) => !parent?.enableAction,
     },
   ],
 });

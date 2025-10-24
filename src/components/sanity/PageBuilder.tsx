@@ -8,6 +8,7 @@ import { createDataAttribute } from 'next-sanity';
 import { client as sanityClient } from '@/sanity/lib/client';
 import { useOptimistic } from 'next-sanity/hooks';
 import ProductCarousel from './blocks/ProductCarousel';
+import CollectionsCarousel from './blocks/CollectionsCarousel';
 type PageBuilderProps = {
   content: NonNullable<PAGE_QUERYResult>['content'];
   documentId: string;
@@ -25,6 +26,7 @@ export function PageBuilder({
   content,
   documentId,
   documentType,
+  locale,
 }: PageBuilderProps) {
   const blocks = useOptimistic<
     NonNullable<PAGE_QUERYResult>['content'] | undefined,
@@ -41,7 +43,7 @@ export function PageBuilder({
   if (!Array.isArray(blocks)) {
     return null;
   }
-
+  console.log(blocks);
   return (
     <main
       data-sanity={createDataAttribute({
@@ -50,7 +52,7 @@ export function PageBuilder({
         type: documentType,
         path: 'content',
       }).toString()}
-      className="w-full flex justify-center"
+      className="w-full flex justify-center flex-col"
     >
       {blocks.map((block) => {
         const DragHandle = ({ children }: { children: React.ReactNode }) => (
@@ -94,7 +96,13 @@ export function PageBuilder({
           case 'productCarousel':
             return (
               <DragHandle key={block._key}>
-                <ProductCarousel {...block} />
+                <ProductCarousel {...block} locale={locale} />
+              </DragHandle>
+            );
+          case 'collectionsCarousel':
+            return (
+              <DragHandle key={block._key}>
+                <CollectionsCarousel {...block} locale={locale} />
               </DragHandle>
             );
           default:

@@ -19,13 +19,17 @@ import { localeType } from './localeType';
 import simpleBlockContent from './simpleBlockContent';
 import { shopifySchemaTypes } from './shopify/shemas';
 import { productCarousel } from './blokcs/productCarousel';
+import { collectionsCarousel } from './blokcs/collectionsCarouselWithActionButton';
+import { localizedString } from './localizedStringType';
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
     ...shopifySchemaTypes,
+    collectionsCarousel,
     productCarousel,
     simpleBlockContent,
     localeType,
+    localizedString,
     socialType,
     blockContentType,
     redirectType,

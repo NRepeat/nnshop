@@ -2,6 +2,11 @@
   "HomePage": {
     "title": "Hello world!"
   },
+  "productCarousel": {
+    "TITLE": "Products",
+    "DESCRIPTION": "View and filter products",
+    "VIEW_ALL": "View all"
+  },
   "Auth": {
     "signIn": {
       "title": "Welcome back",
