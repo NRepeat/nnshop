@@ -11,8 +11,8 @@ import { useRef } from 'react';
 import AutoHeight from 'embla-carousel-auto-height';
 import Link from 'next/link';
 import { PAGE_QUERYResult, Product } from '@/sanity/types';
-import { getTranslations } from 'next-intl/server';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { Locale } from '@/i18n/routing';
 
 type ProductCarouselProps = Extract<
   NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],
@@ -22,19 +22,19 @@ type ProductCarouselProps = Extract<
 const ProductCarousel = ({
   products,
   title,
-  locale,
 }: {
   title: ProductCarouselProps['title'];
   products: Product[];
-  locale: string;
 }) => {
   const plugin = useRef(AutoHeight({ active: true }));
   const tBetterAuth = useTranslations('productCarousel');
-  console.log('ProductCarousel', tBetterAuth('VIEW_ALL'));
+  const locale = useLocale() as Locale;
   return (
     <div className="w-full">
       <div className="flex justify-between items-end   container pb-4">
-        <h2 className="text-5xl font-bold mb-8">{title[locale]}</h2>
+        <h2 className="text-2xl md:text-5xl font-bold md:mb-8">
+          {title ? title[locale] : ''}
+        </h2>
         <div className="flex h-full justify-end">
           <Link href="/products" className="text-md underline">
             {tBetterAuth('VIEW_ALL')}
@@ -50,12 +50,12 @@ const ProductCarousel = ({
           {products?.map((product, index) => (
             <CarouselItem
               key={index}
-              className="pl-1 basis-1/2 md:basis-1/3 lg:basis-1/4"
+              className="pl-1 basis-1/2 md:basis-1/3 lg:basis-1/4 max-w-[400px]"
             >
               <div className="p-1 h-full">
-                <Card className="h-full rounded-none p-0 border-0 shadow-none">
+                <Card className="h-full rounded-none p-0 border-0 shadow-none bg-[#eeeeee]">
                   <CardContent className="flex flex-col  rounded-none p-0 border-0 shadow-none h-full justify-between">
-                    <div className="w-full flex justify-center items-center overflow-hidden  border-sidebar-ring">
+                    <div className="w-full flex justify-center items-center overflow-hidden  border-sidebar-ring ">
                       <Image
                         className="h-auto w-full "
                         src={product.store?.previewImageUrl || ''}
@@ -83,7 +83,7 @@ const ProductCarousel = ({
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className="w-full flex justify-center gap-4 mt-6">
+        <div className="w-full hidden md:flex justify-center gap-4 mt-6">
           <CarouselPrevious className="border-1 border-sidebar-ring rounded-none" />
           <CarouselNext className="border-1 border-sidebar-ring rounded-none" />
         </div>

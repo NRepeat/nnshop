@@ -279,7 +279,7 @@ export type SimpleBlockContent = Array<{
 
 export type ProductCarousel = {
   _type: 'productCarousel';
-  title?: string;
+  title?: LocalizedString;
   products?: Array<{
     _ref: string;
     _type: 'reference';
@@ -288,8 +288,8 @@ export type ProductCarousel = {
     [internalGroqTypeReferenceTo]?: 'product';
   }>;
   enableAction?: boolean;
-  actionName?: string;
-  actionLink?: string;
+  actionName?: LocalizedString;
+  actionLink?: LocalizedString;
 };
 
 export type CollectionsCarousel = {
@@ -2071,7 +2071,7 @@ export type PAGE_QUERYResult = {
     | {
         _key: string;
         _type: 'productCarousel';
-        title?: string;
+        title?: LocalizedString;
         products?: Array<{
           _ref: string;
           _type: 'reference';
@@ -2080,8 +2080,8 @@ export type PAGE_QUERYResult = {
           [internalGroqTypeReferenceTo]?: 'product';
         }>;
         enableAction?: boolean;
-        actionName?: string;
-        actionLink?: string;
+        actionName?: LocalizedString;
+        actionLink?: LocalizedString;
       }
     | {
         _key: string;
@@ -2284,7 +2284,7 @@ export type HOME_PAGE_QUERYResult =
           | {
               _key: string;
               _type: 'productCarousel';
-              title?: string;
+              title?: LocalizedString;
               products: Array<{
                 _id: string;
                 store: {
@@ -2298,8 +2298,8 @@ export type HOME_PAGE_QUERYResult =
                 } | null;
               }> | null;
               enableAction?: boolean;
-              actionName?: string;
-              actionLink?: string;
+              actionName?: LocalizedString;
+              actionLink?: LocalizedString;
             }
           | {
               _key: string;

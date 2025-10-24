@@ -26,7 +26,6 @@ export function PageBuilder({
   content,
   documentId,
   documentType,
-  locale,
 }: PageBuilderProps) {
   const blocks = useOptimistic<
     NonNullable<PAGE_QUERYResult>['content'] | undefined,
@@ -43,7 +42,6 @@ export function PageBuilder({
   if (!Array.isArray(blocks)) {
     return null;
   }
-  console.log(blocks);
   return (
     <main
       data-sanity={createDataAttribute({
@@ -96,13 +94,13 @@ export function PageBuilder({
           case 'productCarousel':
             return (
               <DragHandle key={block._key}>
-                <ProductCarousel {...block} locale={locale} />
+                <ProductCarousel {...block} />
               </DragHandle>
             );
           case 'collectionsCarousel':
             return (
               <DragHandle key={block._key}>
-                <CollectionsCarousel {...block} locale={locale} />
+                <CollectionsCarousel {...block} />
               </DragHandle>
             );
           default:

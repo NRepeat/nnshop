@@ -1682,7 +1682,8 @@
         "title": {
           "type": "objectAttribute",
           "value": {
-            "type": "string"
+            "type": "inline",
+            "name": "localizedString"
           },
           "optional": true
         },
@@ -1740,14 +1741,16 @@
         "actionName": {
           "type": "objectAttribute",
           "value": {
-            "type": "string"
+            "type": "inline",
+            "name": "localizedString"
           },
           "optional": true
         },
         "actionLink": {
           "type": "objectAttribute",
           "value": {
-            "type": "string"
+            "type": "inline",
+            "name": "localizedString"
           },
           "optional": true
         }

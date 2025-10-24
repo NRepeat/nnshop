@@ -294,7 +294,6 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings"][0]{
               minVariantPrice
               },
               productType
-
             }
           }
         },

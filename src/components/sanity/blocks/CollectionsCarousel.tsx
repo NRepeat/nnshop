@@ -10,6 +10,8 @@ import {
 } from '@/components/ui/carousel';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useLocale } from 'next-intl';
+import { Locale } from '@/i18n/routing';
 
 type ProductCarouselProps = Extract<
   NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],
@@ -17,22 +19,26 @@ type ProductCarouselProps = Extract<
 >;
 
 const CollectionsCarousel = (props: {
-  collections: Collection[];
+  collections:
+    | Omit<Collection, '_createdAt' | '_id' | '_rev' | '_type' | '_updatedAt'>[]
+    | undefined;
   title: ProductCarouselProps['title'];
   action_text: ProductCarouselProps['action_text'];
   action_link: ProductCarouselProps['action_link'];
-  locale: 'en' | 'ua';
 }) => {
-  const { collections, locale, title, action_text, action_link } = props;
+  const { collections, title, action_text, action_link } = props;
+  const locale = useLocale() as Locale;
   return (
     <div className="w-full flex ">
       <Carousel
-        className="w-full flex-row flex"
+        className="w-full flex-col md:flex-row flex gap-4"
         opts={{ loop: true, dragFree: true }}
       >
-        <div className="min-w-[300px] flex flex-col justify-between container">
-          <h2 className="text-5xl font-bold">{title ? title[locale] : ''}</h2>
-          <div className="flex w-full justify-between">
+        <div className="lg:min-w-[500px] flex flex-col justify-between ">
+          <h2 className="text-2xl md:text-5xl font-bold">
+            {title ? title[locale] : ''}
+          </h2>
+          <div className=" w-full justify-between hidden md:flex">
             <Button className="">
               <Link href={action_link || ''}>
                 {action_text ? action_text[locale] : ''}
@@ -49,9 +55,9 @@ const CollectionsCarousel = (props: {
           {collections?.map((collection, index) => (
             <CarouselItem key={index} className="pl-1 basis-1/2 ">
               <div className="p-1 h-full">
-                <Card className="h-full rounded-none p-0 border-0 shadow-none">
+                <Card className="h-full rounded-none p-0 border-0 shadow-none bg-[#eeeeee]">
                   <CardContent className="flex flex-col  rounded-none p-0 border-0 shadow-none h-full justify-between">
-                    <div className="w-full flex justify-center items-center overflow-hidden  border-sidebar-ring">
+                    <div className="w-full flex justify-center items-center overflow-hidden  border-sidebar-ring ">
                       <Image
                         className="h-auto w-full "
                         src={collection.store?.imageUrl || ''}
@@ -76,6 +82,16 @@ const CollectionsCarousel = (props: {
             </CarouselItem>
           ))}
         </CarouselContent>
+        <div className=" w-full justify-between flex md:hidden">
+          <Button
+            className="rounded-none border-1  border-gray-300"
+            variant={'ghost'}
+          >
+            <Link href={action_link || ''}>
+              {action_text ? action_text[locale] : ''}
+            </Link>
+          </Button>
+        </div>
       </Carousel>
     </div>
   );
