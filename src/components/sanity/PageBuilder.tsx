@@ -94,12 +94,14 @@ export function PageBuilder({
           case 'productCarousel':
             return (
               <DragHandle key={block._key}>
+                {/** @ts-expect-error sanity */}
                 <ProductCarousel {...block} />
               </DragHandle>
             );
           case 'collectionsCarousel':
             return (
               <DragHandle key={block._key}>
+                {/** @ts-expect-error sanity */}
                 <CollectionsCarousel {...block} />
               </DragHandle>
             );

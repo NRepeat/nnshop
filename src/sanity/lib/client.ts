@@ -21,10 +21,12 @@ export async function sanityFetch<const QueryString extends string>({
   revalidate?: number | false;
   tags?: string[];
 }) {
+  console.log('Sanity Params:', params);
+  console.log('Sanity Fetch:', params);
   return client.fetch(query, params, {
     next: {
-      revalidate: tags.length ? false : revalidate, // for simple, time-based revalidation
-      tags, // for tag-based revalidation
+      revalidate: tags.length ? false : revalidate,
+      tags,
     },
   });
 }

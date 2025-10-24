@@ -1,11 +1,13 @@
 import { PageBuilder } from '@/components/sanity/PageBuilder';
+import { Locale } from '@/i18n/routing';
 import { sanityFetch } from '@/sanity/lib/client';
 import { urlFor } from '@/sanity/lib/image';
 import { PAGE_QUERY } from '@/sanity/lib/query';
+import { isLocalizedString } from '@/sanity/utils/checkLocaliztionType';
 import { Metadata } from 'next';
 
 type RouteProps = {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: Locale }>;
 };
 
 const getPage = async (params: RouteProps['params']) =>
@@ -18,14 +20,16 @@ export async function generateMetadata({
   params,
 }: RouteProps): Promise<Metadata> {
   const page = await getPage(params);
-
+  const { locale } = await params;
   if (!page) {
     return {};
   }
 
   const metadata: Metadata = {
     metadataBase: new URL('https://close-dane-shining.ngrok-free.app'),
-    title: page.seo.title,
+    title: isLocalizedString(page.seo.title)
+      ? page.seo.title[locale]
+      : page.seo.title,
     description: page.seo.description,
   };
 

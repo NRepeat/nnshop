@@ -43,7 +43,7 @@ const sanityConfig = defineConfig({
       supportedLanguages: (client) =>
         client.fetch(`*[_type == "locale"]{"id": tag, "title":name}`),
       // define schema types using document level localization
-      schemaTypes: ['post'],
+      schemaTypes: ['post', 'page'],
     }),
     assist({
       translate: {

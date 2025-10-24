@@ -9,7 +9,7 @@ export const pageType = defineType({
   fields: [
     defineField({
       name: 'title',
-      type: 'string',
+      type: 'localizedString',
     }),
     defineField({
       name: 'slug',
@@ -17,6 +17,12 @@ export const pageType = defineType({
       options: {
         source: 'title',
       },
+    }),
+    defineField({
+      name: 'language',
+      type: 'string',
+      readOnly: true,
+      hidden: true,
     }),
     defineField({
       name: 'content',

@@ -1,6 +1,7 @@
 import { client as sanityClient } from '@/sanity/lib/client';
 import { urlFor } from '@/sanity/lib/image';
 import { OG_IMAGE_QUERY } from '@/sanity/lib/query';
+import { isLocalizedString } from '@/sanity/utils/checkLocaliztionType';
 import { notFound } from 'next/navigation';
 import { ImageResponse } from 'next/og';
 
@@ -42,7 +43,7 @@ export async function GET(request: Request) {
   const darkVibrantBackground =
     data?.image?.metadata?.palette?.darkVibrant?.background ?? '#3B82F6';
 
-  const text = data.title || '';
+  const text = isLocalizedString(data.title) ? data.title.en : data.title;
 
   return new ImageResponse(
     (
@@ -81,7 +82,7 @@ export async function GET(request: Request) {
       fonts: [
         {
           name: 'Inter',
-          data: await loadGoogleFont('Inter', text),
+          data: await loadGoogleFont('Inter', text ?? ''),
           weight: 400,
           style: 'normal',
         },

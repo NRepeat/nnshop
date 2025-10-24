@@ -256,7 +256,7 @@ export const POST_WITH_FALLBACK_QUERY =
 }`);
 
 export const PAGE_QUERY =
-  defineQuery(`*[_type == "page" && slug.current == $slug][0]{
+  defineQuery(`*[_type == "page" && slug.current == $slug && language == $language][0]{
   ...,
   "seo": {
   "title": coalesce(seo.title, title, ""),
@@ -278,7 +278,7 @@ export const PAGE_QUERY =
   }
 }`);
 
-export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings"][0]{
+export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
     homePage->{
       ...,
       content[]{

@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   logging: {
     fetches: {
-      fullUrl: true,
+      fullUrl: false,
     },
   },
   allowedDevOrigins: [
