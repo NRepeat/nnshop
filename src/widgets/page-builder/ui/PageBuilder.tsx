@@ -41,7 +41,7 @@ export function PageBuilder({
         type: documentType,
         path: 'content',
       }).toString()}
-      className="w-full flex justify-center flex-col"
+      className="w-full flex justify-center flex-col "
     >
       {blocks.map((block) => {
         const Component =

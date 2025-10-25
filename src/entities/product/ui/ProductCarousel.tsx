@@ -32,7 +32,7 @@ const ProductCarousel = ({
   return (
     <div className="w-full">
       <div className="flex justify-between items-end   container pb-4">
-        <h2 className="text-2xl md:text-5xl font-bold md:mb-8">
+        <h2 className="text-2xl md:text-5xl font-bold md:mb-5">
           {title ? title[locale] : ''}
         </h2>
         <div className="flex h-full justify-end">

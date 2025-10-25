@@ -7,6 +7,28 @@
     "DESCRIPTION": "View and filter products",
     "VIEW_ALL": "View all"
   },
+  "Header": {
+    "nav": {
+      "home": "Home",
+      "collections": "Collections",
+      "new": "New Arrivals",
+      "drawer": {
+        "title": "Menu",
+        "close": "Close",
+        "home": "Home",
+        "collections": "Collections",
+        "new": "New Arrivals"
+      }
+    },
+    "cart": {
+      "drawer": {
+        "title": "Cart",
+        "close": "Close",
+        "empty": "Your cart is empty",
+        "checkout": "Checkout"
+      }
+    }
+  },
   "Auth": {
     "signIn": {
       "title": "Welcome back",
