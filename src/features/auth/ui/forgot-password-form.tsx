@@ -1,31 +1,34 @@
 'use client';
 import { cn } from '@/shared/lib/utils';
-
-import { Form, useForm } from 'react-hook-form';
+import {} from './schema';
+import {} from './action';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { z } from 'zod';
-import { client } from '@/features/auth/lib/client';
-import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
-import {
-  FieldGroup,
-  Field,
-  FieldLabel,
-  FieldDescription,
-} from '@/shared/ui/field';
-import {
-  FormItem,
-  FormControl,
-  FormMessage,
-  FormField,
-} from '@/shared/ui/form';
+
 import { Input } from '@/shared/ui/input';
+import { useForm } from 'react-hook-form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/shared/ui/form';
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from '@/shared/ui/field';
+import z from 'zod';
+import { client } from '../lib/client';
+import { toast } from 'sonner';
 
 const forgotPasswordSchema = z.object({
   email: z.email({

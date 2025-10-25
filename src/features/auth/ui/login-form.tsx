@@ -6,7 +6,6 @@ import {
   createGoogleSignInHandler,
   createShopifySignInHandler,
 } from './action';
-import { Form, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Image from 'next/image';
@@ -15,20 +14,23 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
+
+import { Input } from '@/shared/ui/input';
+import { useForm } from 'react-hook-form';
 import {
-  FieldGroup,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/shared/ui/form';
+import {
   Field,
+  FieldDescription,
+  FieldGroup,
   FieldLabel,
   FieldSeparator,
-  FieldDescription,
 } from '@/shared/ui/field';
-import {
-  FormItem,
-  FormControl,
-  FormMessage,
-  FormField,
-} from '@/shared/ui/form';
-import { Input } from '@/shared/ui/input';
 
 export default function LoginForm({
   className,
