@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { createDataAttribute } from 'next-sanity';
-import { POST_QUERYResult } from '@/sanity/types';
-import { client } from '@/sanity/lib/client';
+import { POST_QUERYResult } from '@/shared/sanity/types';
+import { client } from '@/shared/sanity/lib/client';
 import { useOptimistic } from 'next-sanity/hooks';
 
 const { projectId, dataset, stega } = client.config();

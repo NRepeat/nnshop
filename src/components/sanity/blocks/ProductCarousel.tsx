@@ -1,18 +1,18 @@
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/shared/ui/card';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from '@/components/ui/carousel';
+} from '@/shared/ui/carousel';
 import Image from 'next/image';
 import { useRef } from 'react';
 import AutoHeight from 'embla-carousel-auto-height';
 import Link from 'next/link';
-import { PAGE_QUERYResult, Product } from '@/sanity/types';
+import { PAGE_QUERYResult, Product } from '@/shared/sanity/types';
 import { useLocale, useTranslations } from 'next-intl';
-import { Locale } from '@/i18n/routing';
+import { Locale } from '@/shared/i18n/routing';
 
 type ProductCarouselProps = Extract<
   NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],

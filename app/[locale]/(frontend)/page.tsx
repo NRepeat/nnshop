@@ -1,16 +1,16 @@
 import { PageBuilder } from '@/components/sanity/PageBuilder';
-import { Locale, locales } from '@/i18n/routing';
+import { Locale, locales } from '@/shared/i18n/routing';
 import { normalizeLocaleForSanity } from '@/lib/locale';
-import { sanityFetch } from '@/sanity/lib/client';
-import { HOME_PAGE_QUERY } from '@/sanity/lib/query';
-import { HOME_PAGE_QUERYResult } from '@/sanity/types';
+import { sanityFetch } from '@/shared/sanity/lib/client';
+import { HOME_PAGE_QUERY } from '@/shared/sanity/lib/query';
+import { HOME_PAGE_QUERYResult } from '@/shared/sanity/types';
 
 type RouteProps = {
-  params: { locale: Locale };
+  params: Promise<{ locale: Locale }>;
 };
 
 const getPage = async (params: RouteProps['params']) => {
-  const { locale } = params;
+  const { locale } = await params;
 
   const sanityLocale = await normalizeLocaleForSanity(locale);
 

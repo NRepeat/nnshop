@@ -1,4 +1,4 @@
-import { fetchRedirects } from '@/sanity/lib/fetchRedirects';
+import { fetchRedirects } from '@/shared/sanity/lib/fetchRedirects';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
@@ -42,5 +42,5 @@ const nextConfig: NextConfig = {
       }));
   },
 };
-const withNextIntl = createNextIntlPlugin();
+const withNextIntl = createNextIntlPlugin('./src/shared/i18n/request.ts');
 export default withNextIntl(nextConfig);

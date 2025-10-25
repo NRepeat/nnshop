@@ -1,8 +1,8 @@
 import { PortableText } from 'next-sanity';
 import Image from 'next/image';
-import { urlFor } from '@/sanity/lib/image';
-import { PAGE_QUERYResult } from '@/sanity/types';
-import { components } from '@/sanity/components/portableText';
+import { urlFor } from '@/shared/sanity/lib/image';
+import { PAGE_QUERYResult } from '@/shared/sanity/types';
+import { components } from '@/shared/sanity/components/portableText';
 
 type HeroProps = Extract<
   NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],

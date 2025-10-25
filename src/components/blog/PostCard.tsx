@@ -1,8 +1,8 @@
 import {
   POSTS_QUERYResult,
   POSTS_BY_LANGUAGE_QUERYResult,
-} from '@/sanity/types';
-import { urlFor } from '@/sanity/lib/image';
+} from '@/shared/sanity/types';
+import { urlFor } from '@/shared/sanity/lib/image';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Author } from './Author';

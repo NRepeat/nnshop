@@ -1,12 +1,8 @@
 'use client';
 
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from '@/components/ui/carousel';
-import { Locale } from '@/i18n/routing';
-import { PAGE_QUERYResult } from '@/sanity/types';
+import { Carousel, CarouselContent, CarouselItem } from '@/shared/ui/carousel';
+import { Locale } from '@/shared/i18n/routing';
+import { PAGE_QUERYResult } from '@/shared/sanity/types';
 import autoplay from 'embla-carousel-autoplay';
 import { useLocale } from 'next-intl';
 import Image from 'next/image';

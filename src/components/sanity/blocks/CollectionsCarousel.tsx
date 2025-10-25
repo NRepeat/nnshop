@@ -1,17 +1,17 @@
-import { Button } from '@/components/ui/button';
-import { Collection, PAGE_QUERYResult } from '@/sanity/types';
-import { Card, CardContent } from '@/components/ui/card';
+import { Collection, PAGE_QUERYResult } from '@/shared/sanity/types';
+import { Card, CardContent } from '@/shared/ui/card';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from '@/components/ui/carousel';
+} from '@/shared/ui/carousel';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
-import { Locale } from '@/i18n/routing';
+import { Locale } from '@/shared/i18n/routing';
+import { Button } from '@/shared/ui/button';
 
 type ProductCarouselProps = Extract<
   NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],
@@ -67,9 +67,6 @@ const CollectionsCarousel = (props: {
                       />
                     </div>
                     <div className="w-full pt-4  flex flex-col">
-                      {/*<span className="text-sm text-gray-500">
-                        {collection.store?.productType}
-                      </span>*/}
                       <div className=" w-full  justify-between flex">
                         <p className="text-md font-medium  text-pretty">
                           {collection.store?.title}

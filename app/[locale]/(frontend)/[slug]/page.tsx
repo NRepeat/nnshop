@@ -1,9 +1,9 @@
 import { PageBuilder } from '@/components/sanity/PageBuilder';
-import { Locale } from '@/i18n/routing';
-import { sanityFetch } from '@/sanity/lib/client';
-import { urlFor } from '@/sanity/lib/image';
-import { PAGE_QUERY } from '@/sanity/lib/query';
-import { isLocalizedString } from '@/sanity/utils/checkLocaliztionType';
+import { Locale } from '@/shared/i18n/routing';
+import { sanityFetch } from '@/shared/sanity/lib/client';
+import { urlFor } from '@/shared/sanity/lib/image';
+import { PAGE_QUERY } from '@/shared/sanity/lib/query';
+import { isLocalizedString } from '@/shared/sanity/utils/checkLocaliztionType';
 import { Metadata } from 'next';
 
 type RouteProps = {

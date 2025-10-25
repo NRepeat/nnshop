@@ -1,6 +1,6 @@
-import { ForgotPasswordForm } from '@/components/forms/clientAuth/forgot-password-form';
-import LoginForm from '@/components/forms/clientAuth/login-form';
-import { SignupForm } from '@/components/forms/clientAuth/signup-form';
+import { ForgotPasswordForm } from '@/features/auth/ui/forgot-password-form';
+import LoginForm from '@/features/auth/ui/login-form';
+import { SignupForm } from '@/features/auth/ui/signup-form';
 import { localization } from '@/lib/betterAuthLocaliztions/authView';
 import { AuthView } from '@daveyplate/better-auth-ui';
 import { authViewPaths } from '@daveyplate/better-auth-ui/server';

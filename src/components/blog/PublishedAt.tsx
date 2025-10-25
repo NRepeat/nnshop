@@ -1,4 +1,4 @@
-import { POST_QUERYResult } from '@/sanity/types';
+import { POST_QUERYResult } from '@/shared/sanity/types';
 import dayjs from 'dayjs';
 
 type PublishedAtProps = {

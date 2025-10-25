@@ -1,7 +1,7 @@
-import { client as sanityClient } from '@/sanity/lib/client';
-import { urlFor } from '@/sanity/lib/image';
-import { OG_IMAGE_QUERY } from '@/sanity/lib/query';
-import { isLocalizedString } from '@/sanity/utils/checkLocaliztionType';
+import { client as sanityClient } from '@/shared/sanity/lib/client';
+import { urlFor } from '@/shared/sanity/lib/image';
+import { OG_IMAGE_QUERY } from '@/shared/sanity/lib/query';
+import { isLocalizedString } from '@/shared/sanity/utils/checkLocaliztionType';
 import { notFound } from 'next/navigation';
 import { ImageResponse } from 'next/og';
 

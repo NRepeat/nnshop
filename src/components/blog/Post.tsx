@@ -1,8 +1,8 @@
 import { PortableText } from 'next-sanity';
-import { POST_QUERYResult } from '@/sanity/types';
-import { urlFor } from '@/sanity/lib/image';
+import { POST_QUERYResult } from '@/shared/sanity/types';
+import { urlFor } from '@/shared/sanity/lib/image';
 import Image from 'next/image';
-import { components } from '@/sanity/components/portableText';
+import { components } from '@/shared/sanity/components/portableText';
 import { Author } from './Author';
 import { Categories } from './Categories';
 import { PublishedAt } from './PublishedAt';

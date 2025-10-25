@@ -9,10 +9,10 @@ import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
 import { presentationTool } from 'sanity/presentation';
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
-import { apiVersion, dataset, projectId } from './src/sanity/env';
-import { schema } from './src/sanity/schemaTypes';
-import { structure } from './src/sanity/structure';
-import { resolve } from '@/sanity/presentation/resolve';
+import { apiVersion, dataset, projectId } from './src/shared/sanity/env';
+import { schema } from './src/shared/sanity/schemaTypes';
+import { structure } from './src/shared/sanity/structure';
+import { resolve } from '@/shared/sanity/presentation/resolve';
 import { documentInternationalization } from '@sanity/document-internationalization';
 import { internationalizedArray } from 'sanity-plugin-internationalized-array';
 import { colorInput } from '@sanity/color-input';
@@ -32,23 +32,18 @@ const sanityConfig = defineConfig({
   schema,
   plugins: [
     internationalizedArray({
-      // Use client to fetch locales or import from local locale file
       languages: (client) =>
         client.fetch(`*[_type == "locale"]{"id": tag, "title":name}`),
-      // Define field types to localize as-needed
       fieldTypes: ['string', 'simpleBlockContent'],
     }),
     documentInternationalization({
-      // fetch locales from Content Lake or load from your locale file
       supportedLanguages: (client) =>
         client.fetch(`*[_type == "locale"]{"id": tag, "title":name}`),
-      // define schema types using document level localization
       schemaTypes: ['post', 'page'],
     }),
     assist({
       translate: {
         document: {
-          // Specify the field containing the language for the document
           languageField: 'language',
         },
         field: {
@@ -59,8 +54,6 @@ const sanityConfig = defineConfig({
       },
     }),
     structureTool({ structure }),
-    // Vision is for querying with GROQ from inside the Studio
-    // https://www.sanity.io/docs/the-vision-plugin
     visionTool({ defaultApiVersion: apiVersion }),
     presentation,
     colorInput(),

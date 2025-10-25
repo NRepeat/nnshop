@@ -1,4 +1,4 @@
-import { PAGE_QUERYResult } from '@/sanity/types';
+import { PAGE_QUERYResult } from '@/shared/sanity/types';
 import { PortableText } from 'next-sanity';
 import { FAQPage, WithContext } from 'schema-dts';
 

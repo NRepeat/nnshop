@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
-import { client as sanityClient } from '@/sanity/lib/client';
-import { SITEMAP_QUERY } from '@/sanity/lib/query';
+import { client as sanityClient } from '@/shared/sanity/lib/client';
+import { SITEMAP_QUERY } from '@/shared/sanity/lib/query';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {

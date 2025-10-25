@@ -1,8 +1,8 @@
 'use client';
 
 import { UserButton, UserAvatar } from '@daveyplate/better-auth-ui';
-import { client } from '@/service/auth/client';
-import { Button } from '@/components/ui/button';
+import { client } from '@/features/auth/lib/client';
+import { Button } from '@/shared/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/shared/ui/dropdown-menu';
 import { Settings, User, Shield, Key, Building2, LogOut } from 'lucide-react';
 import Link from 'next/link';
 

@@ -1,16 +1,15 @@
 import { notFound } from 'next/navigation';
 
+import { Post } from '@/components/blog/Post';
+import { Metadata } from 'next';
+import { normalizeLocaleForSanity } from '@/lib/locale';
+import { client, sanityFetch } from '@/shared/sanity/lib/client';
+import { urlFor } from '@/shared/sanity/lib/image';
 import {
   POST_BY_LANGUAGE_QUERY,
   POST_WITH_FALLBACK_QUERY,
   POSTS_SLUGS_BY_LANGUAGE_QUERY,
-} from '@/sanity/lib/query';
-
-import { Post } from '@/components/blog/Post';
-import { urlFor } from '@/sanity/lib/image';
-import { Metadata } from 'next';
-import { client, sanityFetch } from '@/sanity/lib/client';
-import { normalizeLocaleForSanity } from '@/lib/locale';
+} from '@/shared/sanity/lib/query';
 
 type RouteProps = {
   params: Promise<{ slug: string; locale: string }>;

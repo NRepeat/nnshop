@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import { urlFor } from '@/sanity/lib/image';
-import { PAGE_QUERYResult } from '@/sanity/types';
+import { urlFor } from '@/shared/sanity/lib/image';
+import { PAGE_QUERYResult } from '@/shared/sanity/types';
 import { stegaClean } from 'next-sanity';
 
 type SplitImageProps = Extract<

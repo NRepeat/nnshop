@@ -1,11 +1,11 @@
 'use client';
-import { PAGE_QUERYResult } from '@/sanity/types';
+import { PAGE_QUERYResult } from '@/shared/sanity/types';
 import { FAQs } from './blocks/FAQs';
 import { Features } from './blocks/Features';
 import { Hero } from './blocks/hero';
 import { SplitImage } from './blocks/SplitImage';
 import { createDataAttribute } from 'next-sanity';
-import { client as sanityClient } from '@/sanity/lib/client';
+import { client as sanityClient } from '@/shared/sanity/lib/client';
 import { useOptimistic } from 'next-sanity/hooks';
 import ProductCarousel from './blocks/ProductCarousel';
 import CollectionsCarousel from './blocks/CollectionsCarousel';

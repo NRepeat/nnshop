@@ -12,7 +12,7 @@
     "prepare": "husky",
     "predev": "npm run typegen",
     "prebuild": "npm run typegen",
-    "typegen": "sanity schema extract --path=./src/sanity/extract.json && sanity typegen generate"
+    "typegen": "sanity schema extract --path=./src/shared/sanity/extract.json && sanity typegen generate"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

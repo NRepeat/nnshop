@@ -1,10 +1,10 @@
+import { Title } from '@/components/blog/Title';
+import { PostCard } from '@/components/blog/PostCard';
 import {
   POSTS_BY_LANGUAGE_QUERY,
   POSTS_EN_FALLBACK_QUERY,
-} from '@/sanity/lib/query';
-import { Title } from '@/components/blog/Title';
-import { PostCard } from '@/components/blog/PostCard';
-import { sanityFetch } from '@/sanity/lib/client';
+} from '@/shared/sanity/lib/query';
+import { sanityFetch } from '@/shared/sanity/lib/client';
 type PageProps = {
   params: Promise<{ locale: string }>;
 };
