@@ -1,7 +1,7 @@
 import { ReadonlyHeaders } from 'next/dist/server/web/spec-extension/adapters/headers';
 import { auth } from '../auth';
 import { client } from '../client';
-import { ShopifyClientType, shopifyFactory } from '@/lib/shopify/clients';
+import { ShopifyClientType, shopifyFactory } from '@/shared/lib/clients';
 
 export default async function authShopifyCustomer(head: ReadonlyHeaders) {
   const serverSession = await auth.api.getSession({

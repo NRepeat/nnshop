@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 
-import { Post } from '@/components/blog/Post';
 import { Metadata } from 'next';
 import { normalizeLocaleForSanity } from '@/shared/lib/locale';
 import { client, sanityFetch } from '@/shared/sanity/lib/client';
@@ -10,6 +9,7 @@ import {
   POST_WITH_FALLBACK_QUERY,
   POSTS_SLUGS_BY_LANGUAGE_QUERY,
 } from '@/shared/sanity/lib/query';
+import { Post } from '@/widgets/post';
 
 type RouteProps = {
   params: Promise<{ slug: string; locale: string }>;

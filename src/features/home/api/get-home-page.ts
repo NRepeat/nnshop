@@ -1,4 +1,4 @@
-import { normalizeLocaleForSanity } from '@/lib/locale';
+import { normalizeLocaleForSanity } from '@/shared/lib/locale';
 import { sanityFetch } from '@/shared/sanity/lib/client';
 import { HOME_PAGE_QUERY } from '@/shared/sanity/lib/query';
 import { HOME_PAGE_QUERYResult } from '@/shared/sanity/types';

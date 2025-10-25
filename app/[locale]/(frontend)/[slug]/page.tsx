@@ -1,4 +1,4 @@
-import { PageBuilder } from '@/widgets/PageBuilder';
+import { PageBuilder } from '@/widgets/page-builder';
 import { Locale } from '@/shared/i18n/routing';
 import { sanityFetch } from '@/shared/sanity/lib/client';
 import { urlFor } from '@/shared/sanity/lib/image';

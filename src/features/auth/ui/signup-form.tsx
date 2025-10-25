@@ -1,5 +1,5 @@
 'use client';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 
 import { signUpSchema, SignUpFormData } from './schema';
 import {

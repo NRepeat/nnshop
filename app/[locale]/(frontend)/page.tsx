@@ -1,4 +1,4 @@
-import { PageBuilder } from '@/widgets/PageBuilder';
+import { PageBuilder } from '@/widgets/page-builder';
 import { Locale, locales } from '@/shared/i18n/routing';
 
 type RouteProps = {

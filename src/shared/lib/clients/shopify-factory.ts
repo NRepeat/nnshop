@@ -9,7 +9,7 @@ import {
 import { AdminClient } from './admin-client';
 import { StorefrontClient } from './storefront-client';
 import { CustomerAccountClient } from './customer-account-client';
-import prisma from '../../prisma';
+import prisma from '@/shared/lib/prisma';
 
 const SHOPIFY_STORE_DOMAIN = process.env.SHOPIFY_STORE_DOMAIN;
 const SHOPIFY_ADMIN_API_KEY = process.env.SHOPIFY_ADMIN_API_KEY;
