@@ -8,7 +8,7 @@ import { Categories } from './Categories';
 import { PublishedAt } from './PublishedAt';
 import { Title } from './Title';
 import { RelatedPosts } from './RelatedPosts';
-import { getContentLanguageInfo } from '@/lib/locale';
+import { getContentLanguageInfo } from '@/shared/lib/locale';
 
 export function Post(
   props: NonNullable<POST_QUERYResult> & { currentLocale?: string },

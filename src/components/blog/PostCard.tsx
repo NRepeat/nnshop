@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { Author } from './Author';
 import { Categories } from './Categories';
 import { PublishedAt } from './PublishedAt';
-import { getContentLanguageInfo } from '@/lib/locale';
+import { getContentLanguageInfo } from '@/shared/lib/locale';
 
 export function PostCard(
   props: (POSTS_QUERYResult[0] | POSTS_BY_LANGUAGE_QUERYResult[0]) & {

@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 
 import { Post } from '@/components/blog/Post';
 import { Metadata } from 'next';
-import { normalizeLocaleForSanity } from '@/lib/locale';
+import { normalizeLocaleForSanity } from '@/shared/lib/locale';
 import { client, sanityFetch } from '@/shared/sanity/lib/client';
 import { urlFor } from '@/shared/sanity/lib/image';
 import {

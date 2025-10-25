@@ -1,4 +1,4 @@
-import { decodeIdToken } from '@/lib/shopify/customer-account';
+import { decodeIdToken } from '@/shared/lib/customer-account';
 import { genericOAuth } from 'better-auth/plugins';
 
 const shopifyClientId = process.env.SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID;

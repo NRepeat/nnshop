@@ -1,5 +1,5 @@
 import { accountViewPaths } from '@daveyplate/better-auth-ui/server';
-import { SettingsPageLayout } from '@/components/navigation/settings-nav';
+import { SettingsPageLayout } from '@/widgets/settings-nav';
 import { getTranslations } from 'next-intl/server';
 import { getPageInfo, renderView } from '@/features/account/ui/account-views';
 
