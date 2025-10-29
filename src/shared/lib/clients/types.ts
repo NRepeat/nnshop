@@ -4,6 +4,7 @@ export interface ShopifyClientConfig {
   apiVersion?: string;
   customFetchApi?: typeof fetch;
 }
+export type StorefrontLanguageCode = 'EN' | 'UK';
 
 export interface GraphQLRequest {
   query: string;
@@ -21,7 +22,15 @@ export interface GraphQLResponse<T = unknown> {
 }
 
 export interface ShopifyClient {
-  request<T>(query: string, variables?: Record<string, unknown>): Promise<T>;
+  request<T>({
+    query,
+    language,
+    variables,
+  }: {
+    query: string;
+    variables?: Record<string, unknown>;
+    language?: StorefrontLanguageCode;
+  }): Promise<T>;
   buildHeaders(): Promise<Record<string, string>>;
   buildBody(
     query: string,

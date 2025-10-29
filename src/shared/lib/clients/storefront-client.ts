@@ -2,7 +2,12 @@ import {
   createStorefrontApiClient,
   StorefrontApiClient,
 } from '@shopify/storefront-api-client';
-import { ShopifyClient, ShopifyClientConfig, GraphQLResponse } from './types';
+import {
+  ShopifyClient,
+  ShopifyClientConfig,
+  GraphQLResponse,
+  StorefrontLanguageCode,
+} from './types';
 
 export class StorefrontClient implements ShopifyClient {
   private client: StorefrontApiClient;
@@ -43,7 +48,35 @@ export class StorefrontClient implements ShopifyClient {
       'X-Shopify-Storefront-Access-Token': this.accessToken,
     };
   }
+  private addLanguageContext(
+    query: string,
+    language: StorefrontLanguageCode,
+  ): string {
+    if (query.includes('@inContext')) {
+      return query;
+    }
 
+    let modifiedQuery = query.replace(
+      /(query\s+\w+)\s*(\([^)]+\))\s*\{/,
+      `$1 $2 @inContext(language: ${language}) {`,
+    );
+
+    if (modifiedQuery === query) {
+      modifiedQuery = query.replace(
+        /(query\s+\w+)\s*\{/,
+        `$1 @inContext(language: ${language}) {`,
+      );
+    }
+
+    if (modifiedQuery === query) {
+      modifiedQuery = query.replace(
+        /query\s*\{/,
+        `query @inContext(language: ${language}) {`,
+      );
+    }
+
+    return modifiedQuery;
+  }
   async buildBody(
     query: string,
     variables: Record<string, unknown> = {},
@@ -59,9 +92,15 @@ export class StorefrontClient implements ShopifyClient {
   async request<T>(
     query: string,
     variables: Record<string, unknown> = {},
+    language?: StorefrontLanguageCode,
   ): Promise<T> {
     try {
-      const response = await this.client.request(query, { variables });
+      let modifiedQuery = query;
+
+      if (language) {
+        modifiedQuery = this.addLanguageContext(query, language);
+      }
+      const response = await this.client.request(modifiedQuery, { variables });
 
       if (response.errors) {
         throw new Error(`Storefront API GraphQL`);

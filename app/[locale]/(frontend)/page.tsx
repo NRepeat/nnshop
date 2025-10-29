@@ -18,12 +18,12 @@ export default async function Page({ params }: RouteProps) {
   return page?.homePage?.content ? (
     <>
       {/*<h2 className="text-2xl font-bold mb-4">{page.homePage.title[locale]}</h2>*/}
-      <PageBuilder
+      {/*<PageBuilder
         //@ts-expect-error sanity
         content={page.homePage.content}
         documentId={page.homePage._id}
         documentType={page.homePage._type}
-      />
+      />*/}
     </>
   ) : (
     <div>

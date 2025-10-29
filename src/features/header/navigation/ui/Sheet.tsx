@@ -9,13 +9,16 @@ import { getTranslations } from 'next-intl/server';
 import BurgerIcon from './BurgerIcon';
 import Link from 'next/link';
 import { Separator } from '@shared/ui/separator';
+import { Button } from '@shared/ui/button';
 
 const NavigationSheet = async () => {
   const t = await getTranslations('Header.nav.drawer');
   return (
     <Sheet>
       <SheetTrigger className="cursor-pointer block md:hidden">
-        <BurgerIcon className="min-h-6 min-w-6" />
+        <Button variant="ghost">
+          <BurgerIcon className="min-h-6 min-w-6" />
+        </Button>
       </SheetTrigger>
       <SheetContent side="left">
         <SheetHeader>

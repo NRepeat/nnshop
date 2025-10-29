@@ -14,6 +14,7 @@ export default async function AuthPage({
   params: Promise<{ authView: string }>;
 }) {
   const { authView } = await params;
+  console.log(authView);
   const tBetterAuth = await getTranslations('BetterAuthUI');
 
   return (

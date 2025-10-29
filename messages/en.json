@@ -8,9 +8,32 @@
     "VIEW_ALL": "View all"
   },
   "Header": {
+    "subnav": {
+      "clothes": {
+        "title": "Clothes"
+      },
+      "shoes": {
+        "title": "Shoes"
+      },
+      "bags": {
+        "title": "Bags"
+      },
+      "accessories": {
+        "title": "Accessories",
+        "href": "/accessories"
+      }
+    },
     "nav": {
       "home": "Home",
-      "collections": "Collections",
+      "collections": {
+        "title": "Collections",
+        "forMan": {
+          "title": "For Man"
+        },
+        "forWoman": {
+          "title": "For Woman"
+        }
+      },
       "new": "New Arrivals",
       "drawer": {
         "title": "Menu",

@@ -7,13 +7,20 @@ import {
 } from '@shared/ui/sheet';
 import { getTranslations } from 'next-intl/server';
 import CartIcon from '@shared/assets/CartIcon';
+import { Button } from '@shared/ui/button';
+import { ShoppingCart } from 'lucide-react';
 
 const CartSheet = async () => {
   const t = await getTranslations('Header.cart.drawer');
   return (
     <Sheet>
       <SheetTrigger className="cursor-pointer block">
-        <CartIcon className="h-10 w-10" />
+        <Button
+          variant="ghost"
+          className="h-7.5 w-7.5 p-0 ring-5 ring-black rounded-full"
+        >
+          <ShoppingCart className="h-7 w-7" />
+        </Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
