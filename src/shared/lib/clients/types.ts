@@ -24,8 +24,8 @@ export interface GraphQLResponse<T = unknown> {
 export interface ShopifyClient {
   request<T>({
     query,
-    language,
     variables,
+    language,
   }: {
     query: string;
     variables?: Record<string, unknown>;

@@ -18,7 +18,7 @@ export const Subnavigation = async () => {
     <div className="w-full flex container px-3 py-4">
       <NavigationMenu>
         <NavigationMenuList className="">
-          {collections.map((collection) => (
+          {/*{collections.map((collection) => (
             <NavigationMenuItem key={collection.name}>
               <Link href={collection.href}>
                 <NavigationMenuTrigger className="font-medium">
@@ -26,7 +26,7 @@ export const Subnavigation = async () => {
                 </NavigationMenuTrigger>
               </Link>
               <NavigationMenuContent>
-                {/*<ul className="grid w-[300px] gap-4">
+                <ul className="grid w-[300px] gap-4">
                   {collections.map((collection) => (
                     <li key={collection.title}>
                       <NavigationMenuLink asChild>
@@ -36,10 +36,10 @@ export const Subnavigation = async () => {
                       </NavigationMenuLink>
                     </li>
                   ))}
-                </ul>*/}
+                </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
-          ))}
+          ))}*/}
         </NavigationMenuList>
       </NavigationMenu>
     </div>

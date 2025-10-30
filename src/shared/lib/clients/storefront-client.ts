@@ -89,17 +89,22 @@ export class StorefrontClient implements ShopifyClient {
     return data as GraphQLResponse<T>;
   }
 
-  async request<T>(
-    query: string,
-    variables: Record<string, unknown> = {},
-    language?: StorefrontLanguageCode,
-  ): Promise<T> {
+  async request<T>({
+    query,
+    variables = {},
+    language,
+  }: {
+    query: string;
+    variables: Record<string, unknown>;
+    language?: StorefrontLanguageCode;
+  }): Promise<T> {
     try {
       let modifiedQuery = query;
 
       if (language) {
         modifiedQuery = this.addLanguageContext(query, language);
       }
+      console.log(modifiedQuery, 'modifiedQuery');
       const response = await this.client.request(modifiedQuery, { variables });
 
       if (response.errors) {

@@ -10,9 +10,12 @@ import {
   NavigationMenuTrigger,
 } from '@shared/ui/navigation-menu';
 import { Button } from '@shared/ui/button';
+import { getMainMenu } from '../api/getMainMenu';
 
 const Navigation = async () => {
   const t = await getTranslations('Header.nav');
+  const d = await getMainMenu();
+
   const collections: { title: string; href: string }[] = [
     {
       title: t('collections.forMan.title'),
