@@ -36,7 +36,8 @@ export const InternalMenu = ({
       className={clsx(
         'text-sm py-4 px-4 hover:bg-accent flex justify-between items-center cursor-pointer',
         {
-          hidden: (activeTab || activeTab === 0) && index !== activeTab,
+          'hidden ': (activeTab || activeTab === 0) && index !== activeTab,
+          'bg-accent': index === activeTab,
         },
       )}
       onClick={() =>

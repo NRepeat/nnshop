@@ -8,31 +8,117 @@ import {
 import { getTranslations } from 'next-intl/server';
 import CartIcon from '@shared/assets/CartIcon';
 import { Button } from '@shared/ui/button';
-import { ShoppingCart } from 'lucide-react';
+import { ChevronDown, ShoppingCart } from 'lucide-react';
+import { Separator } from '@shared/ui/separator';
+import CartItem from './Item';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@shared/ui/accordion';
+import { Textarea } from '@shared/ui/textarea';
+import { EmptyState } from './EmptyState';
+import Content from './Content';
 
 const CartSheet = async () => {
-  const t = await getTranslations('Header.cart.drawer');
+  const mockProducts = [
+    {
+      title: 'SS 2001 Elizabeth Taylor Silk Dress',
+      price: '$2,000.00',
+      size: 'L',
+      color: 'Blue',
+      image:
+        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
+    },
+    {
+      title: 'SS 2001 Elizabeth Taylor Silk Dress',
+      price: '$2,000.00',
+      size: 'L',
+      color: 'Blue',
+      image:
+        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
+    },
+    {
+      title: 'SS 2001 Elizabeth Taylor Silk Dress',
+      price: '$2,000.00',
+      size: 'L',
+      color: 'Blue',
+      image:
+        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
+    },
+    {
+      title: 'SS 2001 Elizabeth Taylor Silk Dress',
+      price: '$2,000.00',
+      size: 'L',
+      color: 'Blue',
+      image:
+        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
+    },
+    {
+      title: 'SS 2001 Elizabeth Taylor Silk Dress',
+      price: '$2,000.00',
+      size: 'L',
+      color: 'Blue',
+      image:
+        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
+    },
+    {
+      title: 'SS 2001 Elizabeth Taylor Silk Dress',
+      price: '$2,000.00',
+      size: 'L',
+      color: 'Blue',
+      image:
+        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
+    },
+    {
+      title: 'SS 2001 Elizabeth Taylor Silk Dress',
+      price: '$2,000.00',
+      size: 'L',
+      color: 'Blue',
+      image:
+        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
+    },
+    {
+      title: 'SS 2001 Elizabeth Taylor Silk Dress',
+      price: '$2,000.00',
+      size: 'L',
+      color: 'Blue',
+      image:
+        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
+    },
+    {
+      title: 'SS 2001 Elizabeth Taylor Silk Dress',
+      price: '$2,000.00',
+      size: 'L',
+      color: 'Blue',
+      image:
+        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
+    },
+  ];
+
   return (
     <Sheet>
       <SheetTrigger className="cursor-pointer block hover:bg-accent p-2 rounded-sm">
         <ShoppingCart />
       </SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>{t('title')}</SheetTitle>
-        </SheetHeader>
-        <div className="flex flex-col space-y-2 px-4">
-          <div className="flex justify-between">
-            <span>Product</span>
-          </div>
-          {/*<div className="flex items-center justify-between">
-            <span>{t('empty')}</span>
-            <button className="btn btn-primary">{t('checkout')}</button>
-          </div>*/}
-        </div>
-      </SheetContent>
+      <CartWithEmptyState products={mockProducts} test />
     </Sheet>
   );
 };
 
 export default CartSheet;
+
+const CartWithEmptyState = ({
+  test,
+  products,
+}: {
+  test: boolean;
+  products: any;
+}) => {
+  if (test) {
+    return <EmptyState />;
+  } else {
+    <Content mockProducts={products} />;
+  }
+};

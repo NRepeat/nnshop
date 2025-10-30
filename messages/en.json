@@ -48,7 +48,22 @@
         "title": "Cart",
         "close": "Close",
         "empty": "Your cart is empty",
-        "checkout": "Checkout"
+        "checkout": "Checkout",
+        "tax_information": "Taxes, discounts and shipping calculated at checkout.",
+        "estimate_total": "Estimated total.",
+        "order_instraction": "Order special instractions",
+        "order_instraction_placeholder": "Type your message here.",
+        "product": "Product",
+        "total": "Total",
+        "empty_state": {
+          "header": "Your cart is empty",
+          "description": "You haven&apos;t added any products yet. Get started by browsing our store.",
+          "continue_shopping": "Continue Shopping",
+          "account": "Have an account?",
+          "login": "Log in",
+          "login_description": " to check out faster.",
+          "new_arrivals": "New Arrivals"
+        }
       }
     }
   },
