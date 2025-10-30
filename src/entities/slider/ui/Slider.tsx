@@ -1,10 +1,6 @@
-'use client';
-
 import { Carousel, CarouselContent, CarouselItem } from '@/shared/ui/carousel';
-import { Locale } from '@/shared/i18n/routing';
 import { PAGE_QUERYResult } from '@/shared/sanity/types';
-import autoplay from 'embla-carousel-autoplay';
-import { useLocale } from 'next-intl';
+import Autoplay from 'embla-carousel-autoplay';
 import Image from 'next/image';
 
 type HeroSwiperProps = Extract<
@@ -12,12 +8,15 @@ type HeroSwiperProps = Extract<
   { _type: 'sliderBlock' }
 >;
 export function HeroSwiper({ slides, title }: HeroSwiperProps) {
-  const locale = useLocale() as Locale;
   if (!slides || slides.length === 0) return null;
   return (
-    <Carousel plugins={[autoplay({ delay: 5000 })]}>
-      <div className="">
-        <CarouselContent className="pl-1  flex-row">
+    <>
+      <Carousel
+        className="w-full"
+        autoplay={{ active: true, dellay: 3500 }}
+        opts={{ loop: true }}
+      >
+        <CarouselContent className="-ml-1 ">
           {slides.map((slide, index) => (
             <CarouselItem key={index}>
               <div className="relative w-full overflow-hidden">
@@ -33,7 +32,7 @@ export function HeroSwiper({ slides, title }: HeroSwiperProps) {
             </CarouselItem>
           ))}
         </CarouselContent>
-      </div>
-    </Carousel>
+      </Carousel>
+    </>
   );
 }

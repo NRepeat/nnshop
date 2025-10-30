@@ -7,33 +7,31 @@ import {
   CarouselPrevious,
 } from '@/shared/ui/carousel';
 import Image from 'next/image';
-import { useRef } from 'react';
-import AutoHeight from 'embla-carousel-auto-height';
 import Link from 'next/link';
 import { PAGE_QUERYResult, Product } from '@/shared/sanity/types';
-import { useLocale, useTranslations } from 'next-intl';
 import { Locale } from '@/shared/i18n/routing';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 type ProductCarouselProps = Extract<
   NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],
   { _type: 'productCarousel' }
 >;
 
-const ProductCarousel = ({
+const ProductCarousel = async ({
   products,
   title,
 }: {
   title: ProductCarouselProps['title'];
   products: Product[];
 }) => {
-  const plugin = useRef(AutoHeight({ active: true }));
-  const tBetterAuth = useTranslations('productCarousel');
-  const locale = useLocale() as Locale;
+  // const plugin = useRef(AutoHeight({ active: true }));
+  const tBetterAuth = await getTranslations('productCarousel');
+  const locale = (await getLocale()) as Locale;
   return (
     <div className="w-full">
       <div className="flex justify-between items-end   container pb-4">
         <h2 className="text-2xl md:text-5xl font-bold md:mb-5">
-          {title ? title[locale] : ''}
+          {title ? title.en : ''}
         </h2>
         <div className="flex h-full justify-end">
           <Link href="/products" className="text-md underline">
@@ -41,11 +39,7 @@ const ProductCarousel = ({
           </Link>
         </div>
       </div>
-      <Carousel
-        className="w-full"
-        plugins={[plugin.current]}
-        opts={{ loop: true, dragFree: true }}
-      >
+      <Carousel className="w-full" opts={{ loop: true, dragFree: true }}>
         <CarouselContent className="-ml-1 ">
           {products?.map((product, index) => (
             <CarouselItem
@@ -84,8 +78,8 @@ const ProductCarousel = ({
           ))}
         </CarouselContent>
         <div className="w-full hidden md:flex justify-center gap-4 mt-6">
-          <CarouselPrevious className="border-1 border-sidebar-ring rounded-none" />
-          <CarouselNext className="border-1 border-sidebar-ring rounded-none" />
+          <CarouselPrevious className=" rounded-sm" variant={'ghost'} />
+          <CarouselNext className="rounded-sm" variant={'ghost'} />
         </div>
       </Carousel>
     </div>

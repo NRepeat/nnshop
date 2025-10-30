@@ -42,7 +42,7 @@ export async function EmptyState() {
               size="sm"
             >
               <a href="#">
-                {t('continue_shopping')} <ArrowUpRightIcon />
+                {t('new_arrivals')} <ArrowUpRightIcon />
               </a>
             </Button>
           </div>

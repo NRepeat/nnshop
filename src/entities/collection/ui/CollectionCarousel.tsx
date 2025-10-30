@@ -1,3 +1,4 @@
+'use clinet';
 import { Collection, PAGE_QUERYResult } from '@/shared/sanity/types';
 import { Card, CardContent } from '@/shared/ui/card';
 import {
@@ -36,12 +37,12 @@ const CollectionsCarousel = (props: {
       >
         <div className="lg:min-w-[500px] flex flex-col justify-between ">
           <h2 className="text-2xl md:text-5xl font-bold">
-            {title ? title[locale] : ''}
+            {title ? title.en : ''}
           </h2>
           <div className=" w-full justify-between hidden md:flex">
             <Button className="">
               <Link href={action_link || ''}>
-                {action_text ? action_text[locale] : ''}
+                {action_text ? action_text.en : ''}
               </Link>
             </Button>
             <div className=" flex justify-end gap-4 ">
@@ -85,7 +86,7 @@ const CollectionsCarousel = (props: {
             variant={'ghost'}
           >
             <Link href={action_link || ''}>
-              {action_text ? action_text[locale] : ''}
+              {action_text ? action_text.en : ''}
             </Link>
           </Button>
         </div>

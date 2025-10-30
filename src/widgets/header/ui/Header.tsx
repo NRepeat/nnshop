@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 export const Header = async () => {
   return (
-    <header className=" py-6 sticky top-0 bg-background">
+    <header className=" py-6 sticky top-0 bg-background z-20 shadow-sm">
       <div className="grid grid-cols-3 container">
         <div className="flex  justify-start items-center">
           <NavigationSheet />
