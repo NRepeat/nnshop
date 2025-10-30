@@ -1175,7 +1175,7 @@ export type Color = {
 export type LocalizedText = {
   _type: 'localizedText';
   en?: string;
-  ua?: string;
+  uk?: string;
 };
 
 export type LocalizedString = {

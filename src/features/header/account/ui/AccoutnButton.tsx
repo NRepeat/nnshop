@@ -11,14 +11,12 @@ export const AccountButton = async () => {
   const session = await auth.api.getSession({ headers: headersList });
   if (!session) {
     return (
-      <Button
-        variant="ghost"
-        className="h-7.5 w-7.5 p-0 ring-5 ring-black rounded-full"
+      <Link
+        href={'/auth/sign-in'}
+        className="cursor-pointer block hover:bg-accent p-2 rounded-sm"
       >
-        <Link href={'/auth/sign-in'}>
-          <User className="h-7 w-7" />
-        </Link>
-      </Button>
+        <User />
+      </Link>
     );
   }
 

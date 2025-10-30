@@ -55,7 +55,7 @@ export class StorefrontClient implements ShopifyClient {
     if (query.includes('@inContext')) {
       return query;
     }
-
+    console.log('Adding language context', language, query);
     let modifiedQuery = query.replace(
       /(query\s+\w+)\s*(\([^)]+\))\s*\{/,
       `$1 $2 @inContext(language: ${language}) {`,
@@ -74,7 +74,7 @@ export class StorefrontClient implements ShopifyClient {
         `query @inContext(language: ${language}) {`,
       );
     }
-
+    console.log('Modified query:', modifiedQuery);
     return modifiedQuery;
   }
   async buildBody(
@@ -104,16 +104,17 @@ export class StorefrontClient implements ShopifyClient {
       if (language) {
         modifiedQuery = this.addLanguageContext(query, language);
       }
-      console.log(modifiedQuery, 'modifiedQuery');
       const response = await this.client.request(modifiedQuery, { variables });
 
       if (response.errors) {
+        console.error(response.errors);
         throw new Error(`Storefront API GraphQL`);
       }
 
       return response.data as T;
     } catch (error) {
       if (error instanceof Error) {
+        console.error(error);
         throw new Error(`Storefront API Request Failed: ${error.message}`);
       }
       throw new Error(`Storefront API Request Failed: ${String(error)}`);

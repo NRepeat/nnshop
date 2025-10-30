@@ -34,10 +34,10 @@ export async function getDefaultLocale(): Promise<string> {
       query: DEFAULT_LOCALE_QUERY,
       revalidate: 3600,
     });
-    return defaultLocale || 'en';
+    return defaultLocale || 'uk';
   } catch (error) {
     console.error('Failed to fetch default locale from Sanity:', error);
-    return 'en';
+    return 'uk';
   }
 }
 
@@ -100,7 +100,7 @@ export async function normalizeLocaleForSanity(
 export function getLocalizedPath(
   path: string,
   locale: string,
-  defaultLocale: string = 'en',
+  defaultLocale: string = 'uk',
 ): string {
   // Don't add locale prefix for default locale
   if (locale === defaultLocale) {
@@ -118,7 +118,7 @@ export function getLocalizedPath(
  */
 export function extractLocaleFromPath(
   pathname: string,
-  supportedLocales: string[] = ['en', 'ua'],
+  supportedLocales: string[] = ['en', 'uk'],
 ): {
   locale: string;
   pathWithoutLocale: string;
@@ -133,7 +133,7 @@ export function extractLocaleFromPath(
   }
 
   return {
-    locale: 'en', // default locale
+    locale: 'uk', // default locale
     pathWithoutLocale: pathname,
   };
 }

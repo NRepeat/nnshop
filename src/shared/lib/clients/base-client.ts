@@ -57,10 +57,13 @@ export abstract class BaseShopifyClient implements ShopifyClient {
     return data;
   }
 
-  async request<T>(
-    query: string,
-    variables: Record<string, unknown> = {},
-  ): Promise<T> {
+  async request<T>({
+    query,
+    variables,
+  }: {
+    query: string;
+    variables: Record<string, unknown>;
+  }): Promise<T> {
     const response = await fetch(this.baseUrl, {
       method: 'POST',
       headers: await this.buildHeaders(),

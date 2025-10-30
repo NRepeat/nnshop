@@ -118,6 +118,12 @@
   padding: 0 10px;
 }
 
+@media (min-width: 48rem) {
+  .container {
+    max-width: 95%;
+    padding: 0 5px;
+  }
+}
 @layer components {
   .ui-container-primary {
     @apply flex flex-col p-[10px] gap-2.5 bg-card rounded-[16px] shadow;

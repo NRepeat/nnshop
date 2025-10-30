@@ -14,10 +14,10 @@ export default async function Page({ params }: PageProps) {
 
   let posts = [];
 
-  if (locale === 'ua') {
+  if (locale === 'uk') {
     posts = await sanityFetch({
       query: POSTS_BY_LANGUAGE_QUERY,
-      params: { language: 'ua' },
+      params: { language: 'uk' },
       revalidate: 3600,
     });
 

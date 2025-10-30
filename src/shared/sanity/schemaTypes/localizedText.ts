@@ -12,7 +12,7 @@ export const localizedText = defineType({
       rows: 3,
     },
     {
-      name: 'ua',
+      name: 'uk',
       title: 'Ukrainian',
       type: 'text',
       rows: 3,

@@ -89,7 +89,7 @@ export const POSTS_BY_LANGUAGE_QUERY =
 
 // Debug query for Ukrainian posts specifically
 export const POSTS_UA_DEBUG_QUERY =
-  defineQuery(`*[_type == "post" && defined(slug.current) && language == "ua"] | order(publishedAt desc)[0...12]{
+  defineQuery(`*[_type == "post" && defined(slug.current) && language == "uk"] | order(publishedAt desc)[0...12]{
   _id,
   title,
   slug,

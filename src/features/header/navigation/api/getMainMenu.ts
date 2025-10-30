@@ -10,6 +10,11 @@ const query = `#graphql
         title
         url
         resourceId
+          items {
+            title
+            url
+            resourceId
+          }
       }
     }
   }
@@ -17,16 +22,22 @@ const query = `#graphql
 
 export const getMainMenu = async () => {
   const locale = await getLocale();
-
-  const responce = (await storefrontClient.request({
+  console.log(locale, 'locale');
+  const responce = await storefrontClient.request<GetMainMenuQuery>({
     query,
     language: locale.toUpperCase() as StorefrontLanguageCode,
-  })) as GetMainMenuQuery;
+  });
 
-  const mainMenu = responce.menu?.items.map((item) => ({
-    id: item.resourceId,
-    title: item.title,
-    url: item.url,
-  }));
+  const mainMenu =
+    responce.menu?.items.reverse().map((item) => ({
+      id: item.resourceId,
+      title: item.title,
+      url: `/collection/${item.url?.split('/').pop()}`,
+      items: item.items?.map((subItem) => ({
+        id: subItem.resourceId,
+        title: subItem.title,
+        url: `/collection/${subItem.url?.split('/').pop()}`,
+      })),
+    })) || [];
   return mainMenu;
 };

@@ -11,7 +11,7 @@ export const localizedString = defineType({
       type: 'string',
     },
     {
-      name: 'ua',
+      name: 'uk',
       title: 'Ukrainian',
       type: 'string',
     },

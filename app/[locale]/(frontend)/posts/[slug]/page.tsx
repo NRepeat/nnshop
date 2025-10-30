@@ -18,7 +18,6 @@ const getPage = async (params: RouteProps['params']) => {
   const { slug, locale } = await params;
 
   const sanityLocale = await normalizeLocaleForSanity(locale);
-
   let post = await sanityFetch({
     query: POST_BY_LANGUAGE_QUERY,
     params: { slug, language: sanityLocale },
@@ -47,11 +46,11 @@ export async function generateStaticParams() {
 
   const uaPosts = await client
     .withConfig({ useCdn: false })
-    .fetch(POSTS_SLUGS_BY_LANGUAGE_QUERY, { language: 'ua' });
+    .fetch(POSTS_SLUGS_BY_LANGUAGE_QUERY, { language: 'uk' });
 
   const uaPostsFormatted = uaPosts.map((post) => ({
     slug: post.slug,
-    locale: 'ua',
+    locale: 'uk',
   }));
 
   return [...enPosts, ...uaPostsFormatted];

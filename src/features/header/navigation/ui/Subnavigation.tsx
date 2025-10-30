@@ -9,10 +9,9 @@ import {
   NavigationMenuTrigger,
 } from '@shared/ui/navigation-menu';
 import { getLocale, getTranslations } from 'next-intl/server';
-import { getNavCollections } from '../api/getNavCollections';
 
 export const Subnavigation = async () => {
-  const t = await getTranslations('Header.subnav');
+  // const t = await getTranslations('Header.subnav');
 
   return (
     <div className="w-full flex container px-3 py-4">

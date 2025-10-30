@@ -2,8 +2,8 @@ import { AccountButton } from '@features/header/account/ui/AccoutnButton';
 import CartSheet from '@features/header/cart/ui/Sheet';
 import Navigation from '@features/header/navigation/ui/Navigation';
 import NavigationSheet from '@features/header/navigation/ui/Sheet';
-import { Subnavigation } from '@features/header/navigation/ui/Subnavigation';
 import Logo from '@shared/assets/Logo';
+import Link from 'next/link';
 
 export const Header = async () => {
   return (
@@ -14,14 +14,15 @@ export const Header = async () => {
           <Navigation />
         </div>
         <div className="justify-items-center">
-          <Logo className="w-10 h-10" />
+          <Link className="flex" href="/">
+            <Logo className="w-10 h-10" />
+          </Link>
         </div>
         <div className="justify-items-end flex gap-4 justify-end items-center">
           <AccountButton />
           <CartSheet />
         </div>
       </div>
-      <Subnavigation />
     </header>
   );
 };
