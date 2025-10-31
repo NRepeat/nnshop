@@ -21,34 +21,33 @@ export function HeroSwiper({
   if (!slides || slides.length === 0) return null;
 
   return (
-    <>
-      <Carousel
-        className="w-full"
-        autoplay={{ active: true, dellay: 3500 }}
-        opts={{ loop: true }}
-      >
-        <CarouselContent className="-ml-1 ">
-          {slides.map((slide, index) => (
-            <CarouselItem key={slide._key || index}>
-              <div className="relative w-full overflow-hidden">
-                <Link
+    <Carousel
+      className="w-full"
+      autoplay={{ active: true, dellay: 3500 }}
+      opts={{ loop: true }}
+    >
+      <CarouselContent className="-ml-1 ">
+        {slides.map((slide, index) => (
+          <CarouselItem key={slide._key || index}>
+            <div className="relative w-full overflow-hidden">
+              <Link
+                //@ts-expect-error sanity
+                href={slide?.link ? '/' + slide?.link[0].reference.slug : '/'}
+                className="flex justify-center"
+              >
+                <Image
                   //@ts-expect-error sanity
-                  href={slide?.link ? '/' + slide?.link[0].reference.slug : '/'}
-                >
-                  <Image
-                    //@ts-expect-error sanity
-                    src={slide.backgroundImage?.asset.url}
-                    alt={'asd'}
-                    width={1920}
-                    height={1080}
-                    priority
-                  />
-                </Link>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
-    </>
+                  src={slide.backgroundImage?.asset.url}
+                  alt={'asd'}
+                  width={1920}
+                  height={1080}
+                  priority
+                />
+              </Link>
+            </div>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+    </Carousel>
   );
 }

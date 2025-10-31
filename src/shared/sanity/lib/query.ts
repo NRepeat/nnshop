@@ -310,12 +310,25 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
             _id,
             store{
               title,
+              isDeleted,
               previewImageUrl,
               priceRange{
               maxVariantPrice,
               minVariantPrice
               },
               productType
+            }
+          },
+          collection -> {
+            _id,
+            title,
+            store{
+             imageUrl,
+             isDeleted,
+             slug{
+             current
+             },
+             title
             }
           }
         },

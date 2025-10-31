@@ -290,6 +290,12 @@ export type ProductCarousel = {
     _key: string;
     [internalGroqTypeReferenceTo]?: 'product';
   }>;
+  collection?: {
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: 'collection';
+  };
   enableAction?: boolean;
   actionName?: LocalizedString;
   actionLink?: LocalizedString;
@@ -2161,6 +2167,12 @@ export type PAGE_QUERYResult = {
           _key: string;
           [internalGroqTypeReferenceTo]?: 'product';
         }>;
+        collection?: {
+          _ref: string;
+          _type: 'reference';
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: 'collection';
+        };
         enableAction?: boolean;
         actionName?: LocalizedString;
         actionLink?: LocalizedString;
@@ -2245,7 +2257,7 @@ export type PAGE_QUERYResult = {
   social?: Social;
 } | null;
 // Variable: HOME_PAGE_QUERY
-// Query: *[_id == "siteSettings" ][0]{    homePage->{      ...,      content[]{        ...,        _type == "sliderBlock" => {          slides[]{             ...,            _key,            link[]{             ...,             reference->{               _id,               title,               "slug": store.slug.current             }           },            backgroundImage{              asset->{                _id,                url,                metadata{dimensions}              }            }          }        },        _type == "productCarousel" => {          products[]->{            _id,            store{              title,              previewImageUrl,              priceRange{              maxVariantPrice,              minVariantPrice              },              productType            }          }        },        _type == "collectionsCarousel" => {          collections[]->{            _id,            title,            store{             imageUrl,             isDeleted,             slug{             current             },             title            }          }        },        _type == "faqs" => {          ...,          faqs[]->{            _id,            title,            body,            "text": pt::text(body)          }        }      }    }  }
+// Query: *[_id == "siteSettings" ][0]{    homePage->{      ...,      content[]{        ...,        _id,        _type == "sliderBlock" => {          slides[]{             ...,            _key,            link[]{             ...,             reference->{               _id,               title,               "slug": store.slug.current             }           },            backgroundImage{              asset->{                _id,                url,                metadata{dimensions}              }            }          }        },        _type == "productCarousel" => {          products[]->{            _id,            store{              title,              isDeleted,              previewImageUrl,              priceRange{              maxVariantPrice,              minVariantPrice              },              productType            }          },          collection -> {            _id,            title,            store{             imageUrl,             isDeleted,             slug{             current             },             title            }          }        },        _type == "collectionsCarousel" => {          collections[]->{            _id,            title,            store{             imageUrl,             isDeleted,             slug{             current             },             title            }          }        },        _type == "faqs" => {          ...,          faqs[]->{            _id,            title,            body,            "text": pt::text(body)          }        }      }    }  }
 export type HOME_PAGE_QUERYResult =
   | {
       homePage: null;
@@ -2280,6 +2292,7 @@ export type HOME_PAGE_QUERYResult =
               enable_action?: boolean;
               action_text?: LocalizedString;
               action_link?: string;
+              _id: null;
             }
           | {
               _key: string;
@@ -2330,6 +2343,7 @@ export type HOME_PAGE_QUERYResult =
                 > | null;
                 text: string;
               }> | null;
+              _id: null;
             }
           | {
               _key: string;
@@ -2341,6 +2355,7 @@ export type HOME_PAGE_QUERYResult =
                 _type: 'feature';
                 _key: string;
               }>;
+              _id: null;
             }
           | {
               _key: string;
@@ -2392,6 +2407,7 @@ export type HOME_PAGE_QUERYResult =
                 crop?: SanityImageCrop;
                 _type: 'image';
               };
+              _id: null;
             }
           | {
               _key: string;
@@ -2401,6 +2417,7 @@ export type HOME_PAGE_QUERYResult =
                 _id: string;
                 store: {
                   title: string | null;
+                  isDeleted: boolean | null;
                   previewImageUrl: string | null;
                   priceRange: {
                     maxVariantPrice: number | null;
@@ -2409,9 +2426,22 @@ export type HOME_PAGE_QUERYResult =
                   productType: string | null;
                 } | null;
               }> | null;
+              collection: {
+                _id: string;
+                title: null;
+                store: {
+                  imageUrl: string | null;
+                  isDeleted: boolean | null;
+                  slug: {
+                    current: string | null;
+                  } | null;
+                  title: string | null;
+                } | null;
+              } | null;
               enableAction?: boolean;
               actionName?: LocalizedString;
               actionLink?: LocalizedString;
+              _id: null;
             }
           | {
               _key: string;
@@ -2457,6 +2487,7 @@ export type HOME_PAGE_QUERYResult =
                 _type: 'slide';
                 _key: string;
               }> | null;
+              _id: null;
             }
           | {
               _key: string;
@@ -2475,6 +2506,7 @@ export type HOME_PAGE_QUERYResult =
                 crop?: SanityImageCrop;
                 _type: 'image';
               };
+              _id: null;
             }
         > | null;
         mainImage?: {
@@ -2564,7 +2596,7 @@ declare module '@sanity/client' {
     '*[_type == "post" && defined(slug.current) && (language == "en" || !defined(language))] | order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_EN_FALLBACK_QUERYResult;
     '*[_type == "post" && slug.current == $slug && (language == "en" || !defined(language))][0]{\n  _id,\n  title,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  },\n  relatedPosts[]{\n    _key,\n    ...@->{_id, title, slug, language}\n  },\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n}': POST_WITH_FALLBACK_QUERYResult;
     '*[_type == "page" && slug.current == $slug && language == $language][0]{\n  ...,\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n  content[]{\n    ...,\n    _type == "faqs" => {\n      ...,\n      faqs[]->{\n        _id,\n        title,\n        body,\n        "text": pt::text(body)\n      }\n    }\n  }\n}': PAGE_QUERYResult;
-    '*[_id == "siteSettings" ][0]{\n    homePage->{\n      ...,\n      content[]{\n        ...,\n        _type == "sliderBlock" => {\n          slides[]{\n             ...,\n            _key,\n            link[]{\n             ...,\n             reference->{\n               _id,\n               title,\n               "slug": store.slug.current\n             }\n           },\n            backgroundImage{\n              asset->{\n                _id,\n                url,\n                metadata{dimensions}\n              }\n            }\n          }\n        },\n        _type == "productCarousel" => {\n          products[]->{\n            _id,\n            store{\n              title,\n              previewImageUrl,\n              priceRange{\n              maxVariantPrice,\n              minVariantPrice\n              },\n              productType\n            }\n          }\n        },\n        _type == "collectionsCarousel" => {\n          collections[]->{\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        }\n      }\n    }\n  }': HOME_PAGE_QUERYResult;
+    '*[_id == "siteSettings" ][0]{\n    homePage->{\n      ...,\n      content[]{\n        ...,\n        _id,\n        _type == "sliderBlock" => {\n          slides[]{\n             ...,\n            _key,\n            link[]{\n             ...,\n             reference->{\n               _id,\n               title,\n               "slug": store.slug.current\n             }\n           },\n            backgroundImage{\n              asset->{\n                _id,\n                url,\n                metadata{dimensions}\n              }\n            }\n          }\n        },\n        _type == "productCarousel" => {\n          products[]->{\n            _id,\n            store{\n              title,\n              isDeleted,\n              previewImageUrl,\n              priceRange{\n              maxVariantPrice,\n              minVariantPrice\n              },\n              productType\n            }\n          },\n          collection -> {\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "collectionsCarousel" => {\n          collections[]->{\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        }\n      }\n    }\n  }': HOME_PAGE_QUERYResult;
     '\n  *[_type == "redirect" && isEnabled == true] {\n      source,\n      destination,\n      permanent\n  }\n': REDIRECTS_QUERYResult;
     '\n  *[_id == $id][0]{\n    title,\n    "image": mainImage.asset->{\n      url,\n      metadata {\n        palette\n      }\n    }\n  }\n': OG_IMAGE_QUERYResult;
     '\n*[_type in ["page", "post"] && defined(slug.current)] {\n    "href": select(\n      _type == "page" => "/" + slug.current,\n      _type == "post" => select(\n        defined(language) => "/" + language + "/posts/" + slug.current,\n        "/posts/" + slug.current\n      ),\n      slug.current\n    ),\n    _updatedAt,\n    language\n}\n': SITEMAP_QUERYResult;

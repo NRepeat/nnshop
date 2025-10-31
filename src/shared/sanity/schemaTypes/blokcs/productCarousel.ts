@@ -17,6 +17,13 @@ export const productCarousel = defineType({
       of: [{ type: 'reference', to: [{ type: 'product' }] }],
     },
     {
+      name: 'collection',
+      title: 'Collection',
+      type: 'reference',
+      to: [{ type: 'collection' }],
+    },
+
+    {
       name: 'enableAction',
       title: 'Enable Action',
       type: 'boolean',

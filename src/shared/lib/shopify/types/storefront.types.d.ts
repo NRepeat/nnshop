@@ -2884,7 +2884,7 @@ export enum CountryCode {
   /** Tanzania. */
   Tz = 'TZ',
   /** Ukraine. */
-  Ua = 'uk',
+  Ua = 'UA',
   /** Uganda. */
   Ug = 'UG',
   /** U.S. Outlying Islands. */
