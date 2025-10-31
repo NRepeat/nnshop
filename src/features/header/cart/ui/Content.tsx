@@ -69,7 +69,7 @@ const Content = async ({
         </div>
         <div className="w-full flex flex-col justify-between px-4 py-4 space-y-4">
           <span>{t('tax_information')}</span>
-          <Button className="w-full">{t('checkout')}</Button>
+          <Button className="w-full rounded-full">{t('checkout')}</Button>
         </div>
       </div>
     </SheetContent>

@@ -26,7 +26,7 @@ const NavigationSheet = async () => {
       <SheetTrigger className="cursor-pointer block md:hidden hover:bg-accent p-2 rounded-lg">
         <BurgerIcon className="min-h-6 min-w-6" />
       </SheetTrigger>
-      <SheetContent side="left">
+      <SheetContent side="left" className="">
         <SheetHeader>
           <SheetTitle>{t('title')}</SheetTitle>
         </SheetHeader>

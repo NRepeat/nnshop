@@ -25,8 +25,10 @@ export async function EmptyState() {
         </EmptyHeader>
         <EmptyContent>
           <div className="flex gap-2">
-            <Button>{t('continue_shopping')}</Button>
-            <Button variant="outline">{t('login')}</Button>
+            <Button className="rounded-full">{t('continue_shopping')}</Button>
+            <Button variant="outline" className="rounded-full">
+              {t('login')}
+            </Button>
           </div>
           <div className="flex flex-col">
             <Image

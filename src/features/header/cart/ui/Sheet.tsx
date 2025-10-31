@@ -99,7 +99,7 @@ const CartSheet = async () => {
 
   return (
     <Sheet>
-      <SheetTrigger className="cursor-pointer block hover:bg-accent p-2 rounded-sm">
+      <SheetTrigger className="cursor-pointer block hover:bg-accent p-2 rounded-none">
         <ShoppingCart />
       </SheetTrigger>
       <CartWithEmptyState products={mockProducts} test />
@@ -116,9 +116,9 @@ const CartWithEmptyState = ({
   test: boolean;
   products: any;
 }) => {
-  if (test) {
+  if (!test) {
     return <EmptyState />;
   } else {
-    <Content mockProducts={products} />;
+    return <Content mockProducts={products} />;
   }
 };

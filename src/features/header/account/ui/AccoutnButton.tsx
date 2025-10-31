@@ -13,7 +13,7 @@ export const AccountButton = async () => {
     return (
       <Link
         href={'/auth/sign-in'}
-        className="cursor-pointer block hover:bg-accent p-2 rounded-sm"
+        className="cursor-pointer block hover:bg-accent p-2 rounded-none"
       >
         <User />
       </Link>

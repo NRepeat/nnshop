@@ -11,12 +11,12 @@ type SplitImageProps = Extract<
 export function SplitImage({ title, image, orientation }: SplitImageProps) {
   return (
     <section
-      className="container mx-auto flex gap-8 py-16 data-[orientation='imageRight']:flex-row-reverse"
+      className="container  flex gap-8 py-16 data-[orientation='imageRight']:flex-row-reverse"
       data-orientation={stegaClean(orientation) || 'imageLeft'}
     >
       {image ? (
         <Image
-          className="rounded-xl w-2/3 h-auto"
+          className="rounded-none w-2/3 h-auto"
           src={urlFor(image).width(800).height(600).url()}
           width={800}
           height={600}

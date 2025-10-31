@@ -20,7 +20,10 @@ const Navigation = async () => {
     if (item.items.length > 0) {
       return (
         <NavigationMenuItem key={item.title}>
-          <NavigationMenuTrigger variant={'ghost'} className="rounded-full">
+          <NavigationMenuTrigger
+            variant={'ghost'}
+            className="rounded-full text-md"
+          >
             {item.title}
           </NavigationMenuTrigger>
           <NavigationMenuContent className="bg-transparent">
@@ -29,9 +32,11 @@ const Navigation = async () => {
                 <li key={subItem.title}>
                   <Button
                     variant={'ghost'}
-                    className="w-full justify-start bg-transparent hover:bg-transparent hover:underline"
+                    className="w-full  justify-start bg-transparent hover:bg-transparent hover:underline"
                   >
-                    <Link href={subItem.url}>{subItem.title}</Link>
+                    <Link href={subItem.url} className="text-md">
+                      {subItem.title}
+                    </Link>
                   </Button>
                 </li>
               ))}
@@ -46,10 +51,10 @@ const Navigation = async () => {
           className={` ${index === meinMenu.length - 1 ? 'hidden lg:block' : 'block'}`}
         >
           <Button
-            className="rounded-full cursor-pointer w-full text-nowrap"
+            className="rounded-full cursor-pointer w-full text-nowrap text-md"
             variant={'ghost'}
           >
-            {item.title}
+            <Link href={'/'}>{item.title}</Link>
           </Button>
           {/*<NavigationMenuLink
             className="cursor-pointer w-full text-nowrap "
