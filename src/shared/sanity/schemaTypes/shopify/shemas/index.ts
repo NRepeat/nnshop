@@ -44,6 +44,8 @@ import shopifLinkExternal from './annotations/shopifLinkExternal';
 import shopifLinkInternal from './annotations/shopifLinkInternal';
 import productAnnotation from './annotations/product';
 import { callToAction } from '@/shared/sanity/schemaTypes/shopify/shemas/objects/module/sopifyCallToAction';
+import linkInternal from './objects/global/linkInternal';
+import linkExternal from './objects/global/linkExternal';
 
 const annotations = [
   shopifLinkEmail,
@@ -53,6 +55,8 @@ const annotations = [
 ];
 
 const objects = [
+  linkInternal,
+  linkExternal,
   customProductOptionColor,
   customProductOptionColorObject,
   customProductOptionSize,

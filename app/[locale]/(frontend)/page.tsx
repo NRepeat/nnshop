@@ -17,7 +17,6 @@ export default async function Page({ params }: RouteProps) {
   const page = await getPage(params);
   return page?.homePage?.content ? (
     <>
-      {/*<h2 className="text-2xl font-bold mb-4">{page.homePage.title[locale]}</h2>*/}
       <PageBuilder
         //@ts-expect-error sanity
         content={page.homePage.content}

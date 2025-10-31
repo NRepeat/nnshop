@@ -55,7 +55,6 @@ export class StorefrontClient implements ShopifyClient {
     if (query.includes('@inContext')) {
       return query;
     }
-    console.log('Adding language context', language, query);
     let modifiedQuery = query.replace(
       /(query\s+\w+)\s*(\([^)]+\))\s*\{/,
       `$1 $2 @inContext(language: ${language}) {`,
@@ -74,7 +73,6 @@ export class StorefrontClient implements ShopifyClient {
         `query @inContext(language: ${language}) {`,
       );
     }
-    console.log('Modified query:', modifiedQuery);
     return modifiedQuery;
   }
   async buildBody(
