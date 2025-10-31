@@ -5,7 +5,9 @@
   "productCarousel": {
     "TITLE": "Продукти",
     "DESCRIPTION": "Перегляд та фільтрація продуктів",
-    "VIEW_ALL": "Переглянути всі"
+    "VIEW_ALL": "Переглянути всі",
+    "add_to_cart": "Додати до кошика",
+    "size": "Розмір"
   },
   "Header": {
     "nav": {

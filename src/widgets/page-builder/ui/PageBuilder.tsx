@@ -31,7 +31,7 @@ export function PageBuilder({
   };
 
   return (
-    <main className="w-full flex justify-center flex-col space-y-6 ">
+    <main className="w-full flex justify-center flex-col space-y-6 pt-4">
       {content?.map((block, index) => {
         const Component =
           blockComponents[block._type as keyof typeof blockComponents];

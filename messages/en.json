@@ -5,7 +5,9 @@
   "productCarousel": {
     "TITLE": "Products",
     "DESCRIPTION": "View and filter products",
-    "VIEW_ALL": "View all"
+    "VIEW_ALL": "View all",
+    "add_to_cart": "ADD TO CART",
+    "size": "Size"
   },
   "Header": {
     "subnav": {

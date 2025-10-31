@@ -7,18 +7,18 @@ import Link from 'next/link';
 
 export const Header = async () => {
   return (
-    <header className=" py-6 sticky top-0 bg-background z-20 shadow-sm">
-      <div className="grid grid-cols-3 container">
-        <div className="flex  justify-start items-center">
+    <header className=" sticky top-2   z-20  bg-transparent ">
+      <div className="grid grid-cols-3 container w-[95%] md:max-w-[80%]  rounded-full backdrop-blur-sm bg-card/60 border-card border-2">
+        <div className="flex  justify-start items-center  py-5 pl-4">
           <NavigationSheet />
           <Navigation />
         </div>
-        <div className="justify-items-center justify-center flex ">
+        <div className="justify-items-center justify-center flex  py-5 ">
           <Link className="flex" href="/">
             <Logo className="w-10 h-10" />
           </Link>
         </div>
-        <div className="justify-items-end flex gap-4 justify-end items-center">
+        <div className="justify-items-end flex gap-4 justify-end items-center  py-5 pr-4">
           <AccountButton />
           <CartSheet />
         </div>

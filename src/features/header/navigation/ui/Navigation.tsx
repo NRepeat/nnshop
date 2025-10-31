@@ -8,6 +8,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
+  NavigationMenuViewport,
 } from '@shared/ui/navigation-menu';
 import { Button } from '@shared/ui/button';
 import { getMainMenu } from '../api/getMainMenu';
@@ -19,12 +20,17 @@ const Navigation = async () => {
     if (item.items.length > 0) {
       return (
         <NavigationMenuItem key={item.title}>
-          <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[250px] gap-4">
+          <NavigationMenuTrigger variant={'ghost'} className="rounded-full">
+            {item.title}
+          </NavigationMenuTrigger>
+          <NavigationMenuContent className="bg-transparent">
+            <ul className="grid w-[250px] gap-4  bg-transparent">
               {item.items.map((subItem) => (
                 <li key={subItem.title}>
-                  <Button variant={'ghost'} className="w-full justify-start">
+                  <Button
+                    variant={'ghost'}
+                    className="w-full justify-start bg-transparent hover:bg-transparent hover:underline"
+                  >
                     <Link href={subItem.url}>{subItem.title}</Link>
                   </Button>
                 </li>
@@ -37,20 +43,26 @@ const Navigation = async () => {
       return (
         <NavigationMenuItem
           key={item.title}
-          className={`${index === meinMenu.length - 1 ? 'hidden lg:block' : 'block'}`}
+          className={` ${index === meinMenu.length - 1 ? 'hidden lg:block' : 'block'}`}
         >
-          <NavigationMenuLink
-            className="cursor-pointer w-full text-nowrap"
+          <Button
+            className="rounded-full cursor-pointer w-full text-nowrap"
+            variant={'ghost'}
+          >
+            {item.title}
+          </Button>
+          {/*<NavigationMenuLink
+            className="cursor-pointer w-full text-nowrap "
             href=""
           >
             {item.title}
-          </NavigationMenuLink>
+          </NavigationMenuLink>*/}
         </NavigationMenuItem>
       );
     }
   });
   return (
-    <NavigationMenu className="hidden md:block">
+    <NavigationMenu className="hidden md:block ">
       <NavigationMenuList>{menu}</NavigationMenuList>
     </NavigationMenu>
   );
