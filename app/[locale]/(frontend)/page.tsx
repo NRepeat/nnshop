@@ -16,14 +16,12 @@ export async function generateStaticParams() {
 export default async function Page({ params }: RouteProps) {
   const page = await getPage(params);
   return page?.homePage?.content ? (
-    <>
-      <PageBuilder
-        //@ts-expect-error sanity
-        content={page.homePage.content}
-        documentId={page.homePage._id}
-        documentType={page.homePage._type}
-      />
-    </>
+    <PageBuilder
+      //@ts-expect-error sanity
+      content={page.homePage.content}
+      documentId={page.homePage._id}
+      documentType={page.homePage._type}
+    />
   ) : (
     <div>
       <h1>Page Not Found</h1>

@@ -1,7 +1,13 @@
 import { PAGE_QUERYResult } from '@/shared/sanity/types';
+import { ProductCarousel } from '@entities/product';
+import { CollectionsCarousel } from '@entities/collection';
+import { HeroSwiper } from '@entities/slider';
+import { Hero } from '@/entities/hero';
+import { Features } from '@/entities/feature';
+import { SplitImage } from '@/entities/split-image';
+import { FAQs } from '@/entities/faq';
 import { createDataAttribute } from 'next-sanity';
 import { createDataAttributeConfig } from '../lib/createDataAttributeConfig';
-import { blockComponents } from '../model/blockComponents';
 
 type PageBuilderProps = {
   content: NonNullable<PAGE_QUERYResult>['content'];
@@ -14,24 +20,50 @@ export function PageBuilder({
   documentId,
   documentType,
 }: PageBuilderProps) {
+  const blockComponents = {
+    hero: Hero,
+    features: Features,
+    splitImage: SplitImage,
+    faqs: FAQs,
+    productCarousel: ProductCarousel,
+    collectionsCarousel: CollectionsCarousel,
+    sliderBlock: HeroSwiper,
+  };
+
   return (
-    <main
-      data-sanity={createDataAttribute({
-        ...createDataAttributeConfig,
-        id: documentId,
-        type: documentType,
-        path: 'content',
-      }).toString()}
-      className="w-full flex justify-center flex-col "
-    >
-      {content?.map((block) => {
+    <main className="w-full flex justify-center flex-col ">
+      {content?.map((block, index) => {
         const Component =
           blockComponents[block._type as keyof typeof blockComponents];
+
+        const dataAttribute = createDataAttribute({
+          ...createDataAttributeConfig,
+          id: documentId,
+          type: documentType,
+          path: ['content'],
+        }).toString();
+
         if (!Component) {
-          return <>Something went wrong</>;
+          return (
+            <div key={block._key} data-sanity={dataAttribute}>
+              Block not found: {block._type}
+            </div>
+          );
         }
-        //@ts-expect-error sanity
-        return <Component key={block._key} {...block} />;
+
+        return (
+          <div key={block._key} data-sanity={dataAttribute}>
+            <Component
+              {...block}
+              /*@ts-expect-error sanity*/
+              documentId={documentId}
+              /*@ts-expect-error sanity*/
+              documentType={documentType}
+              /*@ts-expect-error sanity*/
+              blockIndex={index}
+            />
+          </div>
+        );
       })}
     </main>
   );

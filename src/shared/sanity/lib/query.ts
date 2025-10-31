@@ -283,11 +283,19 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
       ...,
       content[]{
         ...,
+        _id,
         _type == "sliderBlock" => {
           slides[]{
              ...,
             _key,
-            
+            link[]{
+             ...,
+             reference->{
+               _id,
+               title,
+               "slug": store.slug.current
+             }
+           },
             backgroundImage{
               asset->{
                 _id,

@@ -26,7 +26,6 @@ const ProductCarousel = async ({
 }) => {
   // const plugin = useRef(AutoHeight({ active: true }));
   const tBetterAuth = await getTranslations('productCarousel');
-  const locale = (await getLocale()) as Locale;
   return (
     <div className="w-full">
       <div className="flex justify-between items-end   container pb-4">
