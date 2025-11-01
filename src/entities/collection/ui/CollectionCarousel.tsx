@@ -30,40 +30,26 @@ const CollectionsCarousel = (props: {
   const { collections, title, action_text, action_link } = props;
   const locale = useLocale() as Locale;
   return (
-    <div className="w-full flex container">
-      <Carousel
-        className="w-full flex-col md:flex-row grid grid-cols-3 gap-4"
-        opts={{ loop: true, dragFree: true }}
-      >
-        <div className="col-span-1 flex flex-col justify-between ">
-          <h2 className="text-2xl md:text-5xl font-bold">
-            {title ? title.en : ''}
-          </h2>
-          <div className=" w-full justify-between hidden md:flex">
-            <Button
-              className="border-black border rounded-none hover:bg-black hover:text-card"
-              variant={'outline'}
-            >
-              <Link href={action_link || ''}>
-                {action_text ? action_text.en : ''}
-              </Link>
-            </Button>
-            <div className=" flex justify-end gap-4 ">
-              <CarouselPrevious
-                className=" rounded-none p-6 hover:bg-card"
-                variant={'ghost'}
-              />
-              <CarouselNext
-                className="rounded-none p-6 hover:bg-card"
-                variant={'ghost'}
-              />
-            </div>
-          </div>
+    <div className="w-full container flex flex-col gap-8 py-16">
+      <div className="flex justify-between items-end">
+        <h2 className="text-2xl md:text-5xl font-bold">
+          {title ? title[locale as keyof typeof title] : ''}
+        </h2>
+        <div className="hidden md:flex items-center">
+          <Button
+            className="border-black border rounded-none hover:bg-black hover:text-card"
+            variant={'outline'}
+          >
+            <Link href={action_link || ''}>
+              {action_text ? action_text[locale as keyof typeof title] : ''}
+            </Link>
+          </Button>
         </div>
-
-        <CarouselContent className="-ml-1 col-span-2">
+      </div>
+      <Carousel className="w-full" opts={{ loop: true, dragFree: true }}>
+        <CarouselContent className="-ml-1">
           {collections?.map((collection, index) => (
-            <CarouselItem key={index} className="pl-1 basis-1/2 ">
+            <CarouselItem key={index} className="pl-1 basis-1/2 md:basis-1/3">
               <Link href={`/collections/${collection.store?.slug?.current}`}>
                 <div className="p-1 h-full">
                   <Card className="h-full rounded-none p-0 border-0 shadow-none bg-transparent">
@@ -91,12 +77,15 @@ const CollectionsCarousel = (props: {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className=" w-full justify-between flex md:hidden">
-          <Button className="rounded-none " variant={'ghost'}>
-            <Link href={action_link || ''}>
-              {action_text ? action_text.en : ''}
-            </Link>
-          </Button>
+        <div className="w-full justify-end gap-4 mt-4 hidden md:flex">
+          <CarouselPrevious
+            className=" rounded-none p-6 hover:bg-card"
+            variant={'ghost'}
+          />
+          <CarouselNext
+            className="rounded-none p-6 hover:bg-card"
+            variant={'ghost'}
+          />
         </div>
       </Carousel>
     </div>
