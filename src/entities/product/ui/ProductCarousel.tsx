@@ -58,27 +58,31 @@ const ProductCarousel = async ({
               <div className="h-full  px-1 pl-2">
                 <Card className="h-full shadow-none backdrop-blur-sm bg-transparent border-gray-200 border-nonerounded-xl  py-0">
                   <CardContent className="  flex flex-col  rounded-none p-0 border-0 shadow-none h-full justify-between bg-transparent">
-                    <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full">
-                      <Image
-                        className="h-auto w-full "
-                        src={product.featuredImage?.url || ''}
-                        alt={product.featuredImage?.altText || ''}
-                        width={product.featuredImage?.width || 300}
-                        height={product.featuredImage?.height || 300}
-                      />
-                      <div className="absolute right-3 top-3 group">
-                        <Bookmark className="group-hover:fill-black" />
+                    <Link href={`/products/${product.handle}`}>
+                      <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full">
+                        <Image
+                          className="h-auto w-full "
+                          src={product.featuredImage?.url || ''}
+                          alt={product.featuredImage?.altText || ''}
+                          width={product.featuredImage?.width || 300}
+                          height={product.featuredImage?.height || 300}
+                        />
+                        <div className="absolute right-3 top-3 group">
+                          <Bookmark className="group-hover:fill-black" />
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                     <div className="w-full pt-2 md:pt-6  flex flex-col gap-1">
                       <span className="text-md font-bold">
                         {product.vendor}
                       </span>
                       <div>
                         <div className=" w-full flex-col  justify-between flex pb-4">
-                          <p className="text-md font-light  text-pretty">
-                            {product?.title}
-                          </p>
+                          <Link href={`/products/${product.handle}`}>
+                            <p className="text-md font-light  text-pretty">
+                              {product?.title}
+                            </p>
+                          </Link>
                           <span className="text-md font-light text-pretty">
                             Slize:{' '}
                             {product?.options.find((f) => f.name === 'Size')

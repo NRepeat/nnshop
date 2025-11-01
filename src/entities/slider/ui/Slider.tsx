@@ -1,3 +1,4 @@
+import { resolveLink } from '@/features/blocks/split-image/lib/resolveLink';
 import { Carousel, CarouselContent, CarouselItem } from '@/shared/ui/carousel';
 import { PAGE_QUERYResult } from '@/shared/sanity/types';
 import Image from 'next/image';
@@ -31,8 +32,7 @@ export function HeroSwiper({
           <CarouselItem key={slide._key || index}>
             <div className="relative w-full overflow-hidden">
               <Link
-                //@ts-expect-error sanity
-                href={slide?.link ? '/' + slide?.link[0].reference.slug : '/'}
+                href={resolveLink(slide.link?.[0]) || '/'}
                 className="flex justify-center"
               >
                 <Image

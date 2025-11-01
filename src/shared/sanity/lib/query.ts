@@ -293,8 +293,13 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
              ...,
              reference->{
                _id,
+               _type,
                title,
-               "slug": store.slug.current
+               "slug": select(
+                 _type == "product" => store.slug.current,
+                 _type == "collection" => store.slug.current,
+                 _type == "page" => slug.current
+               )
              }
            },
             backgroundImage{
