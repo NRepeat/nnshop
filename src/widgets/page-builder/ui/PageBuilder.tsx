@@ -23,7 +23,7 @@ export function PageBuilder({
   const blockComponents = {
     hero: Hero,
     features: Features,
-    // splitImage: SplitImage,
+    splitImage: SplitImage,
     faqs: FAQs,
     productCarousel: ProductCarousel,
     collectionsCarousel: CollectionsCarousel,

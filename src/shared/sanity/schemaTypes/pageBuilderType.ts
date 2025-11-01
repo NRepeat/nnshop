@@ -17,7 +17,15 @@ export const pageBuilderType = defineType({
       views: [
         {
           name: 'grid',
-          previewImageUrl: (schemaType) => `/block-previews/${schemaType}.png`,
+          previewImageUrl: (schemaType) => {
+            const svgPreviews = [
+              'sliderBlock',
+              'productCarousel',
+              'collectionsCarousel',
+            ];
+            const extension = svgPreviews.includes(schemaType) ? 'svg' : 'png';
+            return `/block-previews/${schemaType}.${extension}`;
+          },
         },
       ],
     },

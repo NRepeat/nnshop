@@ -9,7 +9,6 @@ export const client = createClient({
   stega: {
     enabled: true,
     studioUrl: process.env.NEXT_PUBLIC_BASE_URL + '/studio',
-    logger: console,
   },
   apiVersion, // https://www.sanity.io/docs/api-versioning
   useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation

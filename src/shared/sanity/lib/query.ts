@@ -266,6 +266,7 @@ export const PAGE_QUERY =
    },
   content[]{
     ...,
+
     _type == "faqs" => {
       ...,
       faqs[]->{
@@ -343,6 +344,22 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
              current
              },
              title
+            }
+          }
+        },
+        _type == "splitImage" => {
+          ...,
+          link[]{
+            ...,
+            reference->{
+              _id,
+              _type,
+              title,
+              "slug": select(
+                _type == "product" => store.slug.current,
+                _type == "collection" => store.slug.current,
+                _type == "page" => slug.current
+              )
             }
           }
         },

@@ -44,8 +44,12 @@ export const pageType = defineType({
   ],
   preview: {
     select: {
-      title: 'title.en',
+      title: 'title',
       subtitle: 'slug.current',
     },
+    prepare: ({ title, subtitle }) => ({
+      title: title.en,
+      subtitle,
+    }),
   },
 });

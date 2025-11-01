@@ -37,7 +37,7 @@ export const splitImageType = defineType({
     },
     prepare({ title, media }) {
       return {
-        title: title,
+        title: title.en,
         subtitle: 'Split Image',
         media: media ?? BlockContentIcon,
       };

@@ -16,7 +16,15 @@
 export type SplitImage = {
   _type: 'splitImage';
   orientation?: 'imageLeft' | 'imageRight';
-  title?: string;
+  title?: LocalizedString;
+  link?: Array<
+    | ({
+        _key: string;
+      } & LinkInternal)
+    | ({
+        _key: string;
+      } & LinkExternal)
+  >;
   image?: {
     asset?: {
       _ref: string;
@@ -2210,7 +2218,15 @@ export type PAGE_QUERYResult = {
         _key: string;
         _type: 'splitImage';
         orientation?: 'imageLeft' | 'imageRight';
-        title?: string;
+        title?: LocalizedString;
+        link?: Array<
+          | ({
+              _key: string;
+            } & LinkExternal)
+          | ({
+              _key: string;
+            } & LinkInternal)
+        >;
         image?: {
           asset?: {
             _ref: string;
@@ -2493,7 +2509,15 @@ export type HOME_PAGE_QUERYResult =
               _key: string;
               _type: 'splitImage';
               orientation?: 'imageLeft' | 'imageRight';
-              title?: string;
+              title?: LocalizedString;
+              link?: Array<
+                | ({
+                    _key: string;
+                  } & LinkExternal)
+                | ({
+                    _key: string;
+                  } & LinkInternal)
+              >;
               image?: {
                 asset?: {
                   _ref: string;
