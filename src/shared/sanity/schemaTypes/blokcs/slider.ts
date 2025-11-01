@@ -37,4 +37,17 @@ export const sliderBlock = defineField({
       ],
     }),
   ],
+  preview: {
+    select: {
+      title: 'slides[0].title',
+      media: 'slides[0].backgroundImage',
+    },
+    prepare({ title, media }) {
+      return {
+        title: title?.en,
+        subtitle: 'Slider',
+        media: media,
+      };
+    },
+  },
 });

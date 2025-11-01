@@ -35,4 +35,15 @@ export const collectionsCarousel = defineType({
       hidden: ({ parent }) => !parent?.enable_action,
     },
   ],
+  preview: {
+    select: {
+      title: 'title',
+    },
+    prepare({ title }) {
+      return {
+        title: title.en,
+        subtitle: 'Collections Carousel',
+      };
+    },
+  },
 });

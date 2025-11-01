@@ -7,7 +7,7 @@ export const resolve: PresentationPluginOptions['resolve'] = {
   locations: {
     page: defineLocations({
       select: {
-        title: 'title',
+        title: 'title.en',
         slug: 'slug.current',
       },
       resolve: (doc) => ({

@@ -41,4 +41,15 @@ export const productCarousel = defineType({
       hidden: ({ parent }) => !parent?.enableAction,
     },
   ],
+  preview: {
+    select: {
+      title: 'title',
+    },
+    prepare({ title }) {
+      return {
+        title: title.en,
+        subtitle: 'Product Carousel',
+      };
+    },
+  },
 });
