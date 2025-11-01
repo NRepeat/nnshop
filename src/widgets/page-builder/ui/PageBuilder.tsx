@@ -23,7 +23,7 @@ export function PageBuilder({
   const blockComponents = {
     hero: Hero,
     features: Features,
-    splitImage: SplitImage,
+    // splitImage: SplitImage,
     faqs: FAQs,
     productCarousel: ProductCarousel,
     collectionsCarousel: CollectionsCarousel,
@@ -44,11 +44,7 @@ export function PageBuilder({
         }).toString();
 
         if (!Component) {
-          return (
-            <div key={block._key} data-sanity={dataAttribute}>
-              Block not found: {block._type}
-            </div>
-          );
+          return null;
         }
 
         return (
