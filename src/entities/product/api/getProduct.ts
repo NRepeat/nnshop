@@ -1,10 +1,11 @@
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { getLocale } from 'next-intl/server';
+import { GetProductByHandleQuery } from '@shared/lib/shopify/types/storefront.generated';
 
 const query = `#graphql
-  query getProductByHandle($handle: String!) {
-    product(handle: $handle) {
+  query getProductByHandle($handle: String!, $variant: ID) {
+    product(handle: $handle, id: $variant) {
       id
       title
       handle
@@ -76,11 +77,11 @@ const query = `#graphql
 
 export const getProduct = async ({ handle }: { handle: string }) => {
   const locale = await getLocale();
-  const product = await storefrontClient.request({
+  const product = await storefrontClient.request<GetProductByHandleQuery>({
     query,
     variables: { handle },
     language: locale.toUpperCase() as StorefrontLanguageCode,
   });
-  console.log(product);
+  if (!product.product) throw new Error('Product not found');
   return product;
 };
