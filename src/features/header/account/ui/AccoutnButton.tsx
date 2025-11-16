@@ -19,7 +19,16 @@ export const AccountButton = async () => {
       </Link>
     );
   }
-
+  if (session && session.user.name === 'Anonymous') {
+    return (
+      <Link
+        href={'/auth/sign-in'}
+        className="cursor-pointer block hover:bg-accent p-2 rounded-none"
+      >
+        <User />
+      </Link>
+    );
+  }
   return (
     <div className="flex items-center">
       <Avatar>

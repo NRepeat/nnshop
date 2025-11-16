@@ -49,18 +49,19 @@ const Gallery = ({
   }, [mainApi, selectedVariantImageIndex]);
 
   return (
-    <div className="md:col-span-3 ">
+    <div className="md:col-span-4">
       <div className="relative">
         <Carousel setApi={setMainApi}>
           <CarouselContent>
             {images.map((image: any, index: number) => (
               <CarouselItem key={index}>
-                <div className="aspect-[4/5] relative">
+                <div className="aspect-[1] relative flex items-center justify-center overflow-hidden max-h-[calc(100vh-16rem)]">
                   <Image
                     src={image.node.url}
                     alt={image.node.altText || ''}
-                    fill
-                    className="object-cover"
+                    width={image.node.width}
+                    height={image.node.height}
+                    className="h-auto w-auto max-h-full max-w-full"
                   />
                 </div>
               </CarouselItem>

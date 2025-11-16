@@ -33,8 +33,8 @@ const Description = async ({
     console.log('Submit');
   };
   return (
-    <div className="md:col-span-2">
-      <div className="sticky top-24">
+    <div className="md:col-span-4 flex jusify-center flex-col w-full items-center">
+      <div className="sticky top-24 md:max-w-xl ">
         <h4>
           <a href="#" className="tw:no-underline tw:text-inherit text-md">
             {product.vendor}

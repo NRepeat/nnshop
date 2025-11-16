@@ -1,8 +1,11 @@
-import prisma from '@/shared/lib/prisma';
+import prisma from '../../../shared/lib/prisma';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { oauthShopifyClient } from './shopify/client';
 import { nextCookies } from 'better-auth/next-js';
+import { anonymous } from 'better-auth/plugins';
+import { anonymousClient } from 'better-auth/client/plugins';
+
 const betterAuthSecret = process.env.BETTER_AUTH_SECRET;
 const betterAuthUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -19,7 +22,14 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
-
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60, // Cache duration in seconds
+    },
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
@@ -49,9 +59,14 @@ export const auth = betterAuth({
     },
   },
   trustedOrigins: [betterAuthUrl],
-  session: {
-    expiresIn: 60 * 60,
-    updateAge: 60,
-  },
-  plugins: [oauthShopifyClient, nextCookies()],
+
+  plugins: [
+    oauthShopifyClient,
+    anonymous({
+      onLinkAccount: async ({ anonymousUser, newUser }) => {
+        // perform actions like moving the cart items from anonymous user to the new user
+      },
+    }),
+    nextCookies(),
+  ],
 });

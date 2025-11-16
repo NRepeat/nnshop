@@ -6,6 +6,8 @@ type RouteProps = {
 };
 
 import { getPage } from '@/features/home/api/get-home-page';
+import { auth } from '@features/auth/lib/auth';
+import { headers } from 'next/headers';
 
 export async function generateStaticParams() {
   return locales.map((locale) => ({
@@ -15,6 +17,10 @@ export async function generateStaticParams() {
 
 export default async function Page({ params }: RouteProps) {
   const page = await getPage(params);
+  // const session = await auth.api.getSession({
+  //   headers: await headers(),
+  // });
+  // console.log(session);
   return page?.homePage?.content ? (
     <PageBuilder
       //@ts-expect-error sanity
