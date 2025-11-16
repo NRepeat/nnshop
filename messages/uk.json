@@ -272,5 +272,9 @@
     "ORGANIZATION_NAME": "Назва",
     "ORGANIZATION_NAME_PLACEHOLDER": "Acme Inc.",
     "ORGANIZATION_NAME_DESCRIPTION": "Це видима назва вашої організації."
+  },
+  "ProductPage": {
+    "addToCart": "Додати в кошик",
+    "soldOut": "Продано"
   }
 }

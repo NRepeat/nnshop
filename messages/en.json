@@ -294,5 +294,9 @@
     "ORGANIZATION_NAME": "Name",
     "ORGANIZATION_NAME_PLACEHOLDER": "Acme Inc.",
     "ORGANIZATION_NAME_DESCRIPTION": "This is your organization's visible name."
+  },
+  "ProductPage": {
+    "addToCart": "Add to Cart",
+    "soldOut": "Sold Out"
   }
 }
