@@ -91,5 +91,5 @@ model Cart {
   id        String @id @default(cuid())
   cartToken String @unique
   user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
+  userId    String @unique
 }

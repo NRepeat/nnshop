@@ -19,7 +19,7 @@ export const AccountButton = async () => {
       </Link>
     );
   }
-  if (session && session.user.name === 'Anonymous') {
+  if (session && session.user?.isAnonymous) {
     return (
       <Link
         href={'/auth/sign-in'}

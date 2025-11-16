@@ -1,101 +1,23 @@
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@shared/ui/sheet';
-import { getTranslations } from 'next-intl/server';
-import CartIcon from '@shared/assets/CartIcon';
-import { Button } from '@shared/ui/button';
-import { ChevronDown, ShoppingCart } from 'lucide-react';
-import { Separator } from '@shared/ui/separator';
-import CartItem from './Item';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@shared/ui/accordion';
-import { Textarea } from '@shared/ui/textarea';
+import { Sheet, SheetTrigger } from '@shared/ui/sheet';
 import { EmptyState } from './EmptyState';
 import Content from './Content';
+import { getCart } from '@features/cart/api/get';
+import { ShoppingCart } from 'lucide-react';
 
 const CartSheet = async () => {
-  const mockProducts = [
-    {
-      title: 'SS 2001 Elizabeth Taylor Silk Dress',
-      price: '$2,000.00',
-      size: 'L',
-      color: 'Blue',
-      image:
-        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
-    },
-    {
-      title: 'SS 2001 Elizabeth Taylor Silk Dress',
-      price: '$2,000.00',
-      size: 'L',
-      color: 'Blue',
-      image:
-        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
-    },
-    {
-      title: 'SS 2001 Elizabeth Taylor Silk Dress',
-      price: '$2,000.00',
-      size: 'L',
-      color: 'Blue',
-      image:
-        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
-    },
-    {
-      title: 'SS 2001 Elizabeth Taylor Silk Dress',
-      price: '$2,000.00',
-      size: 'L',
-      color: 'Blue',
-      image:
-        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
-    },
-    {
-      title: 'SS 2001 Elizabeth Taylor Silk Dress',
-      price: '$2,000.00',
-      size: 'L',
-      color: 'Blue',
-      image:
-        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
-    },
-    {
-      title: 'SS 2001 Elizabeth Taylor Silk Dress',
-      price: '$2,000.00',
-      size: 'L',
-      color: 'Blue',
-      image:
-        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
-    },
-    {
-      title: 'SS 2001 Elizabeth Taylor Silk Dress',
-      price: '$2,000.00',
-      size: 'L',
-      color: 'Blue',
-      image:
-        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
-    },
-    {
-      title: 'SS 2001 Elizabeth Taylor Silk Dress',
-      price: '$2,000.00',
-      size: 'L',
-      color: 'Blue',
-      image:
-        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
-    },
-    {
-      title: 'SS 2001 Elizabeth Taylor Silk Dress',
-      price: '$2,000.00',
-      size: 'L',
-      color: 'Blue',
-      image:
-        'https://justinreed.com/cdn/shop/files/DSC08368.jpg?v=1761153431&width=300',
-    },
-  ];
+  const cart = await getCart();
+  const items = cart?.cart?.lines.edges.map((item) => ({
+    title: item.node.merchandise.product.title,
+    price: item.node.cost.totalAmount.amount,
+    size: item.node.merchandise.selectedOptions[0].value,
+    color: item.node.merchandise.selectedOptions[1]
+      ? item.node.merchandise.selectedOptions[1].value
+      : '',
+    image: item.node.merchandise?.image
+      ? item.node.merchandise.image.url
+      : null,
+  }));
+  const mockProducts = items;
 
   return (
     <Sheet>
