@@ -10,6 +10,7 @@ import {
 } from '@shared/ui/accordion';
 import { Separator } from '@shared/ui/separator';
 import { getTranslations } from 'next-intl/server';
+import { CreateOrderButton } from './CreateOrderButton';
 
 const Content = async ({
   mockProducts,
@@ -78,10 +79,7 @@ const Content = async ({
             {currencySymbol} {estimateTotal}
           </span>
         </div>
-        <div className="w-full flex flex-col justify-between px-4 py-4 space-y-4">
-          <span>{t('tax_information')}</span>
-          <Button className="w-full rounded-full">{t('checkout')}</Button>
-        </div>
+        <CreateOrderButton cartId={cartId} />
       </div>
     </SheetContent>
   );

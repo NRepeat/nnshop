@@ -24,6 +24,7 @@ model User {
   updatedAt     DateTime  @default(now()) @updatedAt
   sessions      Session[]
   accounts      Account[]
+  orders        Order[]
 
   isAnonymous Boolean?
   cart        Cart[]
@@ -92,4 +93,13 @@ model Cart {
   cartToken String @unique
   user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String @unique
+}
+
+model Order {
+  id             String   @id @default(cuid())
+  shopifyOrderId String   @unique
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
