@@ -1,18 +1,16 @@
 'use server';
-import { auth } from '@features/auth/lib/auth';
-import prisma from '@shared/lib/prisma';
+import { CART_TAGS } from '@shared/lib/cached-fetch';
 import { storefrontClient } from '@shared/lib/shopify/client';
-import { tryCatch } from '@shared/lib/try-catch';
 import {
-  CartCreatePayload,
-  CartInput,
-  CreateCartInput,
+  Cart,
+  CartUserError,
   CreateCartResult,
 } from '@shared/types/cart/types';
-import { headers } from 'next/headers';
-const CART_CREATE_MUTATION = `
-  mutation cartCreate($input: CartInput) {
-    cartCreate(input: $input) {
+import { revalidateTag } from 'next/cache';
+
+const CART_LINES_REMOVE_MUTATION = `
+  mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+    cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
       cart {
         id
         checkoutUrl
@@ -102,90 +100,49 @@ const CART_CREATE_MUTATION = `
         field
         message
       }
-      warnings {
-        message
-      }
     }
   }
 `;
 
-const createCart = async (
-  input: CreateCartInput,
-): Promise<CreateCartResult> => {
+export async function removeProductFromCart(
+  cartId: string,
+  lineId: string,
+): Promise<CreateCartResult> {
   try {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) {
-      throw new Error('Session not found ');
-    }
-    const cartInput: CartInput = {
-      lines: [
-        {
-          merchandiseId: input.merchandiseId,
-          quantity: input.quantity || 1,
-          attributes: input.attributes
-            ? Object.entries(input.attributes).map(([key, value]) => ({
-                key,
-                value,
-              }))
-            : undefined,
-        },
-      ],
-      note: input.note,
-      buyerIdentity: input.buyerIdentity
-        ? {
-            email: input.buyerIdentity.email,
-            phone: input.buyerIdentity.phone,
-            countryCode: input.buyerIdentity.countryCode,
-          }
-        : undefined,
-    };
-
     const response = await storefrontClient.request<{
-      cartCreate: CartCreatePayload;
+      cartLinesRemove: { cart?: Cart; userErrors: CartUserError[] };
     }>({
-      query: CART_CREATE_MUTATION,
+      query: CART_LINES_REMOVE_MUTATION,
       variables: {
-        input: cartInput,
+        cartId,
+        lineIds: [lineId],
       },
     });
 
-    const { cartCreate } = response;
+    const { cartLinesRemove } = response;
 
-    if (cartCreate.userErrors && cartCreate.userErrors.length > 0) {
+    // Check for user errors
+    console.log('errore', cartLinesRemove.userErrors);
+    if (cartLinesRemove.userErrors && cartLinesRemove.userErrors.length > 0) {
       return {
         success: false,
-        errors: cartCreate.userErrors.map((error) => error.message),
+        errors: cartLinesRemove.userErrors.map((error) => error.message),
       };
     }
 
-    const warnings =
-      cartCreate.warnings?.map((warning) => warning.message) || [];
-    if (!cartCreate.cart) {
-      return {
-        success: false,
-        errors: cartCreate.userErrors.map((error) => error.message),
-      };
-    }
-    const localCart = await prisma.cart.create({
-      data: {
-        cartToken: cartCreate.cart?.id,
-        userId: session.user.id,
-      },
-    });
+    revalidateTag(CART_TAGS.CART);
+
     return {
       success: true,
-      cart: cartCreate.cart,
-      warnings: warnings.length > 0 ? warnings : undefined,
+      cart: cartLinesRemove.cart,
     };
   } catch (error) {
-    console.error('Error creating cart:', error);
+    console.error('Error removing from cart:', error);
     return {
       success: false,
       errors: [
-        error instanceof Error ? error.message : 'Failed to create cart',
+        error instanceof Error ? error.message : 'Failed to remove from cart',
       ],
     };
   }
-};
-
-export default createCart;
+}

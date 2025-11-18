@@ -1,17 +1,26 @@
+import { removeProductFromCart } from '@features/cart/api/remove-product';
+import { Button } from '@shared/ui/button';
 import { Card, CardContent } from '@shared/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
+import { RemoveItemButton } from './RemoveItemButton';
 
 const CartItem = ({
   product,
+  cartId,
+  itemId,
 }: {
   product: {
     title: string;
+    totalPrice: string;
+    quantity: number;
     price: string;
     size: string;
     color: string;
     image: string;
   };
+  cartId: string;
+  itemId: string;
 }) => {
   return (
     <Card className="p-0 rounded-none shadow-none ">
@@ -28,14 +37,17 @@ const CartItem = ({
         <div className="flex flex-col gap-1.5 col-span-3 ml-4 text-sm justify-between">
           <div className="flex flex-col gap-1">
             <p className="text-pretty ">{product.title}</p>
-            <p>{product.price}</p>
+            <p>
+              {product.price} x {product.quantity}
+            </p>
             <p>Size:{product.size}</p>
             <p>Color:{product.color}</p>
           </div>
-          <p className="hover:underline cursor-pointer">Remove</p>
+
+          <RemoveItemButton cartId={cartId} itemId={itemId} />
         </div>
         <p className="justify-items-end text-right  col-span-2 ">
-          {product.price}
+          {product.totalPrice}
         </p>
       </CardContent>
     </Card>

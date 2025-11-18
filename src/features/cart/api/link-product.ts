@@ -1,3 +1,5 @@
+'use server';
+
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { Cart, CartUserError } from '@shared/types/cart/types';
 

@@ -1,3 +1,4 @@
+'use server';
 import { auth } from '@features/auth/lib/auth';
 import { cachedFetch, CART_TAGS } from '@shared/lib/cached-fetch';
 import prisma from '@shared/lib/prisma';

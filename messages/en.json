@@ -57,6 +57,7 @@
         "order_instraction_placeholder": "Type your message here.",
         "product": "Product",
         "total": "Total",
+        "remove": "Remove",
         "empty_state": {
           "header": "Your cart is empty",
           "description": "You haven&apos;t added any products yet. Get started by browsing our store.",

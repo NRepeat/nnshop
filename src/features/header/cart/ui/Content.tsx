@@ -13,14 +13,23 @@ import { getTranslations } from 'next-intl/server';
 
 const Content = async ({
   mockProducts,
+  estimateTotal,
+  currencySymbol,
+  cartId,
 }: {
   mockProducts: {
+    id: string;
     title: string;
     price: string;
     size: string;
+    totalPrice: string;
+    quantity: number;
     color: string;
     image: string;
   }[];
+  cartId: string;
+  estimateTotal: number;
+  currencySymbol: string;
 }) => {
   const t = await getTranslations('Header.cart.drawer');
   return (
@@ -39,20 +48,20 @@ const Content = async ({
               <Separator />
             </div>
             {mockProducts.map((product) => (
-              <CartItem key={product.title} product={product} />
+              <CartItem
+                key={product.title}
+                product={product}
+                cartId={cartId}
+                itemId={product.id}
+              />
             ))}
           </div>
         </div>
 
         <div className="flex flex-col justify-between py-4  ">
           <Separator />
-          <Accordion
-            type="single"
-            collapsible
-            className="w-full px-4"
-            defaultValue="item-1"
-          >
-            <AccordionItem value="item-1">
+          <Accordion type="single" collapsible className="w-full px-4">
+            <AccordionItem value="item-1" defaultChecked={false}>
               <AccordionTrigger className="w-full">
                 <span className="font-light">{t('order_instraction')}</span>
               </AccordionTrigger>
@@ -65,7 +74,9 @@ const Content = async ({
         </div>
         <div className="w-full flex justify-between px-4 py-4">
           <span>{t('estimate_total')}</span>
-          <span className="">€20.2000</span>
+          <span className="">
+            {currencySymbol} {estimateTotal}
+          </span>
         </div>
         <div className="w-full flex flex-col justify-between px-4 py-4 space-y-4">
           <span>{t('tax_information')}</span>

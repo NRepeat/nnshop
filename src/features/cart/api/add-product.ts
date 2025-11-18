@@ -1,3 +1,4 @@
+'use server';
 import { auth } from '@features/auth/lib/auth';
 import createCart from './create';
 import { headers } from 'next/headers';
@@ -17,7 +18,6 @@ export async function addToCartAction(productVariantId: string) {
         userId: session.user.id,
       },
     });
-    console.log('sessionCart', sessionCart);
     let result;
     if (sessionCart) {
       result = await linkProduct({
