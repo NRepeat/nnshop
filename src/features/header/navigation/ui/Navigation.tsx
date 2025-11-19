@@ -16,6 +16,7 @@ import { getMainMenu } from '../api/getMainMenu';
 const Navigation = async () => {
   // const t = await getTranslations('Header.nav');
   const meinMenu = await getMainMenu();
+  console.log('meinMenu', meinMenu);
   const menu = meinMenu.map((item, index) => {
     if (item.items.length > 0) {
       return (
