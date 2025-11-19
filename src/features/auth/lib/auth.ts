@@ -63,6 +63,7 @@ export const auth = betterAuth({
   plugins: [
     oauthShopifyClient,
     anonymous({
+      emailDomainName: 'gmail.com',
       onLinkAccount: async ({ anonymousUser, newUser }) => {
         // perform actions like moving the cart items from anonymous user to the new user
       },

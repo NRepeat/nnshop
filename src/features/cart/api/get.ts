@@ -155,6 +155,12 @@ export async function getCart(
         userId: session.user.id,
       },
     });
+    if (!sessionCart) {
+      return {
+        success: false,
+        errors: ['Cart not found'],
+      };
+    }
     return await cachedFetch(
       `cart-${sessionCart?.cartToken}`,
       async () => {

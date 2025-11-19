@@ -18,6 +18,7 @@ export async function addToCartAction(productVariantId: string) {
         userId: session.user.id,
       },
     });
+    console.log('sessionCart', sessionCart);
     let result;
     if (sessionCart) {
       result = await linkProduct({
@@ -34,6 +35,9 @@ export async function addToCartAction(productVariantId: string) {
       result = await createCart({
         merchandiseId: productVariantId,
         quantity: 1,
+        buyerIdentity: {
+          email: session.user.email,
+        },
       });
     }
 

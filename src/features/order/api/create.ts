@@ -66,7 +66,7 @@ export async function createDraftOrder(
         quantity: lineItem.quantity,
       };
     });
-
+    console.log('cart?.buyerIdentity', cart);
     const customerInfo = cart?.buyerIdentity;
 
     const input: any = {
@@ -93,7 +93,7 @@ export async function createDraftOrder(
       };
     }
 
-    const orderResponse = await adminClient.request<{
+    const orderResponse = await adminClient.client.request<{
       draftOrderCreate: {
         draftOrder: any | null;
         userErrors: Array<{ field: string; message: string }>;

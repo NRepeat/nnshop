@@ -11,9 +11,7 @@ if (!adminAccessToken) {
   );
 }
 
-export const adminClient = await shopifyFactory.createClient(
+export const adminClient = await shopifyFactory.createAuthenticatedClient(
   ShopifyClientType.ADMIN,
-  {
-    accessToken: adminAccessToken,
-  },
+  adminAccessToken,
 );

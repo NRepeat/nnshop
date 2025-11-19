@@ -114,6 +114,7 @@ const createCart = async (
 ): Promise<CreateCartResult> => {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
+
     if (!session) {
       throw new Error('Session not found ');
     }
@@ -139,7 +140,7 @@ const createCart = async (
           }
         : undefined,
     };
-
+    console.log(JSON.stringify(cartInput), 'cartInput');
     const response = await storefrontClient.request<{
       cartCreate: CartCreatePayload;
     }>({
@@ -148,7 +149,7 @@ const createCart = async (
         input: cartInput,
       },
     });
-
+    console.log(response.cartCreate.userErrors, 'response');
     const { cartCreate } = response;
 
     if (cartCreate.userErrors && cartCreate.userErrors.length > 0) {
@@ -166,7 +167,7 @@ const createCart = async (
         errors: cartCreate.userErrors.map((error) => error.message),
       };
     }
-    const localCart = await prisma.cart.create({
+    await prisma.cart.create({
       data: {
         cartToken: cartCreate.cart?.id,
         userId: session.user.id,

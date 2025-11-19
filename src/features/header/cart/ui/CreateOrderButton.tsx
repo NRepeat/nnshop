@@ -3,14 +3,17 @@
 import { createDraftOrder } from '@features/order/api/create';
 import { Button } from '@shared/ui/button';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
 export const CreateOrderButton = ({ cartId }: { cartId: string }) => {
   const t = useTranslations('Header.cart.drawer');
   const [isPending, startTransition] = useTransition();
+  const nav = useRouter();
   const handleCreateOrder = () => {
     startTransition(async () => {
-      const { success, order, errors } = await createDraftOrder(cartId);
+      nav.push('/checkout');
+      // const { success, order, errors } = await createDraftOrder(cartId);
     });
   };
 
