@@ -2,19 +2,40 @@ import { getCollection } from '@entities/collection/api/getCollection';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { ProductCard } from '@entities/product/ui/ProductCard';
-import { Product } from '@shared/lib/shopify/types/storefront.types';
+import {
+  Product,
+  ProductFilter,
+} from '@shared/lib/shopify/types/storefront.types';
 import { Button } from '@shared/ui/button';
+import { CollectionFilters } from './CollectionFilters';
+import { getTranslations } from 'next-intl/server';
 
 type Props = {
-  params: { slug: string; locale: string };
+  params: Promise<{ slug: string; locale: string }>;
+  searchParams: Promise<{
+    filters?: string;
+  }>;
 };
 
-export default async function CollectionPage({ params }: Props) {
-  if (!params.slug) {
+export default async function CollectionPage({ params, searchParams }: Props) {
+  const { slug } = await params;
+  if (!slug) {
     return notFound();
   }
 
-  const collectionData = await getCollection({ handle: params.slug });
+  const t = await getTranslations('CollectionPage');
+  const { filters: filtersString } = await searchParams;
+  let filters: ProductFilter[] = [];
+  if (filtersString) {
+    try {
+      filters = JSON.parse(filtersString);
+    } catch (e) {}
+  }
+
+  const collectionData = await getCollection({
+    handle: slug,
+    filters,
+  });
   const collection = collectionData.collection;
 
   if (!collection) {
@@ -31,7 +52,7 @@ export default async function CollectionPage({ params }: Props) {
           <div className="relative h-64 w-full rounded-lg overflow-hidden mb-4">
             <Image
               src={collection.image.url}
-              alt={collection.image.altText || collection.title}
+              alt={collection.image?.altText || collection.title}
               fill
               className="object-cover"
             />
@@ -43,51 +64,13 @@ export default async function CollectionPage({ params }: Props) {
       </header>
       <div className="lg:hidden mb-4">
         <Button variant="outline" className="w-full">
-          Show Filters
+          {t('showFilters')}
         </Button>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-x-8">
         <aside className="hidden lg:block lg:col-span-1">
           <div className="sticky top-24">
-            <h3 className="text-xl font-semibold mb-4">Filters</h3>
-            <div className="space-y-6">
-              <div>
-                <h4 className="font-medium mb-3">Category</h4>
-                <ul className="space-y-2">
-                  <li>
-                    <a href="#" className="text-gray-600 hover:text-black">
-                      T-Shirts
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="text-gray-600 hover:text-black">
-                      Hoodies
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="text-gray-600 hover:text-black">
-                      Accessories
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-medium mb-3">Price</h4>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="number"
-                    placeholder="Min"
-                    className="w-full border-gray-300 rounded-md shadow-sm p-2"
-                  />
-                  <span>-</span>
-                  <input
-                    type="number"
-                    placeholder="Max"
-                    className="w-full border-gray-300 rounded-md shadow-sm p-2"
-                  />
-                </div>
-              </div>
-            </div>
+            <CollectionFilters filters={collection.products.filters} />
           </div>
         </aside>
         <main className="lg:col-span-4">

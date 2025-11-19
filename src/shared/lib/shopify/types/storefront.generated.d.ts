@@ -5,7 +5,9 @@ import type * as StorefrontTypes from './storefront.types';
 
 export type GetCollectionQueryVariables = StorefrontTypes.Exact<{
   handle: StorefrontTypes.Scalars['String']['input'];
-  first: StorefrontTypes.Scalars['Int']['input'];
+  filters?: StorefrontTypes.InputMaybe<
+    Array<StorefrontTypes.ProductFilter> | StorefrontTypes.ProductFilter
+  >;
 }>;
 
 export type GetCollectionQuery = {
@@ -14,11 +16,18 @@ export type GetCollectionQuery = {
       StorefrontTypes.Collection,
       'id' | 'title' | 'handle' | 'description'
     > & {
+      image?: StorefrontTypes.Maybe<Pick<StorefrontTypes.Image, 'url'>>;
       products: {
         edges: Array<{
           node: Pick<
             StorefrontTypes.Product,
-            'id' | 'title' | 'handle' | 'productType' | 'vendor'
+            | 'id'
+            | 'title'
+            | 'handle'
+            | 'availableForSale'
+            | 'productType'
+            | 'vendor'
+            | 'tags'
           > & {
             options: Array<
               Pick<StorefrontTypes.ProductOption, 'name'> & {
@@ -28,6 +37,10 @@ export type GetCollectionQuery = {
               }
             >;
             priceRange: {
+              minVariantPrice: Pick<
+                StorefrontTypes.MoneyV2,
+                'amount' | 'currencyCode'
+              >;
               maxVariantPrice: Pick<
                 StorefrontTypes.MoneyV2,
                 'amount' | 'currencyCode'
@@ -36,15 +49,22 @@ export type GetCollectionQuery = {
             featuredImage?: StorefrontTypes.Maybe<
               Pick<
                 StorefrontTypes.Image,
-                'altText' | 'height' | 'width' | 'url'
+                'url' | 'altText' | 'width' | 'height'
               >
             >;
           };
         }>;
+        filters: Array<
+          Pick<StorefrontTypes.Filter, 'id' | 'label' | 'type'> & {
+            values: Array<
+              Pick<
+                StorefrontTypes.FilterValue,
+                'id' | 'label' | 'count' | 'input'
+              >
+            >;
+          }
+        >;
       };
-      image?: StorefrontTypes.Maybe<
-        Pick<StorefrontTypes.Image, 'url' | 'altText'>
-      >;
     }
   >;
 };
@@ -125,7 +145,6 @@ export type CartBuyerIdentityUpdateMutation = {
   cartBuyerIdentityUpdate?: StorefrontTypes.Maybe<{
     cart?: StorefrontTypes.Maybe<Pick<StorefrontTypes.Cart, 'id'>>;
     userErrors: Array<Pick<StorefrontTypes.CartUserError, 'field' | 'message'>>;
-    warnings: Array<Pick<StorefrontTypes.CartWarning, 'code' | 'message'>>;
   }>;
 };
 
@@ -162,7 +181,7 @@ export type GetSubMenuQuery = {
 };
 
 interface GeneratedQueryTypes {
-  '#graphql\n  query GetCollection($handle: String!, $first: Int!) {\n    collection(handle: $handle) {\n      id\n      title\n      handle\n      description\n      products(first: $first) {\n        edges {\n          node {\n            id\n            title\n            handle\n            productType\n            options{\n              name\n              optionValues{\n                name\n              }\n            }\n            vendor\n            priceRange{\n              maxVariantPrice{\n                amount\n                currencyCode\n              }\n\n            }\n            featuredImage {\n              altText\n              height\n              width\n              url\n            }\n          }\n        }\n      }\n      image {\n        url\n        altText\n      }\n    }\n  }\n': {
+  '#graphql\n  query GetCollection($handle: String!, $filters: [ProductFilter!]) {\n    collection(handle: $handle) {\n    id\n    title\n    handle\n    description\n      image {\n        url\n      }\n\n      products(first: 250, filters: $filters) {\n        edges {\n          node {\n            id\n            title\n            handle\n            availableForSale\n            productType\n            vendor\n            tags\n            options{\n              name\n              optionValues{\n                name\n              }\n            }\n            priceRange {\n              minVariantPrice {\n                amount\n                currencyCode\n              }\n              maxVariantPrice {\n                amount\n                currencyCode\n              }\n            }\n            featuredImage {\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n        filters {\n      id\n      label\n      type\n      values {\n        id\n        label\n        count\n        input\n      }\n    }\n      }\n    }\n  }\n': {
     return: GetCollectionQuery;
     variables: GetCollectionQueryVariables;
   };
@@ -181,7 +200,7 @@ interface GeneratedQueryTypes {
 }
 
 interface GeneratedMutationTypes {
-  '\n  #graphql\n  mutation cartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {\n    cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {\n      cart {\n        id\n      }\n      userErrors {\n        field\n        message\n      }\n      warnings {\n        code\n        message\n      }\n    }\n  }\n': {
+  '\n  #graphql\n  mutation cartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {\n    cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {\n      cart {\n        id\n      }\n      userErrors {\n        field\n        message\n      }\n    }\n  }\n': {
     return: CartBuyerIdentityUpdateMutation;
     variables: CartBuyerIdentityUpdateMutationVariables;
   };

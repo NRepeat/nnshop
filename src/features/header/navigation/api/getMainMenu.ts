@@ -22,7 +22,6 @@ const query = `#graphql
 
 export const getMainMenu = async () => {
   const locale = await getLocale();
-  console.log(locale, 'locale');
   const responce = await storefrontClient.request<GetMainMenuQuery>({
     query,
     language: locale.toUpperCase() as StorefrontLanguageCode,

@@ -1,55 +1,83 @@
+'use server';
+import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { GetCollectionQuery } from '@shared/lib/shopify/types/storefront.generated';
-
+import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
+import { getLocale } from 'next-intl/server';
 const query = `#graphql
-  query GetCollection($handle: String!, $first: Int!) {
+  query GetCollection($handle: String!, $filters: [ProductFilter!]) {
     collection(handle: $handle) {
-      id
-      title
-      handle
-      description
-      products(first: $first) {
+    id
+    title
+    handle
+    description
+      image {
+        url
+        altText
+      }
+
+      products(first: 250, filters: $filters) {
         edges {
           node {
             id
             title
             handle
+            availableForSale
             productType
+            vendor
+            tags
             options{
               name
               optionValues{
                 name
               }
             }
-            vendor
-            priceRange{
-              maxVariantPrice{
+            priceRange {
+              minVariantPrice {
                 amount
                 currencyCode
               }
-
+              maxVariantPrice {
+                amount
+                currencyCode
+              }
             }
             featuredImage {
-              altText
-              height
-              width
               url
+              altText
+              width
+              height
             }
           }
         }
+        filters {
+      id
+      label
+      type
+      values {
+        id
+        label
+        count
+        input
       }
-      image {
-        url
-        altText
+    }
       }
     }
   }
 `;
 
-export const getCollection = async ({ handle }: { handle: string }) => {
+export const getCollection = async ({
+  handle,
+  filters,
+}: {
+  handle: string;
+  filters?: ProductFilter[];
+}) => {
+  const locale = await getLocale();
   const collection = await storefrontClient.request<GetCollectionQuery>({
     query,
-    variables: { handle, first: 10 },
+    variables: { handle, filters },
+    language: locale.toUpperCase() as StorefrontLanguageCode,
   });
   return collection;
 };
