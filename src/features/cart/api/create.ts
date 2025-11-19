@@ -140,7 +140,6 @@ const createCart = async (
           }
         : undefined,
     };
-    console.log(JSON.stringify(cartInput), 'cartInput');
     const response = await storefrontClient.request<{
       cartCreate: CartCreatePayload;
     }>({
@@ -149,7 +148,6 @@ const createCart = async (
         input: cartInput,
       },
     });
-    console.log(response.cartCreate.userErrors, 'response');
     const { cartCreate } = response;
 
     if (cartCreate.userErrors && cartCreate.userErrors.length > 0) {

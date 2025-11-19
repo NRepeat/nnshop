@@ -51,6 +51,7 @@ export type GetCollectionQuery = {
 
 export type GetProductByHandleQueryVariables = StorefrontTypes.Exact<{
   handle: StorefrontTypes.Scalars['String']['input'];
+  variant?: StorefrontTypes.InputMaybe<StorefrontTypes.Scalars['ID']['input']>;
 }>;
 
 export type GetProductByHandleQuery = {
@@ -115,6 +116,19 @@ export type GetProductByHandleQuery = {
   >;
 };
 
+export type CartBuyerIdentityUpdateMutationVariables = StorefrontTypes.Exact<{
+  cartId: StorefrontTypes.Scalars['ID']['input'];
+  buyerIdentity: StorefrontTypes.CartBuyerIdentityInput;
+}>;
+
+export type CartBuyerIdentityUpdateMutation = {
+  cartBuyerIdentityUpdate?: StorefrontTypes.Maybe<{
+    cart?: StorefrontTypes.Maybe<Pick<StorefrontTypes.Cart, 'id'>>;
+    userErrors: Array<Pick<StorefrontTypes.CartUserError, 'field' | 'message'>>;
+    warnings: Array<Pick<StorefrontTypes.CartWarning, 'code' | 'message'>>;
+  }>;
+};
+
 export type GetMainMenuQueryVariables = StorefrontTypes.Exact<{
   [key: string]: never;
 }>;
@@ -152,7 +166,7 @@ interface GeneratedQueryTypes {
     return: GetCollectionQuery;
     variables: GetCollectionQueryVariables;
   };
-  '#graphql\n  query getProductByHandle($handle: String!) {\n    product(handle: $handle) {\n      id\n      title\n      handle\n      description\n      descriptionHtml\n      vendor\n      productType\n      priceRange {\n        maxVariantPrice {\n          amount\n          currencyCode\n        }\n        minVariantPrice {\n          amount\n          currencyCode\n        }\n      }\n      options(first: 10) {\n        id\n        name\n        values\n      }\n      variants(first: 50) {\n        edges {\n          node {\n            id\n            title\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n            selectedOptions {\n              name\n              value\n            }\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n      }\n      images(first: 10) {\n        edges {\n          node {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n      featuredImage {\n        url\n        altText\n        width\n        height\n      }\n    }\n  }\n': {
+  '#graphql\n  query getProductByHandle($handle: String!, $variant: ID) {\n    product(handle: $handle, id: $variant) {\n      id\n      title\n      handle\n      description\n      descriptionHtml\n      vendor\n      productType\n      priceRange {\n        maxVariantPrice {\n          amount\n          currencyCode\n        }\n        minVariantPrice {\n          amount\n          currencyCode\n        }\n      }\n      options(first: 10) {\n        id\n        name\n        values\n      }\n      variants(first: 50) {\n        edges {\n          node {\n            id\n            title\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n            selectedOptions {\n              name\n              value\n            }\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n      }\n      images(first: 10) {\n        edges {\n          node {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n      featuredImage {\n        url\n        altText\n        width\n        height\n      }\n    }\n  }\n': {
     return: GetProductByHandleQuery;
     variables: GetProductByHandleQueryVariables;
   };
@@ -166,7 +180,12 @@ interface GeneratedQueryTypes {
   };
 }
 
-interface GeneratedMutationTypes {}
+interface GeneratedMutationTypes {
+  '\n  #graphql\n  mutation cartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {\n    cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {\n      cart {\n        id\n      }\n      userErrors {\n        field\n        message\n      }\n      warnings {\n        code\n        message\n      }\n    }\n  }\n': {
+    return: CartBuyerIdentityUpdateMutation;
+    variables: CartBuyerIdentityUpdateMutationVariables;
+  };
+}
 declare module '@shopify/storefront-api-client' {
   type InputMaybe<T> = StorefrontTypes.InputMaybe<T>;
   interface StorefrontQueries extends GeneratedQueryTypes {}

@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
     'https://close-dane-shining.ngrok-free.app',
     'http://localhost:3000',
     'http://localhost:3333',
+    'r665avfiaqptwlw27urowyzo5q.srv.us',
   ],
   images: {
     unoptimized: true,

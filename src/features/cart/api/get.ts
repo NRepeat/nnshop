@@ -148,6 +148,10 @@ export async function getCart(
   } else {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
+      return {
+        success: false,
+        errors: ['Cart not found'],
+      };
       throw new Error('Session not found');
     }
     const sessionCart = await prisma.cart.findUnique({
