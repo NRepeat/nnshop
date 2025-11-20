@@ -1,14 +1,11 @@
 import { Separator } from '@shared/ui/separator';
 import ConditionScale from './ConditionScale';
 import { HelpCircle } from 'lucide-react';
-import { Button } from '@shared/ui/button';
 import { Product } from '@shared/types/product/types';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { Label } from '@shared/ui/label';
-import Option from './Option';
 import { ProductVariant } from '@shared/lib/shopify/types/storefront.types';
-import { AddToCartButton } from './AddToCartButton';
+import { ProductOptions } from './ProductOptions';
 
 const Description = async ({
   product,
@@ -62,9 +59,7 @@ const Description = async ({
             )}
           </div>
         </div>
-
-        <AddToCartButton product={product} selectedVariant={selectedVariant} />
-
+        <ProductOptions product={product} selectedVariant={selectedVariant} />
         {product.descriptionHtml && (
           <div className="product__description rte quick-add-hidden mt-8">
             <div

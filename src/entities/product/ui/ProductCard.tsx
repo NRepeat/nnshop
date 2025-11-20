@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button } from '@shared/ui/button';
 import { getTranslations } from 'next-intl/server';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
+import { AddToCartButton } from './AddToCartButton';
 
 type ProductCardProps = {
   product: Product;
@@ -59,12 +60,11 @@ export const ProductCard = async ({
 
         {addToCard && (
           <div className=" w-full mt-1 md:mt-4 flex justify-center">
-            <Button
-              variant={'outline'}
-              className="w-full   rounded-none bg-transparent hover:bg-black hover:text-white  py-5 border shadow-none"
-            >
-              {tBetterAuth('add_to_cart')}
-            </Button>
+            <AddToCartButton
+              product={product}
+              variant="outline"
+              className="w-full   rounded-none mt-2 bg-transparent border shadow-none"
+            />
           </div>
         )}
       </CardContent>

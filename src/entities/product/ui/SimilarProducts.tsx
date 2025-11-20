@@ -21,9 +21,7 @@ type SimilarProductsProps = Extract<
 >;
 
 const SimilarProducts = async ({ collection }: { collection: Collection }) => {
-  const t = await getTranslations('productCarousel');
   const collectionHandle = collection?.store?.slug?.current;
-  const locale = await getLocale();
   if (!collectionHandle) return null;
   const shopifyCollection = await getCollection({ handle: collectionHandle });
   if (!shopifyCollection) return null;

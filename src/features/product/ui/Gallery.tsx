@@ -14,7 +14,7 @@ import {
 } from '@shared/ui/carousel';
 import { Bookmark } from 'lucide-react';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const Gallery = ({
   images,
@@ -35,18 +35,20 @@ const Gallery = ({
     },
     [mainApi],
   );
+  const selectedVariantImageIndex = useMemo(() => {
+    return images.findIndex(
+      (image) =>
+        image.node.url.split('?')[0] ===
+        selectedVariant?.image?.url.split('?')[0],
+    );
+  }, [selectedVariant]);
 
-  const selectedVariantImageIndex = images.findIndex(
-    (image) =>
-      image.node.url.split('?')[0] ===
-      selectedVariant?.image?.url.split('?')[0],
-  );
   useEffect(() => {
     if (mainApi) {
       mainApi?.scrollTo(selectedVariantImageIndex, false);
     }
     setSelectedIndex(selectedVariantImageIndex);
-  }, [mainApi, selectedVariantImageIndex]);
+  }, [mainApi, selectedVariantImageIndex, selectedVariant]);
 
   return (
     <div className="md:col-span-4">

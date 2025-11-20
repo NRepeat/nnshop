@@ -1,22 +1,23 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect } from 'react';
+import { useFormStatus } from 'react-dom';
 import { toast } from 'sonner';
 import { Button } from '@shared/ui/button';
 import addToCart from '../api/add-to-cart';
 import { ProductVariant } from '@shared/lib/shopify/types/storefront.types';
-import Option from './Option';
 import { Product } from '@shared/types/product/types';
 import { useTranslations } from 'next-intl';
+import clsx from 'clsx';
 
-function SubmitButton() {
+function SubmitButton({ variant = 'default' }: { variant?: string }) {
   const { pending } = useFormStatus();
   const t = useTranslations('ProductPage');
   return (
     <Button
       type="submit"
       size="lg"
+      variant={variant}
       className="w-full h-14 text-md rounded-none"
       disabled={pending}
       aria-disabled={pending}
@@ -29,15 +30,19 @@ function SubmitButton() {
 export function AddToCartButton({
   product,
   selectedVariant,
+  className,
+  variant,
 }: {
   product: Product;
-  selectedVariant: ProductVariant;
+  selectedVariant?: ProductVariant;
+  className?: string;
+  variant?: string;
 }) {
-  const [formState, formAction] = useFormState(addToCart, {
+  const [formState, formAction] = useActionState(addToCart, {
     success: false,
     message: '',
   });
-
+  console.log(product, 'product');
   useEffect(() => {
     if (formState.message) {
       if (formState.success) {
@@ -49,17 +54,7 @@ export function AddToCartButton({
   }, [formState]);
 
   return (
-    <form className="mt-6" action={formAction}>
-      <Option
-        product={product}
-        selectedOption={
-          selectedVariant
-            ? selectedVariant?.selectedOptions.find(
-                (option) => option.name === 'Color',
-              )?.value
-            : ''
-        }
-      />
+    <form className="w-full" action={formAction}>
       <input
         type="hidden"
         name="variantId"
@@ -69,8 +64,8 @@ export function AddToCartButton({
             : product?.variants.edges[0].node.id
         }
       />
-      <div className="product-form__buttons mt-8">
-        <SubmitButton />
+      <div className={clsx('product-form__buttons ', className)}>
+        <SubmitButton variant={variant} />
       </div>
     </form>
   );
