@@ -32,7 +32,7 @@ export function FilterSheet({ filters }: Props) {
         <SheetHeader>
           <SheetTitle>{t('filters.title')}</SheetTitle>
         </SheetHeader>
-        <div className="overflow-auto">
+        <div className="overflow-auto px-4">
           <CollectionFilters filters={filters} />
         </div>
       </SheetContent>

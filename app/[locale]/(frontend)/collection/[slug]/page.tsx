@@ -9,6 +9,7 @@ import {
 import { Button } from '@shared/ui/button';
 import { CollectionFilters } from './CollectionFilters';
 import { getTranslations } from 'next-intl/server';
+import { FilterSheet } from './FilterSheet';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -63,9 +64,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         )}
       </header>
       <div className="lg:hidden mb-4">
-        <Button variant="outline" className="w-full">
-          {t('showFilters')}
-        </Button>
+        <FilterSheet filters={collection.products.filters} />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-x-8">
         <aside className="hidden lg:block lg:col-span-1">

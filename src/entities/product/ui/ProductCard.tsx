@@ -2,9 +2,7 @@ import { Card, CardContent } from '@/shared/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@shared/ui/button';
-import { Bookmark } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
-import { GetCollectionQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 
 type ProductCardProps = {
