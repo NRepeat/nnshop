@@ -17,6 +17,7 @@ function SubmitButton({ variant = 'default' }: { variant?: string }) {
     <Button
       type="submit"
       size="lg"
+      //@ts-expect-error
       variant={variant}
       className="w-full h-14 text-md rounded-none"
       disabled={pending}

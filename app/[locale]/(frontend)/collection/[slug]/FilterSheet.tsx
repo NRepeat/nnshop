@@ -23,7 +23,7 @@ export function FilterSheet({ filters }: Props) {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" className="w-full">
+        <Button variant="outline" className="w-full shadow-none border">
           <SlidersHorizontal className="mr-2 h-4 w-4" />
           {t('showFilters')}
         </Button>

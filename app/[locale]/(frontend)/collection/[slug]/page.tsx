@@ -73,9 +73,13 @@ export default async function CollectionPage({ params, searchParams }: Props) {
           </div>
         </aside>
         <main className="lg:col-span-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 gap-2  sm:gap-2 sm:grid-cols-2 md:grid-cols-3 lg:gap-8 lg:grid-cols-3 xl:grid-cols-4 ">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product as Product} />
+              <ProductCard
+                key={product.id}
+                product={product as Product}
+                className="pl-0 pr-0"
+              />
             ))}
           </div>
         </main>

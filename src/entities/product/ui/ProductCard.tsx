@@ -1,24 +1,28 @@
 import { Card, CardContent } from '@/shared/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Button } from '@shared/ui/button';
-import { getTranslations } from 'next-intl/server';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { AddToCartButton } from './AddToCartButton';
+import clsx from 'clsx';
 
 type ProductCardProps = {
   product: Product;
   addToCard?: boolean;
+  className?: string;
 };
 
 export const ProductCard = async ({
   product,
   addToCard = true,
+  className,
 }: ProductCardProps) => {
-  const tBetterAuth = await getTranslations('productCarousel');
-
   return (
-    <Card className="h-full shadow-none backdrop-blur-sm bg-transparent border-gray-200 border-nonerounded-xl  py-0">
+    <Card
+      className={clsx(
+        'h-full shadow-none backdrop-blur-sm bg-transparent border-gray-200 border-nonerounded-xl  py-1 px-1.5 ',
+        className,
+      )}
+    >
       <CardContent className="  flex flex-col  rounded-none p-0 border-0 shadow-none h-full justify-between bg-transparent">
         <Link href={`/products/${product.handle}`}>
           <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full">
