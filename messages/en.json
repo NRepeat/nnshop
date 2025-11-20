@@ -298,6 +298,7 @@
   },
   "ProductPage": {
     "addToCart": "Add to Cart",
+    "addingToCart": "Adding to cart...",
     "soldOut": "Sold Out",
     "fromMoWith": "From {price}/mo with",
     "shopPay": "Shop Pay",
@@ -316,5 +317,11 @@
       "apply": "Apply",
       "clear": "Clear"
     }
+  },
+  "NotFound": {
+    "errorCode": "404",
+    "title": "Page Not Found",
+    "description": "The page you are looking for does not exist.",
+    "goHome": "Go back to Home"
   }
 }

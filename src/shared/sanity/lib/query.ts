@@ -256,7 +256,7 @@ export const POST_WITH_FALLBACK_QUERY =
 }`);
 
 export const PAGE_QUERY =
-  defineQuery(`*[_type == "page" && slug.current == $slug && language == $language][0]{
+  defineQuery(`*[_type == "page" && slug.current == $slug][0]{
   ...,
   "seo": {
   "title": coalesce(seo.title, title, ""),
@@ -266,7 +266,103 @@ export const PAGE_QUERY =
    },
   content[]{
     ...,
-
+    _type == "similarProducts" => {
+      collection -> {
+        _id,
+        title,
+        store{
+         imageUrl,
+         isDeleted,
+         slug{
+         current
+         },
+         title
+        }
+      }
+    },
+    _type == "sliderBlock" => {
+      slides[]{
+         ...,
+        _key,
+        link[]{
+         ...,
+         reference->{
+           _id,
+           _type,
+           title,
+           "slug": select(
+             _type == "product" => store.slug.current,
+             _type == "collection" => store.slug.current,
+             _type == "page" => slug.current
+           )
+         }
+       },
+        backgroundImage{
+          asset->{
+            _id,
+            url,
+            metadata{dimensions}
+          }
+        }
+      }
+    },
+    _type == "productCarousel" => {
+      products[]->{
+        _id,
+        store{
+          title,
+          isDeleted,
+          previewImageUrl,
+          priceRange{
+          maxVariantPrice,
+          minVariantPrice
+          },
+          productType
+        }
+      },
+      collection -> {
+        _id,
+        title,
+        store{
+         imageUrl,
+         isDeleted,
+         slug{
+         current
+         },
+         title
+        }
+      }
+    },
+    _type == "collectionsCarousel" => {
+      collections[]->{
+        _id,
+        title,
+        store{
+         imageUrl,
+         isDeleted,
+         slug{
+         current
+         },
+         title
+        }
+      }
+    },
+    _type == "splitImage" => {
+      ...,
+      link[]{
+        ...,
+        reference->{
+          _id,
+          _type,
+          title,
+          "slug": select(
+            _type == "product" => store.slug.current,
+            _type == "collection" => store.slug.current,
+            _type == "page" => slug.current
+          )
+        }
+      }
+    },
     _type == "faqs" => {
       ...,
       faqs[]->{

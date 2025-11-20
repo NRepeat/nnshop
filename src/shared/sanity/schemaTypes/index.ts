@@ -23,6 +23,7 @@ import { collectionsCarousel } from './blokcs/collectionsCarouselWithActionButto
 import { localizedString } from './localizedStringType';
 import { localizedText } from './localizedText';
 import { sliderBlock } from './blokcs/slider';
+import { similarProducts } from './blocks/similarProducts';
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -49,5 +50,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     featuresType,
     heroType,
     splitImageType,
+    similarProducts,
   ],
 };

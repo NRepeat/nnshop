@@ -15,19 +15,13 @@ import { Button } from '@shared/ui/button';
 import { ProductCard } from './ProductCard';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 
-type ProductCarouselProps = Extract<
+type SimilarProductsProps = Extract<
   NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],
-  { _type: 'productCarousel' }
+  { _type: 'similarProducts' }
 >;
 
-const ProductCarousel = async ({
-  title,
-  collection,
-}: {
-  title: ProductCarouselProps['title'];
-  collection: Collection;
-}) => {
-  const tBetterAuth = await getTranslations('productCarousel');
+const SimilarProducts = async ({ collection }: { collection: Collection }) => {
+  const t = await getTranslations('productCarousel');
   const collectionHandle = collection?.store?.slug?.current;
   const locale = await getLocale();
   if (!collectionHandle) return null;
@@ -38,19 +32,6 @@ const ProductCarousel = async ({
   );
   return (
     <div className="w-full container">
-      <div className="flex justify-between items-end    pb-4">
-        <h2 className="text-2xl md:text-2xl font-medium md:mb-2">
-          {title ? title[locale as keyof typeof title] : ''}
-        </h2>
-        <div className="flex h-full justify-end">
-          <Link
-            href={`/collection/${collectionHandle}`}
-            className="text-md underline"
-          >
-            {tBetterAuth('VIEW_ALL')}
-          </Link>
-        </div>
-      </div>
       <Carousel className="w-full" opts={{ loop: true, dragFree: true }}>
         <CarouselContent className="ml-2 ">
           {products?.map((product, index) => (
@@ -58,8 +39,8 @@ const ProductCarousel = async ({
               key={index}
               className=" basis-1/2 md:basis-1/3 lg:basis-1/4 "
             >
-              <div className="h-full  px-1 pl-2">
-                <ProductCard product={product as Product} />
+              <div className="h-full">
+                <ProductCard product={product as Product} addToCard={false} />
               </div>
             </CarouselItem>
           ))}
@@ -79,4 +60,4 @@ const ProductCarousel = async ({
   );
 };
 
-export default ProductCarousel;
+export default SimilarProducts;

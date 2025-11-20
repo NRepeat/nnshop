@@ -9,6 +9,7 @@ export const pageBuilderType = defineType({
     defineArrayMember({ type: 'features' }),
     defineArrayMember({ type: 'faqs' }),
     defineArrayMember({ type: 'productCarousel' }),
+    defineArrayMember({ type: 'similarProducts' }),
     defineArrayMember({ type: 'collectionsCarousel' }),
     defineArrayMember({ type: 'sliderBlock' }),
   ],

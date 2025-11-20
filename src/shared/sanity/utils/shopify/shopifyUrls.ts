@@ -6,7 +6,7 @@ export const collectionUrl = (collectionId: number) => {
   if (!SHOPIFY_STORE_ID) {
     return null;
   }
-  return `${storeUrl}/collections/${collectionId}`;
+  return `${storeUrl}/collection/${collectionId}`;
 };
 
 export const productUrl = (productId: number) => {

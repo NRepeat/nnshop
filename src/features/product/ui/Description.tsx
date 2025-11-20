@@ -8,7 +8,7 @@ import { getTranslations } from 'next-intl/server';
 import { Label } from '@shared/ui/label';
 import Option from './Option';
 import { ProductVariant } from '@shared/lib/shopify/types/storefront.types';
-import addToCart from '../api/add-to-cart';
+import { AddToCartButton } from './AddToCartButton';
 
 const Description = async ({
   product,
@@ -27,11 +27,7 @@ const Description = async ({
         ?.value
     : '';
   // const isDiscounted = compareAtPrice && compareAtPrice.amount > price.amount;
-  console.log(selectedOption);
-  const handleSubmit = async () => {
-    'use server';
-    console.log('Submit');
-  };
+
   return (
     <div className="md:col-span-4 flex jusify-center flex-col w-full items-center">
       <div className="sticky top-24 md:max-w-xl ">
@@ -67,36 +63,7 @@ const Description = async ({
           </div>
         </div>
 
-        {price && (
-          <div className="mt-2 text-sm text-muted-foreground">
-            <p>
-              {t('fromMoWith', { price: `${(price.amount / 12).toFixed(2)}` })}{' '}
-              <span className="font-bold">{t('shopPay')}</span>
-            </p>
-          </div>
-        )}
-        <form className="mt-6" action={addToCart}>
-          <Option product={product} selectedOption={selectedOption} />
-          <input
-            type="hidden"
-            name="variantId"
-            value={
-              selectedVariant
-                ? selectedVariant.id
-                : product.variants.edges[0].node.id
-            }
-          />
-          <div className="product-form__buttons mt-8">
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full h-14 text-md rounded-full"
-              disabled={!selectedVariant?.availableForSale}
-            >
-              {t('addToCart')}
-            </Button>
-          </div>
-        </form>
+        <AddToCartButton product={product} selectedVariant={selectedVariant} />
 
         {product.descriptionHtml && (
           <div className="product__description rte quick-add-hidden mt-8">

@@ -50,7 +50,7 @@ const CollectionsCarousel = (props: {
         <CarouselContent className="-ml-1">
           {collections?.map((collection, index) => (
             <CarouselItem key={index} className="pl-1 basis-1/2 md:basis-1/3">
-              <Link href={`/collections/${collection.store?.slug?.current}`}>
+              <Link href={`/collection/${collection.store?.slug?.current}`}>
                 <div className="p-1 h-full">
                   <Card className="h-full rounded-none p-0 border-0 shadow-none bg-transparent">
                     <CardContent className="relative flex flex-col  rounded-none p-0 border-0 shadow-none h-full justify-between">

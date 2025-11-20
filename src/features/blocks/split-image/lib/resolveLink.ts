@@ -15,9 +15,9 @@ export function resolveLink(
     const { _type, slug } = link.reference as any;
     switch (_type) {
       case 'product':
-        return `/products/${slug}`;
+        return `/product/${slug}`;
       case 'collection':
-        return `/collections/${slug}`;
+        return `/collection/${slug}`;
       case 'page':
         return `/${slug}`;
       default:

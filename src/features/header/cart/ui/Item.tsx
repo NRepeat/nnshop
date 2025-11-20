@@ -27,7 +27,7 @@ const CartItem = ({
       <CardContent className="grid grid-cols-7 justify-between  p-0 rounded-none shadow-none">
         <Link href={''} className="flex col-span-2">
           <Image
-            className="w-full h-auto"
+            className="w-full h-auto object-cover"
             src={product.image}
             alt={product.title}
             width={120}
@@ -43,7 +43,6 @@ const CartItem = ({
             <p>Size:{product.size}</p>
             <p>Color:{product.color}</p>
           </div>
-
           <RemoveItemButton cartId={cartId} itemId={itemId} />
         </div>
         <p className="justify-items-end text-right  col-span-2 ">

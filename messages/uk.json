@@ -276,6 +276,7 @@
   },
   "ProductPage": {
     "addToCart": "Додати в кошик",
+    "addingToCart": "Додаємо в кошик...",
     "soldOut": "Продано",
     "fromMoWith": "Від {price}/міс з",
     "shopPay": "Shop Pay",
@@ -294,5 +295,11 @@
       "apply": "Застосувати",
       "clear": "Очистити"
     }
+  },
+  "NotFound": {
+    "errorCode": "404",
+    "title": "Сторінку не знайдено",
+    "description": "Сторінка, яку ви шукаєте, не існує.",
+    "goHome": "Повернутися на головну"
   }
 }

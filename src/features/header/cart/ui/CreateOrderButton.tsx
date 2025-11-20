@@ -23,7 +23,7 @@ export const CreateOrderButton = ({ cartId }: { cartId: string }) => {
       <Button
         onClick={handleCreateOrder}
         disabled={isPending}
-        className="w-full rounded-full"
+        className="w-full rounded-none"
       >
         {t('checkout')}
       </Button>

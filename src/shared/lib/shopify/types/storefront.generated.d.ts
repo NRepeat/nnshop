@@ -16,7 +16,9 @@ export type GetCollectionQuery = {
       StorefrontTypes.Collection,
       'id' | 'title' | 'handle' | 'description'
     > & {
-      image?: StorefrontTypes.Maybe<Pick<StorefrontTypes.Image, 'url'>>;
+      image?: StorefrontTypes.Maybe<
+        Pick<StorefrontTypes.Image, 'url' | 'altText'>
+      >;
       products: {
         edges: Array<{
           node: Pick<
@@ -67,6 +69,16 @@ export type GetCollectionQuery = {
       };
     }
   >;
+};
+
+export type GetCollectionsQueryVariables = StorefrontTypes.Exact<{
+  [key: string]: never;
+}>;
+
+export type GetCollectionsQuery = {
+  collections: {
+    edges: Array<{ node: Pick<StorefrontTypes.Collection, 'handle'> }>;
+  };
 };
 
 export type GetProductByHandleQueryVariables = StorefrontTypes.Exact<{
@@ -181,9 +193,13 @@ export type GetSubMenuQuery = {
 };
 
 interface GeneratedQueryTypes {
-  '#graphql\n  query GetCollection($handle: String!, $filters: [ProductFilter!]) {\n    collection(handle: $handle) {\n    id\n    title\n    handle\n    description\n      image {\n        url\n      }\n\n      products(first: 250, filters: $filters) {\n        edges {\n          node {\n            id\n            title\n            handle\n            availableForSale\n            productType\n            vendor\n            tags\n            options{\n              name\n              optionValues{\n                name\n              }\n            }\n            priceRange {\n              minVariantPrice {\n                amount\n                currencyCode\n              }\n              maxVariantPrice {\n                amount\n                currencyCode\n              }\n            }\n            featuredImage {\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n        filters {\n      id\n      label\n      type\n      values {\n        id\n        label\n        count\n        input\n      }\n    }\n      }\n    }\n  }\n': {
+  '#graphql\n  query GetCollection($handle: String!, $filters: [ProductFilter!]) {\n    collection(handle: $handle) {\n    id\n    title\n    handle\n    description\n      image {\n        url\n        altText\n      }\n\n      products(first: 250, filters: $filters) {\n        edges {\n          node {\n            id\n            title\n            handle\n            availableForSale\n            productType\n            vendor\n            tags\n            options{\n              name\n              optionValues{\n                name\n              }\n            }\n            priceRange {\n              minVariantPrice {\n                amount\n                currencyCode\n              }\n              maxVariantPrice {\n                amount\n                currencyCode\n              }\n            }\n            featuredImage {\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n        filters {\n      id\n      label\n      type\n      values {\n        id\n        label\n        count\n        input\n      }\n    }\n      }\n    }\n  }\n': {
     return: GetCollectionQuery;
     variables: GetCollectionQueryVariables;
+  };
+  '#graphql\n  query GetCollections {\n    collections(first: 250) {\n      edges {\n        node {\n          handle\n        }\n      }\n    }\n  }\n': {
+    return: GetCollectionsQuery;
+    variables: GetCollectionsQueryVariables;
   };
   '#graphql\n  query getProductByHandle($handle: String!, $variant: ID) {\n    product(handle: $handle, id: $variant) {\n      id\n      title\n      handle\n      description\n      descriptionHtml\n      vendor\n      productType\n      priceRange {\n        maxVariantPrice {\n          amount\n          currencyCode\n        }\n        minVariantPrice {\n          amount\n          currencyCode\n        }\n      }\n      options(first: 10) {\n        id\n        name\n        values\n      }\n      variants(first: 50) {\n        edges {\n          node {\n            id\n            title\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n            selectedOptions {\n              name\n              value\n            }\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n      }\n      images(first: 10) {\n        edges {\n          node {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n      featuredImage {\n        url\n        altText\n        width\n        height\n      }\n    }\n  }\n': {
     return: GetProductByHandleQuery;

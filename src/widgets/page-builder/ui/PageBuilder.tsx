@@ -1,5 +1,5 @@
 import { PAGE_QUERYResult } from '@/shared/sanity/types';
-import { ProductCarousel } from '@entities/product';
+import { ProductCarousel, SimilarProducts } from '@entities/product';
 import { CollectionsCarousel } from '@entities/collection';
 import { HeroSwiper } from '@entities/slider';
 import { Hero } from '@/entities/hero';
@@ -26,6 +26,7 @@ export function PageBuilder({
     splitImage: SplitImage,
     faqs: FAQs,
     productCarousel: ProductCarousel,
+    similarProducts: SimilarProducts,
     collectionsCarousel: CollectionsCarousel,
     sliderBlock: HeroSwiper,
   };
@@ -33,9 +34,9 @@ export function PageBuilder({
   return (
     <main className="w-full flex justify-center flex-col space-y-6 pt-4">
       {content?.map((block, index) => {
+        console.log(block, 'block');
         const Component =
           blockComponents[block._type as keyof typeof blockComponents];
-
         const dataAttribute = createDataAttribute({
           ...createDataAttributeConfig,
           id: documentId,

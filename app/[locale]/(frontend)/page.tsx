@@ -17,10 +17,6 @@ export async function generateStaticParams() {
 
 export default async function Page({ params }: RouteProps) {
   const page = await getPage(params);
-  // const session = await auth.api.getSession({
-  //   headers: await headers(),
-  // });
-  // console.log(session);
   return page?.homePage?.content ? (
     <PageBuilder
       //@ts-expect-error sanity
