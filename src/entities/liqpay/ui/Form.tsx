@@ -1,9 +1,7 @@
 import LiqPay from '../model';
 
-const publicKey = process.env.LIQPAY_PUBLIC_KEY || 'sandbox_i3517449772';
-const privateKey =
-  process.env.LIQPAY_PRIVATE_KEY ||
-  'sandbox_Mil3fi6KLbEOUITPCA1CMV1YrBRChDMt1qsAkfDr';
+const publicKey = process.env.LIQPAY_PUBLIC_KEY;
+const privateKey = process.env.LIQPAY_PRIVATE_KEY;
 
 interface LiqpayProps {
   orderId: string;
