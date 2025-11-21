@@ -3,7 +3,7 @@
 import { createDraftOrder } from '@features/order/api/create';
 import { Button } from '@shared/ui/button';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
 export const CreateOrderButton = ({ cartId }: { cartId: string }) => {
@@ -12,7 +12,7 @@ export const CreateOrderButton = ({ cartId }: { cartId: string }) => {
   const nav = useRouter();
   const handleCreateOrder = () => {
     startTransition(async () => {
-      nav.push('/checkout');
+      redirect('/checkout');
       // const { success, order, errors } = await createDraftOrder(cartId);
     });
   };

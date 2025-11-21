@@ -10,6 +10,7 @@ import { Button } from '@shared/ui/button';
 import { CollectionFilters } from './CollectionFilters';
 import { getTranslations } from 'next-intl/server';
 import { FilterSheet } from './FilterSheet';
+import { getCollections } from '@entities/collection/api/getCollections';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -17,7 +18,18 @@ type Props = {
     filters?: string;
   }>;
 };
+export async function generateStaticParams() {
+  const { collections } = await getCollections();
 
+  const paths = collections.edges.flatMap((edge) => {
+    return ['en', 'uk'].map((locale) => ({
+      slug: edge.node.handle,
+      locale: locale,
+    }));
+  });
+
+  return paths;
+}
 export default async function CollectionPage({ params, searchParams }: Props) {
   const { slug } = await params;
   if (!slug) {

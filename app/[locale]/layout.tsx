@@ -21,10 +21,5 @@ export default async function LocaleLayout({
     notFound();
   }
   setRequestLocale(locale);
-  return (
-    <div>
-      <Header />
-      {children}
-    </div>
-  );
+  return <div>{children}</div>;
 }

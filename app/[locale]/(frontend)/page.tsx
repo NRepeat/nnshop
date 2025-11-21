@@ -6,8 +6,6 @@ type RouteProps = {
 };
 
 import { getPage } from '@/features/home/api/get-home-page';
-import { auth } from '@features/auth/lib/auth';
-import { headers } from 'next/headers';
 
 export async function generateStaticParams() {
   return locales.map((locale) => ({
