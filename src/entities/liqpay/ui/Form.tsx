@@ -1,9 +1,10 @@
+'use client';
+
 import LiqPay from '../model';
 
-const publicKey = process.env.LIQPAY_PUBLIC_KEY;
-const privateKey = process.env.LIQPAY_PRIVATE_KEY;
-
 interface LiqpayProps {
+  publicKey: string;
+  privateKey: string;
   orderId: string;
   amount: string;
   action: string;
@@ -25,6 +26,8 @@ interface LiqpayProps {
 }
 
 export default function Liqpay({
+  publicKey,
+  privateKey,
   orderId,
   amount,
   action,

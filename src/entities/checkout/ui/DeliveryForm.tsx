@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Form, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useRouter, useParams } from 'next/navigation';
@@ -9,6 +9,7 @@ import { DeliveryInfo, deliverySchema } from '../schema/delivery';
 import { SelectedDepartment, NovaPoshtaButton } from '@entities/novaPoshta';
 import { Button } from '@shared/ui/button';
 import {
+  Form,
   FormItem,
   FormLabel,
   FormControl,

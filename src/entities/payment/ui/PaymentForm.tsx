@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { Form, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useRouter, useParams } from 'next/navigation';
@@ -10,6 +10,7 @@ import { getCompleteCheckoutData } from '../api/getCompleteCheckoutData';
 import { savePaymentInfo } from '../api/savePaymentInfo';
 import { Button } from '@shared/ui/button';
 import {
+  Form,
   FormItem,
   FormLabel,
   FormControl,
@@ -24,6 +25,8 @@ interface PaymentFormProps {
   orderId: string;
   amount: number;
   currency?: string;
+  liqpayPublicKey?: string;
+  liqpayPrivateKey?: string;
 }
 
 export default function PaymentForm({
@@ -31,6 +34,8 @@ export default function PaymentForm({
   orderId,
   amount,
   currency = 'USD',
+  liqpayPublicKey,
+  liqpayPrivateKey,
 }: PaymentFormProps) {
   const router = useRouter();
   const params = useParams();
@@ -514,7 +519,9 @@ export default function PaymentForm({
 
           {/* LiqPay Form - only show when LiqPay is selected */}
           {selectedPaymentMethodValue === 'pay-now' &&
-            selectedProviderValue === 'liqpay' && (
+            selectedProviderValue === 'liqpay' &&
+            liqpayPublicKey &&
+            liqpayPrivateKey && (
               <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -526,6 +533,8 @@ export default function PaymentForm({
                 </div>
 
                 <Liqpay
+                  publicKey={liqpayPublicKey}
+                  privateKey={liqpayPrivateKey}
                   orderId={orderId}
                   amount={amount.toString()}
                   action="pay"

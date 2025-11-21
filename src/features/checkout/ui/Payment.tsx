@@ -9,6 +9,9 @@ import { generateOrderId } from '@entities/payment/api/generateOrderId';
 export default async function Payment() {
   const orderId = await generateOrderId();
 
+  const liqpayPublicKey = process.env.LIQPAY_PUBLIC_KEY;
+  const liqpayPrivateKey = process.env.LIQPAY_PRIVATE_KEY;
+
   let existingPaymentInfo = null;
   try {
     existingPaymentInfo = await getPaymentInfo();
@@ -32,7 +35,7 @@ export default async function Payment() {
     if (!sessionCart) {
       throw new Error('Cart not found');
     }
-    const cartResult = await getCart(session.user.id);
+    const cartResult = await getCart(sessionCart.cartToken);
     if (cartResult && cartResult.cart?.cost?.totalAmount) {
       cartAmount = parseFloat(cartResult.cart.cost.totalAmount.amount);
       currency = cartResult.cart.cost.totalAmount.currencyCode;
@@ -56,6 +59,8 @@ export default async function Payment() {
         orderId={orderId}
         amount={cartAmount}
         currency={currency}
+        liqpayPublicKey={liqpayPublicKey}
+        liqpayPrivateKey={liqpayPrivateKey}
       />
     </div>
   );
