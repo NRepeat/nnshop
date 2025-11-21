@@ -1,3 +1,4 @@
+'use server';
 import prisma from '@shared/lib/prisma';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { CartBuyerIdentityUpdatePayload } from '@shared/lib/shopify/types/storefront.types';
@@ -19,7 +20,7 @@ const CART_BUYER_IDENTITY_UPDATE = `
   }
 `;
 
-export const cartBuyerIdentityUpdate = async ({
+export const anonymousCartBuyerIdentityUpdate = async ({
   newUser,
   anonymousUser,
 }: {

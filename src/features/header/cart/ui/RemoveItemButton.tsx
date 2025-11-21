@@ -1,6 +1,6 @@
 'use client';
 
-import { removeProductFromCart } from '@features/cart/api/remove-product';
+import { removeProductFromCart } from '@entities/cart/api/remove-product';
 import { Button } from '@shared/ui/button';
 import { useTranslations } from 'next-intl';
 import { useTransition } from 'react';

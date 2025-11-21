@@ -1,8 +1,8 @@
 import { Sheet, SheetTrigger } from '@shared/ui/sheet';
 import { EmptyState } from './EmptyState';
 import Content from './Content';
-import { getCart } from '@features/cart/api/get';
 import { ShoppingCart } from 'lucide-react';
+import { getCart } from '@entities/cart/api/get';
 
 const CartSheet = async () => {
   const cart = await getCart();

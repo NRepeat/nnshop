@@ -1,7 +1,4 @@
-import Payment from '@/app/components/Checkout/Payment/Payment';
-import { Thank } from '@/app/components/Checkout/Thank/Thank';
-import { ContactInfo } from '@/app/components/Checkout';
-import Delivery from '@/app/components/Checkout/Delivery/Delivery';
+import CheckoutView from '@widgets/checkout/ui/view';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -28,17 +25,5 @@ export default async function Page(props: Props) {
   // Extract orderId from URL for success page
   const orderId = slug[1] || '';
 
-  return (
-    <>
-      {slug == 'info' ? (
-        <ContactInfo />
-      ) : slug[0] == 'delivery' ? (
-        <Delivery />
-      ) : slug[0] == 'payment' ? (
-        <Payment />
-      ) : slug[0] === 'success' ? (
-        <Thank orderId={orderId} />
-      ) : null}
-    </>
-  );
+  return <CheckoutView orderId={orderId} slug={slug} />;
 }

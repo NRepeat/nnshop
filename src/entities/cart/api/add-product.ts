@@ -18,7 +18,6 @@ export async function addToCartAction(productVariantId: string) {
         userId: session.user.id,
       },
     });
-    console.log('sessionCart', sessionCart);
     let result;
     if (sessionCart) {
       result = await linkProduct({

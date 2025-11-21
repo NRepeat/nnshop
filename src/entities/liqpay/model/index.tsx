@@ -21,7 +21,8 @@
  */
 
 import crypto from 'crypto';
-import SdkButton from '@/shared/lib/liqpay/SdkButton';
+import axios from 'axios';
+import SdkButton from '../ui/SdkButton';
 
 export interface LiqPayParams {
   version: number | string;
@@ -34,7 +35,7 @@ export interface LiqPayParams {
   language?: 'ru' | 'uk' | 'en';
   server_url?: string;
   result_url?: string;
-  [key: string]: string | undefined | number;
+  [key: string]: any;
 }
 
 export interface LiqPayFormObject {
@@ -58,7 +59,15 @@ export class LiqPay {
     private readonly privateKey: string,
   ) {}
 
-  async api(path: string, params: LiqPayParams) {
+  /**
+   * Call API
+   *
+   * @param {string} path
+   * @param {LiqPayParams} params
+   * @return {Promise<any>}
+   * @throws {Error}
+   */
+  async api(path: string, params: LiqPayParams): Promise<any> {
     if (!params.version) {
       throw new Error('version is null');
     }
@@ -72,16 +81,14 @@ export class LiqPay {
     dataToSend.append('signature', signature);
 
     try {
-      const response = await fetch(this.host + path, {
-        method: 'POST',
-        body: dataToSend,
+      const response = await axios.post(this.host + path, dataToSend, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
 
       if (response.status === 200) {
-        return response.json();
+        return response.data;
       } else {
         throw new Error(`Request failed with status code: ${response.status}`);
       }
@@ -90,6 +97,13 @@ export class LiqPay {
     }
   }
 
+  /**
+   * Generate CNB form HTML
+   *
+   * @param {LiqPayParams} params
+   * @return {string}
+   * @throws {Error}
+   */
   cnbForm(params: LiqPayParams) {
     let buttonText = this.buttonTranslations['uk'];
     if (params.language && this.availableLanguages.includes(params.language)) {
@@ -117,6 +131,13 @@ export class LiqPay {
     );
   }
 
+  /**
+   * Generate CNB signature
+   *
+   * @param {LiqPayParams} params
+   * @return {string}
+   * @throws {Error}
+   */
   cnbSignature(params: LiqPayParams): string {
     const processedParams = this.cnbParams(params);
     const data = Buffer.from(JSON.stringify(processedParams)).toString(
@@ -125,6 +146,13 @@ export class LiqPay {
     return this.strToSign(this.privateKey + data + this.privateKey);
   }
 
+  /**
+   * Process and validate CNB parameters
+   *
+   * @param {LiqPayParams} params
+   * @return {LiqPayParams}
+   * @throws {Error}
+   */
   cnbParams(params: LiqPayParams): LiqPayParams {
     const processedParams = { ...params };
     processedParams.public_key = this.publicKey;
@@ -185,6 +213,13 @@ export class LiqPay {
     return processedParams;
   }
 
+  /**
+   * Generate SHA1 signature
+   *
+   * @param {string} str
+   * @return {string}
+   * @throws {Error}
+   */
   private strToSign(str: string): string {
     if (typeof str !== 'string') {
       throw new Error('Input must be a string');
@@ -195,6 +230,12 @@ export class LiqPay {
     return sha1.digest('base64');
   }
 
+  /**
+   * Return Form Object
+   *
+   * @param {LiqPayParams} params
+   * @return {LiqPayFormObject} Form Object
+   */
   cnbObject(params: LiqPayParams): LiqPayFormObject {
     const processedParams = { ...params };
     processedParams.language = processedParams.language || 'uk';
@@ -220,7 +261,13 @@ export class LiqPay {
     return signature === expectedSignature;
   }
 
-  decodeData(data: string) {
+  /**
+   * Decode callback data
+   *
+   * @param {string} data
+   * @return {any}
+   */
+  decodeData(data: string): any {
     return JSON.parse(Buffer.from(data, 'base64').toString('utf8'));
   }
 }

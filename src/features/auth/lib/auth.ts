@@ -4,8 +4,7 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { oauthShopifyClient } from './shopify/client';
 import { nextCookies } from 'better-auth/next-js';
 import { anonymous } from 'better-auth/plugins';
-import { anonymousClient } from 'better-auth/client/plugins';
-import { cartBuyerIdentityUpdate } from '@features/cart/api/cart-buyer-identity-update';
+import { anonymousCartBuyerIdentityUpdate } from '@entities/cart/api/anonymous-cart-buyer-identity-update';
 
 const betterAuthSecret = process.env.BETTER_AUTH_SECRET;
 const betterAuthUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -67,7 +66,7 @@ export const auth = betterAuth({
       emailDomainName: 'gmail.com',
       onLinkAccount: async ({ anonymousUser, newUser }) => {
         // perform actions like moving the cart items from anonymous user to the new user
-        await cartBuyerIdentityUpdate({ anonymousUser, newUser });
+        await anonymousCartBuyerIdentityUpdate({ anonymousUser, newUser });
       },
     }),
     nextCookies(),

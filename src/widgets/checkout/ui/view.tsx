@@ -1,3 +1,7 @@
+import ContactInfo from '@features/checkout/ui/ContactInfo';
+import Delivery from '@features/checkout/ui/Delivery';
+import Payment from '@features/checkout/ui/Payment';
+
 export default function CheckoutView({
   slug,
   orderId,
@@ -14,8 +18,9 @@ export default function CheckoutView({
       ) : slug[0] == 'payment' ? (
         <Payment />
       ) : slug[0] === 'success' ? (
-        <Thank orderId={orderId} />
-      ) : null}
+        <>Ty</>
+      ) : // <Thank orderId={orderId} />
+      null}
     </>
   );
 }

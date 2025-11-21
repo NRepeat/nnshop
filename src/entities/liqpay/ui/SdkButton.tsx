@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import Image from 'next/image';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface SdkButtonProps {
   label?: string;
@@ -13,6 +13,9 @@ interface SdkButtonProps {
 
 const SdkButton: React.FC<SdkButtonProps> = ({
   label = 'Pay with LiqPay',
+  color = '#fff',
+  background = '#77CC5D',
+  textTransform = 'uppercase',
   onClick,
   className = '',
 }) => {
