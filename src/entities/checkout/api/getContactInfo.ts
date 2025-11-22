@@ -1,6 +1,6 @@
 'use server';
+import { ContactInfo } from '@features/checkout/schema/contactInfoSchema';
 import { cookies } from 'next/headers';
-import { ContactInfo } from '../schema/contactInfoSchema';
 
 export async function getContactInfo(): Promise<ContactInfo | null> {
   try {

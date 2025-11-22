@@ -1,6 +1,4 @@
-import ContactInfo from '@features/checkout/ui/ContactInfo';
-import Delivery from '@features/checkout/ui/Delivery';
-import Payment from '@features/checkout/ui/Payment';
+import { ContactInfo, Delivery, Payment } from '@features/checkout';
 
 export default function CheckoutView({
   slug,

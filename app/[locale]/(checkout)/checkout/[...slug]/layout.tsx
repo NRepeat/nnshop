@@ -1,4 +1,4 @@
-import StepComp from '@entities/checkout/ui/StepComp';
+import { StepComp } from '@features/checkout/ui/StepComp';
 import { Card } from '@shared/ui/card';
 import { ChevronRight } from 'lucide-react';
 import { redirect } from 'next/navigation';
