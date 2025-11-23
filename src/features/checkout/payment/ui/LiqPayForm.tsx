@@ -11,7 +11,7 @@ interface LiqPayFormProps {
   orderId: string;
   amount: number;
   currency: string;
-  checkoutData: CheckoutData | null;
+  checkoutData: Omit<CheckoutData, 'paymentInfo'> | null;
 }
 
 export default function LiqPayForm({

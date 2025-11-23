@@ -103,7 +103,6 @@ export class ShopifyFactory implements ShopifyClientFactory {
     clientId: string,
   ): Promise<AuthenticatedClient> {
     const session = await this.getOrRefreshAdminSession(clientId);
-    console.log('createAdminAuthenticatedClient', session);
     const client = await this.createClient(ShopifyClientType.ADMIN, {
       accessToken: session.accessToken,
       shopDomain: SHOPIFY_STORE_DOMAIN!,

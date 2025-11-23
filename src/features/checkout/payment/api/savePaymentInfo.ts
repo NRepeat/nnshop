@@ -3,17 +3,18 @@ import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { headers } from 'next/headers';
 import { PaymentInfo } from '../schema/paymentSchema';
+import { User } from '~/generated/prisma/client';
 
 export async function savePaymentInfo(
   data: PaymentInfo,
-): Promise<{ success: boolean; message: string }> {
+): Promise<{ success: boolean; user?: User | null; message: string }> {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
       return { success: false, message: 'Session not found' };
     }
 
-    await prisma.user.update({
+    const user = await prisma.user.update({
       where: { id: session.user.id },
       data: {
         paymentInformation: {
@@ -32,6 +33,7 @@ export async function savePaymentInfo(
 
     return {
       success: true,
+      user,
       message: 'Payment information saved successfully!',
     };
   } catch (error) {

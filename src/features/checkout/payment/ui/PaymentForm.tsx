@@ -3,7 +3,7 @@
 import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, redirect } from 'next/navigation';
 import { PaymentInfo, getPaymentSchema } from '../schema/paymentSchema';
 import { savePaymentInfo } from '../api/savePaymentInfo';
 import { Button } from '@shared/ui/button';
@@ -15,6 +15,7 @@ import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { paymentMethods, paymentProviders } from '../lib/constants';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
+import { createDraftOrder } from '@features/order/api/create';
 
 interface PaymentFormProps {
   defaultValues?: PaymentInfo | null;
@@ -23,7 +24,7 @@ interface PaymentFormProps {
   currency?: string;
   liqpayPublicKey?: string;
   liqpayPrivateKey?: string;
-  checkoutData: CheckoutData | null;
+  completeCheckoutData: CheckoutData | null; // Renamed from checkoutData
 }
 
 export default function PaymentForm({
@@ -33,17 +34,16 @@ export default function PaymentForm({
   currency = 'UAH',
   liqpayPublicKey,
   liqpayPrivateKey,
-  checkoutData,
+  completeCheckoutData, // Renamed from checkoutData
 }: PaymentFormProps) {
   const router = useRouter();
   const params = useParams();
   const locale = params.locale as string;
   const t = useTranslations('PaymentForm');
-  console.log('checkoutData', checkoutData);
+  console.log('completeCheckoutData', completeCheckoutData); // Renamed from checkoutData
   const paymentSchema = getPaymentSchema(t);
 
   const form = useForm<PaymentInfo>({
-    //@ts-ignore
     resolver: zodResolver(paymentSchema),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
@@ -65,15 +65,20 @@ export default function PaymentForm({
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
     try {
       const result = await savePaymentInfo(data);
-
-      if (result.success) {
+      if (!completeCheckoutData) {
+        throw new Error('Checkout data not available.');
+      }
+      const order = await createDraftOrder(formData, completeCheckoutData);
+      if (order && result.success) {
         toast.success(t('paymentInformationSaved'));
+
+        if (data.paymentMethod === 'after-delivered') {
+          return router.push(`/${locale}/checkout/success/${data.orderId}`);
+        }
 
         if (data.paymentProvider === 'liqpay') {
           return;
         }
-
-        router.push(`/${locale}/checkout/success/${data.orderId}`);
       } else {
         toast.error(result.message);
       }
@@ -135,7 +140,7 @@ export default function PaymentForm({
               orderId={orderId}
               amount={amount}
               currency={form.getValues('currency')}
-              checkoutData={checkoutData}
+              checkoutData={completeCheckoutData}
             />
           )}
 
@@ -145,9 +150,19 @@ export default function PaymentForm({
         ) && (
           <div className="">
             <Button
-              type="submit"
+              // type="submit"
               className="w-full h-12 bg-green-800"
               disabled={form.formState.isSubmitting}
+              onClick={async () => {
+                await onSubmit({
+                  amount: form.getValues('amount'),
+                  currency: form.getValues('currency'),
+                  orderId: form.getValues('orderId'),
+                  paymentMethod: form.getValues('paymentMethod'),
+                  paymentProvider: form.getValues('paymentProvider'),
+                  description: form.getValues('description'),
+                });
+              }}
             >
               {form.formState.isSubmitting ? (
                 <div className="flex items-center gap-3">

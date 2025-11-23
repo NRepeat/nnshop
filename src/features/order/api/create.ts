@@ -1,9 +1,10 @@
 'use server';
+import { getCart } from '@entities/cart/api/get';
 import { auth } from '@features/auth/lib/auth';
-import { getCart } from '@features/cart/api/get';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { headers } from 'next/headers';
+import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 
 const DRAFT_ORDER_CREATE_MUTATION = `
   mutation draftOrderCreate($input: DraftOrderInput!) {
@@ -31,12 +32,25 @@ const DRAFT_ORDER_CREATE_MUTATION = `
 `;
 
 export async function createDraftOrder(
-  cartId: string,
-): Promise<{ success: boolean; order?: any; errors?: string[] }> {
+  completeCheckoutData: CheckoutData,
+): Promise<{
+  success: boolean;
+  order?: any;
+  errors?: string[];
+}> {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-
-    const result = await getCart(cartId);
+    if (!session) {
+      console.error('SESSION NOT FOUND');
+      return {
+        success: false,
+        errors: ['Session not found'],
+      };
+    }
+    const cartId = await prisma.cart.findUnique({
+      where: { userId: session.user.id },
+    });
+    const result = await getCart(cartId?.cartToken);
     if (!result) {
       console.error('CART NOT FOUND');
       return {
@@ -66,32 +80,29 @@ export async function createDraftOrder(
         quantity: lineItem.quantity,
       };
     });
-    console.log('cart?.buyerIdentity', cart);
-    const customerInfo = cart?.buyerIdentity;
 
     const input: any = {
       lineItems: lineItems,
     };
 
-    if (customerInfo && customerInfo?.email) {
-      input.email = customerInfo.email;
+    if (completeCheckoutData.contactInfo.email) {
+      input.email = completeCheckoutData.contactInfo.email;
     }
-    if (customerInfo && customerInfo?.phone) {
-      input.phone = customerInfo.phone;
+    if (completeCheckoutData.contactInfo.phone) {
+      input.phone = completeCheckoutData.contactInfo.phone;
     }
 
-    const shippingAddress = customerInfo?.deliveryAddressPreferences?.[0];
-    if (shippingAddress) {
-      input.shippingAddress = {
-        address1: shippingAddress.address1,
-        city: shippingAddress.city,
-        country: shippingAddress.country,
-        firstName: shippingAddress.firstName,
-        lastName: shippingAddress.lastName,
-        phone: shippingAddress.phone,
-        zip: shippingAddress.zip,
-      };
-    }
+    const shippingAddress = {
+      address1: completeCheckoutData.deliveryInfo.address || '',
+      city: completeCheckoutData.deliveryInfo.city || '',
+      country: completeCheckoutData.deliveryInfo.country || '',
+      firstName: completeCheckoutData.contactInfo.name || '',
+      lastName: completeCheckoutData.contactInfo.lastName || '',
+      phone: completeCheckoutData.contactInfo.phone || '',
+      zip: completeCheckoutData.deliveryInfo.postalCode || '',
+      address2: completeCheckoutData.deliveryInfo.apartment || undefined,
+    };
+    input.shippingAddress = shippingAddress;
 
     const orderResponse = await adminClient.client.request<{
       draftOrderCreate: {
@@ -102,11 +113,6 @@ export async function createDraftOrder(
       query: DRAFT_ORDER_CREATE_MUTATION,
       variables: { input },
     });
-
-    console.log(
-      ' ADMIN API DRAFT ORDER CREATE RESPONSE:',
-      JSON.stringify(orderResponse, null, 2),
-    );
 
     if (orderResponse.draftOrderCreate.userErrors.length > 0) {
       console.error(
@@ -156,7 +162,7 @@ export async function createDraftOrder(
     console.error(' ERROR DETAILS:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      cartId: cartId,
+      cartId: '',
     });
     return {
       success: false,

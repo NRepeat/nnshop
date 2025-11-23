@@ -1,12 +1,10 @@
-import React from 'react';
-
-import { User } from 'lucide-react';
+import getContactInfo from '../api/get-contact-info';
 import ContactInfoForm from './ContactInfoForm';
-import { Avatar, AvatarImage } from '@shared/ui/avatar';
 import { getTranslations } from 'next-intl/server';
 
 export default async function ContactInfo() {
   const t = await getTranslations('CheckoutPage');
+  const contactInfo = await getContactInfo();
   return (
     <div className="space-y-6 container">
       <div className="flex  gap-3">
@@ -17,7 +15,7 @@ export default async function ContactInfo() {
           <p className="text-gray-600">{t('contact_info_description')}</p>
         </div>
       </div>
-      <ContactInfoForm />
+      <ContactInfoForm contactInfo={contactInfo} />
     </div>
   );
 }

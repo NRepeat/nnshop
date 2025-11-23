@@ -20,8 +20,13 @@ import saveContactInfo from '../api/save-contact-info';
 import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
+import { ContactInformation } from '~/generated/prisma/client';
 
-export default function ContactInfoForm() {
+export default function ContactInfoForm({
+  contactInfo,
+}: {
+  contactInfo: ContactInformation | null;
+}) {
   const router = useRouter();
   const params = useParams();
   const locale = params.locale as string;
@@ -36,11 +41,11 @@ export default function ContactInfoForm() {
     shouldFocusError: false,
     shouldUnregister: false,
     defaultValues: {
-      name: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      countryCode: 'UA',
+      name: contactInfo?.name || '',
+      lastName: contactInfo?.lastName || '',
+      email: contactInfo?.email || '',
+      phone: contactInfo?.phone || '',
+      countryCode: contactInfo?.countryCode || 'UA',
     },
   });
 

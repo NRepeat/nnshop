@@ -34,7 +34,7 @@ export const Steps = ({ slug }: { slug: string }) => {
           />
           <div className="w-full flex items-center justify-center">
             {index < Object.keys(steps).length - 1 && (
-              <ChevronRight className="w-6 h-6 text-gray-400 mx-2 flex-shrink-0" />
+              <ChevronRight className="w-6 h-6 text-gray-400 mx-2 shrink-0" />
             )}
           </div>
         </div>

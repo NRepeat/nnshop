@@ -3,17 +3,18 @@ import { CheckoutData } from '../schema/checkoutDataSchema';
 import { getDeliveryInfo } from '../delivery/api/getDeliveryInfo';
 import { getPaymentInfo } from '../payment/api/getPaymentInfo';
 
-export async function getCompleteCheckoutData(): Promise<CheckoutData | null> {
+export async function getCompleteCheckoutData(): Promise<Omit<
+  CheckoutData,
+  'paymentInfo'
+> | null> {
   try {
     const contactInfo = await getContactInfo();
     const deliveryInfo = await getDeliveryInfo();
     const paymentInfo = await getPaymentInfo();
 
-    console.log(contactInfo, deliveryInfo, paymentInfo);
     if (!contactInfo || !deliveryInfo) {
       return null;
     }
-    // Ensure deliveryInfo has deliveryMethod
     const completeDeliveryInfo = {
       ...deliveryInfo,
       deliveryMethod: deliveryInfo.deliveryMethod || 'novaPoshta',
@@ -22,7 +23,6 @@ export async function getCompleteCheckoutData(): Promise<CheckoutData | null> {
     return {
       contactInfo,
       deliveryInfo: completeDeliveryInfo,
-      paymentInfo,
     };
   } catch (error) {
     console.error('Error getting complete checkout data:', error);

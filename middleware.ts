@@ -12,7 +12,6 @@ export async function middleware(request: NextRequest) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-  console.log(session, 'session');
   if (!session) {
     try {
       await auth.api.signInAnonymous();
