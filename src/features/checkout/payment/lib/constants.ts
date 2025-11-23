@@ -6,7 +6,7 @@ export const paymentMethods = [
   },
   { id: 'after-delivered', name: 'After Delivered', availableMethods: [] },
   { id: 'pay-later', name: 'Pay Later', availableMethods: [] },
-];
+] as const;
 
 export const paymentProviders = [
   {
@@ -25,4 +25,4 @@ export const paymentProviders = [
     id: 'stripe',
     name: 'Stripe',
   },
-];
+] as const;
