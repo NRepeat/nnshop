@@ -30,15 +30,13 @@ export async function ProductView({
   const collectionHandle = sliderEnable
     ? sliderEnable.collection.store.slug.current
     : '';
-  const shopifyCollection = await getCollection({ handle: collectionHandle });
-  const collection = {};
+
   return (
     <div className="container mx-auto py-12 space-y-12">
       <div className="grid grid-cols-1 md:grid-cols-8 gap-12 h-full md:h-screen">
         <Gallery images={images} selectedVariant={selectedVariant} />
         <Description product={product} selectedVariant={selectedVariant} />
       </div>
-      {/*{sliderEnable && <SimilarProducts collection={sliderEnable.collection} />}*/}
       <PageBuilder
         content={content}
         documentId={sanityDocumentId}

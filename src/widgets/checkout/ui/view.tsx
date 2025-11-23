@@ -8,17 +8,17 @@ export default function CheckoutView({
   orderId: string;
 }) {
   return (
-    <>
+    <div className="container  ">
       {slug == 'info' ? (
         <ContactInfo />
-      ) : slug[0] == 'delivery' ? (
+      ) : slug == 'delivery' ? (
         <Delivery />
-      ) : slug[0] == 'payment' ? (
+      ) : slug == 'payment' ? (
         <Payment />
-      ) : slug[0] === 'success' ? (
+      ) : slug === 'success' ? (
         <>Ty</>
       ) : // <Thank orderId={orderId} />
       null}
-    </>
+    </div>
   );
 }

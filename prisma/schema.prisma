@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "../generated/prisma"
 }
 
@@ -15,22 +15,33 @@ datasource db {
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  orders        Order[]
-
-  isAnonymous Boolean?
-  cart        Cart[]
+  id                 String               @id
+  name               String
+  email              String
+  emailVerified      Boolean              @default(false)
+  image              String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @default(now()) @updatedAt
+  sessions           Session[]
+  accounts           Account[]
+  orders             Order[]
+  isAnonymous        Boolean?
+  cart               Cart[]
+  contactInformation ContactInformation[]
 
   @@unique([email])
   @@map("user")
+}
+
+model ContactInformation {
+  id          String @id @default(cuid())
+  name        String
+  lastName    String
+  email       String
+  phone       String
+  countryCode String
+  user        User   @relation(fields: [userId], references: [id])
+  userId      String @unique
 }
 
 model Session {

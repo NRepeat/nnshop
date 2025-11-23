@@ -318,6 +318,10 @@
       "clear": "Clear"
     }
   },
+  "CheckoutPage": {
+    "contact_info_title": "Contact Information",
+    "contact_info_description": "Please provide your contact details"
+  },
   "NotFound": {
     "errorCode": "404",
     "title": "Page Not Found",

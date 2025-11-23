@@ -296,6 +296,10 @@
       "clear": "Очистити"
     }
   },
+  "CheckoutPage": {
+    "contact_info_title": "Контактна інформація",
+    "contact_info_description": "Будь ласка, надайте свої контактні дані"
+  },
   "NotFound": {
     "errorCode": "404",
     "title": "Сторінку не знайдено",

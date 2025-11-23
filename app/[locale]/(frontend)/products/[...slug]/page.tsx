@@ -24,7 +24,6 @@ export default async function ProductPage({ params }: Props) {
     const sanityProduct = await getProductPage({
       language: p.locale as Locale,
     });
-    console.log(sanityProduct);
     const selectedVariant = variant
       ? product.variants.edges.find(
           (e) => e.node.id.split('/').pop() === variant,

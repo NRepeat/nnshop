@@ -21,7 +21,6 @@ export default function ContactInfoForm() {
   const router = useRouter();
   const params = useParams();
   const locale = params.locale as string;
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const form = useForm<z.infer<typeof contactInfoSchema>>({
     mode: 'onSubmit',
@@ -36,20 +35,6 @@ export default function ContactInfoForm() {
       countryCode: 'UA',
     },
   });
-
-  useEffect(() => {
-    async function fetchContactInfo() {
-      try {
-        const existingContactInfo = await getContactInfo();
-        if (existingContactInfo) {
-          form.reset(existingContactInfo);
-        }
-      } catch (error) {
-        console.error('Error fetching contact info:', error);
-      }
-    }
-    fetchContactInfo();
-  }, [form]);
 
   async function onSubmit(data: z.infer<typeof contactInfoSchema>) {
     const validationResult = contactInfoSchema.safeParse(data);
@@ -67,7 +52,6 @@ export default function ContactInfoForm() {
       return;
     }
 
-    setIsSubmitting(true);
     try {
       const result = await saveContactInfo(data);
       if (result.success) {
@@ -79,15 +63,12 @@ export default function ContactInfoForm() {
     } catch (error) {
       console.error('Error saving contact info:', error);
       toast.error('An error occurred while saving your contact information.');
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* General form errors - only show after submit attempt */}
         {form.formState.isSubmitted &&
           Object.keys(form.formState.errors).length > 0 && (
             <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -234,9 +215,9 @@ export default function ContactInfoForm() {
           type="submit"
           className="w-full bg-[#325039] hover:bg-[#2a4330] text-white"
           size="lg"
-          disabled={isSubmitting}
+          // disabled={isSubmitting}
         >
-          {isSubmitting ? 'Saving...' : 'Continue to Delivery'}
+          {/*{isSubmitting ? 'Saving...' : 'Continue to Delivery'}*/}
         </Button>
       </form>
     </Form>
