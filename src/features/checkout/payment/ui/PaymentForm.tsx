@@ -14,7 +14,6 @@ import PaymentMethodSelection from './PaymentMethodSelection';
 import PaymentProviderSelection from './PaymentProviderSelection';
 import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { paymentMethods, paymentProviders } from '../lib/constants';
 
 interface PaymentFormProps {
   defaultValues?: PaymentInfo | null;
