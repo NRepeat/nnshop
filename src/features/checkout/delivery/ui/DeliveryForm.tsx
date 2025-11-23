@@ -28,7 +28,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
 
   const deliverySchema = getDeliverySchema(t);
 
-  const form = useForm<z.infer<typeof deliverySchema>>({
+  const form = useForm<DeliveryInfo>({
     resolver: zodResolver(deliverySchema),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
@@ -56,7 +56,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
     });
   };
 
-  async function onSubmit(data: z.infer<typeof deliverySchema>) {
+  async function onSubmit(data: DeliveryInfo) {
     try {
       const result = await saveDeliveryInfo(data);
 
