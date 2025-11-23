@@ -146,7 +146,7 @@ export default function ContactInfoForm() {
                       form.formState.errors.email &&
                       'border-red-500 focus-visible:ring-red-500',
                   )}
-                />{' '}
+                />
               </FormControl>
               <FormMessage className="text-red-500 text-sm h-5" />
             </FormItem>
