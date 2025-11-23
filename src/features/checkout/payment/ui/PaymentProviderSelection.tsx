@@ -30,7 +30,7 @@ export default function PaymentProviderSelection({
   const t = useTranslations('PaymentForm');
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+    <div className="">
       <FormField
         control={control}
         name="paymentProvider"
@@ -45,7 +45,7 @@ export default function PaymentProviderSelection({
               </p>
             </div>
             <FormControl>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {paymentProviders.map((provider) => (
                   <PaymentProviderButton
                     key={provider.id}

@@ -1,9 +1,18 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Liqpay from '@entities/liqpay/ui/Form';
-import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
 import { useTranslations } from 'next-intl';
+import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
+
+interface LiqPayFormProps {
+  liqpayPublicKey: string;
+  liqpayPrivateKey: string;
+  orderId: string;
+  amount: number;
+  currency: string;
+  checkoutData: CheckoutData | null;
+}
 
 export default function LiqPayForm({
   liqpayPublicKey,
@@ -11,17 +20,9 @@ export default function LiqPayForm({
   orderId,
   amount,
   currency,
-}) {
+  checkoutData,
+}: LiqPayFormProps) {
   const t = useTranslations('PaymentForm');
-  const [checkoutData, setCheckoutData] = useState<any>(null);
-
-  useEffect(() => {
-    async function loadCheckoutData() {
-      const data = await getCompleteCheckoutData();
-      setCheckoutData(data);
-    }
-    loadCheckoutData();
-  }, []);
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">

@@ -5,6 +5,7 @@ import { useFormContext } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import clsx from 'clsx';
 import { PaymentInfo } from '../schema/paymentSchema';
+import { Button } from '@shared/ui/button';
 
 interface PaymentProviderButtonProps {
   provider: {
@@ -24,20 +25,18 @@ export default function PaymentProviderButton({
   const selectedProvider = watch('paymentProvider');
 
   return (
-    <button
+    <Button
       key={provider.id}
       type="button"
+      variant={selectedProvider !== provider.id ? 'outline' : 'default'}
       onClick={() => {
         setValue('paymentProvider', provider.id);
         onSelectPaymentProvider(provider.id);
       }}
       className={clsx(
-        'group relative p-6 rounded-xl border-2 transition-all duration-200',
+        'group relative p-6 rounded-none border border-transparent h-fit w-full',
         {
-          'border-[#325039] bg-[#325039] text-white shadow-lg':
-            selectedProvider === provider.id,
-          'border-gray-200 hover:border-[#325039] hover:shadow-md bg-white':
-            selectedProvider !== provider.id,
+          'border-gray-200 ': selectedProvider !== provider.id,
         },
       )}
     >
@@ -51,12 +50,7 @@ export default function PaymentProviderButton({
             },
           )}
         >
-          {React.cloneElement(provider.icon as React.ReactElement, {
-            className: clsx('w-6 h-6', {
-              'text-white': selectedProvider === provider.id,
-              'text-[#325039]': selectedProvider !== provider.id,
-            }),
-          })}
+          {React.cloneElement(provider.icon as React.ReactElement)}
         </div>
         <div className="text-left">
           <h3
@@ -65,7 +59,7 @@ export default function PaymentProviderButton({
               'text-gray-900': selectedProvider !== provider.id,
             })}
           >
-            {t(provider.name)}
+            {t(provider.id)}
           </h3>
           <p
             className={clsx('text-sm', {
@@ -80,23 +74,6 @@ export default function PaymentProviderButton({
           </p>
         </div>
       </div>
-      {selectedProvider === provider.id && (
-        <div className="absolute top-3 right-3">
-          <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-            <svg
-              className="w-4 h-4 text-[#325039]"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
-        </div>
-      )}
-    </button>
+    </Button>
   );
 }

@@ -386,7 +386,7 @@
     "afterDelivered": "After Delivered",
     "payLater": "Pay Later",
     "liqpay": "LiqPay",
-    "creditCard": "Credit Card",
+    "credit-card": "Credit Card",
     "paypal": "PayPal",
     "stripe": "Stripe",
     "processingPayment": "Processing Payment...",
@@ -399,9 +399,9 @@
     "payNowDescription": "Pay immediately with card or online",
     "afterDeliveredDescription": "Pay after receiving your order",
     "payLaterDescription": "Pay within 30 days",
-    "payNowMethod": "Pay Now",
-    "afterDeliveredMethod": "After Delivered",
-    "payLaterMethod": "Pay Later",
+    "pay-now": "Pay Now",
+    "after-delivered": "After Delivered",
+    "pay-later": "Pay Later",
     "orderPaymentFor": "Order payment for"
   }
 }

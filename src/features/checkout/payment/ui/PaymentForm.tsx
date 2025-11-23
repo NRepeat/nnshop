@@ -14,6 +14,7 @@ import PaymentProviderSelection from './PaymentProviderSelection';
 import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { paymentMethods, paymentProviders } from '../lib/constants';
+import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 
 interface PaymentFormProps {
   defaultValues?: PaymentInfo | null;
@@ -22,15 +23,17 @@ interface PaymentFormProps {
   currency?: string;
   liqpayPublicKey?: string;
   liqpayPrivateKey?: string;
+  checkoutData: CheckoutData | null;
 }
 
 export default function PaymentForm({
   defaultValues,
   orderId,
   amount,
-  currency = 'USD',
+  currency = 'UAH',
   liqpayPublicKey,
   liqpayPrivateKey,
+  checkoutData,
 }: PaymentFormProps) {
   const router = useRouter();
   const params = useParams();
@@ -104,7 +107,6 @@ export default function PaymentForm({
 
           <PaymentMethodSelection
             paymentMethods={paymentMethods}
-            // Pass form.setValue directly for paymentMethod
             onSelectPaymentMethod={(method: string) =>
               form.setValue(
                 'paymentMethod',
@@ -116,7 +118,6 @@ export default function PaymentForm({
           {selectedPaymentMethodValue === 'pay-now' && (
             <PaymentProviderSelection
               paymentProviders={paymentProviders}
-              // Pass form.setValue directly for paymentProvider
               onSelectPaymentProvider={(provider: string) =>
                 form.setValue(
                   'paymentProvider',
@@ -136,6 +137,7 @@ export default function PaymentForm({
                 orderId={orderId}
                 amount={amount}
                 currency={form.getValues('currency')}
+                checkoutData={checkoutData}
               />
             )}
 
