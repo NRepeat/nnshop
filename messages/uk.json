@@ -362,7 +362,6 @@
     "errorSavingPaymentInformation": "Під час збереження платіжної інформації сталася помилка.",
     "payNow": "Оплатити зараз",
     "afterDelivered": "Після доставки",
-    "afterDelivered": "Після доставки",
     "payLater": "Оплатити пізніше",
     "liqpay": "LiqPay",
     "creditCard": "Кредитна картка",
@@ -381,6 +380,12 @@
     "payNowMethod": "Оплатити зараз",
     "afterDeliveredMethod": "Після доставки",
     "payLaterMethod": "Оплатити пізніше",
-    "orderPaymentFor": "Оплата замовлення"
+    "orderPaymentFor": "Оплата замовлення",
+    "choosePaymentProvider": "Виберіть платіжну систему",
+    "selectPaymentProviderDescription": "Виберіть бажаний спосіб оплати для безпечної обробки.",
+    "liqpayDescription": "Безпечні онлайн-платежі",
+    "creditCardDescription": "Кредитна або дебетова картка",
+    "paypalDescription": "Оплатити через PayPal",
+    "stripeDescription": "Обробка платежів Stripe"
   }
 }
