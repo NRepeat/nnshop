@@ -1,3 +1,4 @@
+'use client';
 import { headers } from 'next/headers';
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
