@@ -79,44 +79,13 @@ export async function saveDeliveryInfo(
       // Existing Shopify update logic (if needed, this would be integrated here)
       const sessionCart = await tx.cart.findUnique({
         where: {
-          userId: session.user.id,
+          userId: user.id,
         },
       });
       if (sessionCart) {
-        const deliveryMethodMapping: Record<string, string> = {
-          novaPoshta: 'PICKUP_POINT',
-          ukrPoshta: 'SHIPPING',
-        };
-
-        const shopifyDeliveryMethod =
-          deliveryMethodMapping[data.deliveryMethod] || 'SHIPPING';
-
-        let pickupHandle: string[] | undefined;
-        let coordinatesObject:
-          | { latitude: number; longitude: number; countryCode: string }
-          | undefined;
-
-        if (
-          data.deliveryMethod === 'novaPoshta' &&
-          data.novaPoshtaDepartment?.id
-        ) {
-          pickupHandle = [String(data.novaPoshtaDepartment.id)];
-
-          if (data.novaPoshtaDepartment.coordinates) {
-            coordinatesObject = {
-              ...data.novaPoshtaDepartment.coordinates,
-              countryCode: 'UA',
-            };
-          }
-        }
-
         const cartUpdateResult = await updateCartDeliveryPreferences(
           sessionCart.cartToken,
-          {
-            deliveryMethod: [shopifyDeliveryMethod],
-            pickupHandle: pickupHandle,
-            coordinates: coordinatesObject,
-          },
+          data, // Pass the entire DeliveryInfo object
         );
 
         if (!cartUpdateResult.success) {
