@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { z } from 'zod';
 import { toast } from 'sonner';
 import { useRouter, useParams } from 'next/navigation';
 import { PaymentInfo, getPaymentSchema } from '../schema/paymentSchema';
@@ -14,6 +13,7 @@ import PaymentMethodSelection from './PaymentMethodSelection';
 import PaymentProviderSelection from './PaymentProviderSelection';
 import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { paymentMethods, paymentProviders } from '../lib/constants';
 
 interface PaymentFormProps {
   defaultValues?: PaymentInfo | null;

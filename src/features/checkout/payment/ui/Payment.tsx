@@ -1,11 +1,10 @@
-'use client';
-import { headers } from 'next/headers';
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { getCart } from '@entities/cart/api/get';
 import PaymentForm from './PaymentForm';
 import { getPaymentInfo } from '../api/getPaymentInfo';
 import { generateOrderId } from '../api/generateOrderId';
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export default async function Payment() {
@@ -22,7 +21,7 @@ export default async function Payment() {
   }
 
   let cartAmount = 0;
-  let currency = 'USD';
+  let currency = 'UAH';
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
@@ -34,8 +33,8 @@ export default async function Payment() {
       },
     });
     if (!sessionCart) {
-      return redirect('/checkout/cart');
-      throw new Error('Cart not found');
+      return redirect('/');
+      // throw new Error('Cart not found');
     }
     const cartResult = await getCart(sessionCart.cartToken);
     if (cartResult && cartResult.cart?.cost?.totalAmount) {
