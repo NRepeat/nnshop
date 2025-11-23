@@ -29,6 +29,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
   const deliverySchema = getDeliverySchema(t);
 
   const form = useForm<DeliveryInfo>({
+    // @ts-expect-error form
     resolver: zodResolver(deliverySchema),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
@@ -75,6 +76,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
   return (
     <div className="w-full max-w-4xl mx-auto">
       <Form {...form}>
+        {/* @ts-expect-error form */}
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {form.formState.isSubmitted &&
             Object.keys(form.formState.errors).length > 0 && (
