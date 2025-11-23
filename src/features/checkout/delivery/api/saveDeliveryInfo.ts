@@ -3,7 +3,7 @@
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { headers } from 'next/headers';
-import { DeliveryInfo } from '../schema/deliverySchema';
+import { DeliveryInfo } from '../model/deliverySchema';
 import { updateCartDeliveryPreferences } from '@entities/cart/api/update-cart-delivery-preferences';
 
 export async function saveDeliveryInfo(

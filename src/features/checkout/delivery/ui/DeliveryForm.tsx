@@ -5,7 +5,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useRouter, useParams } from 'next/navigation';
-import { DeliveryInfo, getDeliverySchema } from '../schema/deliverySchema';
+import { DeliveryInfo, getDeliverySchema } from '../model/deliverySchema';
 import { SelectedDepartment } from '@features/novaPoshta';
 import { Button } from '@shared/ui/button';
 import { Form } from '@shared/ui/form';
