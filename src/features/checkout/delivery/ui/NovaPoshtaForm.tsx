@@ -10,13 +10,15 @@ import {
   FormMessage,
 } from '@shared/ui/form';
 import { NovaPoshtaButton } from '@features/novaPoshta';
+import { useTranslations } from 'next-intl';
 
 export default function NovaPoshtaForm({
   handleDepartmentSelect,
 }: {
   handleDepartmentSelect: (department: any) => void;
 }) {
-  const { control, setValue, watch } = useFormContext();
+  const { control, watch } = useFormContext();
+  const t = useTranslations('DeliveryForm');
   const novaPoshtaDepartment = watch('novaPoshtaDepartment');
 
   return (
@@ -28,11 +30,10 @@ export default function NovaPoshtaForm({
           <FormItem className="w-full">
             <div className="mb-4">
               <FormLabel className="text-lg font-semibold text-gray-900 mb-2 block">
-                Select Nova Poshta Department
+                {t('selectNovaPoshtaDepartment')}
               </FormLabel>
               <p className="text-sm text-gray-600">
-                Choose the most convenient Nova Poshta branch or parcel locker
-                for your delivery.
+                {t('novaPoshtaDescription')}
               </p>
             </div>
             <FormControl>
@@ -46,7 +47,7 @@ export default function NovaPoshtaForm({
                       ? `${field.value.addressParts.city || ''} вул. ${
                           field.value.addressParts.street || ''
                         }, ${field.value.addressParts.building || ''}`
-                      : 'Обрати відділення або поштомат'
+                      : t('chooseDepartment')
                   }
                 />
               </div>

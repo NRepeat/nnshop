@@ -9,9 +9,12 @@ import {
   FormControl,
   FormMessage,
 } from '@shared/ui/form';
+import { useTranslations } from 'next-intl';
+import clsx from 'clsx';
 
 export default function DeliveryMethodSelection() {
   const { control } = useFormContext();
+  const t = useTranslations('DeliveryForm');
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
@@ -22,11 +25,10 @@ export default function DeliveryMethodSelection() {
           <FormItem className="w-full">
             <div className="mb-4">
               <FormLabel className="text-lg font-semibold text-gray-900 mb-2 block">
-                Choose Delivery Method
+                {t('chooseDeliveryMethod')}
               </FormLabel>
               <p className="text-sm text-gray-600">
-                Your delivery preferences will be saved to your cart for faster
-                checkout.
+                {t('deliveryPreferencesDescription')}
               </p>
             </div>
             <FormControl>
@@ -34,26 +36,31 @@ export default function DeliveryMethodSelection() {
                 <button
                   type="button"
                   onClick={() => field.onChange('novaPoshta')}
-                  className={`group relative p-6 rounded-xl border-2 transition-all duration-200 ${
-                    field.value === 'novaPoshta'
-                      ? 'border-[#325039] bg-[#325039] text-white shadow-lg'
-                      : 'border-gray-200 hover:border-[#325039] hover:shadow-md bg-white'
-                  }`}
+                  className={clsx(
+                    'group relative p-6 rounded-xl border-2 transition-all duration-200',
+                    {
+                      'border-[#325039] bg-[#325039] text-white shadow-lg':
+                        field.value === 'novaPoshta',
+                      'border-gray-200 hover:border-[#325039] hover:shadow-md bg-white':
+                        field.value !== 'novaPoshta',
+                    },
+                  )}
                 >
                   <div className="flex items-center gap-4">
                     <div
-                      className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                        field.value === 'novaPoshta'
-                          ? 'bg-white/20'
-                          : 'bg-[#325039]/10'
-                      }`}
+                      className={clsx(
+                        'w-12 h-12 rounded-lg flex items-center justify-center',
+                        {
+                          'bg-white/20': field.value === 'novaPoshta',
+                          'bg-[#325039]/10': field.value !== 'novaPoshta',
+                        },
+                      )}
                     >
                       <svg
-                        className={`w-6 h-6 ${
-                          field.value === 'novaPoshta'
-                            ? 'text-white'
-                            : 'text-[#325039]'
-                        }`}
+                        className={clsx('w-6 h-6', {
+                          'text-white': field.value === 'novaPoshta',
+                          'text-[#325039]': field.value !== 'novaPoshta',
+                        })}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -68,22 +75,20 @@ export default function DeliveryMethodSelection() {
                     </div>
                     <div className="text-left">
                       <h3
-                        className={`font-semibold text-base ${
-                          field.value === 'novaPoshta'
-                            ? 'text-white'
-                            : 'text-gray-900'
-                        }`}
+                        className={clsx('font-semibold text-base', {
+                          'text-white': field.value === 'novaPoshta',
+                          'text-gray-900': field.value !== 'novaPoshta',
+                        })}
                       >
-                        Nova Poshta
+                        {t('novaPoshta')}
                       </h3>
                       <p
-                        className={`text-sm ${
-                          field.value === 'novaPoshta'
-                            ? 'text-white/80'
-                            : 'text-gray-600'
-                        }`}
+                        className={clsx('text-sm', {
+                          'text-white/80': field.value === 'novaPoshta',
+                          'text-gray-600': field.value !== 'novaPoshta',
+                        })}
                       >
-                        Fast and reliable delivery
+                        {t('novaPoshtaDelivery')}
                       </p>
                     </div>
                   </div>
@@ -109,26 +114,31 @@ export default function DeliveryMethodSelection() {
                 <button
                   type="button"
                   onClick={() => field.onChange('ukrPoshta')}
-                  className={`group relative p-6 rounded-xl border-2 transition-all duration-200 ${
-                    field.value === 'ukrPoshta'
-                      ? 'border-[#325039] bg-[#325039] text-white shadow-lg'
-                      : 'border-gray-200 hover:border-[#325039] hover:shadow-md bg-white'
-                  }`}
+                  className={clsx(
+                    'group relative p-6 rounded-xl border-2 transition-all duration-200',
+                    {
+                      'border-[#325039] bg-[#325039] text-white shadow-lg':
+                        field.value === 'ukrPoshta',
+                      'border-gray-200 hover:border-[#325039] hover:shadow-md bg-white':
+                        field.value !== 'ukrPoshta',
+                    },
+                  )}
                 >
                   <div className="flex items-center gap-4">
                     <div
-                      className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                        field.value === 'ukrPoshta'
-                          ? 'bg-white/20'
-                          : 'bg-[#325039]/10'
-                      }`}
+                      className={clsx(
+                        'w-12 h-12 rounded-lg flex items-center justify-center',
+                        {
+                          'bg-white/20': field.value === 'ukrPoshta',
+                          'bg-[#325039]/10': field.value !== 'ukrPoshta',
+                        },
+                      )}
                     >
                       <svg
-                        className={`w-6 h-6 ${
-                          field.value === 'ukrPoshta'
-                            ? 'text-white'
-                            : 'text-[#325039]'
-                        }`}
+                        className={clsx('w-6 h-6', {
+                          'text-white': field.value === 'ukrPoshta',
+                          'text-[#325039]': field.value !== 'ukrPoshta',
+                        })}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -143,22 +153,20 @@ export default function DeliveryMethodSelection() {
                     </div>
                     <div className="text-left">
                       <h3
-                        className={`font-semibold text-base ${
-                          field.value === 'ukrPoshta'
-                            ? 'text-white'
-                            : 'text-gray-900'
-                        }`}
+                        className={clsx('font-semibold text-base', {
+                          'text-white': field.value === 'ukrPoshta',
+                          'text-gray-900': field.value !== 'ukrPoshta',
+                        })}
                       >
-                        UkrPoshta
+                        {t('ukrPoshta')}
                       </h3>
                       <p
-                        className={`text-sm ${
-                          field.value === 'ukrPoshta'
-                            ? 'text-white/80'
-                            : 'text-gray-600'
-                        }`}
+                        className={clsx('text-sm', {
+                          'text-white/80': field.value === 'ukrPoshta',
+                          'text-gray-600': field.value !== 'ukrPoshta',
+                        })}
                       >
-                        Traditional postal service
+                        {t('ukrPoshtaDelivery')}
                       </p>
                     </div>
                   </div>
