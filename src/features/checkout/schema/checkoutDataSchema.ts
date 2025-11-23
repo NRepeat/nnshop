@@ -1,36 +1,23 @@
+'use server';
 import { z } from 'zod';
-import { paymentSchema } from '../payment/schema/paymentSchema';
+import { getPaymentSchema } from '../payment/model/paymentSchema';
+import { getTranslations } from 'next-intl/server';
+import { getContactInfoSchema } from '@features/checkout/contact-info/model/contactInfoSchema';
+import { getDeliverySchema } from '../delivery/model/deliverySchema';
 
-// Combined checkout data schema
-export const checkoutDataSchema = z.object({
-  contactInfo: z.object({
-    name: z.string(),
-    lastName: z.string(),
-    email: z.string().email(),
-    phone: z.string(),
-  }),
-  deliveryInfo: z.object({
-    deliveryMethod: z.string(),
-    novaPoshtaDepartment: z
-      .object({
-        id: z.string(),
-        shortName: z.string(),
-        addressParts: z
-          .object({
-            city: z.string().optional(),
-            street: z.string().optional(),
-            building: z.string().optional(),
-          })
-          .optional(),
-      })
-      .optional(),
-    country: z.string().optional(),
-    address: z.string().optional(),
-    apartment: z.string().optional(),
-    city: z.string().optional(),
-    postalCode: z.string().optional(),
-  }),
-  paymentInfo: paymentSchema,
-});
+export const getCheckoutDataSchema = async () => {
+  const tPayment = await getTranslations('PaymentForm');
+  const tContact = await getTranslations('ContactInfoForm');
+  const tDelivery = await getTranslations('DeliveryForm');
 
-export type CheckoutData = z.infer<typeof checkoutDataSchema>;
+  const checkoutDataSchema = z.object({
+    contactInfo: getContactInfoSchema(tContact),
+    deliveryInfo: getDeliverySchema(tDelivery),
+    paymentInfo: getPaymentSchema(tPayment),
+  });
+  return checkoutDataSchema;
+};
+
+export type CheckoutData = z.infer<
+  Awaited<ReturnType<typeof getCheckoutDataSchema>>
+>;
