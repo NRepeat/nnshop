@@ -36,8 +36,8 @@ export default async function Payment() {
       },
     });
     if (!sessionCart) {
-      return redirect('/');
-      // throw new Error('Cart not found');
+      // return redirect('/');
+      throw new Error('Cart not found');
     }
     const cartResult = await getCart(sessionCart.cartToken);
     if (cartResult && cartResult.cart?.cost?.totalAmount) {
