@@ -106,7 +106,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
           <div className="">
             <Button
               type="submit"
-              className="w-full bg-[#325039] hover:bg-[#2a4330] text-white"
+              className="w-full"
               size="lg"
               disabled={form.formState.isSubmitting}
             >
