@@ -13,6 +13,20 @@ import { Input } from '@shared/ui/input';
 import { useTranslations } from 'next-intl';
 import clsx from 'clsx';
 
+const addressFields = [
+  { name: 'address', label: 'address', placeholder: 'enterStreetAddress' },
+  {
+    name: 'apartment',
+    label: 'apartment',
+    placeholder: 'enterApartmentNumber',
+  },
+];
+
+const locationFields = [
+  { name: 'city', label: 'city', placeholder: 'enterCity' },
+  { name: 'postalCode', label: 'postalCode', placeholder: 'enterPostalCode' },
+];
+
 export default function UkrPoshtaForm() {
   const form = useFormContext();
   const t = useTranslations('DeliveryForm');
@@ -41,11 +55,11 @@ export default function UkrPoshtaForm() {
                     placeholder={t('enterCountryRegion')}
                     {...field}
                     className={clsx(
-                      'h-12 px-4 rounded-xl border-2 transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
+                      'h-12 px-4 rounded-none border transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
                       form.formState.isSubmitted &&
                         form.formState.errors.country
                         ? 'border-red-500 focus-visible:ring-red-500'
-                        : 'border-gray-200 focus:border-[#325039]',
+                        : 'border-gray-200 focus:border-black',
                     )}
                   />
                 </div>
@@ -56,118 +70,69 @@ export default function UkrPoshtaForm() {
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4 gap-y-8">
-          <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem className="w-full relative">
-                <FormLabel className="text-sm font-medium text-gray-700 mb-2 block">
-                  {t('address')}
-                </FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input
-                      placeholder={t('enterStreetAddress')}
-                      {...field}
-                      className={clsx(
-                        'h-12 px-4 rounded-xl border-2 transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
-                        form.formState.isSubmitted &&
-                          form.formState.errors.address
-                          ? 'border-red-500 focus-visible:ring-red-500'
-                          : 'border-gray-200 focus:border-[#325039]',
-                      )}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage className="text-red-500 text-sm absolute -bottom-6 min-h-5" />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="apartment"
-            render={({ field }) => (
-              <FormItem className="w-full relative">
-                <FormLabel className="text-sm font-medium text-gray-700 mb-2 block">
-                  {t('apartment')}
-                </FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input
-                      placeholder={t('enterApartmentNumber')}
-                      {...field}
-                      className={clsx(
-                        'h-12 px-4 rounded-xl border-2 transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
-                        form.formState.isSubmitted &&
-                          form.formState.errors.apartment
-                          ? 'border-red-500 focus-visible:ring-red-500'
-                          : 'border-gray-200 focus:border-[#325039]',
-                      )}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage className="text-red-500 text-sm absolute -bottom-6 min-h-5" />
-              </FormItem>
-            )}
-          />
+          {addressFields.map((item) => (
+            <FormField
+              key={item.name}
+              control={form.control}
+              name={item.name as any}
+              render={({ field }) => (
+                <FormItem className="w-full relative">
+                  <FormLabel className="text-sm font-medium text-gray-700 mb-2 block">
+                    {t(item.label)}
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        placeholder={t(item.placeholder)}
+                        {...field}
+                        className={clsx(
+                          'h-12 px-4 rounded-xl border-2 transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
+                          form.formState.isSubmitted &&
+                            form.formState.errors[item.name]
+                            ? 'border-red-500 focus-visible:ring-red-500'
+                            : 'border-gray-200 focus:border-[#325039]',
+                        )}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-red-500 text-sm absolute -bottom-6 min-h-5" />
+                </FormItem>
+              )}
+            />
+          ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4 gap-y-8">
-          <FormField
-            control={form.control}
-            name="city"
-            render={({ field }) => (
-              <FormItem className="w-full relative">
-                <FormLabel className="text-sm font-medium text-gray-700 mb-2 block">
-                  {t('city')}
-                </FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input
-                      placeholder={t('enterCity')}
-                      {...field}
-                      className={clsx(
-                        'h-12 px-4 rounded-xl border-2 transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
-                        form.formState.isSubmitted && form.formState.errors.city
-                          ? 'border-red-500 focus-visible:ring-red-500'
-                          : 'border-gray-200 focus:border-[#325039]',
-                      )}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage className="text-red-500 text-sm absolute -bottom-6 min-h-5" />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="postalCode"
-            render={({ field }) => (
-              <FormItem className="w-full relative">
-                <FormLabel className="text-sm font-medium text-gray-700 mb-2 block">
-                  {t('postalCode')}
-                </FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input
-                      placeholder={t('enterPostalCode')}
-                      {...field}
-                      className={clsx(
-                        'h-12 px-4 rounded-xl border-2 transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
-                        form.formState.isSubmitted &&
-                          form.formState.errors.postalCode
-                          ? 'border-red-500 focus-visible:ring-red-500'
-                          : 'border-gray-200 focus:border-[#325039]',
-                      )}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage className="text-red-500 text-sm absolute -bottom-6 min-h-5" />
-              </FormItem>
-            )}
-          />
+          {locationFields.map((item) => (
+            <FormField
+              key={item.name}
+              control={form.control}
+              name={item.name as any}
+              render={({ field }) => (
+                <FormItem className="w-full relative">
+                  <FormLabel className="text-sm font-medium text-gray-700 mb-2 block">
+                    {t(item.label)}
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        placeholder={t(item.placeholder)}
+                        {...field}
+                        className={clsx(
+                          'h-12 px-4 rounded-xl border-2 transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
+                          form.formState.isSubmitted &&
+                            form.formState.errors[item.name]
+                            ? 'border-red-500 focus-visible:ring-red-500'
+                            : 'border-gray-200 focus:border-[#325039]',
+                        )}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-red-500 text-sm absolute -bottom-6 min-h-5" />
+                </FormItem>
+              )}
+            />
+          ))}
         </div>
       </div>
     </div>
