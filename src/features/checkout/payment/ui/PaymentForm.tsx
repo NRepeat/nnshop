@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useRouter, useParams } from 'next/navigation';
 import { PaymentInfo, getPaymentSchema } from '../schema/paymentSchema';
-import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
 import { savePaymentInfo } from '../api/savePaymentInfo';
 import { Button } from '@shared/ui/button';
 import { Form } from '@shared/ui/form';
@@ -38,7 +37,6 @@ export default function PaymentForm({
   const params = useParams();
   const locale = params.locale as string;
   const t = useTranslations('PaymentForm');
-  const [checkoutData, setCheckoutData] = useState<any>(null);
 
   const paymentSchema = getPaymentSchema(t);
 
@@ -61,14 +59,6 @@ export default function PaymentForm({
 
   const selectedPaymentMethodValue = form.watch('paymentMethod');
   const selectedProviderValue = form.watch('paymentProvider');
-
-  useEffect(() => {
-    async function loadCheckoutData() {
-      const data = await getCompleteCheckoutData();
-      setCheckoutData(data);
-    }
-    loadCheckoutData();
-  }, []);
 
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
     try {
@@ -148,7 +138,6 @@ export default function PaymentForm({
                 orderId={orderId}
                 amount={amount}
                 currency={form.getValues('currency')}
-                checkoutData={checkoutData}
               />
             )}
 

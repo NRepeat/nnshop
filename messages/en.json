@@ -401,6 +401,7 @@
     "payLaterDescription": "Pay within 30 days",
     "payNowMethod": "Pay Now",
     "afterDeliveredMethod": "After Delivered",
-    "payLaterMethod": "Pay Later"
+    "payLaterMethod": "Pay Later",
+    "orderPaymentFor": "Order payment for"
   }
 }

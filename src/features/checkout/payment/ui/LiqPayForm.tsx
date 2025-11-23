@@ -1,7 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Liqpay from '@entities/liqpay/ui/Form';
+import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
+import { useTranslations } from 'next-intl';
 
 export default function LiqPayForm({
   liqpayPublicKey,
@@ -9,17 +11,25 @@ export default function LiqPayForm({
   orderId,
   amount,
   currency,
-  checkoutData,
 }) {
+  const t = useTranslations('PaymentForm');
+  const [checkoutData, setCheckoutData] = useState<any>(null);
+
+  useEffect(() => {
+    async function loadCheckoutData() {
+      const data = await getCompleteCheckoutData();
+      setCheckoutData(data);
+    }
+    loadCheckoutData();
+  }, []);
+
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Complete Payment
+          {t('completePayment')}
         </h3>
-        <p className="text-sm text-gray-600">
-          Secure payment processing through LiqPay
-        </p>
+        <p className="text-sm text-gray-600">{t('liqpayDescription')}</p>
       </div>
 
       <Liqpay
@@ -28,7 +38,7 @@ export default function LiqPayForm({
         orderId={orderId}
         amount={amount.toString()}
         action="pay"
-        description={`Order payment for ${orderId}`}
+        description={`${t('orderPaymentFor')} ${orderId}`}
         currency={currency}
         language="en"
         customerInfo={

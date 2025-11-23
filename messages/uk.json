@@ -379,6 +379,7 @@
     "payLaterDescription": "Оплатити протягом 30 днів",
     "payNowMethod": "Оплатити зараз",
     "afterDeliveredMethod": "Після доставки",
-    "payLaterMethod": "Оплатити пізніше"
+    "payLaterMethod": "Оплатити пізніше",
+    "orderPaymentFor": "Оплата замовлення"
   }
 }
