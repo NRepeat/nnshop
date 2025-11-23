@@ -8,20 +8,21 @@ datasource db {
 }
 
 model User {
-  id                  String               @id
-  name                String
-  email               String
-  emailVerified       Boolean              @default(false)
-  image               String?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @default(now()) @updatedAt
-  sessions            Session[]
-  accounts            Account[]
-  orders              Order[]
-  isAnonymous         Boolean?
-  cart                Cart[]
-  contactInformation  ContactInformation?
-  deliveryInformation DeliveryInformation?
+  id                    String                 @id
+  name                  String
+  email                 String
+  emailVerified         Boolean                @default(false)
+  image                 String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @default(now()) @updatedAt
+  sessions              Session[]
+  accounts              Account[]
+  orders                Order[]
+  isAnonymous           Boolean?
+  cart                  Cart[]
+  contactInformation    ContactInformation?
+  deliveryInformation   DeliveryInformation?
+  paymentInformation    PaymentInformation?
 
   @@unique([email])
   @@map("user")
@@ -39,16 +40,16 @@ model ContactInformation {
 }
 
 model DeliveryInformation {
-  id                   String                @id @default(cuid())
-  deliveryMethod       String
-  country              String?
-  address              String?
-  apartment            String?
-  city                 String?
-  postalCode           String?
-  user                 User                  @relation(fields: [userId], references: [id])
-  userId               String                @unique
-  novaPoshtaDepartment NovaPoshtaDepartment?
+  id                     String                  @id @default(cuid())
+  deliveryMethod         String
+  country                String?
+  address                String?
+  apartment              String?
+  city                   String?
+  postalCode             String?
+  user                   User                    @relation(fields: [userId], references: [id])
+  userId                 String                  @unique
+  novaPoshtaDepartment   NovaPoshtaDepartment?
 }
 
 model NovaPoshtaDepartment {
@@ -61,6 +62,20 @@ model NovaPoshtaDepartment {
   longitude             Float?
   deliveryInformation   DeliveryInformation @relation(fields: [deliveryInformationId], references: [id])
   deliveryInformationId String              @unique
+}
+
+model PaymentInformation {
+  id              String   @id @default(cuid())
+  paymentMethod   String
+  paymentProvider String
+  amount          Float
+  currency        String
+  orderId         String
+  description     String?
+  user            User     @relation(fields: [userId], references: [id])
+  userId          String   @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Session {

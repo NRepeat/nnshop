@@ -356,5 +356,21 @@
     "departmentIdRequired": "Потрібен ID відділення",
     "departmentNameRequired": "Потрібна назва відділення",
     "fillAllFields": "Будь ласка, заповніть усі необхідні поля для обраного способу доставки"
+  },
+  "PaymentForm": {
+    "pleaseFixErrors": "Будь ласка, виправте наступні помилки:",
+    "errorSavingPaymentInformation": "Під час збереження платіжної інформації сталася помилка.",
+    "payNow": "Оплатити зараз",
+    "afterDelivered": "Після доставки",
+    "payLater": "Оплатити пізніше",
+    "liqpay": "LiqPay",
+    "creditCard": "Кредитна картка",
+    "paypal": "PayPal",
+    "stripe": "Stripe",
+    "processingPayment": "Обробка платежу...",
+    "completePayment": "Завершити платіж",
+    "paymentInformationSaved": "Платіжну інформацію успішно збережено!",
+    "amountMustBeGreaterThanZero": "Сума повинна бути більше 0",
+    "orderIdIsRequired": "Потрібен ID замовлення"
   }
 }

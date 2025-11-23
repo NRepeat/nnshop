@@ -378,5 +378,21 @@
     "departmentIdRequired": "Department ID is required",
     "departmentNameRequired": "Department name is required",
     "fillAllFields": "Please fill in all required fields for the selected delivery method"
+  },
+  "PaymentForm": {
+    "pleaseFixErrors": "Please fix the following errors:",
+    "errorSavingPaymentInformation": "An error occurred while saving your payment information.",
+    "payNow": "Pay Now",
+    "afterDelivered": "After Delivered",
+    "payLater": "Pay Later",
+    "liqpay": "LiqPay",
+    "creditCard": "Credit Card",
+    "paypal": "PayPal",
+    "stripe": "Stripe",
+    "processingPayment": "Processing Payment...",
+    "completePayment": "Complete Payment",
+    "paymentInformationSaved": "Payment information saved successfully!",
+    "amountMustBeGreaterThanZero": "Amount must be greater than 0",
+    "orderIdIsRequired": "Order ID is required"
   }
 }
