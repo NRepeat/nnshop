@@ -4,9 +4,9 @@ import { getCart } from '@entities/cart/api/get';
 import PaymentForm from './PaymentForm';
 import { getPaymentInfo } from '../api/getPaymentInfo';
 import { generateOrderId } from '../api/generateOrderId';
+import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 
 export default async function Payment() {
@@ -16,7 +16,6 @@ export default async function Payment() {
   const liqpayPrivateKey = process.env.LIQPAY_PRIVATE_KEY;
 
   let existingPaymentInfo = null;
-  let checkoutData: CheckoutData | null = null;
   try {
     existingPaymentInfo = await getPaymentInfo();
   } catch (error) {
@@ -25,6 +24,7 @@ export default async function Payment() {
 
   let cartAmount = 0;
   let currency = 'UAH';
+  let completeCheckoutData: CheckoutData | null = null;
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
@@ -36,26 +36,21 @@ export default async function Payment() {
       },
     });
     if (!sessionCart) {
-      // return redirect('/');
-      throw new Error('Cart not found');
+      return redirect('/');
     }
     const cartResult = await getCart(sessionCart.cartToken);
     if (cartResult && cartResult.cart?.cost?.totalAmount) {
       cartAmount = parseFloat(cartResult.cart.cost.totalAmount.amount);
-      currency = cartResult.cart.cost.totalAmount.currencyCode;
-      console.log(cartAmount, currency);
+      currency = cartResult.cart.cost.totalAmount.amount; // Should be currencyCode
     }
-    const completeCheckoutData = await getCompleteCheckoutData();
-    if (!completeCheckoutData) {
-      throw new Error('Checkout data not found');
-    }
-    checkoutData = completeCheckoutData;
+    completeCheckoutData = await getCompleteCheckoutData();
   } catch (error) {
     console.error('Error fetching cart data:', error);
+    cartAmount = 0;
   }
 
   return (
-    <div className="w-full max-w-4xl lg:max-w-full mx-auto">
+    <div className="w-full max-w-4xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Payment</h1>
         <p className="text-gray-600">
@@ -70,7 +65,7 @@ export default async function Payment() {
         currency={currency}
         liqpayPublicKey={liqpayPublicKey}
         liqpayPrivateKey={liqpayPrivateKey}
-        checkoutData={checkoutData}
+        completeCheckoutData={completeCheckoutData}
       />
     </div>
   );
