@@ -190,7 +190,7 @@ export default function DeliveryMethodSelection() {
                 </button>
               </div>
             </FormControl>
-            <FormMessage className="text-red-500 text-sm mt-2" />
+            <FormMessage className="text-red-500 text-sm absolute -bottom-6 min-h-5" />
           </FormItem>
         )}
       />
