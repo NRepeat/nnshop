@@ -12,6 +12,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { PaymentInfo } from '../schema/paymentSchema';
 import PaymentMethodButton from './PaymentMethodButton';
+import clsx from 'clsx';
 
 interface PaymentMethodSelectionProps {
   paymentMethods: {
@@ -46,7 +47,11 @@ export default function PaymentMethodSelection({
               </p>
             </div>
             <FormControl>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div
+                className={clsx(
+                  `grid grid-cols-1 gap-4 lg:grid-cols-${paymentMethods.length}`,
+                )}
+              >
                 {paymentMethods.map((method) => (
                   <PaymentMethodButton
                     key={method.id}

@@ -43,6 +43,7 @@ export default function PaymentForm({
   const paymentSchema = getPaymentSchema(t);
 
   const form = useForm<PaymentInfo>({
+    //@ts-ignore
     resolver: zodResolver(paymentSchema),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
@@ -83,7 +84,7 @@ export default function PaymentForm({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto space-y-8">
       <Form {...form}>
         {form.formState.isSubmitted &&
           Object.keys(form.formState.errors).length > 0 && (
@@ -142,10 +143,10 @@ export default function PaymentForm({
           selectedPaymentMethodValue === 'pay-now' &&
           selectedProviderValue === 'liqpay'
         ) && (
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+          <div className="">
             <Button
               type="submit"
-              className="w-full h-14 bg-[#325039] hover:bg-[#2a4330] text-white font-semibold text-lg rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-12 bg-green-800"
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? (

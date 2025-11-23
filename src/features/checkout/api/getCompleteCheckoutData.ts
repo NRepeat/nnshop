@@ -9,10 +9,10 @@ export async function getCompleteCheckoutData(): Promise<CheckoutData | null> {
     const deliveryInfo = await getDeliveryInfo();
     const paymentInfo = await getPaymentInfo();
 
-    if (!contactInfo || !deliveryInfo || !paymentInfo) {
+    console.log(contactInfo, deliveryInfo, paymentInfo);
+    if (!contactInfo || !deliveryInfo) {
       return null;
     }
-
     // Ensure deliveryInfo has deliveryMethod
     const completeDeliveryInfo = {
       ...deliveryInfo,

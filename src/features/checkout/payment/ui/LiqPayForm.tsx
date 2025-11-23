@@ -25,13 +25,13 @@ export default function LiqPayForm({
   const t = useTranslations('PaymentForm');
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-      <div className="mb-6">
+    <div className="">
+      {/*<div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
           {t('completePayment')}
         </h3>
         <p className="text-sm text-gray-600">{t('liqpayDescription')}</p>
-      </div>
+      </div>*/}
 
       <Liqpay
         publicKey={liqpayPublicKey}

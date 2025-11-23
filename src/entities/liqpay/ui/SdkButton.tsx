@@ -1,3 +1,4 @@
+import { Button } from '@shared/ui/button';
 import clsx from 'clsx';
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
@@ -20,12 +21,9 @@ const SdkButton: React.FC<SdkButtonProps> = ({
   className = '',
 }) => {
   return (
-    <button
+    <Button
       type="submit"
-      className={clsx(
-        className,
-        'w-full h-14 bg-[#325039] hover:bg-[#2a4330] text-white font-semibold text-lg rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3',
-      )}
+      className="w-full h-12 bg-green-800"
       onClick={onClick}
     >
       <div className="flex items-center gap-3">
@@ -40,7 +38,7 @@ const SdkButton: React.FC<SdkButtonProps> = ({
         </div>
         <span className="text-white font-semibold">{label}</span>
       </div>
-    </button>
+    </Button>
   );
 };
 

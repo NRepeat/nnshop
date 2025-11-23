@@ -1,17 +1,28 @@
 'use server';
+import { auth } from '@features/auth/lib/auth';
 import { ContactInfo } from '@features/checkout/schema/contactInfoSchema';
-import { cookies } from 'next/headers';
+import { prisma } from '@shared/lib/prisma';
+import { headers } from 'next/headers';
 
 export async function getContactInfo(): Promise<ContactInfo | null> {
   try {
-    const cookieStore = await cookies();
-    const contactInfoCookie = cookieStore.get('contactInfo');
-
-    if (!contactInfoCookie) {
-      return null;
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
+      throw new Error('Session not found');
     }
-
-    return JSON.parse(contactInfoCookie.value) as ContactInfo;
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    const contactInfo = await prisma.contactInformation.findUnique({
+      where: { userId: user.id },
+    });
+    if (!contactInfo) {
+      throw new Error('Contact info not found');
+    }
+    return contactInfo;
   } catch (error) {
     console.error('Error getting contact info:', error);
     return null;

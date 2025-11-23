@@ -43,6 +43,7 @@ export default async function Payment() {
     if (cartResult && cartResult.cart?.cost?.totalAmount) {
       cartAmount = parseFloat(cartResult.cart.cost.totalAmount.amount);
       currency = cartResult.cart.cost.totalAmount.currencyCode;
+      console.log(cartAmount, currency);
     }
     const completeCheckoutData = await getCompleteCheckoutData();
     if (!completeCheckoutData) {
@@ -51,11 +52,10 @@ export default async function Payment() {
     checkoutData = completeCheckoutData;
   } catch (error) {
     console.error('Error fetching cart data:', error);
-    cartAmount = 0;
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl lg:max-w-full mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Payment</h1>
         <p className="text-gray-600">

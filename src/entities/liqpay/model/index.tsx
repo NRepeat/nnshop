@@ -117,17 +117,15 @@ export class LiqPay {
     const signature = this.strToSign(this.privateKey + data + this.privateKey);
 
     return (
-      <>
-        <form
-          method="POST"
-          action="https://www.liqpay.ua/api/3/checkout"
-          acceptCharset="utf-8"
-        >
-          <input type="hidden" name="data" value={data} />
-          <input type="hidden" name="signature" value={signature} />
-          <SdkButton label={buttonText} />
-        </form>
-      </>
+      <form
+        method="POST"
+        action="https://www.liqpay.ua/api/3/checkout"
+        acceptCharset="utf-8"
+      >
+        <input type="hidden" name="data" value={data} />
+        <input type="hidden" name="signature" value={signature} />
+        <SdkButton label={buttonText} />
+      </form>
     );
   }
 
