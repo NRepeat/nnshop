@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useRouter, useParams } from 'next/navigation';
@@ -56,7 +56,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
     });
   };
 
-  async function onSubmit(data: DeliveryInfo) {
+  const onSubmit: SubmitHandler<DeliveryInfo> = async (data) => {
     try {
       const result = await saveDeliveryInfo(data);
 
@@ -70,7 +70,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
       console.error('Error saving delivery info:', error);
       toast.error(t('errorSavingDeliveryInformation'));
     }
-  }
+  };
 
   return (
     <div className="w-full max-w-4xl mx-auto">
