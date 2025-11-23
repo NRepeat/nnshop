@@ -30,6 +30,10 @@ const saveContactInfo = async (data: z.infer<typeof contactInfoSchema>) => {
               },
               update: {
                 countryCode: data.countryCode,
+                email: data.email,
+                lastName: data.lastName,
+                name: data.name,
+                phone: data.phone,
               },
               create: {
                 countryCode: data.countryCode,

@@ -5,6 +5,7 @@ import { prisma } from '@shared/lib/prisma';
 import { headers } from 'next/headers';
 import { DeliveryInfo } from '../model/deliverySchema';
 import { updateCartDeliveryPreferences } from '@entities/cart/api/update-cart-delivery-preferences';
+import { ContactInformation } from '@prisma/client'; // Assuming ContactInformation Prisma model
 
 export async function saveDeliveryInfo(
   data: DeliveryInfo,
@@ -18,9 +19,16 @@ export async function saveDeliveryInfo(
     const transaction = await prisma.$transaction(async (tx) => {
       const user = await tx.user.findUnique({
         where: { id: session.user.id },
+        include: {
+          contactInformation: true, // Include contact information
+        },
       });
       if (!user) {
         throw new Error('User not found');
+      }
+
+      if (!user.contactInformation) {
+        throw new Error('Contact information not found for the user.');
       }
 
       // Upsert DeliveryInformation
@@ -85,7 +93,8 @@ export async function saveDeliveryInfo(
       if (sessionCart) {
         const cartUpdateResult = await updateCartDeliveryPreferences(
           sessionCart.cartToken,
-          data, // Pass the entire DeliveryInfo object
+          data, // Pass DeliveryInfo
+          user.contactInformation, // Pass ContactInformation
         );
 
         if (!cartUpdateResult.success) {

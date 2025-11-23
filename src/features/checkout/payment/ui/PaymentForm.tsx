@@ -68,7 +68,7 @@ export default function PaymentForm({
       if (!completeCheckoutData) {
         throw new Error('Checkout data not available.');
       }
-      const order = await createDraftOrder(formData, completeCheckoutData);
+      const order = await createDraftOrder(data, completeCheckoutData);
       if (order && result.success) {
         toast.success(t('paymentInformationSaved'));
 

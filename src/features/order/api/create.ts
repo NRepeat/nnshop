@@ -5,6 +5,7 @@ import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { headers } from 'next/headers';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
+import { PaymentInfo } from '@features/checkout/payment/schema/paymentSchema';
 
 const DRAFT_ORDER_CREATE_MUTATION = `
   mutation draftOrderCreate($input: DraftOrderInput!) {
@@ -32,6 +33,7 @@ const DRAFT_ORDER_CREATE_MUTATION = `
 `;
 
 export async function createDraftOrder(
+  paymentData: PaymentInfo,
   completeCheckoutData: CheckoutData,
 ): Promise<{
   success: boolean;

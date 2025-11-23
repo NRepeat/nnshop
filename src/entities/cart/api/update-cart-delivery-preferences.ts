@@ -8,6 +8,7 @@ import { revalidateTag } from 'next/cache';
 import { headers } from 'next/headers';
 import { getCart } from './get';
 import { DeliveryInfo } from '@features/checkout/delivery/model/deliverySchema';
+import { ContactInformation } from '@prisma/client'; // Assuming ContactInformation Prisma model
 
 const CART_BUYER_IDENTITY_UPDATE_MUTATION = `
   mutation cartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {
@@ -85,13 +86,16 @@ const CART_DELIVERY_ADDRESSES_ADD_MUTATION = `
 
 export async function updateCartDeliveryPreferences(
   cartId: string,
-  deliveryInfo: DeliveryInfo, // Changed to DeliveryInfo
+  deliveryInfo: DeliveryInfo,
+  contactInfo: ContactInformation, // Added ContactInformation
 ): Promise<{ success: boolean; cart?: Cart; errors?: string[] }> {
   console.log(
     'updateCartDeliveryPreferences: Received cartId:',
     cartId,
     'deliveryInfo:',
     JSON.stringify(deliveryInfo),
+    'contactInfo:',
+    JSON.stringify(contactInfo),
   );
 
   try {
@@ -116,214 +120,118 @@ export async function updateCartDeliveryPreferences(
       throw new Error('Cart not found');
     }
 
+    // Determine the delivery address input based on delivery method
+    let deliveryAddressInput: any;
+
     if (deliveryInfo.deliveryMethod === 'novaPoshta') {
       console.log(
         'updateCartDeliveryPreferences: Handling Nova Poshta delivery method.',
       );
+      // For Nova Poshta, we construct an address from department info
+      // Fallback to general delivery address if department address is not fully available
+      const departmentAddress = deliveryInfo.novaPoshtaDepartment?.addressParts;
+      const fullAddress =
+        departmentAddress?.street && departmentAddress?.building
+          ? `${departmentAddress.street}, ${departmentAddress.building}`
+          : deliveryInfo.novaPoshtaDepartment?.shortName ||
+            deliveryInfo.address; // Fallback to shortName or general address
 
-      // Use existing buyer identity update for Nova Poshta pickup points
-      const currentCartResult = await getCart(sessionCart?.cartToken);
-      let existingBuyerIdentity = {};
-
-      if (currentCartResult && currentCartResult.cart?.buyerIdentity) {
-        existingBuyerIdentity = {
-          email: currentCartResult.cart.buyerIdentity.email,
-          phone: currentCartResult.cart.buyerIdentity.phone,
-          countryCode: currentCartResult.cart.buyerIdentity.countryCode,
-        };
-      }
-      console.log(
-        'updateCartDeliveryPreferences: Existing buyer identity:',
-        JSON.stringify(existingBuyerIdentity),
-      );
-
-      let pickupHandle: string[] | undefined;
-      let coordinatesObject:
-        | { latitude: number; longitude: number; countryCode: string }
-        | undefined;
-
-      if (deliveryInfo.novaPoshtaDepartment?.id) {
-        pickupHandle = [String(deliveryInfo.novaPoshtaDepartment.id)];
-
-        if (deliveryInfo.novaPoshtaDepartment.coordinates) {
-          coordinatesObject = {
-            ...deliveryInfo.novaPoshtaDepartment.coordinates,
-            countryCode: 'UA', // Default to Ukraine for Nova Poshta
-          };
-        }
-      }
-
-      const buyerIdentity = {
-        ...existingBuyerIdentity,
-        preferences: {
-          delivery: {
-            deliveryMethod: ['PICKUP_POINT'], // Assuming PICKUP_POINT for Nova Poshta
-            pickupHandle: pickupHandle,
-            coordinates: coordinatesObject,
-          },
-        },
+      deliveryAddressInput = {
+        address1: fullAddress || '',
+        city: departmentAddress?.city || deliveryInfo.city || '',
+        country: deliveryInfo.country || 'UA', // Assume UA if not provided
+        firstName: contactInfo.name || '',
+        lastName: contactInfo.lastName || '',
+        phone: contactInfo.phone || '',
+        zip: deliveryInfo.postalCode || '',
+        address2:
+          departmentAddress?.building || deliveryInfo.apartment || undefined,
       };
-      console.log(
-        'updateCartDeliveryPreferences: Constructed buyerIdentity for Nova Poshta:',
-        JSON.stringify(buyerIdentity),
-      );
-
-      const response = await storefrontClient.request<{
-        cartBuyerIdentityUpdate: {
-          cart: Cart | null;
-          userErrors: CartUserError[];
-          warnings: { message: string }[];
-        };
-      }>({
-        query: CART_BUYER_IDENTITY_UPDATE_MUTATION,
-        variables: {
-          cartId,
-          buyerIdentity,
-        },
-      });
 
       console.log(
-        'updateCartDeliveryPreferences: Shopify cartBuyerIdentityUpdate response:',
-        JSON.stringify(response),
+        'updateCartDeliveryPreferences: Constructed deliveryAddressInput for Nova Poshta:',
+        JSON.stringify(deliveryAddressInput),
       );
-
-      if (response.cartBuyerIdentityUpdate.userErrors.length > 0) {
-        console.error(
-          'updateCartDeliveryPreferences: Shopify user errors for Nova Poshta:',
-          response.cartBuyerIdentityUpdate.userErrors,
-        );
-        return {
-          success: false,
-          errors: response.cartBuyerIdentityUpdate.userErrors.map(
-            (error) => error.message,
-          ),
-        };
-      }
-
-      if (!response.cartBuyerIdentityUpdate.cart) {
-        console.error(
-          'updateCartDeliveryPreferences: No cart returned from Shopify for Nova Poshta update.',
-        );
-        return {
-          success: false,
-          errors: ['Failed to update cart delivery preferences'],
-        };
-      }
-
-      revalidateTag(CART_TAGS.CART);
-      revalidateTag(CART_TAGS.CART_SESSION);
-
-      console.log(
-        'updateCartDeliveryPreferences: Nova Poshta delivery preferences updated successfully!',
-      );
-      return {
-        success: true,
-        cart: response.cartBuyerIdentityUpdate.cart,
-      };
     } else if (deliveryInfo.deliveryMethod === 'ukrPoshta') {
       console.log(
         'updateCartDeliveryPreferences: Handling UkrPoshta delivery method.',
       );
-
-      // Need to fetch ContactInfo here to get firstName, lastName, phone
-      const currentCartResult = await getCart(sessionCart?.cartToken);
-      let contactInfo = {
-        firstName: '',
-        lastName: '',
-        phone: '',
-      };
-      if (
-        currentCartResult &&
-        currentCartResult.cart?.buyerIdentity?.customer
-      ) {
-        contactInfo.firstName =
-          currentCartResult.cart.buyerIdentity.customer.firstName || '';
-        contactInfo.lastName =
-          currentCartResult.cart.buyerIdentity.customer.lastName || '';
-        contactInfo.phone = currentCartResult.cart.buyerIdentity.phone || '';
-      }
-      console.log(
-        'updateCartDeliveryPreferences: Fetched contactInfo for UkrPoshta:',
-        JSON.stringify(contactInfo),
-      );
-
-      const cartDeliveryAddressInput = {
-        address: {
-          address1: deliveryInfo.address,
-          address2: deliveryInfo.apartment,
-          city: deliveryInfo.city,
-          country: deliveryInfo.country,
-          firstName: contactInfo.firstName,
-          lastName: contactInfo.lastName,
-          phone: contactInfo.phone,
-          zip: deliveryInfo.postalCode,
-        },
+      // For UkrPoshta, use the provided address fields directly
+      deliveryAddressInput = {
+        address1: deliveryInfo.address || '',
+        city: deliveryInfo.city || '',
+        country: deliveryInfo.country || '',
+        firstName: contactInfo.name || '',
+        lastName: contactInfo.lastName || '',
+        phone: contactInfo.phone || '',
+        zip: deliveryInfo.postalCode || '',
+        address2: deliveryInfo.apartment || undefined,
       };
       console.log(
-        'updateCartDeliveryPreferences: Constructed cartDeliveryAddressInput for UkrPoshta:',
-        JSON.stringify(cartDeliveryAddressInput),
+        'updateCartDeliveryPreferences: Constructed deliveryAddressInput for UkrPoshta:',
+        JSON.stringify(deliveryAddressInput),
       );
-
-      const response = await storefrontClient.request<{
-        cartDeliveryAddressesAdd: {
-          cart: Cart | null;
-          userErrors: CartUserError[];
-        };
-      }>({
-        query: CART_DELIVERY_ADDRESSES_ADD_MUTATION,
-        variables: {
-          cartId,
-          deliveryAddresses: [cartDeliveryAddressInput],
-        },
-      });
-
-      console.log(
-        'updateCartDeliveryPreferences: Shopify cartDeliveryAddressesAdd response:',
-        JSON.stringify(response),
-      );
-
-      if (response.cartDeliveryAddressesAdd.userErrors.length > 0) {
-        console.error(
-          'updateCartDeliveryPreferences: Shopify user errors for UkrPoshta:',
-          response.cartDeliveryAddressesAdd.userErrors,
-        );
-        return {
-          success: false,
-          errors: response.cartDeliveryAddressesAdd.userErrors.map(
-            (error) => error.message,
-          ),
-        };
-      }
-
-      if (!response.cartDeliveryAddressesAdd.cart) {
-        console.error(
-          'updateCartDeliveryPreferences: No cart returned from Shopify for UkrPoshta address add.',
-        );
-        return {
-          success: false,
-          errors: ['Failed to add cart delivery address'],
-        };
-      }
-
-      revalidateTag(CART_TAGS.CART);
-      revalidateTag(CART_TAGS.CART_SESSION);
-
-      console.log(
-        'updateCartDeliveryPreferences: UkrPoshta delivery address added successfully!',
+    } else {
+      console.warn(
+        'updateCartDeliveryPreferences: Unsupported delivery method:',
+        deliveryInfo.deliveryMethod,
       );
       return {
-        success: true,
-        cart: response.cartDeliveryAddressesAdd.cart,
+        success: false,
+        errors: ['Unsupported delivery method'],
       };
     }
 
-    console.warn(
-      'updateCartDeliveryPreferences: Unsupported delivery method:',
-      deliveryInfo.deliveryMethod,
+    const response = await storefrontClient.request<{
+      cartDeliveryAddressesAdd: {
+        cart: Cart | null;
+        userErrors: CartUserError[];
+      };
+    }>({
+      query: CART_DELIVERY_ADDRESSES_ADD_MUTATION,
+      variables: {
+        cartId,
+        deliveryAddresses: [{ address: deliveryAddressInput }],
+      },
+    });
+
+    console.log(
+      'updateCartDeliveryPreferences: Shopify cartDeliveryAddressesAdd response:',
+      JSON.stringify(response),
+    );
+
+    if (response.cartDeliveryAddressesAdd.userErrors.length > 0) {
+      console.error(
+        'updateCartDeliveryPreferences: Shopify user errors adding delivery address:',
+        response.cartDeliveryAddressesAdd.userErrors,
+      );
+      return {
+        success: false,
+        errors: response.cartDeliveryAddressesAdd.userErrors.map(
+          (error) => error.message,
+        ),
+      };
+    }
+
+    if (!response.cartDeliveryAddressesAdd.cart) {
+      console.error(
+        'updateCartDeliveryPreferences: No cart returned from Shopify after adding delivery address.',
+      );
+      return {
+        success: false,
+        errors: ['Failed to add cart delivery address'],
+      };
+    }
+
+    revalidateTag(CART_TAGS.CART);
+    revalidateTag(CART_TAGS.CART_SESSION);
+
+    console.log(
+      'updateCartDeliveryPreferences: Cart delivery address added successfully!',
     );
     return {
-      success: false,
-      errors: ['Unsupported delivery method'],
+      success: true,
+      cart: response.cartDeliveryAddressesAdd.cart,
     };
   } catch (error) {
     console.error(
@@ -333,7 +241,8 @@ export async function updateCartDeliveryPreferences(
         stack: error instanceof Error ? error.stack : undefined,
         cartId: cartId,
         deliveryInfo: JSON.stringify(deliveryInfo),
-        errorObject: JSON.stringify(error), // Log the full error object if possible
+        contactInfo: JSON.stringify(contactInfo),
+        errorObject: JSON.stringify(error),
       },
     );
     return {
