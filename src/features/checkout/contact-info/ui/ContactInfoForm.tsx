@@ -98,7 +98,7 @@ export default function ContactInfoForm() {
                     )}
                   />
                 </FormControl>
-                <FormMessage className="text-red-500 text-sm" />
+                <FormMessage className="text-red-500 text-sm h-5" />
               </FormItem>
             )}
           />
@@ -122,7 +122,7 @@ export default function ContactInfoForm() {
                     )}
                   />
                 </FormControl>
-                <FormMessage className="text-red-500 text-sm" />
+                <FormMessage className="text-red-500 text-sm h-5" />
               </FormItem>
             )}
           />
@@ -148,7 +148,7 @@ export default function ContactInfoForm() {
                   )}
                 />{' '}
               </FormControl>
-              <FormMessage className="text-red-500 text-sm" />
+              <FormMessage className="text-red-500 text-sm h-5" />
             </FormItem>
           )}
         />
@@ -174,7 +174,7 @@ export default function ContactInfoForm() {
                     )}
                   />
                 </FormControl>
-                <FormMessage className="text-red-500 text-sm" />
+                <FormMessage className="text-red-500 text-sm h-5" />
               </FormItem>
             )}
           />
@@ -199,7 +199,7 @@ export default function ContactInfoForm() {
                     )}
                   />
                 </FormControl>
-                <FormMessage className="text-red-500 text-sm" />
+                <FormMessage className="text-red-500 text-sm h-5" />
               </FormItem>
             )}
           />
