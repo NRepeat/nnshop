@@ -1,73 +1,111 @@
 'use server';
-import { cookies, headers } from 'next/headers';
-import { DeliveryInfo, deliverySchema } from '../schema/deliverySchema';
+
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
+import { headers } from 'next/headers';
+import { DeliveryInfo } from '../schema/deliverySchema';
 import { updateCartDeliveryPreferences } from '@entities/cart/api/update-cart-delivery-preferences';
 
 export async function saveDeliveryInfo(
   data: DeliveryInfo,
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const validationResult = deliverySchema.safeParse(data);
-
-    if (!validationResult.success) {
-      return {
-        success: false,
-        message: 'Please fix the validation errors.',
-      };
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
+      return { success: false, message: 'Session not found' };
     }
 
-    const deliveryInfo = validationResult.data;
-
-    const cookieStore = await cookies();
-    const deliveryInfoJson = JSON.stringify(deliveryInfo);
-
-    cookieStore.set('deliveryInfo', deliveryInfoJson, {
-      secure: true,
-      httpOnly: true,
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      sameSite: 'lax',
-    });
-
-    try {
-      const session = await auth.api.getSession({ headers: await headers() });
-      if (!session) {
-        throw new Error('Session not found');
+    const transaction = await prisma.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({
+        where: { id: session.user.id },
+      });
+      if (!user) {
+        throw new Error('User not found');
       }
-      const sessionCart = await prisma.cart.findUnique({
+
+      // Upsert DeliveryInformation
+      const updatedDeliveryInfo = await tx.deliveryInformation.upsert({
+        where: { userId: user.id },
+        create: {
+          userId: user.id,
+          deliveryMethod: data.deliveryMethod,
+          country: data.country,
+          address: data.address,
+          apartment: data.apartment,
+          city: data.city,
+          postalCode: data.postalCode,
+        },
+        update: {
+          deliveryMethod: data.deliveryMethod,
+          country: data.country,
+          address: data.address,
+          apartment: data.apartment,
+          city: data.city,
+          postalCode: data.postalCode,
+        },
+      });
+
+      if (data.deliveryMethod === 'novaPoshta' && data.novaPoshtaDepartment) {
+        // Upsert NovaPoshtaDepartment
+        await tx.novaPoshtaDepartment.upsert({
+          where: { deliveryInformationId: updatedDeliveryInfo.id },
+          create: {
+            id: data.novaPoshtaDepartment.id,
+            shortName: data.novaPoshtaDepartment.shortName,
+            city: data.novaPoshtaDepartment.addressParts?.city,
+            street: data.novaPoshtaDepartment.addressParts?.street,
+            building: data.novaPoshtaDepartment.addressParts?.building,
+            latitude: data.novaPoshtaDepartment.coordinates?.latitude,
+            longitude: data.novaPoshtaDepartment.coordinates?.longitude,
+            deliveryInformationId: updatedDeliveryInfo.id,
+          },
+          update: {
+            id: data.novaPoshtaDepartment.id,
+            shortName: data.novaPoshtaDepartment.shortName,
+            city: data.novaPoshtaDepartment.addressParts?.city,
+            street: data.novaPoshtaDepartment.addressParts?.street,
+            building: data.novaPoshtaDepartment.addressParts?.building,
+            latitude: data.novaPoshtaDepartment.coordinates?.latitude,
+            longitude: data.novaPoshtaDepartment.coordinates?.longitude,
+          },
+        });
+      } else if (data.deliveryMethod === 'ukrPoshta') {
+        // Disconnect/delete NovaPoshtaDepartment if it exists and method is UkrPoshta
+        await tx.novaPoshtaDepartment.deleteMany({
+          where: { deliveryInformationId: updatedDeliveryInfo.id },
+        });
+      }
+
+      // Existing Shopify update logic (if needed, this would be integrated here)
+      const sessionCart = await tx.cart.findUnique({
         where: {
           userId: session.user.id,
         },
       });
       if (sessionCart) {
-        // Map delivery method to Shopify preference format
         const deliveryMethodMapping: Record<string, string> = {
           novaPoshta: 'PICKUP_POINT',
           ukrPoshta: 'SHIPPING',
         };
 
         const shopifyDeliveryMethod =
-          deliveryMethodMapping[deliveryInfo.deliveryMethod] || 'SHIPPING';
+          deliveryMethodMapping[data.deliveryMethod] || 'SHIPPING';
 
-        // Prepare pickup handle and coordinates for Nova Poshta
         let pickupHandle: string[] | undefined;
         let coordinatesObject:
           | { latitude: number; longitude: number; countryCode: string }
           | undefined;
 
         if (
-          deliveryInfo.deliveryMethod === 'novaPoshta' &&
-          deliveryInfo.novaPoshtaDepartment?.id
+          data.deliveryMethod === 'novaPoshta' &&
+          data.novaPoshtaDepartment?.id
         ) {
-          // Ensure pickupHandle is string array
-          pickupHandle = [String(deliveryInfo.novaPoshtaDepartment.id)];
+          pickupHandle = [String(data.novaPoshtaDepartment.id)];
 
-          // Add coordinates if available
-          if (deliveryInfo.novaPoshtaDepartment.coordinates) {
+          if (data.novaPoshtaDepartment.coordinates) {
             coordinatesObject = {
-              ...deliveryInfo.novaPoshtaDepartment.coordinates,
-              countryCode: 'UA', // Default to Ukraine for Nova Poshta
+              ...data.novaPoshtaDepartment.coordinates,
+              countryCode: 'UA',
             };
           }
         }
@@ -90,9 +128,7 @@ export async function saveDeliveryInfo(
           console.log(' Delivery preferences updated successfully!');
         }
       }
-    } catch (cartError) {
-      console.warn('Error updating cart delivery preferences:', cartError);
-    }
+    });
 
     return {
       success: true,

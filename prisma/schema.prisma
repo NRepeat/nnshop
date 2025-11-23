@@ -8,19 +8,20 @@ datasource db {
 }
 
 model User {
-  id                 String               @id
-  name               String
-  email              String
-  emailVerified      Boolean              @default(false)
-  image              String?
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @default(now()) @updatedAt
-  sessions           Session[]
-  accounts           Account[]
-  orders             Order[]
-  isAnonymous        Boolean?
-  cart               Cart[]
-  contactInformation ContactInformation[]
+  id                  String               @id
+  name                String
+  email               String
+  emailVerified       Boolean              @default(false)
+  image               String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @default(now()) @updatedAt
+  sessions            Session[]
+  accounts            Account[]
+  orders              Order[]
+  isAnonymous         Boolean?
+  cart                Cart[]
+  contactInformation  ContactInformation?
+  deliveryInformation DeliveryInformation?
 
   @@unique([email])
   @@map("user")
@@ -35,6 +36,31 @@ model ContactInformation {
   countryCode String
   user        User   @relation(fields: [userId], references: [id])
   userId      String @unique
+}
+
+model DeliveryInformation {
+  id                   String                @id @default(cuid())
+  deliveryMethod       String
+  country              String?
+  address              String?
+  apartment            String?
+  city                 String?
+  postalCode           String?
+  user                 User                  @relation(fields: [userId], references: [id])
+  userId               String                @unique
+  novaPoshtaDepartment NovaPoshtaDepartment?
+}
+
+model NovaPoshtaDepartment {
+  id                    String              @id
+  shortName             String
+  city                  String?
+  street                String?
+  building              String?
+  latitude              Float?
+  longitude             Float?
+  deliveryInformation   DeliveryInformation @relation(fields: [deliveryInformationId], references: [id])
+  deliveryInformationId String              @unique
 }
 
 model Session {
