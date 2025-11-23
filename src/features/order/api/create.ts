@@ -1,7 +1,7 @@
 'use server';
 import { auth } from '@features/auth/lib/auth';
 import { getCart } from '@features/cart/api/get';
-import prisma from '@shared/lib/prisma';
+import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { headers } from 'next/headers';
 

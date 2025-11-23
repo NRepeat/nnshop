@@ -1,6 +1,6 @@
 import { headers } from 'next/headers';
 import { auth } from '@features/auth/lib/auth';
-import prisma from '@shared/lib/prisma';
+import { prisma } from '@shared/lib/prisma';
 import { getCart } from '@entities/cart/api/get';
 import PaymentForm from './PaymentForm';
 import { getPaymentInfo } from '../api/getPaymentInfo';

@@ -2,7 +2,7 @@
 import { auth } from '@features/auth/lib/auth';
 import createCart from './create';
 import { headers } from 'next/headers';
-import prisma from '@shared/lib/prisma';
+import { prisma } from '@shared/lib/prisma';
 import linkProduct from './link-product';
 import { revalidateTag } from 'next/cache';
 import { CART_TAGS } from '@shared/lib/cached-fetch';

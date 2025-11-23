@@ -1,10 +1,10 @@
-import prisma from '../../../shared/lib/prisma';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { oauthShopifyClient } from './shopify/client';
 import { nextCookies } from 'better-auth/next-js';
 import { anonymous } from 'better-auth/plugins';
 import { anonymousCartBuyerIdentityUpdate } from '@entities/cart/api/anonymous-cart-buyer-identity-update';
+import { prisma } from '@shared/lib/prisma';
 
 const betterAuthSecret = process.env.BETTER_AUTH_SECRET;
 const betterAuthUrl = process.env.NEXT_PUBLIC_BASE_URL;

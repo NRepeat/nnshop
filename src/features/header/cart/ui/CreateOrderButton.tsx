@@ -12,7 +12,7 @@ export const CreateOrderButton = ({ cartId }: { cartId: string }) => {
   const nav = useRouter();
   const handleCreateOrder = () => {
     startTransition(async () => {
-      redirect('/checkout');
+      redirect('/checkout/info');
       // const { success, order, errors } = await createDraftOrder(cartId);
     });
   };

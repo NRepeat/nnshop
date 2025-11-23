@@ -61,7 +61,7 @@ export default function ContactInfoForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         {form.formState.isSubmitted &&
           Object.keys(form.formState.errors).length > 0 && (
             <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -83,7 +83,7 @@ export default function ContactInfoForm() {
             control={form.control}
             name="name"
             render={({ field }) => (
-              <FormItem className="sm:col-span-1">
+              <FormItem className="sm:col-span-1 relative">
                 <FormLabel className="text-sm font-medium">
                   {t('firstName')}
                 </FormLabel>
@@ -98,7 +98,7 @@ export default function ContactInfoForm() {
                     )}
                   />
                 </FormControl>
-                <FormMessage className="text-red-500 text-sm h-5" />
+                <FormMessage className="text-red-500 text-sm absolute -bottom-6 min-h-5" />
               </FormItem>
             )}
           />
@@ -107,7 +107,7 @@ export default function ContactInfoForm() {
             control={form.control}
             name="lastName"
             render={({ field }) => (
-              <FormItem className="sm:col-span-1">
+              <FormItem className="sm:col-span-1 relative">
                 <FormLabel className="text-sm font-medium">
                   {t('lastName')}
                 </FormLabel>
@@ -118,11 +118,11 @@ export default function ContactInfoForm() {
                     className={clsx(
                       form.formState.isSubmitted &&
                         form.formState.errors.lastName &&
-                        'border-red-500 focus-visible:ring-red-500',
+                        'border-red-500 focus-visible:ring-red-500 ',
                     )}
                   />
                 </FormControl>
-                <FormMessage className="text-red-500 text-sm h-5" />
+                <FormMessage className="text-red-500 text-sm absolute -bottom-6 min-h-5" />
               </FormItem>
             )}
           />
@@ -132,7 +132,7 @@ export default function ContactInfoForm() {
           control={form.control}
           name="email"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className=" relative">
               <FormLabel className="text-sm font-medium">
                 {t('emailAddress')}
               </FormLabel>
@@ -148,7 +148,7 @@ export default function ContactInfoForm() {
                   )}
                 />
               </FormControl>
-              <FormMessage className="text-red-500 text-sm h-5" />
+              <FormMessage className="text-red-500 text-sm absolute -bottom-6 min-h-5" />
             </FormItem>
           )}
         />
@@ -158,7 +158,7 @@ export default function ContactInfoForm() {
             control={form.control}
             name="countryCode"
             render={({ field }) => (
-              <FormItem className="sm:col-span-1">
+              <FormItem className="sm:col-span-1 relative">
                 <FormLabel className="text-sm font-medium">
                   {t('country')}
                 </FormLabel>
@@ -174,7 +174,7 @@ export default function ContactInfoForm() {
                     )}
                   />
                 </FormControl>
-                <FormMessage className="text-red-500 text-sm h-5" />
+                <FormMessage className="text-red-500 text-sm absolute -bottom-6 min-h-5" />
               </FormItem>
             )}
           />
@@ -183,7 +183,7 @@ export default function ContactInfoForm() {
             control={form.control}
             name="phone"
             render={({ field }) => (
-              <FormItem className="sm:col-span-2">
+              <FormItem className="sm:col-span-2 relative">
                 <FormLabel className="text-sm font-medium">
                   {t('phoneNumber')}
                 </FormLabel>
@@ -199,7 +199,7 @@ export default function ContactInfoForm() {
                     )}
                   />
                 </FormControl>
-                <FormMessage className="text-red-500 text-sm h-5" />
+                <FormMessage className="text-red-500 text-sm absolute -bottom-6 min-h-5" />
               </FormItem>
             )}
           />

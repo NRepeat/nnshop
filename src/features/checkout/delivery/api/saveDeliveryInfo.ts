@@ -2,7 +2,7 @@
 import { cookies, headers } from 'next/headers';
 import { DeliveryInfo, deliverySchema } from '../schema/deliverySchema';
 import { auth } from '@features/auth/lib/auth';
-import prisma from '@shared/lib/prisma';
+import { prisma } from '@shared/lib/prisma';
 import { updateCartDeliveryPreferences } from '@entities/cart/api/update-cart-delivery-preferences';
 
 export async function saveDeliveryInfo(

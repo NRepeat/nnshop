@@ -1,7 +1,7 @@
 'use server';
 import { auth } from '@features/auth/lib/auth';
 import { CART_TAGS } from '@shared/lib/cached-fetch';
-import prisma from '@shared/lib/prisma';
+import { prisma } from '@shared/lib/prisma';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { Cart, CartUserError } from '@shared/types/cart/types';
 import { revalidateTag } from 'next/cache';

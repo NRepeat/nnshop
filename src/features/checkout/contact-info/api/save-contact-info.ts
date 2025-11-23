@@ -1,7 +1,7 @@
 'use server';
 import { auth } from '@features/auth/lib/auth';
 import { contactInfoSchema } from '@features/checkout/schema/contactInfoSchema';
-import prisma from '@shared/lib/prisma';
+import { prisma } from '@shared/lib/prisma';
 import { headers } from 'next/headers';
 import z from 'zod';
 
@@ -11,8 +11,8 @@ const saveContactInfo = async (data: z.infer<typeof contactInfoSchema>) => {
     if (!session) {
       throw new Error('Session not found');
     }
-    await prisma.$transaction(async (tx) => {
-      const user = await tx.findUnique({
+    const tranaction = await prisma.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({
         where: {
           id: session.user.id,
         },
@@ -20,7 +20,7 @@ const saveContactInfo = async (data: z.infer<typeof contactInfoSchema>) => {
       if (!user) {
         throw new Error('User not found');
       }
-      await tx.user.update({
+      return await tx.user.update({
         where: { id: user.id },
         data: {
           contactInformation: {
@@ -43,6 +43,7 @@ const saveContactInfo = async (data: z.infer<typeof contactInfoSchema>) => {
         },
       });
     });
+    return tranaction;
   } catch (e) {
     throw new Error(String(e));
   }

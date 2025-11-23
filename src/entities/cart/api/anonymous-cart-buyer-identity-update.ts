@@ -1,5 +1,5 @@
 'use server';
-import prisma from '@shared/lib/prisma';
+import { prisma } from '@shared/lib/prisma';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { CartBuyerIdentityUpdatePayload } from '@shared/lib/shopify/types/storefront.types';
 import { Session, User } from 'better-auth';
