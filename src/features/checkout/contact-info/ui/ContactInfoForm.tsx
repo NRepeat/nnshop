@@ -19,6 +19,7 @@ import { Button } from '@shared/ui/button';
 import saveContactInfo from '../api/save-contact-info';
 import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
+import clsx from 'clsx';
 
 export default function ContactInfoForm() {
   const router = useRouter();
@@ -90,11 +91,11 @@ export default function ContactInfoForm() {
                   <Input
                     placeholder={t('enterYourName')}
                     {...field}
-                    className={
-                      form.formState.isSubmitted && form.formState.errors.name
-                        ? 'border-red-500 focus-visible:ring-red-500'
-                        : ''
-                    }
+                    className={clsx(
+                      form.formState.isSubmitted &&
+                        form.formState.errors.name &&
+                        'border-red-500 focus-visible:ring-red-500',
+                    )}
                   />
                 </FormControl>
                 <FormMessage className="text-red-500 text-sm" />
@@ -114,12 +115,11 @@ export default function ContactInfoForm() {
                   <Input
                     placeholder={t('enterYourLastName')}
                     {...field}
-                    className={
+                    className={clsx(
                       form.formState.isSubmitted &&
-                      form.formState.errors.lastName
-                        ? 'border-red-500 focus-visible:ring-red-500'
-                        : ''
-                    }
+                        form.formState.errors.lastName &&
+                        'border-red-500 focus-visible:ring-red-500',
+                    )}
                   />
                 </FormControl>
                 <FormMessage className="text-red-500 text-sm" />
@@ -141,12 +141,12 @@ export default function ContactInfoForm() {
                   type="email"
                   placeholder={t('enterYourEmail')}
                   {...field}
-                  className={
-                    form.formState.isSubmitted && form.formState.errors.email
-                      ? 'border-red-500 focus-visible:ring-red-500'
-                      : ''
-                  }
-                />
+                  className={clsx(
+                    form.formState.isSubmitted &&
+                      form.formState.errors.email &&
+                      'border-red-500 focus-visible:ring-red-500',
+                  )}
+                />{' '}
               </FormControl>
               <FormMessage className="text-red-500 text-sm" />
             </FormItem>
@@ -167,12 +167,11 @@ export default function ContactInfoForm() {
                     placeholder="UA"
                     maxLength={2}
                     {...field}
-                    className={
+                    className={clsx(
                       form.formState.isSubmitted &&
-                      form.formState.errors.countryCode
-                        ? 'border-red-500 focus-visible:ring-red-500'
-                        : ''
-                    }
+                        form.formState.errors.countryCode &&
+                        'border-red-500 focus-visible:ring-red-500',
+                    )}
                   />
                 </FormControl>
                 <FormMessage className="text-red-500 text-sm" />
@@ -193,11 +192,11 @@ export default function ContactInfoForm() {
                     type="tel"
                     placeholder="+380 50 123 45 67"
                     {...field}
-                    className={
-                      form.formState.isSubmitted && form.formState.errors.phone
-                        ? 'border-red-500 focus-visible:ring-red-500'
-                        : ''
-                    }
+                    className={clsx(
+                      form.formState.isSubmitted &&
+                        form.formState.errors.phone &&
+                        'border-red-500 focus-visible:ring-red-500',
+                    )}
                   />
                 </FormControl>
                 <FormMessage className="text-red-500 text-sm" />
