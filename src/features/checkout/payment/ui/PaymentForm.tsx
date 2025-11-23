@@ -39,7 +39,7 @@ export default function PaymentForm({
   const params = useParams();
   const locale = params.locale as string;
   const t = useTranslations('PaymentForm');
-
+  console.log('checkoutData', checkoutData);
   const paymentSchema = getPaymentSchema(t);
 
   const form = useForm<PaymentInfo>({

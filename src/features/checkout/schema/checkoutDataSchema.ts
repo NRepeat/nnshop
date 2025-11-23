@@ -1,9 +1,9 @@
 'use server';
 import { z } from 'zod';
-import { getPaymentSchema } from '../payment/model/paymentSchema';
 import { getTranslations } from 'next-intl/server';
-import { getContactInfoSchema } from '@features/checkout/contact-info/model/contactInfoSchema';
 import { getDeliverySchema } from '../delivery/model/deliverySchema';
+import { getContactInfoSchema } from '../contact-info/schema/contactInfoSchema';
+import { getPaymentSchema } from '../payment/schema/paymentSchema';
 
 export const getCheckoutDataSchema = async () => {
   const tPayment = await getTranslations('PaymentForm');

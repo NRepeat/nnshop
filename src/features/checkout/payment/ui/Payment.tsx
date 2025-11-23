@@ -7,6 +7,7 @@ import { generateOrderId } from '../api/generateOrderId';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
+import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 
 export default async function Payment() {
   const orderId = await generateOrderId();
@@ -15,7 +16,7 @@ export default async function Payment() {
   const liqpayPrivateKey = process.env.LIQPAY_PRIVATE_KEY;
 
   let existingPaymentInfo = null;
-  let checkoutData = null;
+  let checkoutData: CheckoutData | null = null;
   try {
     existingPaymentInfo = await getPaymentInfo();
   } catch (error) {
@@ -69,7 +70,7 @@ export default async function Payment() {
         currency={currency}
         liqpayPublicKey={liqpayPublicKey}
         liqpayPrivateKey={liqpayPrivateKey}
-        checkoutData={}
+        checkoutData={checkoutData}
       />
     </div>
   );
