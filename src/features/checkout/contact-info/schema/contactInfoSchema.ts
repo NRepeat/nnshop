@@ -1,9 +1,14 @@
 import { z } from 'zod';
 
-export const contactInfoSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  email: z.string().email('Invalid email address'),
-  phone: z.string().min(1, 'Phone is required'),
-  countryCode: z.string().min(1, 'Country code is required'),
-});
+export const getContactInfoSchema = (t: (key: string) => string) => {
+  return z.object({
+    name: z.string().min(1, t('nameRequired')),
+    lastName: z.string().min(1, t('lastNameRequired')),
+    email: z.string().email(t('invalidEmail')),
+    phone: z
+      .string()
+      .min(1, t('phoneRequired'))
+      .regex(/^\+?[1-9]\d{1,14}$/, t('invalidPhoneNumber')),
+    countryCode: z.string().min(1, t('countryCodeRequired')),
+  });
+};

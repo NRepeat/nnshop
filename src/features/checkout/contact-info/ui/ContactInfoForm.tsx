@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useRouter, useParams } from 'next/navigation';
-import { contactInfoSchema } from '../schema/contactInfoSchema';
+import { getContactInfoSchema } from '../schema/contactInfoSchema';
 import {
   Form,
   FormControl,
@@ -16,13 +16,20 @@ import {
 } from '@shared/ui/form';
 import { Input } from '@shared/ui/input';
 import { Button } from '@shared/ui/button';
+import saveContactInfo from '../api/save-contact-info';
+import { useTranslations } from 'next-intl';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export default function ContactInfoForm() {
   const router = useRouter();
   const params = useParams();
   const locale = params.locale as string;
+  const t = useTranslations('ContactInfoForm');
+
+  const contactInfoSchema = getContactInfoSchema(t);
 
   const form = useForm<z.infer<typeof contactInfoSchema>>({
+    resolver: zodResolver(contactInfoSchema),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
     shouldFocusError: false,
@@ -37,32 +44,17 @@ export default function ContactInfoForm() {
   });
 
   async function onSubmit(data: z.infer<typeof contactInfoSchema>) {
-    const validationResult = contactInfoSchema.safeParse(data);
-
-    if (!validationResult.success) {
-      const errors = validationResult.error.flatten().fieldErrors;
-      Object.entries(errors).forEach(([field, messages]) => {
-        if (messages && messages[0]) {
-          form.setError(field as keyof typeof data, {
-            type: 'manual',
-            message: messages[0],
-          });
-        }
-      });
-      return;
-    }
-
     try {
       const result = await saveContactInfo(data);
-      if (result.success) {
-        toast.success(result.message);
+      if (result) {
+        toast.success(t('contactInformationSaved'));
         router.push(`/${locale}/checkout/delivery`);
       } else {
-        toast.error(result.message);
+        toast.error(t('errorSavingContactInformation'));
       }
     } catch (error) {
       console.error('Error saving contact info:', error);
-      toast.error('An error occurred while saving your contact information.');
+      toast.error(t('errorSavingContactInformation'));
     }
   }
 
@@ -73,19 +65,18 @@ export default function ContactInfoForm() {
           Object.keys(form.formState.errors).length > 0 && (
             <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
               <h4 className="text-red-800 font-medium text-sm mb-2">
-                Please fix the following errors:
+                {t('pleaseFixErrors')}
               </h4>
               <ul className="text-red-700 text-sm space-y-1">
                 {Object.entries(form.formState.errors).map(([field, error]) => (
                   <li key={field} className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></span>
+                    <span className="w-2 h-2 bg-red-500 rounded-full shrink-0"></span>
                     {error?.message}
                   </li>
                 ))}
               </ul>
             </div>
           )}
-        {/* Mobile-optimized form grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -93,11 +84,11 @@ export default function ContactInfoForm() {
             render={({ field }) => (
               <FormItem className="sm:col-span-1">
                 <FormLabel className="text-sm font-medium">
-                  First Name
+                  {t('firstName')}
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter your name"
+                    placeholder={t('enterYourName')}
                     {...field}
                     className={
                       form.formState.isSubmitted && form.formState.errors.name
@@ -116,10 +107,12 @@ export default function ContactInfoForm() {
             name="lastName"
             render={({ field }) => (
               <FormItem className="sm:col-span-1">
-                <FormLabel className="text-sm font-medium">Last Name</FormLabel>
+                <FormLabel className="text-sm font-medium">
+                  {t('lastName')}
+                </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter your last name"
+                    placeholder={t('enterYourLastName')}
                     {...field}
                     className={
                       form.formState.isSubmitted &&
@@ -141,12 +134,12 @@ export default function ContactInfoForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-sm font-medium">
-                Email Address
+                {t('emailAddress')}
               </FormLabel>
               <FormControl>
                 <Input
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t('enterYourEmail')}
                   {...field}
                   className={
                     form.formState.isSubmitted && form.formState.errors.email
@@ -166,7 +159,9 @@ export default function ContactInfoForm() {
             name="countryCode"
             render={({ field }) => (
               <FormItem className="sm:col-span-1">
-                <FormLabel className="text-sm font-medium">Country</FormLabel>
+                <FormLabel className="text-sm font-medium">
+                  {t('country')}
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="UA"
@@ -191,7 +186,7 @@ export default function ContactInfoForm() {
             render={({ field }) => (
               <FormItem className="sm:col-span-2">
                 <FormLabel className="text-sm font-medium">
-                  Phone Number
+                  {t('phoneNumber')}
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -213,11 +208,11 @@ export default function ContactInfoForm() {
 
         <Button
           type="submit"
-          className="w-full bg-[#325039] hover:bg-[#2a4330] text-white"
+          className="w-full rounded-none"
           size="lg"
-          // disabled={isSubmitting}
+          disabled={form.formState.isSubmitting}
         >
-          {/*{isSubmitting ? 'Saving...' : 'Continue to Delivery'}*/}
+          {form.formState.isSubmitting ? t('saving') : t('continueToDelivery')}
         </Button>
       </form>
     </Form>

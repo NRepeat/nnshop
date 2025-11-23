@@ -305,5 +305,26 @@
     "title": "Сторінку не знайдено",
     "description": "Сторінка, яку ви шукаєте, не існує.",
     "goHome": "Повернутися на головну"
+  },
+  "ContactInfoForm": {
+    "contactInformationSaved": "Контактну інформацію успішно збережено",
+    "errorSavingContactInformation": "Під час збереження вашої контактної інформації сталася помилка.",
+    "pleaseFixErrors": "Будь ласка, виправте наступні помилки:",
+    "firstName": "Ім'я",
+    "enterYourName": "Введіть ваше ім'я",
+    "lastName": "Прізвище",
+    "enterYourLastName": "Введіть ваше прізвище",
+    "emailAddress": "Адреса електронної пошти",
+    "enterYourEmail": "Введіть вашу електронну пошту",
+    "country": "Країна",
+    "phoneNumber": "Номер телефону",
+    "saving": "Збереження...",
+    "continueToDelivery": "Перейти до доставки",
+    "invalidPhoneNumber": "Невірний номер телефону",
+    "nameRequired": "Ім'я є обов'язковим",
+    "lastNameRequired": "Прізвище є обов'язковим",
+    "invalidEmail": "Невірна адреса електронної пошти",
+    "phoneRequired": "Телефон є обов'язковим",
+    "countryCodeRequired": "Код країни є обов'язковим"
   }
 }

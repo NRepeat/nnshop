@@ -327,5 +327,26 @@
     "title": "Page Not Found",
     "description": "The page you are looking for does not exist.",
     "goHome": "Go back to Home"
+  },
+  "ContactInfoForm": {
+    "contactInformationSaved": "Contact information saved successfully",
+    "errorSavingContactInformation": "An error occurred while saving your contact information.",
+    "pleaseFixErrors": "Please fix the following errors:",
+    "firstName": "First Name",
+    "enterYourName": "Enter your name",
+    "lastName": "Last Name",
+    "enterYourLastName": "Enter your last name",
+    "emailAddress": "Email Address",
+    "enterYourEmail": "Enter your email",
+    "country": "Country",
+    "phoneNumber": "Phone Number",
+    "saving": "Saving...",
+    "continueToDelivery": "Continue to Delivery",
+    "invalidPhoneNumber": "Invalid phone number",
+    "nameRequired": "Name is required",
+    "lastNameRequired": "Last name is required",
+    "invalidEmail": "Invalid email address",
+    "phoneRequired": "Phone is required",
+    "countryCodeRequired": "Country code is required"
   }
 }
