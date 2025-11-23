@@ -1,2 +1,2 @@
-export * as deliverySchema from './schema/deliverySchema';
+export * as deliverySchema from './model/deliverySchema';
 export * from './ui';

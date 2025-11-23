@@ -22,7 +22,7 @@ export default function NovaPoshtaForm({
   const novaPoshtaDepartment = watch('novaPoshtaDepartment');
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+    <div className=" border border-gray-200 p-6 ">
       <FormField
         control={control}
         name="novaPoshtaDepartment"

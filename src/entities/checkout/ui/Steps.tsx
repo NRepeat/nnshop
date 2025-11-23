@@ -23,7 +23,7 @@ const steps = {
 
 export const Steps = ({ slug }: { slug: string }) => {
   return (
-    <div className="flex  justify-around items-center py-4">
+    <div className="flex  justify-around items-center py-4 px-4">
       {(Object.keys(steps) as Array<keyof typeof steps>).map((step, index) => (
         <div key={index} className={clsx('w-full flex items-center')}>
           <Step

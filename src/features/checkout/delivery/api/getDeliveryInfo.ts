@@ -1,7 +1,7 @@
 'use server';
-import { DeliveryInfo } from '../schema/deliverySchema';
 import { auth } from '@features/auth/lib/auth';
 import { cookies } from 'next/headers';
+import { DeliveryInfo } from '../model/deliverySchema';
 
 export async function getDeliveryInfo(): Promise<DeliveryInfo | null> {
   try {
