@@ -24,7 +24,7 @@ export const getNovaPoshtaDepartmentSchema = (t: (key: string) => string) =>
 export const getDeliverySchema = (t: (key: string) => string) =>
   z
     .object({
-      deliveryMethod: z.enum(['novaPoshta', 'ukrPoshta']),
+      deliveryMethod: z.enum(['novaPoshta', 'ukrPoshta']).default('novaPoshta'),
       // Nova Poshta fields - полная структура данных
       novaPoshtaDepartment: getNovaPoshtaDepartmentSchema(t).optional(),
       // UkrPoshta fields

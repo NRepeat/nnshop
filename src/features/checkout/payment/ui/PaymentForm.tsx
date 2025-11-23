@@ -40,7 +40,6 @@ export default function PaymentForm({
   const paymentSchema = getPaymentSchema(t);
 
   const form = useForm<PaymentInfo>({
-    //@ts-ignore
     resolver: zodResolver(paymentSchema),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
