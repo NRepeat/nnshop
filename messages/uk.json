@@ -371,6 +371,14 @@
     "completePayment": "Завершити платіж",
     "paymentInformationSaved": "Платіжну інформацію успішно збережено!",
     "amountMustBeGreaterThanZero": "Сума повинна бути більше 0",
-    "orderIdIsRequired": "Потрібен ID замовлення"
+    "orderIdIsRequired": "Потрібен ID замовлення",
+    "choosePaymentMethod": "Виберіть спосіб оплати",
+    "selectPaymentMethodDescription": "Виберіть, коли ви бажаєте оплатити замовлення.",
+    "payNowDescription": "Оплатити негайно карткою або онлайн",
+    "afterDeliveredDescription": "Оплатити після отримання замовлення",
+    "payLaterDescription": "Оплатити протягом 30 днів",
+    "payNowMethod": "Оплатити зараз",
+    "afterDeliveredMethod": "Після доставки",
+    "payLaterMethod": "Оплатити пізніше"
   }
 }

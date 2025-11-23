@@ -39,16 +39,11 @@ export default function PaymentForm({
   const locale = params.locale as string;
   const t = useTranslations('PaymentForm');
   const [checkoutData, setCheckoutData] = useState<any>(null);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
-    defaultValues?.paymentMethod || 'pay-now',
-  );
-  const [selectedProvider, setSelectedProvider] = useState(
-    defaultValues?.paymentProvider || 'liqpay',
-  );
 
   const paymentSchema = getPaymentSchema(t);
 
   const form = useForm<PaymentInfo>({
+    //@ts-ignore
     resolver: zodResolver(paymentSchema),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
@@ -63,6 +58,9 @@ export default function PaymentForm({
       description: defaultValues?.description || 'Order payment',
     },
   });
+
+  const selectedPaymentMethodValue = form.watch('paymentMethod');
+  const selectedProviderValue = form.watch('paymentProvider');
 
   useEffect(() => {
     async function loadCheckoutData() {
@@ -118,19 +116,30 @@ export default function PaymentForm({
 
           <PaymentMethodSelection
             paymentMethods={paymentMethods}
-            setSelectedPaymentMethod={setSelectedPaymentMethod}
-            setSelectedProvider={setSelectedProvider}
+            // Pass form.setValue directly for paymentMethod
+            onSelectPaymentMethod={(method: string) =>
+              form.setValue(
+                'paymentMethod',
+                method as PaymentInfo['paymentMethod'],
+              )
+            }
           />
 
-          {form.watch('paymentMethod') === 'pay-now' && (
+          {selectedPaymentMethodValue === 'pay-now' && (
             <PaymentProviderSelection
               paymentProviders={paymentProviders}
-              setSelectedProvider={setSelectedProvider}
+              // Pass form.setValue directly for paymentProvider
+              onSelectPaymentProvider={(provider: string) =>
+                form.setValue(
+                  'paymentProvider',
+                  provider as PaymentInfo['paymentProvider'],
+                )
+              }
             />
           )}
 
-          {form.watch('paymentMethod') === 'pay-now' &&
-            form.watch('paymentProvider') === 'liqpay' &&
+          {selectedPaymentMethodValue === 'pay-now' &&
+            selectedProviderValue === 'liqpay' &&
             liqpayPublicKey &&
             liqpayPrivateKey && (
               <LiqPayForm
@@ -144,8 +153,8 @@ export default function PaymentForm({
             )}
 
           {!(
-            form.watch('paymentMethod') === 'pay-now' &&
-            form.watch('paymentProvider') === 'liqpay'
+            selectedPaymentMethodValue === 'pay-now' &&
+            selectedProviderValue === 'liqpay'
           ) && (
             <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
               <Button
