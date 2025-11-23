@@ -1,17 +1,23 @@
 'use server';
-import { cookies } from 'next/headers';
+import { auth } from '@features/auth/lib/auth';
+import { prisma } from '@shared/lib/prisma';
+import { headers } from 'next/headers';
 import { PaymentInfo } from '../schema/paymentSchema';
 
 export async function getPaymentInfo(): Promise<PaymentInfo | null> {
   try {
-    const cookieStore = await cookies();
-    const paymentInfoCookie = cookieStore.get('paymentInfo');
-
-    if (!paymentInfoCookie) {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
       return null;
     }
 
-    return JSON.parse(paymentInfoCookie.value) as PaymentInfo;
+    const paymentInfo = await prisma.paymentInformation.findUnique({
+      where: {
+        userId: session.user.id,
+      },
+    });
+
+    return paymentInfo as PaymentInfo | null;
   } catch (error) {
     console.error('Error getting payment info:', error);
     return null;

@@ -1,27 +1,17 @@
-import { cookies } from 'next/headers';
+'use server';
+import { auth } from '@features/auth/lib/auth';
+import { headers } from 'next/headers';
 
 export async function generateOrderId(): Promise<string> {
   try {
-    // Get session ID from cart-session-id cookie
-    const cookieStore = await cookies();
-    const deliveryInfoCookie = cookieStore.get('deliveryInfo');
-    const sessionCookie = cookieStore.get('cart-session-id');
+    const session = await auth.api.getSession({ headers: await headers() });
 
-    if (sessionCookie?.value) {
-      const sessionId = sessionCookie.value;
+    if (session?.user?.id) {
       const timestamp = Date.now();
-      return `session-${sessionId}-${timestamp}`;
+      return `user-${session.user.id}-${timestamp}`;
     }
 
-    // Fallback: try to get cart ID from old cart cookie
-    const cartCookie = cookieStore.get('cart');
-    if (cartCookie?.value) {
-      const cartId = cartCookie.value;
-      const timestamp = Date.now();
-      return `${cartId}-${timestamp}`;
-    }
-
-    // Final fallback: generate random order ID
+    // Fallback: generate random order ID
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(7);
     return `order-${timestamp}-${randomId}`;

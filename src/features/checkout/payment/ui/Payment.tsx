@@ -6,6 +6,7 @@ import { getCart } from '@entities/cart/api/get';
 import PaymentForm from './PaymentForm';
 import { getPaymentInfo } from '../api/getPaymentInfo';
 import { generateOrderId } from '../api/generateOrderId';
+import { redirect } from 'next/navigation';
 
 export default async function Payment() {
   const orderId = await generateOrderId();
@@ -33,6 +34,7 @@ export default async function Payment() {
       },
     });
     if (!sessionCart) {
+      return redirect('/checkout/cart');
       throw new Error('Cart not found');
     }
     const cartResult = await getCart(sessionCart.cartToken);
