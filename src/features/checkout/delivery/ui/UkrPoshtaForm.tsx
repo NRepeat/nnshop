@@ -32,7 +32,7 @@ export default function UkrPoshtaForm() {
   const t = useTranslations('DeliveryForm');
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+    <div className=" border border-gray-200 p-6 ">
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
           {t('deliveryAddress')}
@@ -86,11 +86,11 @@ export default function UkrPoshtaForm() {
                         placeholder={t(item.placeholder)}
                         {...field}
                         className={clsx(
-                          'h-12 px-4 rounded-xl border-2 transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
+                          'h-12 px-4 rounded-none border transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
                           form.formState.isSubmitted &&
                             form.formState.errors[item.name]
                             ? 'border-red-500 focus-visible:ring-red-500'
-                            : 'border-gray-200 focus:border-[#325039]',
+                            : 'border-gray-200 focus:border-black',
                         )}
                       />
                     </div>
@@ -119,7 +119,7 @@ export default function UkrPoshtaForm() {
                         placeholder={t(item.placeholder)}
                         {...field}
                         className={clsx(
-                          'h-12 px-4 rounded-xl border-2 transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
+                          'h-12 px-4 rounded-none border transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
                           form.formState.isSubmitted &&
                             form.formState.errors[item.name]
                             ? 'border-red-500 focus-visible:ring-red-500'
