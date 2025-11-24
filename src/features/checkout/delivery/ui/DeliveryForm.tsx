@@ -62,7 +62,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
       const result = await saveDeliveryInfo(data);
 
       if (result.success) {
-        toast.success(result.message);
+        toast.success(t('deliveryInformationSavedSuccessfully'));
         router.push(`/${locale}/checkout/payment`);
       } else {
         toast.error(result.message);

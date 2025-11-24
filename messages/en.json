@@ -377,7 +377,8 @@
     "ukrPoshtaDelivery": "Traditional postal service",
     "departmentIdRequired": "Department ID is required",
     "departmentNameRequired": "Department name is required",
-    "fillAllFields": "Please fill in all required fields for the selected delivery method"
+    "fillAllFields": "Please fill in all required fields for the selected delivery method",
+    "deliveryInformationSavedSuccessfully": "Delivery information saved successfully!"
   },
   "PaymentForm": {
     "pleaseFixErrors": "Please fix the following errors:",

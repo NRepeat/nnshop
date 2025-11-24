@@ -355,7 +355,8 @@
     "ukrPoshtaDelivery": "Традиційна поштова служба",
     "departmentIdRequired": "Потрібен ID відділення",
     "departmentNameRequired": "Потрібна назва відділення",
-    "fillAllFields": "Будь ласка, заповніть усі необхідні поля для обраного способу доставки"
+    "fillAllFields": "Будь ласка, заповніть усі необхідні поля для обраного способу доставки",
+    "deliveryInformationSavedSuccessfully": "Інформацію про доставку успішно збережено!"
   },
   "PaymentForm": {
     "pleaseFixErrors": "Будь ласка, виправте наступні помилки:",
