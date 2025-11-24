@@ -77,7 +77,9 @@ export default function PaymentForm({
         if (data.paymentMethod === 'after-delivered') {
           const completedOrder = await completeOrder(order.order?.id);
           await resetCartSession();
-          return router.push(`/${locale}/checkout/success/${completedOrder}`);
+          return router.push(
+            `/${locale}/checkout/success/${order.order?.id.split('/').pop()}`,
+          );
         }
 
         if (data.paymentProvider === 'liqpay') {

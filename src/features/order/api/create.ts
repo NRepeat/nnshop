@@ -163,14 +163,6 @@ export async function createDraftOrder(
         },
       });
     }
-
-    console.log(' REAL SHOPIFY DRAFT ORDER CREATED SUCCESSFULLY:', {
-      id: createdOrder.id,
-      name: createdOrder.name,
-      totalPrice: createdOrder.totalPrice,
-      lineItemsCount: createdOrder.lineItems?.edges?.length || 0,
-    });
-
     return {
       success: true,
       order: createdOrder,

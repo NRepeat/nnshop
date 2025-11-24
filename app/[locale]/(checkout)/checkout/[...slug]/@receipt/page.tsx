@@ -15,8 +15,14 @@ import { getTranslations } from 'next-intl/server';
 import { Products } from '@features/checkout/receipt/ui/Products';
 import { Separator } from '@shared/ui/separator';
 
-export default async function Receipt() {
+export default async function Receipt({
+  params,
+}: {
+  params: Promise<{ slug: string[] }>;
+}) {
   const t = await getTranslations('ReceiptPage');
+  const { slug } = await params;
+  const orderId = slug.length > 1 ? slug[1] : undefined;
   return (
     <div className="flex flex-col items-center  w-full container">
       <Card className="w-full shadow-none rounded-none  bg-gray-100">
@@ -26,7 +32,7 @@ export default async function Receipt() {
           </CardTitle>
         </CardHeader>
         <CardContent className=" text-center px-2 space-y-4">
-          <Products />
+          <Products orderId={orderId} />
           <Separator />
           <div className="flex flex-col items-center justify-center space-y-2 ">
             <ContactInfoSection />

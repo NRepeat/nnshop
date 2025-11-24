@@ -1,4 +1,5 @@
 import { ContactInfo, Delivery, Payment } from '@features/checkout';
+import { Thank } from '@entities/thank-page/ui/Thank';
 
 export default function CheckoutView({
   slug,
@@ -16,9 +17,8 @@ export default function CheckoutView({
       ) : slug == 'payment' ? (
         <Payment />
       ) : slug === 'success' ? (
-        <>Ty</>
-      ) : // <Thank orderId={orderId} />
-      null}
+        <Thank orderId={orderId} />
+      ) : null}
     </div>
   );
 }

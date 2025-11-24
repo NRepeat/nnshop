@@ -33,7 +33,7 @@ export const completeOrder = async (orderId: string) => {
       };
     }>({
       query: DRAFT_ORDER_COMPLITE_MUTATION,
-      variables: { id: orderId },
+      variables: { id: `gid://shopify/DraftOrder/${orderId}` },
     });
 
     if (orderResponse.draftOrderComplete?.userErrors.length > 0) {
