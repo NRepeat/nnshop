@@ -219,13 +219,14 @@ export type GetCollectionQuery = {
             | 'availableForSale'
             | 'productType'
             | 'vendor'
+            | 'totalInventory'
             | 'tags'
           > & {
             variants: {
               edges: Array<{
                 node: Pick<
                   StorefrontTypes.ProductVariant,
-                  'id' | 'title' | 'availableForSale'
+                  'id' | 'title' | 'availableForSale' | 'quantityAvailable'
                 > & {
                   price: Pick<
                     StorefrontTypes.MoneyV2,
@@ -400,7 +401,7 @@ interface GeneratedQueryTypes {
     return: CartQuery;
     variables: CartQueryVariables;
   };
-  '#graphql\n  query GetCollection($handle: String!, $filters: [ProductFilter!]) {\n    collection(handle: $handle) {\n    id\n    title\n    handle\n    description\n      image {\n        url\n        altText\n      }\n\n      products(first: 250, filters: $filters) {\n        edges {\n          node {\n            id\n            title\n            handle\n            availableForSale\n            productType\n            vendor\n            tags\n            variants(first: 50) {\n              edges {\n                node {\n                  id\n                  title\n                  availableForSale\n                  price {\n                    amount\n                    currencyCode\n                  }\n                  compareAtPrice {\n                    amount\n                    currencyCode\n                  }\n                  selectedOptions {\n                    name\n                    value\n                  }\n                  image {\n                    url\n                    altText\n                    width\n                    height\n                  }\n                }\n              }\n            }\n            options{\n              name\n              optionValues{\n                name\n              }\n            }\n            priceRange {\n              minVariantPrice {\n                amount\n                currencyCode\n              }\n              maxVariantPrice {\n                amount\n                currencyCode\n              }\n            }\n            featuredImage {\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n        filters {\n      id\n      label\n      type\n      values {\n        id\n        label\n        count\n        input\n      }\n    }\n      }\n    }\n  }\n': {
+  '#graphql\n  query GetCollection($handle: String!, $filters: [ProductFilter!]) {\n    collection(handle: $handle) {\n    id\n    title\n    handle\n    description\n      image {\n        url\n        altText\n      }\n\n      products(first: 250, filters: $filters) {\n        edges {\n          node {\n            id\n            title\n            handle\n            availableForSale\n            productType\n            vendor\n            totalInventory\n            tags\n            variants(first: 50) {\n              edges {\n                node {\n                  id\n                  title\n                  availableForSale\n                  quantityAvailable\n                  price {\n                    amount\n                    currencyCode\n                  }\n                  compareAtPrice {\n                    amount\n                    currencyCode\n                  }\n                  selectedOptions {\n                    name\n                    value\n                  }\n                  image {\n                    url\n                    altText\n                    width\n                    height\n                  }\n                }\n              }\n            }\n            options{\n              name\n              optionValues{\n                name\n              }\n            }\n            priceRange {\n              minVariantPrice {\n                amount\n                currencyCode\n              }\n              maxVariantPrice {\n                amount\n                currencyCode\n              }\n            }\n            featuredImage {\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n        filters {\n      id\n      label\n      type\n      values {\n        id\n        label\n        count\n        input\n      }\n    }\n      }\n    }\n  }\n': {
     return: GetCollectionQuery;
     variables: GetCollectionQueryVariables;
   };

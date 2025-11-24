@@ -21,11 +21,14 @@ import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { ContactInformation } from '~/generated/prisma/client';
+import { User } from 'better-auth';
 
 export default function ContactInfoForm({
   contactInfo,
+  user,
 }: {
   contactInfo: ContactInformation | null;
+  user: User | null;
 }) {
   const router = useRouter();
   const params = useParams();
@@ -41,9 +44,9 @@ export default function ContactInfoForm({
     shouldFocusError: false,
     shouldUnregister: false,
     defaultValues: {
-      name: contactInfo?.name || '',
+      name: contactInfo?.name ? contactInfo.name : user?.name || '',
       lastName: contactInfo?.lastName || '',
-      email: contactInfo?.email || '',
+      email: contactInfo?.email || user?.email || '',
       phone: contactInfo?.phone || '',
       countryCode: contactInfo?.countryCode || 'UA',
     },

@@ -65,7 +65,11 @@ export const auth = betterAuth({
     anonymous({
       emailDomainName: 'gmail.com',
       onLinkAccount: async ({ anonymousUser, newUser }) => {
-        // perform actions like moving the cart items from anonymous user to the new user
+        console.log(
+          'Linking anonymous user to new user',
+          anonymousUser,
+          newUser,
+        );
         await anonymousCartBuyerIdentityUpdate({ anonymousUser, newUser });
       },
     }),
