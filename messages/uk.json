@@ -399,6 +399,12 @@
     "city": "Місто",
     "delivery_information": "Інформація про доставку",
     "payment_method": "Спосіб оплати",
-    "payment_information": "Інформація про оплату"
+    "payment_information": "Інформація про оплату",
+    "products_title": "Продукти",
+    "total": "Всього",
+    "continue_shopping": "Продовжити покупки",
+    "subtotal": "Підсумок",
+    "shipping": "Доставка",
+    "tax": "Податок"
   }
 }

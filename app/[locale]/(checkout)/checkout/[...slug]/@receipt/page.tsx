@@ -1,4 +1,10 @@
-import { Card, CardHeader, CardTitle, CardContent } from '@shared/ui/card';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from '@shared/ui/card';
 
 import {
   ContactInfoSection,
@@ -6,6 +12,8 @@ import {
   PaymentInfoSection,
 } from '@features/checkout/receipt';
 import { getTranslations } from 'next-intl/server';
+import { Products } from '@features/checkout/receipt/ui/Products';
+import { Separator } from '@shared/ui/separator';
 
 export default async function Receipt() {
   const t = await getTranslations('ReceiptPage');
@@ -17,7 +25,9 @@ export default async function Receipt() {
             {t('title')}
           </CardTitle>
         </CardHeader>
-        <CardContent className=" text-center px-2">
+        <CardContent className=" text-center px-2 space-y-4">
+          <Products />
+          <Separator />
           <div className="flex flex-col items-center justify-center space-y-2 ">
             <ContactInfoSection />
             <DeliveryInfoSection />

@@ -23,9 +23,6 @@ export default async function PaymentInfoSection() {
                       {tr('payment_method')}:{' '}
                     </span>
                     {t(paymentInfo.paymentProvider)}
-                    {/*{paymentInfo.paymentMethod === 'liqpay' && t('liqpayDescription')}
-                    {provider.id === 'credit-card' && t('creditCardDescription')}
-                    {provider.id === 'paypal' && t('paypalDescription')}*/}
                   </p>
                 </div>
               </div>

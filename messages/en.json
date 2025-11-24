@@ -418,6 +418,12 @@
     "city": "City",
     "delivery_information": "Delivery information",
     "payment_method": "Payment Method",
-    "payment_information": "Payment information"
+    "payment_information": "Payment information",
+    "products_title": "Products",
+    "total": "Total",
+    "continue_shopping": "Continue Shopping",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "tax": "Tax"
   }
 }
