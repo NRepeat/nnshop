@@ -404,6 +404,20 @@
     "pay-later": "Pay Later",
     "orderPaymentFor": "Order payment for",
     "choosePaymentProvider": "Choose Payment Provider",
+    "liqpayDescription": "Safe online payments",
     "selectPaymentProviderDescription": "Select the payment provider you would like to use."
+  },
+  "ReceiptPage": {
+    "title": "Order Summary",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "contact_information": "Contact information",
+    "address": "Address",
+    "country": "Country",
+    "city": "City",
+    "delivery_information": "Delivery information",
+    "payment_method": "Payment Method",
+    "payment_information": "Payment information"
   }
 }

@@ -1,9 +1,4 @@
-import Receipt from '@features/checkout/receipt/ui/Receipt';
 import CheckoutHeader from '@features/checkout/ui/CheckoutHeader';
-import { Card } from '@shared/ui/card';
-import { ChevronRight } from 'lucide-react';
-import { Chicle } from 'next/font/google';
-import { redirect } from 'next/navigation';
 export default async function Layout({
   children,
   params,

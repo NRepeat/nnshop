@@ -387,5 +387,18 @@
     "creditCardDescription": "Кредитна або дебетова картка",
     "paypalDescription": "Оплатити через PayPal",
     "stripeDescription": "Обробка платежів Stripe"
+  },
+  "ReceiptPage": {
+    "title": "Підсумок замовлення",
+    "name": "Ім'я",
+    "email": "Електронна пошта",
+    "phone": "Телефон",
+    "contact_information": "Контактна інформація",
+    "address": "Адреса",
+    "country": "Країна",
+    "city": "Місто",
+    "delivery_information": "Інформація про доставку",
+    "payment_method": "Спосіб оплати",
+    "payment_information": "Інформація про оплату"
   }
 }

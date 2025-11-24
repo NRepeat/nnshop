@@ -40,7 +40,7 @@ export default function PaymentProviderButton({
         },
       )}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center  gap-4">
         <div
           className={clsx(
             'w-12 h-12 rounded-lg flex items-center justify-center',
