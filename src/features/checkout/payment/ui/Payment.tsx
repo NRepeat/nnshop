@@ -24,7 +24,7 @@ export default async function Payment() {
 
   let cartAmount = 0;
   let currency = 'UAH';
-  let completeCheckoutData: CheckoutData | null = null;
+  let completeCheckoutData: Omit<CheckoutData, 'paymentInfo'> | null = null;
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
@@ -33,6 +33,7 @@ export default async function Payment() {
     const sessionCart = await prisma.cart.findUnique({
       where: {
         userId: session.user.id,
+        completed: false,
       },
     });
     if (!sessionCart) {
@@ -46,7 +47,6 @@ export default async function Payment() {
     completeCheckoutData = await getCompleteCheckoutData();
   } catch (error) {
     console.error('Error fetching cart data:', error);
-    cartAmount = 0;
   }
 
   return (

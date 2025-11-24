@@ -70,7 +70,7 @@ export default function PaymentProviderButton({
             {provider.id === 'liqpay' && t('liqpayDescription')}
             {provider.id === 'credit-card' && t('creditCardDescription')}
             {provider.id === 'paypal' && t('paypalDescription')}
-            {provider.id === 'stripe' && t('stripeDescription')}
+            {/*{provider.id === 'stripe' && t('stripeDescription')}*/}
           </p>
         </div>
       </div>

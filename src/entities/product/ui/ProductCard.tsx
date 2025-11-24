@@ -28,7 +28,10 @@ export const ProductCard = async ({
           <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full">
             <Image
               className="h-auto w-full "
-              src={product.featuredImage?.url || ''}
+              src={
+                product?.variants.edges[0].node.image?.url ||
+                product.featuredImage?.url
+              }
               alt={product.featuredImage?.altText || ''}
               width={product.featuredImage?.width || 300}
               height={product.featuredImage?.height || 300}

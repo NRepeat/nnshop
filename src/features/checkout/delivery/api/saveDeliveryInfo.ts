@@ -5,7 +5,6 @@ import { prisma } from '@shared/lib/prisma';
 import { headers } from 'next/headers';
 import { DeliveryInfo } from '../model/deliverySchema';
 import { updateCartDeliveryPreferences } from '@entities/cart/api/update-cart-delivery-preferences';
-import { ContactInformation } from '@prisma/client'; // Assuming ContactInformation Prisma model
 
 export async function saveDeliveryInfo(
   data: DeliveryInfo,

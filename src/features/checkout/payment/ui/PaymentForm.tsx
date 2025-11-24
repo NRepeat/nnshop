@@ -16,6 +16,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { paymentMethods, paymentProviders } from '../lib/constants';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { createDraftOrder } from '@features/order/api/create';
+import { completeOrder } from '../api/completeOrder';
+import resetCartSession from '@features/cart/api/resetCartSession';
 
 interface PaymentFormProps {
   defaultValues?: PaymentInfo | null;
@@ -24,7 +26,7 @@ interface PaymentFormProps {
   currency?: string;
   liqpayPublicKey?: string;
   liqpayPrivateKey?: string;
-  completeCheckoutData: CheckoutData | null; // Renamed from checkoutData
+  completeCheckoutData: Omit<CheckoutData, 'paymentInfo'> | null;
 }
 
 export default function PaymentForm({
@@ -34,16 +36,16 @@ export default function PaymentForm({
   currency = 'UAH',
   liqpayPublicKey,
   liqpayPrivateKey,
-  completeCheckoutData, // Renamed from checkoutData
+  completeCheckoutData,
 }: PaymentFormProps) {
   const router = useRouter();
   const params = useParams();
   const locale = params.locale as string;
   const t = useTranslations('PaymentForm');
-  console.log('completeCheckoutData', completeCheckoutData); // Renamed from checkoutData
   const paymentSchema = getPaymentSchema(t);
 
   const form = useForm<PaymentInfo>({
+    //@ts-ignore
     resolver: zodResolver(paymentSchema),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
@@ -69,11 +71,13 @@ export default function PaymentForm({
         throw new Error('Checkout data not available.');
       }
       const order = await createDraftOrder(data, completeCheckoutData);
-      if (order && result.success) {
+      if (order && order.order?.id && result.success) {
         toast.success(t('paymentInformationSaved'));
 
         if (data.paymentMethod === 'after-delivered') {
-          return router.push(`/${locale}/checkout/success/${data.orderId}`);
+          const completedOrder = await completeOrder(order.order?.id);
+          await resetCartSession();
+          return router.push(`/${locale}/checkout/success/${completedOrder}`);
         }
 
         if (data.paymentProvider === 'liqpay') {

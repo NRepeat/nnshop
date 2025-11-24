@@ -8,21 +8,21 @@ datasource db {
 }
 
 model User {
-  id                    String                 @id
-  name                  String
-  email                 String
-  emailVerified         Boolean                @default(false)
-  image                 String?
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @default(now()) @updatedAt
-  sessions              Session[]
-  accounts              Account[]
-  orders                Order[]
-  isAnonymous           Boolean?
-  cart                  Cart[]
-  contactInformation    ContactInformation?
-  deliveryInformation   DeliveryInformation?
-  paymentInformation    PaymentInformation?
+  id                  String               @id
+  name                String
+  email               String
+  emailVerified       Boolean              @default(false)
+  image               String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @default(now()) @updatedAt
+  sessions            Session[]
+  accounts            Account[]
+  orders              Order[]
+  isAnonymous         Boolean?
+  cart                Cart[]
+  contactInformation  ContactInformation?
+  deliveryInformation DeliveryInformation?
+  paymentInformation  PaymentInformation?
 
   @@unique([email])
   @@map("user")
@@ -40,16 +40,16 @@ model ContactInformation {
 }
 
 model DeliveryInformation {
-  id                     String                  @id @default(cuid())
-  deliveryMethod         String
-  country                String?
-  address                String?
-  apartment              String?
-  city                   String?
-  postalCode             String?
-  user                   User                    @relation(fields: [userId], references: [id])
-  userId                 String                  @unique
-  novaPoshtaDepartment   NovaPoshtaDepartment?
+  id                   String                @id @default(cuid())
+  deliveryMethod       String
+  country              String?
+  address              String?
+  apartment            String?
+  city                 String?
+  postalCode           String?
+  user                 User                  @relation(fields: [userId], references: [id])
+  userId               String                @unique
+  novaPoshtaDepartment NovaPoshtaDepartment?
 }
 
 model NovaPoshtaDepartment {
@@ -134,10 +134,12 @@ model ShopifySession {
 }
 
 model Cart {
-  id        String @id @default(cuid())
-  cartToken String @unique
-  user      User   @relation(fields: [userId], references: [id])
-  userId    String @unique
+  id        String   @id @default(cuid())
+  cartToken String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 model Order {

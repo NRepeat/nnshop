@@ -6,79 +6,46 @@ import { storefrontClient } from '@shared/lib/shopify/client';
 import { Cart, CartUserError } from '@shared/types/cart/types';
 import { revalidateTag } from 'next/cache';
 import { headers } from 'next/headers';
-import { getCart } from './get';
 import { DeliveryInfo } from '@features/checkout/delivery/model/deliverySchema';
-import { ContactInformation } from '@prisma/client'; // Assuming ContactInformation Prisma model
+import { ContactInformation } from '~/generated/prisma/client';
+import { getCart } from './get';
 
-const CART_BUYER_IDENTITY_UPDATE_MUTATION = `
-  mutation cartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {
-    cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
-      cart {
-        id
-        buyerIdentity {
-          email
-          phone
-          countryCode
-          customer {
-            id
-            email
-            firstName
-            lastName
-            displayName
-          }
-        }
-        cost {
-          totalAmount {
-            amount
-            currencyCode
-          }
-          subtotalAmount {
-            amount
-            currencyCode
-          }
-          totalTaxAmount {
-            amount
-            currencyCode
-          }
-        }
-      }
+const CART_DELIVERY_ADDRESSES_ADD_MUTATION = `
+  #graphql
+  mutation CartDeliveryAddressesAdd($id: ID!, $addresses: [CartSelectableAddressInput!]!) {
+    cartDeliveryAddressesAdd(cartId: $id, addresses: $addresses) {
       userErrors {
-        field
         message
+        code
+        field
       }
       warnings {
         message
+        code
+        target
       }
-    }
-  }
-`;
-
-const CART_DELIVERY_ADDRESSES_ADD_MUTATION = `
-  mutation cartDeliveryAddressesAdd($cartId: ID!, $deliveryAddresses: [CartDeliveryAddressInput!]!) {
-    cartDeliveryAddressesAdd(cartId: $cartId, deliveryAddresses: $deliveryAddresses) {
       cart {
         id
-        deliveryGroups(first: 1) {
-          edges {
-            node {
-              id
-              deliveryAddress {
-                address1
-                city
-                country
+        delivery {
+          addresses {
+            id
+            selected
+            oneTimeUse
+            address {
+              ... on CartDeliveryAddress {
                 firstName
                 lastName
-                phone
-                zip
+                company
+                address1
                 address2
+                city
+                provinceCode
+                zip
+                countryCode
               }
             }
           }
         }
-      }
-      userErrors {
-        field
-        message
       }
     }
   }
@@ -109,6 +76,7 @@ export async function updateCartDeliveryPreferences(
     const sessionCart = await prisma.cart.findUnique({
       where: {
         userId: session.user.id,
+        completed: false,
       },
     });
     if (!sessionCart) {
@@ -120,32 +88,25 @@ export async function updateCartDeliveryPreferences(
       throw new Error('Cart not found');
     }
 
-    // Determine the delivery address input based on delivery method
     let deliveryAddressInput: any;
 
     if (deliveryInfo.deliveryMethod === 'novaPoshta') {
-      console.log(
-        'updateCartDeliveryPreferences: Handling Nova Poshta delivery method.',
-      );
-      // For Nova Poshta, we construct an address from department info
-      // Fallback to general delivery address if department address is not fully available
       const departmentAddress = deliveryInfo.novaPoshtaDepartment?.addressParts;
       const fullAddress =
         departmentAddress?.street && departmentAddress?.building
           ? `${departmentAddress.street}, ${departmentAddress.building}`
           : deliveryInfo.novaPoshtaDepartment?.shortName ||
-            deliveryInfo.address; // Fallback to shortName or general address
+            deliveryInfo.address;
 
       deliveryAddressInput = {
-        address1: fullAddress || '',
-        city: departmentAddress?.city || deliveryInfo.city || '',
-        country: deliveryInfo.country || 'UA', // Assume UA if not provided
-        firstName: contactInfo.name || '',
-        lastName: contactInfo.lastName || '',
-        phone: contactInfo.phone || '',
-        zip: deliveryInfo.postalCode || '',
-        address2:
-          departmentAddress?.building || deliveryInfo.apartment || undefined,
+        address1: deliveryInfo.novaPoshtaDepartment?.shortName || '',
+        city: deliveryInfo.novaPoshtaDepartment?.addressParts?.city,
+        countryCode: 'UA',
+        firstName: contactInfo.name,
+        lastName: contactInfo.lastName,
+        phone: contactInfo.phone,
+        zip: '00000',
+        address2: fullAddress || undefined,
       };
 
       console.log(
@@ -160,7 +121,7 @@ export async function updateCartDeliveryPreferences(
       deliveryAddressInput = {
         address1: deliveryInfo.address || '',
         city: deliveryInfo.city || '',
-        country: deliveryInfo.country || '',
+        countryCode: deliveryInfo.country || '',
         firstName: contactInfo.name || '',
         lastName: contactInfo.lastName || '',
         phone: contactInfo.phone || '',
@@ -190,8 +151,20 @@ export async function updateCartDeliveryPreferences(
     }>({
       query: CART_DELIVERY_ADDRESSES_ADD_MUTATION,
       variables: {
-        cartId,
-        deliveryAddresses: [{ address: deliveryAddressInput }],
+        id: sessionCart.cartToken,
+        addresses: [
+          {
+            selected: true,
+            address: {
+              deliveryAddress: {
+                address1: deliveryAddressInput?.address1,
+                city: deliveryAddressInput?.city,
+                countryCode: deliveryAddressInput?.countryCode,
+                zip: deliveryAddressInput?.zip,
+              },
+            },
+          },
+        ],
       },
     });
 

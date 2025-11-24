@@ -25,6 +25,7 @@ const query = `#graphql
             availableForSale
             productType
             vendor
+            totalInventory
             tags
             variants(first: 50) {
               edges {
@@ -32,6 +33,7 @@ const query = `#graphql
                   id
                   title
                   availableForSale
+                  quantityAvailable
                   price {
                     amount
                     currencyCode

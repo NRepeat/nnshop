@@ -10,7 +10,13 @@ import { Product } from '@shared/types/product/types';
 import { useTranslations } from 'next-intl';
 import clsx from 'clsx';
 
-function SubmitButton({ variant = 'default' }: { variant?: string }) {
+function SubmitButton({
+  variant = 'default',
+  disabled,
+}: {
+  variant?: string;
+  disabled: boolean;
+}) {
   const { pending } = useFormStatus();
   const t = useTranslations('ProductPage');
   return (
@@ -20,7 +26,7 @@ function SubmitButton({ variant = 'default' }: { variant?: string }) {
       //@ts-expect-error
       variant={variant}
       className="w-full h-14 text-md rounded-none"
-      disabled={pending}
+      disabled={disabled || pending}
       aria-disabled={pending}
     >
       {pending ? t('addingToCart') : t('addToCart')}
@@ -43,7 +49,6 @@ export function AddToCartButton({
     success: false,
     message: '',
   });
-  console.log(product, 'product');
   useEffect(() => {
     if (formState.message) {
       if (formState.success) {
@@ -53,7 +58,9 @@ export function AddToCartButton({
       }
     }
   }, [formState]);
-
+  const isProductAvalible = selectedVariant
+    ? selectedVariant?.quantityAvailable !== 0
+    : product?.totalInventory !== 0;
   return (
     <form className="w-full" action={formAction}>
       <input
@@ -66,7 +73,7 @@ export function AddToCartButton({
         }
       />
       <div className={clsx('product-form__buttons ', className)}>
-        <SubmitButton variant={variant} />
+        <SubmitButton variant={variant} disabled={!isProductAvalible} />
       </div>
     </form>
   );

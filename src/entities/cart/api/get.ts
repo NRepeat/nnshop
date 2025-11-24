@@ -3,9 +3,10 @@ import { auth } from '@features/auth/lib/auth';
 import { cachedFetch, CART_TAGS } from '@shared/lib/cached-fetch';
 import { prisma } from '@shared/lib/prisma';
 import { storefrontClient } from '@shared/lib/shopify/client';
-import { Cart } from '@shared/types/cart/types';
+import { Cart } from '@shared/lib/shopify/types/storefront.types';
 import { headers } from 'next/headers';
 const CART_QUERY = `
+  #graphql
   query cart($id: ID!) {
     cart(id: $id) {
       id
@@ -79,6 +80,26 @@ const CART_QUERY = `
         code
         applicable
       }
+      delivery {
+        addresses {
+            id
+            selected
+            address {
+            ... on CartDeliveryAddress {
+            address1
+            address2
+            city
+            countryCode
+            firstName
+            lastName
+            phone
+            zip
+            }
+
+            }
+        }
+      }
+
       buyerIdentity {
         email
         phone
@@ -90,20 +111,7 @@ const CART_QUERY = `
           lastName
           displayName
         }
-        deliveryAddressPreferences {
-          ... on MailingAddress {
-            address1
-            address2
-            city
-            company
-            country
-            firstName
-            lastName
-            phone
-            province
-            zip
-          }
-        }
+
       }
     }
   }
@@ -157,6 +165,7 @@ export async function getCart(
     const sessionCart = await prisma.cart.findUnique({
       where: {
         userId: session.user.id,
+        completed: false,
       },
     });
     if (!sessionCart) {

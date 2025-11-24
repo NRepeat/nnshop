@@ -6,7 +6,20 @@ import { adminClient } from '@shared/lib/shopify/admin-client';
 import { headers } from 'next/headers';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { PaymentInfo } from '@features/checkout/payment/schema/paymentSchema';
-
+type DrafOrder = {
+  id: string;
+  name: string;
+  totalPrice: number;
+  lineItems: {
+    edges: {
+      node: {
+        id: string;
+        title: string;
+        quantity: number;
+      };
+    }[];
+  };
+};
 const DRAFT_ORDER_CREATE_MUTATION = `
   mutation draftOrderCreate($input: DraftOrderInput!) {
     draftOrderCreate(input: $input) {
@@ -34,10 +47,10 @@ const DRAFT_ORDER_CREATE_MUTATION = `
 
 export async function createDraftOrder(
   paymentData: PaymentInfo,
-  completeCheckoutData: CheckoutData,
+  completeCheckoutData: Omit<CheckoutData, 'paymentInfo'> | null,
 ): Promise<{
   success: boolean;
-  order?: any;
+  order?: DrafOrder;
   errors?: string[];
 }> {
   try {
@@ -50,7 +63,7 @@ export async function createDraftOrder(
       };
     }
     const cartId = await prisma.cart.findUnique({
-      where: { userId: session.user.id },
+      where: { userId: session.user.id, completed: false },
     });
     const result = await getCart(cartId?.cartToken);
     if (!result) {
@@ -82,33 +95,36 @@ export async function createDraftOrder(
         quantity: lineItem.quantity,
       };
     });
-
     const input: any = {
       lineItems: lineItems,
     };
-
+    if (!completeCheckoutData) {
+      throw new Error('Checkout data is missing');
+    }
     if (completeCheckoutData.contactInfo.email) {
       input.email = completeCheckoutData.contactInfo.email;
     }
     if (completeCheckoutData.contactInfo.phone) {
       input.phone = completeCheckoutData.contactInfo.phone;
     }
-
+    const selectedDelivery = cart.delivery.addresses.find(
+      (a) => a.selected,
+    )?.address;
     const shippingAddress = {
-      address1: completeCheckoutData.deliveryInfo.address || '',
-      city: completeCheckoutData.deliveryInfo.city || '',
-      country: completeCheckoutData.deliveryInfo.country || '',
+      address1: selectedDelivery?.address1 || '',
+      city: selectedDelivery?.city || '',
+      country: selectedDelivery?.countryCode || '',
       firstName: completeCheckoutData.contactInfo.name || '',
       lastName: completeCheckoutData.contactInfo.lastName || '',
       phone: completeCheckoutData.contactInfo.phone || '',
-      zip: completeCheckoutData.deliveryInfo.postalCode || '',
-      address2: completeCheckoutData.deliveryInfo.apartment || undefined,
+      zip: selectedDelivery?.zip || '',
+      address2: selectedDelivery?.address2 || undefined,
     };
     input.shippingAddress = shippingAddress;
 
     const orderResponse = await adminClient.client.request<{
       draftOrderCreate: {
-        draftOrder: any | null;
+        draftOrder: DrafOrder | null;
         userErrors: Array<{ field: string; message: string }>;
       };
     }>({

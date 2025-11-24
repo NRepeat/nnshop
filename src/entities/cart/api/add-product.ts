@@ -16,6 +16,7 @@ export async function addToCartAction(productVariantId: string) {
     const sessionCart = await prisma.cart.findUnique({
       where: {
         userId: session.user.id,
+        completed: false,
       },
     });
     let result;

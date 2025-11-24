@@ -209,7 +209,7 @@ export interface CartWarning {
 
 // Simplified types for easier usage
 export interface CreateCartInput {
-  merchandiseId: string;
+  merchandiseId?: string;
   quantity?: number;
   attributes?: Record<string, string>;
   note?: string;

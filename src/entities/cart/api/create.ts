@@ -121,7 +121,7 @@ const createCart = async (
     const cartInput: CartInput = {
       lines: [
         {
-          merchandiseId: input.merchandiseId,
+          merchandiseId: input.merchandiseId || '',
           quantity: input.quantity || 1,
           attributes: input.attributes
             ? Object.entries(input.attributes).map(([key, value]) => ({

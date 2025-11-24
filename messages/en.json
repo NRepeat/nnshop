@@ -402,6 +402,8 @@
     "pay-now": "Pay Now",
     "after-delivered": "After Delivered",
     "pay-later": "Pay Later",
-    "orderPaymentFor": "Order payment for"
+    "orderPaymentFor": "Order payment for",
+    "choosePaymentProvider": "Choose Payment Provider",
+    "selectPaymentProviderDescription": "Select the payment provider you would like to use."
   }
 }
