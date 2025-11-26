@@ -15,7 +15,6 @@ import { getOrder } from '@entities/order/api/getOrder';
 
 export const Thank = async ({ orderId }: { orderId: string }) => {
   const t = await getTranslations('ThankYouPage');
-  const order = await getOrder(orderId);
   return (
     <div className="flex items-center justify-center dark:bg-gray-900">
       <Card className="w-full max-w-full p-6 sm:p-8 shadow-none">

@@ -1,4 +1,9 @@
+import { getCart } from '@entities/cart/api/get';
+import { auth } from '@features/auth/lib/auth';
 import CheckoutHeader from '@features/checkout/ui/CheckoutHeader';
+import { tryCatch } from '@shared/lib/try-catch';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 export default async function Layout({
   children,
   params,
@@ -9,6 +14,16 @@ export default async function Layout({
   params: Promise<{ locale: string; slug: string[] }>;
 }) {
   const { slug } = await params;
+  try {
+    const cart = await getCart();
+    console.log(cart, 'cart---------');
+    if (!cart) {
+      throw new Error('Cart not found');
+    }
+  } catch (error) {
+    console.error(error);
+    redirect('/');
+  }
 
   return (
     <>

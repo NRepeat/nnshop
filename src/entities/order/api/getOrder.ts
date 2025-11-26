@@ -53,6 +53,5 @@ export const getOrder = async (orderId: string): Promise<Order> => {
     query: GET_ORDER_BY_ID_QUERY,
     variables: { id: `gid://shopify/Order/${orderId}` },
   });
-
   return response.order;
 };

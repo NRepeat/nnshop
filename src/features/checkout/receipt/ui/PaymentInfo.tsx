@@ -7,6 +7,7 @@ import { getTranslations } from 'next-intl/server';
 
 export default async function PaymentInfoSection() {
   const paymentInfo = await getPaymentInfo();
+  console.log('paymentInfo', paymentInfo);
   const t = await getTranslations('PaymentForm');
   const tr = await getTranslations('ReceiptPage');
   return (
@@ -22,7 +23,7 @@ export default async function PaymentInfoSection() {
                     <span className="font-semibold">
                       {tr('payment_method')}:{' '}
                     </span>
-                    {t(paymentInfo.paymentProvider)}
+                    {t(paymentInfo.paymentMethod)}
                   </p>
                 </div>
               </div>

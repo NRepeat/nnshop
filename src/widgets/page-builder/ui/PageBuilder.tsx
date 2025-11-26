@@ -34,7 +34,6 @@ export function PageBuilder({
   return (
     <main className="w-full flex justify-center flex-col space-y-6 pt-4">
       {content?.map((block, index) => {
-        console.log(block, 'block');
         const Component =
           blockComponents[block._type as keyof typeof blockComponents];
         const dataAttribute = createDataAttribute({

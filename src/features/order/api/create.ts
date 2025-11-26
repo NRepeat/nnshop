@@ -88,13 +88,18 @@ export async function createDraftOrder(
         errors: ['Cart has no items'],
       };
     }
-    const lineItems = cart.lines.edges.map((edge: any) => {
-      const lineItem = edge.node;
-      return {
-        variantId: lineItem.merchandise.id,
-        quantity: lineItem.quantity,
-      };
-    });
+    const lineItems = cart.lines.edges
+      .map((edge: any) => {
+        const lineItem = edge.node;
+        if (lineItem.quantity === 0) {
+          return null;
+        }
+        return {
+          variantId: lineItem.merchandise.id,
+          quantity: lineItem.quantity,
+        };
+      })
+      .filter((item) => item !== null);
     const input: any = {
       lineItems: lineItems,
     };

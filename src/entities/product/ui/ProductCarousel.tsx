@@ -36,7 +36,6 @@ const ProductCarousel = async ({
   const products = shopifyCollection.collection?.products.edges.map(
     (edge) => edge.node,
   );
-  console.log(products, 'pr');
   return (
     <div className="w-full container">
       <div className="flex justify-between items-end    pb-4">

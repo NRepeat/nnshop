@@ -41,7 +41,7 @@ export default function PaymentMethodButton({
         },
       )}
     >
-      <div className="flex flex-col items-center text-center">
+      <div className="flex flex-col items-center text-center px-2 w-fit text-pretty">
         <div
           className={clsx(
             'w-12 h-12 rounded-none flex items-center justify-center mb-3',

@@ -6,8 +6,9 @@ import { getPaymentInfo } from '../api/getPaymentInfo';
 import { generateOrderId } from '../api/generateOrderId';
 import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
 import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
+import { redirect } from 'next/navigation';
+import { getLocale } from 'next-intl/server';
 
 export default async function Payment() {
   const orderId = await generateOrderId();
@@ -15,7 +16,7 @@ export default async function Payment() {
   const liqpayPublicKey = process.env.LIQPAY_PUBLIC_KEY;
   const liqpayPrivateKey = process.env.LIQPAY_PRIVATE_KEY;
 
-  let existingPaymentInfo = null;
+  let existingPaymentInfo: any = null;
   try {
     existingPaymentInfo = await getPaymentInfo();
   } catch (error) {
@@ -37,16 +38,17 @@ export default async function Payment() {
       },
     });
     if (!sessionCart) {
-      return redirect('/');
+      throw new Error('Cart not found');
     }
     const cartResult = await getCart(sessionCart.cartToken);
     if (cartResult && cartResult.cart?.cost?.totalAmount) {
       cartAmount = parseFloat(cartResult.cart.cost.totalAmount.amount);
-      currency = cartResult.cart.cost.totalAmount.amount; // Should be currencyCode
+      currency = cartResult.cart.cost.totalAmount.amount;
     }
     completeCheckoutData = await getCompleteCheckoutData();
   } catch (error) {
     console.error('Error fetching cart data:', error);
+    redirect(`/`);
   }
 
   return (

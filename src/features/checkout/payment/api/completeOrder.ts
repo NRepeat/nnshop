@@ -21,6 +21,7 @@ const DRAFT_ORDER_COMPLITE_MUTATION = `
 
 export const completeOrder = async (orderId: string) => {
   try {
+    console.log('completeOrder', orderId);
     const orderResponse = await adminClient.client.request<{
       draftOrderComplete: {
         userErrors: Array<{ field: string; message: string }>;
@@ -33,8 +34,9 @@ export const completeOrder = async (orderId: string) => {
       };
     }>({
       query: DRAFT_ORDER_COMPLITE_MUTATION,
-      variables: { id: `gid://shopify/DraftOrder/${orderId}` },
+      variables: { id: orderId },
     });
+    console.log('completedOrder', JSON.stringify(orderResponse));
 
     if (orderResponse.draftOrderComplete?.userErrors.length > 0) {
       throw new Error(orderResponse.draftOrderComplete.userErrors[0].message);
