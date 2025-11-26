@@ -1,10 +1,9 @@
 'use server';
-import { prisma } from '@shared/lib/prisma';
-import { storefrontClient } from '@shared/lib/shopify/client';
-import { CartBuyerIdentityUpdatePayload } from '@shared/lib/shopify/types/storefront.types';
+import { prisma } from '../../../shared/lib/prisma';
+import { storefrontClient } from '../../../shared/lib/shopify/client';
+import { CartBuyerIdentityUpdatePayload } from '../../../shared/lib/shopify/types/storefront.types';
 import { Session, User } from 'better-auth';
-import { UserWithAnonymous } from 'better-auth/plugins';
-
+export type UserWithAnonymous = User & { isAnonymous: boolean };
 const CART_BUYER_IDENTITY_UPDATE = `
   #graphql
   mutation cartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {

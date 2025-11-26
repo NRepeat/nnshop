@@ -1,5 +1,3 @@
-import { removeProductFromCart } from '@features/cart/api/remove-product';
-import { Button } from '@shared/ui/button';
 import { Card, CardContent } from '@shared/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';

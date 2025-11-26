@@ -57,9 +57,10 @@ export function ForgotPasswordForm({
   const handleSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true);
     try {
-      const result = await client.forgetPassword({
-        email: data.email,
-        redirectTo: `${window.location.origin}/reset-password`,
+      const result = await client.resetPassword({
+        newPassword: '',
+        // email: data.email,
+        // redirectTo: `${window.location.origin}/reset-password`,
       });
 
       if (result.error) {

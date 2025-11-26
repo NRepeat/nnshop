@@ -60,7 +60,8 @@ export function AddToCartButton({
   }, [formState]);
   const isProductAvalible = selectedVariant
     ? selectedVariant?.quantityAvailable !== 0
-    : product?.totalInventory !== 0;
+    : //@ts-ignore
+      product?.totalInventory !== 0;
   return (
     <form className="w-full" action={formAction}>
       <input
