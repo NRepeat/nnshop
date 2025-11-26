@@ -1,7 +1,6 @@
 import { getContactInfo } from '@entities/checkout/api/getContactInfo';
 import { CheckoutData } from '../schema/checkoutDataSchema';
 import { getDeliveryInfo } from '../delivery/api/getDeliveryInfo';
-import { getPaymentInfo } from '../payment/api/getPaymentInfo';
 
 export async function getCompleteCheckoutData(): Promise<Omit<
   CheckoutData,
@@ -10,7 +9,6 @@ export async function getCompleteCheckoutData(): Promise<Omit<
   try {
     const contactInfo = await getContactInfo();
     const deliveryInfo = await getDeliveryInfo();
-    const paymentInfo = await getPaymentInfo();
 
     if (!contactInfo || !deliveryInfo) {
       return null;

@@ -7,6 +7,7 @@ import { getTranslations } from 'next-intl/server';
 
 export default async function ContactInfoSection() {
   const contactInfo = await getContactInfo();
+  console.log('Contact info:', contactInfo);
   const t = await getTranslations('ReceiptPage');
   return (
     <>

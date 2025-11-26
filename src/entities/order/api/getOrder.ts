@@ -51,7 +51,7 @@ const GET_ORDER_BY_ID_QUERY = `
 export const getOrder = async (orderId: string): Promise<Order> => {
   const response = await adminClient.client.request<{ order: Order }>({
     query: GET_ORDER_BY_ID_QUERY,
-    variables: { id: `gid://shopify/Order/${orderId}` },
+    variables: { id: `${orderId}` },
   });
   return response.order;
 };

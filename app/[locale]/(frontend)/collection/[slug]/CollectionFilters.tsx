@@ -97,7 +97,7 @@ export function CollectionFilters({ filters }: Props) {
               {[...filter.values]
                 .sort((a, b) => a.label.localeCompare(b.label))
                 .map((value) => (
-                  <li key={value.id}>
+                  <li key={value.label}>
                     <label className="flex items-center space-x-2 text-gray-600 hover:text-black cursor-pointer">
                       <input
                         type="checkbox"

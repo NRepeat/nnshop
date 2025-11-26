@@ -1,4 +1,5 @@
 'use server';
+import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { Order } from '@shared/lib/shopify/types/storefront.types';
 
@@ -21,7 +22,6 @@ const DRAFT_ORDER_COMPLITE_MUTATION = `
 
 export const completeOrder = async (orderId: string) => {
   try {
-    console.log('completeOrder', orderId);
     const orderResponse = await adminClient.client.request<{
       draftOrderComplete: {
         userErrors: Array<{ field: string; message: string }>;
@@ -36,15 +36,20 @@ export const completeOrder = async (orderId: string) => {
       query: DRAFT_ORDER_COMPLITE_MUTATION,
       variables: { id: orderId },
     });
-    console.log('completedOrder', JSON.stringify(orderResponse));
 
     if (orderResponse.draftOrderComplete?.userErrors.length > 0) {
       throw new Error(orderResponse.draftOrderComplete.userErrors[0].message);
     }
 
-    return orderResponse.draftOrderComplete.draftOrder.order.id
-      .split('/')
-      .pop();
+    const complitedOrderId =
+      orderResponse.draftOrderComplete.draftOrder.order.id;
+    return prisma.order.update({
+      where: { shopifyDraftOrderId: orderId },
+      data: {
+        shopifyOrderId: complitedOrderId,
+        draft: false,
+      },
+    });
   } catch (e) {
     console.error(e);
     throw new Error('Failed to complete order');

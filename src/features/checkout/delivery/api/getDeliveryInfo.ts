@@ -8,7 +8,6 @@ export async function getDeliveryInfo(): Promise<DeliveryInfo | null> {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
-      // It should not throw error, but rather return null, allowing a fresh start
       return null;
     }
     const user = await prisma.user.findUnique({

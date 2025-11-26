@@ -7,6 +7,7 @@ const getContactInfo = async () => {
   if (!session) {
     throw new Error('Session not found');
   }
+
   const contactInfo = await prisma.contactInformation.findUnique({
     where: { userId: session.user.id },
   });

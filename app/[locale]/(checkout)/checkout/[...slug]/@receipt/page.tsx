@@ -24,7 +24,7 @@ export default async function Receipt({
   const t = await getTranslations('ReceiptPage');
   try {
     const { slug } = await params;
-    const orderId = slug.length > 1 ? slug[1] : undefined;
+    const druftOrderId = slug.length > 1 ? slug[2] : undefined;
 
     return (
       <div className="flex flex-col items-center  w-full container">
@@ -35,7 +35,7 @@ export default async function Receipt({
             </CardTitle>
           </CardHeader>
           <CardContent className=" text-center px-2 space-y-4">
-            <Products orderId={orderId} />
+            <Products druftOrderId={druftOrderId} />
             <Separator />
             <div className="flex flex-col items-center justify-center space-y-2 ">
               <ContactInfoSection />

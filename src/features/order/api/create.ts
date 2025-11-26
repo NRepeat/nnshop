@@ -46,7 +46,6 @@ const DRAFT_ORDER_CREATE_MUTATION = `
 `;
 
 export async function createDraftOrder(
-  paymentData: PaymentInfo,
   completeCheckoutData: Omit<CheckoutData, 'paymentInfo'> | null,
 ): Promise<{
   success: boolean;
@@ -62,7 +61,7 @@ export async function createDraftOrder(
         errors: ['Session not found'],
       };
     }
-    const cartId = await prisma.cart.findUnique({
+    const cartId = await prisma.cart.findFirst({
       where: { userId: session.user.id, completed: false },
     });
     const result = await getCart(cartId?.cartToken);
@@ -159,12 +158,15 @@ export async function createDraftOrder(
     }
 
     const createdOrder = orderResponse.draftOrderCreate.draftOrder;
-
-    if (session && !session.user.isAnonymous) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+    if (user) {
       await prisma.order.create({
         data: {
-          shopifyOrderId: createdOrder.id,
+          shopifyDraftOrderId: createdOrder.id,
           userId: session.user.id,
+          draft: true,
         },
       });
     }

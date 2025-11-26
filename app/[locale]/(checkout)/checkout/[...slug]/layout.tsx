@@ -15,8 +15,11 @@ export default async function Layout({
 }) {
   const { slug } = await params;
   try {
+    const session = auth.api.getSession({ headers: await headers() });
+    if (!session) {
+      throw new Error('Unauthorized');
+    }
     const cart = await getCart();
-    console.log(cart, 'cart---------');
     if (!cart) {
       throw new Error('Cart not found');
     }
@@ -31,7 +34,6 @@ export default async function Layout({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
         {children}
         {receipt}
-        {/*<Receipt />*/}
       </div>
     </>
   );

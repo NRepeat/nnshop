@@ -17,7 +17,6 @@ export async function middleware(request: NextRequest) {
       await auth.api.signInAnonymous();
     } catch (error) {
       console.error('Failed to sign in anonymously:', error);
-      // If anonymous sign-in fails, redirect to a login page.
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }

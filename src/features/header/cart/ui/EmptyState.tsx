@@ -6,7 +6,7 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from '@shared/ui/empty';
-import { SheetContent } from '@shared/ui/sheet';
+import { SheetContent, SheetHeader, SheetTitle } from '@shared/ui/sheet';
 import { ArrowUpRightIcon } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
@@ -15,6 +15,9 @@ export async function EmptyState() {
   const t = await getTranslations('Header.cart.drawer.empty_state');
   return (
     <SheetContent>
+      <SheetHeader className="sticky top-0">
+        <SheetTitle>{''}</SheetTitle>
+      </SheetHeader>
       <Empty>
         <EmptyHeader>
           {/*<EmptyMedia variant="icon">

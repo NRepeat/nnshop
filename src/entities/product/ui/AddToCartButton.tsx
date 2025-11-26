@@ -73,7 +73,7 @@ export function AddToCartButton({
             : product?.variants.edges[0].node.id
         }
       />
-      <div className={clsx('product-form__buttons ', className)}>
+      <div className={clsx('product-form__buttons  mt-4', className)}>
         <SubmitButton variant={variant} disabled={!isProductAvalible} />
       </div>
     </form>

@@ -11,6 +11,7 @@ const getUser = async () => {
       where: { id: session.user.id },
     });
     if (!user) return null;
+    if (user.isAnonymous) return null;
     return user;
   } catch (error) {
     console.error(error);

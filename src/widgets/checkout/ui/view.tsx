@@ -15,7 +15,7 @@ export default function CheckoutView({
       ) : slug == 'delivery' ? (
         <Delivery />
       ) : slug == 'payment' ? (
-        <Payment />
+        <Payment draftOrderId={orderId} />
       ) : slug === 'success' ? (
         <Thank orderId={orderId} />
       ) : null}

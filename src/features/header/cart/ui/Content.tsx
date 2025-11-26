@@ -50,7 +50,7 @@ const Content = async ({
             </div>
             {mockProducts.map((product) => (
               <CartItem
-                key={product.title}
+                key={product.id + product.title}
                 product={product}
                 cartId={cartId}
                 itemId={product.id}

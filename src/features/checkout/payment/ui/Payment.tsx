@@ -10,9 +10,11 @@ import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { redirect } from 'next/navigation';
 import { getLocale } from 'next-intl/server';
 
-export default async function Payment() {
-  const orderId = await generateOrderId();
-
+export default async function Payment({
+  draftOrderId,
+}: {
+  draftOrderId: string;
+}) {
   const liqpayPublicKey = process.env.LIQPAY_PUBLIC_KEY;
   const liqpayPrivateKey = process.env.LIQPAY_PRIVATE_KEY;
 
@@ -26,12 +28,13 @@ export default async function Payment() {
   let cartAmount = 0;
   let currency = 'UAH';
   let completeCheckoutData: Omit<CheckoutData, 'paymentInfo'> | null = null;
+  let draftOrder = null;
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
       throw new Error('Session not found');
     }
-    const sessionCart = await prisma.cart.findUnique({
+    const sessionCart = await prisma.cart.findFirst({
       where: {
         userId: session.user.id,
         completed: false,
@@ -43,9 +46,17 @@ export default async function Payment() {
     const cartResult = await getCart(sessionCart.cartToken);
     if (cartResult && cartResult.cart?.cost?.totalAmount) {
       cartAmount = parseFloat(cartResult.cart.cost.totalAmount.amount);
-      currency = cartResult.cart.cost.totalAmount.amount;
+      currency = cartResult.cart.cost.totalAmount.currencyCode;
+      cartToken = sessionCart.cartToken?.split('/').at(-1);
     }
-    completeCheckoutData = await getCompleteCheckoutData();
+    draftOrder = await prisma.order.findUnique({
+      where: {
+        shopifyDraftOrderId: 'gid://shopify/DraftOrder/' + draftOrderId,
+      },
+    });
+    if (!draftOrder) {
+      throw new Error('Draft order not found');
+    }
   } catch (error) {
     console.error('Error fetching cart data:', error);
     redirect(`/`);
@@ -62,7 +73,7 @@ export default async function Payment() {
 
       <PaymentForm
         defaultValues={existingPaymentInfo}
-        orderId={orderId}
+        draftOrder={draftOrder}
         amount={cartAmount}
         currency={currency}
         liqpayPublicKey={liqpayPublicKey}

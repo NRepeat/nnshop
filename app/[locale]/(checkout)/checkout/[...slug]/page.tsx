@@ -12,7 +12,12 @@ export default async function Page(props: Props) {
   if (!slug || slug.length === 0) {
     return redirect('/');
   }
-  const orderId = slug.length > 0 ? slug[1] : '';
+  let orderId = '';
 
+  if (slug.length > 1 && slug[0] === 'payment') {
+    orderId = slug[1];
+  } else if (slug.length > 1 && slug[1] === 'liqpay') {
+    orderId = slug[2];
+  }
   return <CheckoutView orderId={orderId} slug={slug[0]} />;
 }

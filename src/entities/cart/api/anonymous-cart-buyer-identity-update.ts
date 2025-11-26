@@ -34,9 +34,10 @@ export const anonymousCartBuyerIdentityUpdate = async ({
 }) => {
   try {
     await prisma.$transaction(async (tx) => {
-      const oldCart = await tx.cart.findUnique({
+      const oldCart = await tx.cart.findFirst({
         where: {
           userId: anonymousUser.user.id,
+          completed: false,
         },
       });
       if (!oldCart) return;

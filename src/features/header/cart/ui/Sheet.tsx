@@ -11,10 +11,12 @@ const CartSheet = async () => {
     id: item.node.id,
     title: item.node.merchandise.product.title,
     price: item.node.cost.amountPerQuantity.amount,
-    size: item.node.merchandise.selectedOptions[0].value,
-    color: item.node.merchandise.selectedOptions[1]
-      ? item.node.merchandise.selectedOptions[1].value
-      : '',
+    size: item.node.merchandise.selectedOptions.find(
+      (option) => option.name === 'Size',
+    )?.value,
+    color: item.node.merchandise.selectedOptions.find(
+      (option) => option.name === 'Color',
+    )?.value,
     quantity: item.node.quantity,
     totalPrice: item.node.cost.totalAmount.amount,
     image: item.node.merchandise?.image

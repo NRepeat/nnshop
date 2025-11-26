@@ -7,13 +7,13 @@ import { User } from '~/generated/prisma/client';
 
 export async function savePaymentInfo(
   data: PaymentInfo,
+  orderId: string,
 ): Promise<{ success: boolean; user?: User | null; message: string }> {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
       return { success: false, message: 'Session not found' };
     }
-
     const user = await prisma.user.update({
       where: { id: session.user.id },
       data: {
@@ -22,9 +22,11 @@ export async function savePaymentInfo(
             where: { userId: session.user.id },
             create: {
               ...data,
+              orderId: orderId,
             },
             update: {
               ...data,
+              orderId: orderId,
             },
           },
         },

@@ -18,10 +18,11 @@ import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { createDraftOrder } from '@features/order/api/create';
 import { completeOrder } from '../api/completeOrder';
 import resetCartSession from '@features/cart/api/resetCartSession';
+import { Order } from '~/generated/prisma/client';
 
 interface PaymentFormProps {
   defaultValues?: PaymentInfo | null;
-  orderId: string;
+  draftOrder: Order;
   amount: number;
   currency?: string;
   liqpayPublicKey?: string;
@@ -31,7 +32,7 @@ interface PaymentFormProps {
 
 export default function PaymentForm({
   defaultValues,
-  orderId,
+  draftOrder,
   amount,
   currency = 'UAH',
   liqpayPublicKey,
@@ -43,7 +44,6 @@ export default function PaymentForm({
   const locale = params.locale as string;
   const t = useTranslations('PaymentForm');
   const paymentSchema = getPaymentSchema(t);
-
   const form = useForm<PaymentInfo>({
     //@ts-ignore
     resolver: zodResolver(paymentSchema),
@@ -55,36 +55,31 @@ export default function PaymentForm({
       paymentMethod: defaultValues?.paymentMethod || 'pay-now',
       paymentProvider: defaultValues?.paymentProvider || 'liqpay',
       amount: amount,
-      currency: defaultValues?.currency || currency,
-      orderId: orderId,
+      currency: currency || defaultValues?.currency,
       description: defaultValues?.description || 'Order payment',
     },
   });
-
   const selectedPaymentMethodValue = form.watch('paymentMethod');
   const selectedProviderValue = form.watch('paymentProvider');
 
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
     try {
-      const result = await savePaymentInfo(data);
-      if (!completeCheckoutData) {
-        throw new Error('Checkout data not available.');
-      }
-      const order = await createDraftOrder(data, completeCheckoutData);
-      if (order && order.order?.id && result.success) {
+      if (draftOrder && draftOrder.shopifyOrderId) {
         toast.success(t('paymentInformationSaved'));
-
         if (data.paymentMethod === 'after-delivered') {
-          const completedOrder = await completeOrder(order.order?.id);
+          const completedOrder = await completeOrder(draftOrder.shopifyOrderId);
+          await savePaymentInfo(data, completedOrder.id);
           await resetCartSession();
-          return router.push(`/${locale}/checkout/success/${completedOrder}`);
+          return router.push(
+            `/${locale}/checkout/success/${completedOrder?.shopifyDraftOrderId?.split('/').pop()}`,
+          );
         }
 
-        if (data.paymentProvider === 'liqpay') {
+        if (data.paymentMethod === 'pay-now') {
           return;
         }
       } else {
-        toast.error(result.message);
+        // toast.error(result.message);
       }
     } catch (error) {
       console.error('Error saving payment info:', error);
@@ -141,7 +136,7 @@ export default function PaymentForm({
             <LiqPayForm
               liqpayPublicKey={liqpayPublicKey}
               liqpayPrivateKey={liqpayPrivateKey}
-              orderId={orderId}
+              shopifyDraftOrderId={draftOrder.shopifyDraftOrderId}
               amount={amount}
               currency={form.getValues('currency')}
               checkoutData={completeCheckoutData}
@@ -154,7 +149,6 @@ export default function PaymentForm({
         ) && (
           <div className="">
             <Button
-              // type="submit"
               className="w-full h-12 bg-green-800"
               disabled={form.formState.isSubmitting}
               onClick={async () => {

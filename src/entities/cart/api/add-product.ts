@@ -13,7 +13,8 @@ export async function addToCartAction(productVariantId: string) {
     if (!session) {
       throw new Error('Session not found');
     }
-    const sessionCart = await prisma.cart.findUnique({
+
+    const sessionCart = await prisma.cart.findFirst({
       where: {
         userId: session.user.id,
         completed: false,
@@ -40,7 +41,6 @@ export async function addToCartAction(productVariantId: string) {
         },
       });
     }
-
     if (result.success) {
       revalidateTag(CART_TAGS.CART);
       revalidateTag(CART_TAGS.CART_ITEMS);

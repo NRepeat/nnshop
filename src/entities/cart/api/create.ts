@@ -167,7 +167,7 @@ const createCart = async (
     }
     await prisma.cart.create({
       data: {
-        cartToken: cartCreate.cart?.id,
+        cartToken: cartCreate.cart.id,
         userId: session.user.id,
       },
     });

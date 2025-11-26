@@ -28,6 +28,8 @@ model User {
   @@map("user")
 }
 
+// === MODELS WITH CASCADING DELETE ===
+
 model ContactInformation {
   id          String @id @default(cuid())
   name        String
@@ -35,25 +37,67 @@ model ContactInformation {
   email       String
   phone       String
   countryCode String
-  user        User   @relation(fields: [userId], references: [id])
-  userId      String @unique
+
+  // ADDED onDelete: Cascade
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
 }
 
 model DeliveryInformation {
-  id                   String                @id @default(cuid())
-  deliveryMethod       String
-  country              String?
-  address              String?
-  apartment            String?
-  city                 String?
-  postalCode           String?
-  user                 User                  @relation(fields: [userId], references: [id])
+  id             String  @id @default(cuid())
+  deliveryMethod String
+  country        String?
+  address        String?
+  apartment      String?
+  city           String?
+  postalCode     String?
+
+  // ADDED onDelete: Cascade
+  user                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId               String                @unique
   novaPoshtaDepartment NovaPoshtaDepartment?
 }
 
+model PaymentInformation {
+  id              String  @id @default(cuid())
+  paymentMethod   String
+  paymentProvider String
+  amount          Float
+  currency        String
+  orderId         String
+  description     String?
+
+  // ADDED onDelete: Cascade
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Cart {
+  id        String @id @default(cuid())
+  cartToken String @unique
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id                  String  @id @default(cuid())
+  shopifyOrderId      String? @unique
+  shopifyDraftOrderId String? @unique
+  draft               Boolean @default(false)
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model NovaPoshtaDepartment {
-  id                    String              @id
+  id                    String              @id @default(cuid())
   shortName             String
   city                  String?
   street                String?
@@ -62,20 +106,6 @@ model NovaPoshtaDepartment {
   longitude             Float?
   deliveryInformation   DeliveryInformation @relation(fields: [deliveryInformationId], references: [id])
   deliveryInformationId String              @unique
-}
-
-model PaymentInformation {
-  id              String   @id @default(cuid())
-  paymentMethod   String
-  paymentProvider String
-  amount          Float
-  currency        String
-  orderId         String
-  description     String?
-  user            User     @relation(fields: [userId], references: [id])
-  userId          String   @unique
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
 }
 
 model Session {
@@ -87,7 +117,7 @@ model Session {
   ipAddress String?
   userAgent String?
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Already set
 
   @@unique([token])
   @@index([userId])
@@ -99,7 +129,7 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade) // Already set
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -134,22 +164,4 @@ model ShopifySession {
   expiresIn   DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-}
-
-model Cart {
-  id        String   @id @default(cuid())
-  cartToken String   @unique
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  completed Boolean  @default(false)
-  createdAt DateTime @default(now())
-}
-
-model Order {
-  id             String   @id @default(cuid())
-  shopifyOrderId String   @unique
-  user           User     @relation(fields: [userId], references: [id])
-  userId         String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
 }

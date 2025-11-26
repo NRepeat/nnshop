@@ -12,9 +12,16 @@ import { completeOrder } from '@features/checkout/payment/api/completeOrder';
 import { getTranslations } from 'next-intl/server';
 import resetCartSession from '@features/cart/api/resetCartSession';
 import { getOrder } from '@entities/order/api/getOrder';
+import { auth } from '@features/auth/lib/auth';
+import { headers } from 'next/headers';
 
 export const Thank = async ({ orderId }: { orderId: string }) => {
   const t = await getTranslations('ThankYouPage');
+
+  const session = auth.api.getSession({ headers: await headers() });
+  if (!session) {
+    throw new Error('Unauthorized');
+  }
   return (
     <div className="flex items-center justify-center dark:bg-gray-900">
       <Card className="w-full max-w-full p-6 sm:p-8 shadow-none">

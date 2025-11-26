@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { z } from 'zod';
+import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
 import { toast } from 'sonner';
 import { useRouter, useParams } from 'next/navigation';
 import { DeliveryInfo, getDeliverySchema } from '../model/deliverySchema';
@@ -15,6 +15,7 @@ import UkrPoshtaForm from './UkrPoshtaForm';
 import DeliveryMethodSelection from './DeliveryMethodSelection';
 import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { createDraftOrder } from '@features/order/api/create';
 
 interface DeliveryFormProps {
   defaultValues?: DeliveryInfo | null;
@@ -62,8 +63,13 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
       const result = await saveDeliveryInfo(data);
 
       if (result.success) {
+        const completeCheckoutData = await getCompleteCheckoutData();
+        const draftOrder = await createDraftOrder(completeCheckoutData);
+        console.log('draftOrder', draftOrder);
         toast.success(t('deliveryInformationSavedSuccessfully'));
-        router.push(`/${locale}/checkout/payment`);
+        router.push(
+          `/${locale}/checkout/payment/${draftOrder.order?.id.split('/').pop()}`,
+        );
       } else {
         toast.error(result.message);
       }

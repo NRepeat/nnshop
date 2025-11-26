@@ -8,7 +8,7 @@ import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 interface LiqPayFormProps {
   liqpayPublicKey: string;
   liqpayPrivateKey: string;
-  orderId: string;
+  shopifyDraftOrderId: string;
   amount: number;
   currency: string;
   checkoutData: Omit<CheckoutData, 'paymentInfo'> | null;
@@ -17,7 +17,7 @@ interface LiqPayFormProps {
 export default function LiqPayForm({
   liqpayPublicKey,
   liqpayPrivateKey,
-  orderId,
+  shopifyDraftOrderId,
   amount,
   currency,
   checkoutData,
@@ -36,10 +36,10 @@ export default function LiqPayForm({
       <Liqpay
         publicKey={liqpayPublicKey}
         privateKey={liqpayPrivateKey}
-        orderId={orderId}
+        shopifyDraftOrderId={shopifyDraftOrderId}
         amount={amount.toString()}
         action="pay"
-        description={`${t('orderPaymentFor')} ${orderId}`}
+        description={`${t('orderPaymentFor')} ${shopifyDraftOrderId}`}
         currency={currency}
         language="en"
         customerInfo={
