@@ -5,6 +5,7 @@ import { nextCookies } from 'better-auth/next-js';
 import { anonymous } from 'better-auth/plugins';
 import { anonymousCartBuyerIdentityUpdate } from '../../../entities/cart/api/anonymous-cart-buyer-identity-update';
 import { prisma } from '../../../shared/lib/prisma';
+import { linkAnonymousDataToUser } from './on-link-account';
 
 const betterAuthSecret = process.env.BETTER_AUTH_SECRET;
 const betterAuthUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -65,7 +66,13 @@ export const auth = betterAuth({
     anonymous({
       emailDomainName: 'gmail.com',
       onLinkAccount: async ({ anonymousUser, newUser }) => {
-        await anonymousCartBuyerIdentityUpdate({ anonymousUser, newUser });
+        await Promise.all([
+          anonymousCartBuyerIdentityUpdate({ anonymousUser, newUser }),
+          linkAnonymousDataToUser({
+            anonymousUserId: anonymousUser.user.id,
+            newUserId: newUser.user.id,
+          }),
+        ]);
       },
     }),
     nextCookies(),

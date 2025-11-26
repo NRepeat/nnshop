@@ -3,12 +3,9 @@ import { prisma } from '@shared/lib/prisma';
 import { getCart } from '@entities/cart/api/get';
 import PaymentForm from './PaymentForm';
 import { getPaymentInfo } from '../api/getPaymentInfo';
-import { generateOrderId } from '../api/generateOrderId';
-import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
 import { headers } from 'next/headers';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { redirect } from 'next/navigation';
-import { getLocale } from 'next-intl/server';
 
 export default async function Payment({
   draftOrderId,
@@ -47,8 +44,8 @@ export default async function Payment({
     if (cartResult && cartResult.cart?.cost?.totalAmount) {
       cartAmount = parseFloat(cartResult.cart.cost.totalAmount.amount);
       currency = cartResult.cart.cost.totalAmount.currencyCode;
-      cartToken = sessionCart.cartToken?.split('/').at(-1);
     }
+    console.log(draftOrderId, 'draftOrderId');
     draftOrder = await prisma.order.findUnique({
       where: {
         shopifyDraftOrderId: 'gid://shopify/DraftOrder/' + draftOrderId,
