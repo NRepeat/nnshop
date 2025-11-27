@@ -1,10 +1,9 @@
-'use client';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
 import Logo from '@shared/assets/Logo';
+import { getTranslations } from 'next-intl/server';
 
-export const Footer = () => {
-  const t = useTranslations('Footer');
+export const Footer = async () => {
+  const t = await getTranslations('Footer');
 
   const navLinks = [
     { title: t('contacts'), href: '/info/contacts' },

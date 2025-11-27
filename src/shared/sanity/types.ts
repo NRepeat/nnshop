@@ -13,6 +13,22 @@
  */
 
 // Source: schema.json
+export type ContentPageBlock = {
+  _type: 'contentPageBlock';
+  body?: LocalizedBlockContent;
+};
+
+export type SimilarProducts = {
+  _type: 'similarProducts';
+  title?: LocalizedString;
+  collection?: {
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: 'collection';
+  };
+};
+
 export type SplitImage = {
   _type: 'splitImage';
   orientation?: 'imageLeft' | 'imageRight';
@@ -42,40 +58,7 @@ export type SplitImage = {
 export type Hero = {
   _type: 'hero';
   title?: string;
-  text?: Array<
-    | {
-        children?: Array<{
-          marks?: Array<string>;
-          text?: string;
-          _type: 'span';
-          _key: string;
-        }>;
-        style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'blockquote';
-        listItem?: 'bullet';
-        markDefs?: Array<{
-          href?: string;
-          _type: 'link';
-          _key: string;
-        }>;
-        level?: number;
-        _type: 'block';
-        _key: string;
-      }
-    | {
-        asset?: {
-          _ref: string;
-          _type: 'reference';
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-        };
-        media?: unknown;
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        alt?: string;
-        _type: 'image';
-        _key: string;
-      }
-  >;
+  text?: BlockContent;
   image?: {
     asset?: {
       _ref: string;
@@ -120,101 +103,7 @@ export type Faq = {
   _updatedAt: string;
   _rev: string;
   title?: string;
-  body?: Array<
-    | {
-        children?: Array<{
-          marks?: Array<string>;
-          text?: string;
-          _type: 'span';
-          _key: string;
-        }>;
-        style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'blockquote';
-        listItem?: 'bullet';
-        markDefs?: Array<{
-          href?: string;
-          _type: 'link';
-          _key: string;
-        }>;
-        level?: number;
-        _type: 'block';
-        _key: string;
-      }
-    | {
-        asset?: {
-          _ref: string;
-          _type: 'reference';
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-        };
-        media?: unknown;
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        alt?: string;
-        _type: 'image';
-        _key: string;
-      }
-  >;
-};
-
-export type PageBuilder = Array<
-  | ({
-      _key: string;
-    } & Hero)
-  | ({
-      _key: string;
-    } & SplitImage)
-  | ({
-      _key: string;
-    } & Features)
-  | ({
-      _key: string;
-    } & Faqs)
-  | ({
-      _key: string;
-    } & ProductCarousel)
-  | ({
-      _key: string;
-    } & CollectionsCarousel)
-  | ({
-      _key: string;
-    } & SliderBlock)
->;
-
-export type SiteSettings = {
-  _id: string;
-  _type: 'siteSettings';
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  homePage?: {
-    _ref: string;
-    _type: 'reference';
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: 'page';
-  };
-};
-
-export type Category = {
-  _id: string;
-  _type: 'category';
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  title?: string;
-  slug?: Slug;
-  description?: string;
-};
-
-export type Redirect = {
-  _id: string;
-  _type: 'redirect';
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  source?: string;
-  destination?: string;
-  permanent?: boolean;
-  isEnabled?: boolean;
+  body?: BlockContent;
 };
 
 export type BlockContent = Array<
@@ -251,6 +140,110 @@ export type BlockContent = Array<
       _key: string;
     }
 >;
+
+export type PageBuilder = Array<
+  | ({
+      _key: string;
+    } & Hero)
+  | ({
+      _key: string;
+    } & SplitImage)
+  | ({
+      _key: string;
+    } & Features)
+  | ({
+      _key: string;
+    } & Faqs)
+  | ({
+      _key: string;
+    } & ProductCarousel)
+  | ({
+      _key: string;
+    } & SimilarProducts)
+  | ({
+      _key: string;
+    } & ContentPageBlock)
+  | ({
+      _key: string;
+    } & CollectionsCarousel)
+  | ({
+      _key: string;
+    } & SliderBlock)
+>;
+
+export type Seo = {
+  _type: 'seo';
+  title?: string;
+  description?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: 'image';
+  };
+  noIndex?: boolean;
+};
+
+export type SiteSettings = {
+  _id: string;
+  _type: 'siteSettings';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  homePage?: {
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: 'page';
+  };
+};
+
+export type Category = {
+  _id: string;
+  _type: 'category';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  description?: string;
+};
+
+export type Slug = {
+  _type: 'slug';
+  current?: string;
+  source?: string;
+};
+
+export type Redirect = {
+  _id: string;
+  _type: 'redirect';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  source?: string;
+  destination?: string;
+  permanent?: boolean;
+  isEnabled?: boolean;
+};
+
+export type Social = {
+  _type: 'social';
+  linkedIn?: string;
+  x?: string;
+};
+
+export type LocalizedString = {
+  _type: 'localizedString';
+  en?: string;
+  uk?: string;
+};
 
 export type Locale = {
   _id: string;
@@ -353,6 +346,12 @@ export type SliderBlock = {
   }>;
 };
 
+export type LocalizedBlockContent = {
+  _type: 'localizedBlockContent';
+  en?: BlockContent;
+  uk?: BlockContent;
+};
+
 export type LocalizedText = {
   _type: 'localizedText';
   en?: string;
@@ -373,6 +372,12 @@ export type Body = Array<{
   _type: 'block';
   _key: string;
 }>;
+
+export type SeoShopify = {
+  _type: 'seo.shopify';
+  title?: string;
+  description?: string;
+};
 
 export type ModuleCallToAction = {
   _type: 'module.callToAction';
@@ -402,6 +407,11 @@ export type ModuleCallToAction = {
 export type ModuleCallout = {
   _type: 'module.callout';
   text?: string;
+};
+
+export type ImageCallToAction = {
+  _type: 'imageCallToAction';
+  title?: string;
 };
 
 export type GridItem = {
@@ -456,38 +466,6 @@ export type CollectionGroup = {
   };
 };
 
-export type CollectionRule = {
-  _type: 'collectionRule';
-  column?: string;
-  relation?: string;
-  condition?: string;
-};
-
-export type ProxyString = string;
-
-export type Option = {
-  _type: 'option';
-  name?: string;
-  values?: Array<string>;
-};
-
-export type ProductHotspots = Array<
-  {
-    _key: string;
-  } & Spot
->;
-
-export type ProductVariant = {
-  _id: string;
-  _type: 'productVariant';
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  hidden?: string;
-  titleProxy?: ProxyString;
-  store?: ShopifyProductVariant;
-};
-
 export type ShopifyProductVariant = {
   _type: 'shopifyProductVariant';
   createdAt?: string;
@@ -507,6 +485,111 @@ export type ShopifyProductVariant = {
   option2?: string;
   option3?: string;
   previewImageUrl?: string;
+};
+
+export type ShopifyProduct = {
+  _type: 'shopifyProduct';
+  createdAt?: string;
+  updatedAt?: string;
+  status?: 'active' | 'archived' | 'draft';
+  isDeleted?: boolean;
+  title?: string;
+  id?: number;
+  gid?: string;
+  slug?: Slug;
+  descriptionHtml?: string;
+  productType?: string;
+  vendor?: string;
+  tags?: string;
+  priceRange?: PriceRange;
+  previewImageUrl?: string;
+  options?: Array<
+    {
+      _key: string;
+    } & Option
+  >;
+  variants?: Array<{
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: 'productVariant';
+  }>;
+};
+
+export type CollectionRule = {
+  _type: 'collectionRule';
+  column?: string;
+  relation?: string;
+  condition?: string;
+};
+
+export type ShopifyCollection = {
+  _type: 'shopifyCollection';
+  createdAt?: string;
+  updatedAt?: string;
+  isDeleted?: boolean;
+  title?: string;
+  id?: number;
+  gid?: string;
+  slug?: Slug;
+  descriptionHtml?: string;
+  imageUrl?: string;
+  rules?: Array<
+    {
+      _key: string;
+    } & CollectionRule
+  >;
+  disjunctive?: boolean;
+  sortOrder?: string;
+};
+
+export type ProxyString = string;
+
+export type Option = {
+  _type: 'option';
+  name?: string;
+  values?: Array<string>;
+};
+
+export type ProductHotspots = Array<
+  {
+    _key: string;
+  } & Spot
+>;
+
+export type ProductWithVariant = {
+  _type: 'productWithVariant';
+  product?: {
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: 'product';
+  };
+  variant?: {
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: 'productVariant';
+  };
+};
+
+export type ProductVariant = {
+  _id: string;
+  _type: 'productVariant';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  hidden?: string;
+  titleProxy?: ProxyString;
+  store?: ShopifyProductVariant;
+};
+
+export type Inventory = {
+  _type: 'inventory';
+  isAvailable?: boolean;
+  management?: string;
+  policy?: string;
 };
 
 export type Spot = {
@@ -585,11 +668,6 @@ export type ModuleImage = {
   >;
 };
 
-export type ImageCallToAction = {
-  _type: 'imageCallToAction';
-  title?: string;
-};
-
 export type ModuleGrid = {
   _type: 'module.grid';
   items?: Array<
@@ -597,6 +675,22 @@ export type ModuleGrid = {
       _key: string;
     } & GridItem
   >;
+};
+
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop';
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot';
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
 };
 
 export type ModuleCollection = {
@@ -613,27 +707,7 @@ export type ModuleCollection = {
 export type AccordionGroup = {
   _type: 'accordionGroup';
   title?: string;
-  body?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: 'span';
-      _key: string;
-    }>;
-    style?: 'normal';
-    listItem?: never;
-    markDefs?: Array<
-      | ({
-          _key: string;
-        } & AnnotationLinkEmail)
-      | ({
-          _key: string;
-        } & AnnotationLinkExternal)
-    >;
-    level?: number;
-    _type: 'block';
-    _key: string;
-  }>;
+  body?: AccordionBody;
 };
 
 export type AccordionBody = Array<{
@@ -680,6 +754,20 @@ export type HeroPage = {
   >;
 };
 
+export type HeroCollection = {
+  _type: 'hero.collection';
+  title?: string;
+  description?: string;
+  content?: Array<
+    | ({
+        _key: string;
+      } & ProductWithVariant)
+    | ({
+        _key: string;
+      } & ImageWithProductHotspots)
+  >;
+};
+
 export type NotFoundPage = {
   _type: 'notFoundPage';
   title?: string;
@@ -690,13 +778,6 @@ export type NotFoundPage = {
     _weak?: boolean;
     [internalGroqTypeReferenceTo]?: 'collection';
   };
-};
-
-export type Inventory = {
-  _type: 'inventory';
-  isAvailable?: boolean;
-  management?: string;
-  policy?: string;
 };
 
 export type ImageWithProductHotspots = {
@@ -768,6 +849,15 @@ export type CustomProductOptionColor = {
   >;
 };
 
+export type Color = {
+  _type: 'color';
+  hex?: string;
+  alpha?: number;
+  hsl?: HslaColor;
+  hsv?: HsvaColor;
+  rgb?: RgbaColor;
+};
+
 export type LinkExternal = {
   _type: 'linkExternal';
   title?: string;
@@ -806,22 +896,6 @@ export type AnnotationProduct = {
   quantity?: number;
 };
 
-export type ProductWithVariant = {
-  _type: 'productWithVariant';
-  product?: {
-    _ref: string;
-    _type: 'reference';
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: 'product';
-  };
-  variant?: {
-    _ref: string;
-    _type: 'reference';
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: 'productVariant';
-  };
-};
-
 export type AnnotationLinkInternal = {
   _type: 'annotationLinkInternal';
   reference?:
@@ -857,42 +931,6 @@ export type Product = {
   body?: Body;
   store?: ShopifyProduct;
   seo?: SeoShopify;
-};
-
-export type SeoShopify = {
-  _type: 'seo.shopify';
-  title?: string;
-  description?: string;
-};
-
-export type ShopifyProduct = {
-  _type: 'shopifyProduct';
-  createdAt?: string;
-  updatedAt?: string;
-  status?: 'active' | 'archived' | 'draft';
-  isDeleted?: boolean;
-  title?: string;
-  id?: number;
-  gid?: string;
-  slug?: Slug;
-  descriptionHtml?: string;
-  productType?: string;
-  vendor?: string;
-  tags?: string;
-  priceRange?: PriceRange;
-  previewImageUrl?: string;
-  options?: Array<
-    {
-      _key: string;
-    } & Option
-  >;
-  variants?: Array<{
-    _ref: string;
-    _type: 'reference';
-    _weak?: boolean;
-    _key: string;
-    [internalGroqTypeReferenceTo]?: 'productVariant';
-  }>;
 };
 
 export type Collection = {
@@ -935,40 +973,6 @@ export type Collection = {
   store?: ShopifyCollection;
 };
 
-export type ShopifyCollection = {
-  _type: 'shopifyCollection';
-  createdAt?: string;
-  updatedAt?: string;
-  isDeleted?: boolean;
-  title?: string;
-  id?: number;
-  gid?: string;
-  slug?: Slug;
-  descriptionHtml?: string;
-  imageUrl?: string;
-  rules?: Array<
-    {
-      _key: string;
-    } & CollectionRule
-  >;
-  disjunctive?: boolean;
-  sortOrder?: string;
-};
-
-export type HeroCollection = {
-  _type: 'hero.collection';
-  title?: string;
-  description?: string;
-  content?: Array<
-    | ({
-        _key: string;
-      } & ProductWithVariant)
-    | ({
-        _key: string;
-      } & ImageWithProductHotspots)
-  >;
-};
-
 export type AnnotationLinkExternal = {
   _type: 'annotationLinkExternal';
   url?: string;
@@ -978,15 +982,6 @@ export type AnnotationLinkExternal = {
 export type AnnotationLinkEmail = {
   _type: 'annotationLinkEmail';
   email?: string;
-};
-
-export type Color = {
-  _type: 'color';
-  hex?: string;
-  alpha?: number;
-  hsl?: HslaColor;
-  hsv?: HsvaColor;
-  rgb?: RgbaColor;
 };
 
 export type RgbaColor = {
@@ -1154,13 +1149,15 @@ export type TranslationMetadata = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  translations?: Array<
-    {
-      _key: string;
-    } & InternationalizedArrayReferenceValue
-  >;
+  translations?: InternationalizedArrayReference;
   schemaTypes?: Array<string>;
 };
+
+export type InternationalizedArrayReference = Array<
+  {
+    _key: string;
+  } & InternationalizedArrayReferenceValue
+>;
 
 export type InternationalizedArrayReferenceValue = {
   _type: 'internationalizedArrayReferenceValue';
@@ -1203,18 +1200,6 @@ export type Page = {
   };
   seo?: Seo;
   social?: Social;
-};
-
-export type Social = {
-  _type: 'social';
-  linkedIn?: string;
-  x?: string;
-};
-
-export type LocalizedString = {
-  _type: 'localizedString';
-  en?: string;
-  uk?: string;
 };
 
 export type Post = {
@@ -1264,25 +1249,6 @@ export type Post = {
   seo?: Seo;
 };
 
-export type Seo = {
-  _type: 'seo';
-  title?: string;
-  description?: string;
-  image?: {
-    asset?: {
-      _ref: string;
-      _type: 'reference';
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: 'image';
-  };
-  noIndex?: boolean;
-};
-
 export type Author = {
   _id: string;
   _type: 'author';
@@ -1303,22 +1269,20 @@ export type Author = {
     crop?: SanityImageCrop;
     _type: 'image';
   };
-  bio?: Array<
-    {
-      _key: string;
-    } & InternationalizedArraySimpleBlockContentValue
-  >;
-  jobTitle?: Array<
-    {
-      _key: string;
-    } & InternationalizedArrayStringValue
-  >;
+  bio?: InternationalizedArraySimpleBlockContent;
+  jobTitle?: InternationalizedArrayString;
 };
 
-export type InternationalizedArrayReference = Array<
+export type InternationalizedArrayString = Array<
   {
     _key: string;
-  } & InternationalizedArrayReferenceValue
+  } & InternationalizedArrayStringValue
+>;
+
+export type InternationalizedArraySimpleBlockContent = Array<
+  {
+    _key: string;
+  } & InternationalizedArraySimpleBlockContentValue
 >;
 
 export type InternationalizedArraySimpleBlockContentValue = {
@@ -1330,18 +1294,6 @@ export type InternationalizedArrayStringValue = {
   _type: 'internationalizedArrayStringValue';
   value?: string;
 };
-
-export type InternationalizedArraySimpleBlockContent = Array<
-  {
-    _key: string;
-  } & InternationalizedArraySimpleBlockContentValue
->;
-
-export type InternationalizedArrayString = Array<
-  {
-    _key: string;
-  } & InternationalizedArrayStringValue
->;
 
 export type SanityImagePaletteSwatch = {
   _type: 'sanity.imagePaletteSwatch';
@@ -1369,20 +1321,15 @@ export type SanityImageDimensions = {
   aspectRatio?: number;
 };
 
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot';
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
-};
-
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop';
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
+export type SanityImageMetadata = {
+  _type: 'sanity.imageMetadata';
+  location?: Geopoint;
+  dimensions?: SanityImageDimensions;
+  palette?: SanityImagePalette;
+  lqip?: string;
+  blurHash?: string;
+  hasAlpha?: boolean;
+  isOpaque?: boolean;
 };
 
 export type SanityFileAsset = {
@@ -1405,6 +1352,13 @@ export type SanityFileAsset = {
   path?: string;
   url?: string;
   source?: SanityAssetSourceData;
+};
+
+export type SanityAssetSourceData = {
+  _type: 'sanity.assetSourceData';
+  name?: string;
+  id?: string;
+  url?: string;
 };
 
 export type SanityImageAsset = {
@@ -1430,17 +1384,6 @@ export type SanityImageAsset = {
   source?: SanityAssetSourceData;
 };
 
-export type SanityImageMetadata = {
-  _type: 'sanity.imageMetadata';
-  location?: Geopoint;
-  dimensions?: SanityImageDimensions;
-  palette?: SanityImagePalette;
-  lqip?: string;
-  blurHash?: string;
-  hasAlpha?: boolean;
-  isOpaque?: boolean;
-};
-
 export type Geopoint = {
   _type: 'geopoint';
   lat?: number;
@@ -1448,47 +1391,47 @@ export type Geopoint = {
   alt?: number;
 };
 
-export type Slug = {
-  _type: 'slug';
-  current?: string;
-  source?: string;
-};
-
-export type SanityAssetSourceData = {
-  _type: 'sanity.assetSourceData';
-  name?: string;
-  id?: string;
-  url?: string;
-};
-
 export type AllSanitySchemaTypes =
+  | ContentPageBlock
+  | SimilarProducts
   | SplitImage
   | Hero
   | Features
   | Faqs
   | Faq
+  | BlockContent
   | PageBuilder
+  | Seo
   | SiteSettings
   | Category
+  | Slug
   | Redirect
-  | BlockContent
+  | Social
+  | LocalizedString
   | Locale
   | SimpleBlockContent
   | ProductCarousel
   | CollectionsCarousel
   | SliderBlock
+  | LocalizedBlockContent
   | LocalizedText
   | Body
+  | SeoShopify
   | ModuleCallToAction
   | ModuleCallout
+  | ImageCallToAction
   | GridItem
   | CollectionGroup
+  | ShopifyProductVariant
+  | ShopifyProduct
   | CollectionRule
+  | ShopifyCollection
   | ProxyString
   | Option
   | ProductHotspots
+  | ProductWithVariant
   | ProductVariant
-  | ShopifyProductVariant
+  | Inventory
   | Spot
   | PriceRange
   | PlaceholderString
@@ -1497,35 +1440,31 @@ export type AllSanitySchemaTypes =
   | ModuleInstagram
   | ModuleImages
   | ModuleImage
-  | ImageCallToAction
   | ModuleGrid
+  | SanityImageCrop
+  | SanityImageHotspot
   | ModuleCollection
   | AccordionGroup
   | AccordionBody
   | ModuleAccordion
   | HeroPage
+  | HeroCollection
   | NotFoundPage
-  | Inventory
   | ImageWithProductHotspots
   | FooterSettings
   | CustomProductOptionSizeObject
   | CustomProductOptionSize
   | CustomProductOptionColorObject
   | CustomProductOptionColor
+  | Color
   | LinkExternal
   | LinkInternal
   | AnnotationProduct
-  | ProductWithVariant
   | AnnotationLinkInternal
   | Product
-  | SeoShopify
-  | ShopifyProduct
   | Collection
-  | ShopifyCollection
-  | HeroCollection
   | AnnotationLinkExternal
   | AnnotationLinkEmail
-  | Color
   | RgbaColor
   | HsvaColor
   | HslaColor
@@ -1542,29 +1481,23 @@ export type AllSanitySchemaTypes =
   | SanityAssistInstruction
   | SanityAssistSchemaTypeField
   | TranslationMetadata
+  | InternationalizedArrayReference
   | InternationalizedArrayReferenceValue
   | Page
-  | Social
-  | LocalizedString
   | Post
-  | Seo
   | Author
-  | InternationalizedArrayReference
+  | InternationalizedArrayString
+  | InternationalizedArraySimpleBlockContent
   | InternationalizedArraySimpleBlockContentValue
   | InternationalizedArrayStringValue
-  | InternationalizedArraySimpleBlockContent
-  | InternationalizedArrayString
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
-  | SanityImageHotspot
-  | SanityImageCrop
-  | SanityFileAsset
-  | SanityImageAsset
   | SanityImageMetadata
-  | Geopoint
-  | Slug
-  | SanityAssetSourceData;
+  | SanityFileAsset
+  | SanityAssetSourceData
+  | SanityImageAsset
+  | Geopoint;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./src/shared/sanity/lib/query.ts
 // Variable: LOCALES_QUERY
@@ -2032,7 +1965,7 @@ export type POST_WITH_FALLBACK_QUERYResult = {
   };
 } | null;
 // Variable: PAGE_QUERY
-// Query: *[_type == "page" && slug.current == $slug && language == $language][0]{  ...,  "seo": {  "title": coalesce(seo.title, title, ""),    "description": coalesce(seo.description,  ""),    "image": seo.image,    "noIndex": seo.noIndex == true   },  content[]{    ...,    _type == "faqs" => {      ...,      faqs[]->{        _id,        title,        body,        "text": pt::text(body)      }    }  }}
+// Query: *[_type == "page" && slug.current == $slug][0]{  ...,  "seo": {  "title": coalesce(seo.title, title, ""),    "description": coalesce(seo.description,  ""),    "image": seo.image,    "noIndex": seo.noIndex == true   },  content[]{    ...,    _type == "similarProducts" => {      collection -> {        _id,        title,        store{         imageUrl,         isDeleted,         slug{         current         },         title        }      }    },    _type == "sliderBlock" => {      slides[]{         ...,        _key,        link[]{         ...,         reference->{           _id,           _type,           title,           "slug": select(             _type == "product" => store.slug.current,             _type == "collection" => store.slug.current,             _type == "page" => slug.current           )         }       },        backgroundImage{          asset->{            _id,            url,            metadata{dimensions}          }        }      }    },    _type == "productCarousel" => {      products[]->{        _id,        store{          title,          isDeleted,          previewImageUrl,          priceRange{          maxVariantPrice,          minVariantPrice          },          productType        }      },      collection -> {        _id,        title,        store{         imageUrl,         isDeleted,         slug{         current         },         title        }      }    },    _type == "collectionsCarousel" => {      collections[]->{        _id,        title,        store{         imageUrl,         isDeleted,         slug{         current         },         title        }      }    },    _type == "splitImage" => {      ...,      link[]{        ...,        reference->{          _id,          _type,          title,          "slug": select(            _type == "product" => store.slug.current,            _type == "collection" => store.slug.current,            _type == "page" => slug.current          )        }      }    },    _type == "faqs" => {      ...,      faqs[]->{        _id,        title,        body,        "text": pt::text(body)      }    }  }}
 export type PAGE_QUERYResult = {
   _id: string;
   _type: 'page';
@@ -2047,16 +1980,26 @@ export type PAGE_QUERYResult = {
         _key: string;
         _type: 'collectionsCarousel';
         title?: LocalizedString;
-        collections?: Array<{
-          _ref: string;
-          _type: 'reference';
-          _weak?: boolean;
-          _key: string;
-          [internalGroqTypeReferenceTo]?: 'collection';
-        }>;
+        collections: Array<{
+          _id: string;
+          title: null;
+          store: {
+            imageUrl: string | null;
+            isDeleted: boolean | null;
+            slug: {
+              current: string | null;
+            } | null;
+            title: string | null;
+          } | null;
+        }> | null;
         enable_action?: boolean;
         action_text?: LocalizedString;
         action_link?: string;
+      }
+    | {
+        _key: string;
+        _type: 'contentPageBlock';
+        body?: LocalizedBlockContent;
       }
     | {
         _key: string;
@@ -2065,40 +2008,7 @@ export type PAGE_QUERYResult = {
         faqs: Array<{
           _id: string;
           title: string | null;
-          body: Array<
-            | {
-                children?: Array<{
-                  marks?: Array<string>;
-                  text?: string;
-                  _type: 'span';
-                  _key: string;
-                }>;
-                style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'normal';
-                listItem?: 'bullet';
-                markDefs?: Array<{
-                  href?: string;
-                  _type: 'link';
-                  _key: string;
-                }>;
-                level?: number;
-                _type: 'block';
-                _key: string;
-              }
-            | {
-                asset?: {
-                  _ref: string;
-                  _type: 'reference';
-                  _weak?: boolean;
-                  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-                };
-                media?: unknown;
-                hotspot?: SanityImageHotspot;
-                crop?: SanityImageCrop;
-                alt?: string;
-                _type: 'image';
-                _key: string;
-              }
-          > | null;
+          body: BlockContent | null;
           text: string;
         }> | null;
       }
@@ -2117,40 +2027,7 @@ export type PAGE_QUERYResult = {
         _key: string;
         _type: 'hero';
         title?: string;
-        text?: Array<
-          | {
-              children?: Array<{
-                marks?: Array<string>;
-                text?: string;
-                _type: 'span';
-                _key: string;
-              }>;
-              style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'normal';
-              listItem?: 'bullet';
-              markDefs?: Array<{
-                href?: string;
-                _type: 'link';
-                _key: string;
-              }>;
-              level?: number;
-              _type: 'block';
-              _key: string;
-            }
-          | {
-              asset?: {
-                _ref: string;
-                _type: 'reference';
-                _weak?: boolean;
-                [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-              };
-              media?: unknown;
-              hotspot?: SanityImageHotspot;
-              crop?: SanityImageCrop;
-              alt?: string;
-              _type: 'image';
-              _key: string;
-            }
-        >;
+        text?: BlockContent;
         image?: {
           asset?: {
             _ref: string;
@@ -2168,65 +2045,145 @@ export type PAGE_QUERYResult = {
         _key: string;
         _type: 'productCarousel';
         title?: LocalizedString;
-        products?: Array<{
-          _ref: string;
-          _type: 'reference';
-          _weak?: boolean;
-          _key: string;
-          [internalGroqTypeReferenceTo]?: 'product';
-        }>;
-        collection?: {
-          _ref: string;
-          _type: 'reference';
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: 'collection';
-        };
+        products: Array<{
+          _id: string;
+          store: {
+            title: string | null;
+            isDeleted: boolean | null;
+            previewImageUrl: string | null;
+            priceRange: {
+              maxVariantPrice: number | null;
+              minVariantPrice: number | null;
+            } | null;
+            productType: string | null;
+          } | null;
+        }> | null;
+        collection: {
+          _id: string;
+          title: null;
+          store: {
+            imageUrl: string | null;
+            isDeleted: boolean | null;
+            slug: {
+              current: string | null;
+            } | null;
+            title: string | null;
+          } | null;
+        } | null;
         enableAction?: boolean;
         actionName?: LocalizedString;
         actionLink?: LocalizedString;
       }
     | {
         _key: string;
+        _type: 'similarProducts';
+        title?: LocalizedString;
+        collection: {
+          _id: string;
+          title: null;
+          store: {
+            imageUrl: string | null;
+            isDeleted: boolean | null;
+            slug: {
+              current: string | null;
+            } | null;
+            title: string | null;
+          } | null;
+        } | null;
+      }
+    | {
+        _key: string;
         _type: 'sliderBlock';
-        slides?: Array<{
+        slides: Array<{
           title?: LocalizedString;
-          backgroundImage?: {
-            asset?: {
-              _ref: string;
-              _type: 'reference';
-              _weak?: boolean;
-              [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-            };
-            media?: unknown;
-            hotspot?: SanityImageHotspot;
-            crop?: SanityImageCrop;
-            _type: 'image';
-          };
-          link?: Array<
-            | ({
+          backgroundImage: {
+            asset: {
+              _id: string;
+              url: string | null;
+              metadata: {
+                dimensions: SanityImageDimensions | null;
+              } | null;
+            } | null;
+          } | null;
+          link: Array<
+            | {
                 _key: string;
-              } & LinkExternal)
-            | ({
+                _type: 'linkExternal';
+                title?: string;
+                url?: string;
+                newWindow?: boolean;
+                reference: null;
+              }
+            | {
                 _key: string;
-              } & LinkInternal)
-          >;
+                _type: 'linkInternal';
+                title?: string;
+                reference:
+                  | {
+                      _id: string;
+                      _type: 'collection';
+                      title: null;
+                      slug: string | null;
+                    }
+                  | {
+                      _id: string;
+                      _type: 'page';
+                      title: LocalizedString | null;
+                      slug: string | null;
+                    }
+                  | {
+                      _id: string;
+                      _type: 'product';
+                      title: null;
+                      slug: string | null;
+                    }
+                  | null;
+              }
+          > | null;
           _type: 'slide';
           _key: string;
-        }>;
+        }> | null;
       }
     | {
         _key: string;
         _type: 'splitImage';
         orientation?: 'imageLeft' | 'imageRight';
         title?: LocalizedString;
-        link?: Array<
-          | ({
+        link: Array<
+          | {
               _key: string;
-            } & LinkExternal)
-          | ({
+              _type: 'linkExternal';
+              title?: string;
+              url?: string;
+              newWindow?: boolean;
+              reference: null;
+            }
+          | {
               _key: string;
-            } & LinkInternal)
-        >;
+              _type: 'linkInternal';
+              title?: string;
+              reference:
+                | {
+                    _id: string;
+                    _type: 'collection';
+                    title: null;
+                    slug: string | null;
+                  }
+                | {
+                    _id: string;
+                    _type: 'page';
+                    title: LocalizedString | null;
+                    slug: string | null;
+                  }
+                | {
+                    _id: string;
+                    _type: 'product';
+                    title: null;
+                    slug: string | null;
+                  }
+                | null;
+            }
+        > | null;
         image?: {
           asset?: {
             _ref: string;
@@ -2273,7 +2230,7 @@ export type PAGE_QUERYResult = {
   social?: Social;
 } | null;
 // Variable: HOME_PAGE_QUERY
-// Query: *[_id == "siteSettings" ][0]{    homePage->{      ...,      content[]{        ...,        _id,        _type == "sliderBlock" => {          slides[]{             ...,            _key,            link[]{             ...,             reference->{               _id,               title,               "slug": store.slug.current             }           },            backgroundImage{              asset->{                _id,                url,                metadata{dimensions}              }            }          }        },        _type == "productCarousel" => {          products[]->{            _id,            store{              title,              isDeleted,              previewImageUrl,              priceRange{              maxVariantPrice,              minVariantPrice              },              productType            }          },          collection -> {            _id,            title,            store{             imageUrl,             isDeleted,             slug{             current             },             title            }          }        },        _type == "collectionsCarousel" => {          collections[]->{            _id,            title,            store{             imageUrl,             isDeleted,             slug{             current             },             title            }          }        },        _type == "faqs" => {          ...,          faqs[]->{            _id,            title,            body,            "text": pt::text(body)          }        }      }    }  }
+// Query: *[_id == "siteSettings" ][0]{    homePage->{      ...,      content[]{        ...,        _id,        _type == "sliderBlock" => {          slides[]{             ...,            _key,            link[]{             ...,             reference->{               _id,               _type,               title,               "slug": select(                 _type == "product" => store.slug.current,                 _type == "collection" => store.slug.current,                 _type == "page" => slug.current               )             }           },            backgroundImage{              asset->{                _id,                url,                metadata{dimensions}              }            }          }        },        _type == "productCarousel" => {          products[]->{            _id,            store{              title,              isDeleted,              previewImageUrl,              priceRange{              maxVariantPrice,              minVariantPrice              },              productType            }          },          collection -> {            _id,            title,            store{             imageUrl,             isDeleted,             slug{             current             },             title            }          }        },        _type == "collectionsCarousel" => {          collections[]->{            _id,            title,            store{             imageUrl,             isDeleted,             slug{             current             },             title            }          }        },        _type == "splitImage" => {          ...,          link[]{            ...,            reference->{              _id,              _type,              title,              "slug": select(                _type == "product" => store.slug.current,                _type == "collection" => store.slug.current,                _type == "page" => slug.current              )            }          }        },        _type == "faqs" => {          ...,          faqs[]->{            _id,            title,            body,            "text": pt::text(body)          }        }      }    }  }
 export type HOME_PAGE_QUERYResult =
   | {
       homePage: null;
@@ -2312,51 +2269,18 @@ export type HOME_PAGE_QUERYResult =
             }
           | {
               _key: string;
+              _type: 'contentPageBlock';
+              body?: LocalizedBlockContent;
+              _id: null;
+            }
+          | {
+              _key: string;
               _type: 'faqs';
               title?: string;
               faqs: Array<{
                 _id: string;
                 title: string | null;
-                body: Array<
-                  | {
-                      children?: Array<{
-                        marks?: Array<string>;
-                        text?: string;
-                        _type: 'span';
-                        _key: string;
-                      }>;
-                      style?:
-                        | 'blockquote'
-                        | 'h1'
-                        | 'h2'
-                        | 'h3'
-                        | 'h4'
-                        | 'normal';
-                      listItem?: 'bullet';
-                      markDefs?: Array<{
-                        href?: string;
-                        _type: 'link';
-                        _key: string;
-                      }>;
-                      level?: number;
-                      _type: 'block';
-                      _key: string;
-                    }
-                  | {
-                      asset?: {
-                        _ref: string;
-                        _type: 'reference';
-                        _weak?: boolean;
-                        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-                      };
-                      media?: unknown;
-                      hotspot?: SanityImageHotspot;
-                      crop?: SanityImageCrop;
-                      alt?: string;
-                      _type: 'image';
-                      _key: string;
-                    }
-                > | null;
+                body: BlockContent | null;
                 text: string;
               }> | null;
               _id: null;
@@ -2377,40 +2301,7 @@ export type HOME_PAGE_QUERYResult =
               _key: string;
               _type: 'hero';
               title?: string;
-              text?: Array<
-                | {
-                    children?: Array<{
-                      marks?: Array<string>;
-                      text?: string;
-                      _type: 'span';
-                      _key: string;
-                    }>;
-                    style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'normal';
-                    listItem?: 'bullet';
-                    markDefs?: Array<{
-                      href?: string;
-                      _type: 'link';
-                      _key: string;
-                    }>;
-                    level?: number;
-                    _type: 'block';
-                    _key: string;
-                  }
-                | {
-                    asset?: {
-                      _ref: string;
-                      _type: 'reference';
-                      _weak?: boolean;
-                      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-                    };
-                    media?: unknown;
-                    hotspot?: SanityImageHotspot;
-                    crop?: SanityImageCrop;
-                    alt?: string;
-                    _type: 'image';
-                    _key: string;
-                  }
-              >;
+              text?: BlockContent;
               image?: {
                 asset?: {
                   _ref: string;
@@ -2461,6 +2352,18 @@ export type HOME_PAGE_QUERYResult =
             }
           | {
               _key: string;
+              _type: 'similarProducts';
+              title?: LocalizedString;
+              collection?: {
+                _ref: string;
+                _type: 'reference';
+                _weak?: boolean;
+                [internalGroqTypeReferenceTo]?: 'collection';
+              };
+              _id: null;
+            }
+          | {
+              _key: string;
               _type: 'sliderBlock';
               slides: Array<{
                 title?: LocalizedString;
@@ -2489,11 +2392,19 @@ export type HOME_PAGE_QUERYResult =
                       reference:
                         | {
                             _id: string;
-                            title: LocalizedString | null;
-                            slug: null;
+                            _type: 'collection';
+                            title: null;
+                            slug: string | null;
                           }
                         | {
                             _id: string;
+                            _type: 'page';
+                            title: LocalizedString | null;
+                            slug: string | null;
+                          }
+                        | {
+                            _id: string;
+                            _type: 'product';
                             title: null;
                             slug: string | null;
                           }
@@ -2510,14 +2421,41 @@ export type HOME_PAGE_QUERYResult =
               _type: 'splitImage';
               orientation?: 'imageLeft' | 'imageRight';
               title?: LocalizedString;
-              link?: Array<
-                | ({
+              link: Array<
+                | {
                     _key: string;
-                  } & LinkExternal)
-                | ({
+                    _type: 'linkExternal';
+                    title?: string;
+                    url?: string;
+                    newWindow?: boolean;
+                    reference: null;
+                  }
+                | {
                     _key: string;
-                  } & LinkInternal)
-              >;
+                    _type: 'linkInternal';
+                    title?: string;
+                    reference:
+                      | {
+                          _id: string;
+                          _type: 'collection';
+                          title: null;
+                          slug: string | null;
+                        }
+                      | {
+                          _id: string;
+                          _type: 'page';
+                          title: LocalizedString | null;
+                          slug: string | null;
+                        }
+                      | {
+                          _id: string;
+                          _type: 'product';
+                          title: null;
+                          slug: string | null;
+                        }
+                      | null;
+                  }
+              > | null;
               image?: {
                 asset?: {
                   _ref: string;
@@ -2619,8 +2557,8 @@ declare module '@sanity/client' {
     '*[_type == "post" && slug.current == $slug && language == $language][0]{\n  _id,\n  title,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  },\n  relatedPosts[]{\n    _key,\n    ...@->{_id, title, slug, language}\n  },\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n}': POST_BY_LANGUAGE_QUERYResult;
     '*[_type == "post" && defined(slug.current) && (language == "en" || !defined(language))] | order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_EN_FALLBACK_QUERYResult;
     '*[_type == "post" && slug.current == $slug && (language == "en" || !defined(language))][0]{\n  _id,\n  title,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  },\n  relatedPosts[]{\n    _key,\n    ...@->{_id, title, slug, language}\n  },\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n}': POST_WITH_FALLBACK_QUERYResult;
-    '*[_type == "page" && slug.current == $slug && language == $language][0]{\n  ...,\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n  content[]{\n    ...,\n    _type == "faqs" => {\n      ...,\n      faqs[]->{\n        _id,\n        title,\n        body,\n        "text": pt::text(body)\n      }\n    }\n  }\n}': PAGE_QUERYResult;
-    '*[_id == "siteSettings" ][0]{\n    homePage->{\n      ...,\n      content[]{\n        ...,\n        _id,\n        _type == "sliderBlock" => {\n          slides[]{\n             ...,\n            _key,\n            link[]{\n             ...,\n             reference->{\n               _id,\n               title,\n               "slug": store.slug.current\n             }\n           },\n            backgroundImage{\n              asset->{\n                _id,\n                url,\n                metadata{dimensions}\n              }\n            }\n          }\n        },\n        _type == "productCarousel" => {\n          products[]->{\n            _id,\n            store{\n              title,\n              isDeleted,\n              previewImageUrl,\n              priceRange{\n              maxVariantPrice,\n              minVariantPrice\n              },\n              productType\n            }\n          },\n          collection -> {\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "collectionsCarousel" => {\n          collections[]->{\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        }\n      }\n    }\n  }': HOME_PAGE_QUERYResult;
+    '*[_type == "page" && slug.current == $slug][0]{\n  ...,\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n  content[]{\n    ...,\n    _type == "similarProducts" => {\n      collection -> {\n        _id,\n        title,\n        store{\n         imageUrl,\n         isDeleted,\n         slug{\n         current\n         },\n         title\n        }\n      }\n    },\n    _type == "sliderBlock" => {\n      slides[]{\n         ...,\n        _key,\n        link[]{\n         ...,\n         reference->{\n           _id,\n           _type,\n           title,\n           "slug": select(\n             _type == "product" => store.slug.current,\n             _type == "collection" => store.slug.current,\n             _type == "page" => slug.current\n           )\n         }\n       },\n        backgroundImage{\n          asset->{\n            _id,\n            url,\n            metadata{dimensions}\n          }\n        }\n      }\n    },\n    _type == "productCarousel" => {\n      products[]->{\n        _id,\n        store{\n          title,\n          isDeleted,\n          previewImageUrl,\n          priceRange{\n          maxVariantPrice,\n          minVariantPrice\n          },\n          productType\n        }\n      },\n      collection -> {\n        _id,\n        title,\n        store{\n         imageUrl,\n         isDeleted,\n         slug{\n         current\n         },\n         title\n        }\n      }\n    },\n    _type == "collectionsCarousel" => {\n      collections[]->{\n        _id,\n        title,\n        store{\n         imageUrl,\n         isDeleted,\n         slug{\n         current\n         },\n         title\n        }\n      }\n    },\n    _type == "splitImage" => {\n      ...,\n      link[]{\n        ...,\n        reference->{\n          _id,\n          _type,\n          title,\n          "slug": select(\n            _type == "product" => store.slug.current,\n            _type == "collection" => store.slug.current,\n            _type == "page" => slug.current\n          )\n        }\n      }\n    },\n    _type == "faqs" => {\n      ...,\n      faqs[]->{\n        _id,\n        title,\n        body,\n        "text": pt::text(body)\n      }\n    }\n  }\n}': PAGE_QUERYResult;
+    '*[_id == "siteSettings" ][0]{\n    homePage->{\n      ...,\n      content[]{\n        ...,\n        _id,\n        _type == "sliderBlock" => {\n          slides[]{\n             ...,\n            _key,\n            link[]{\n             ...,\n             reference->{\n               _id,\n               _type,\n               title,\n               "slug": select(\n                 _type == "product" => store.slug.current,\n                 _type == "collection" => store.slug.current,\n                 _type == "page" => slug.current\n               )\n             }\n           },\n            backgroundImage{\n              asset->{\n                _id,\n                url,\n                metadata{dimensions}\n              }\n            }\n          }\n        },\n        _type == "productCarousel" => {\n          products[]->{\n            _id,\n            store{\n              title,\n              isDeleted,\n              previewImageUrl,\n              priceRange{\n              maxVariantPrice,\n              minVariantPrice\n              },\n              productType\n            }\n          },\n          collection -> {\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "collectionsCarousel" => {\n          collections[]->{\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "splitImage" => {\n          ...,\n          link[]{\n            ...,\n            reference->{\n              _id,\n              _type,\n              title,\n              "slug": select(\n                _type == "product" => store.slug.current,\n                _type == "collection" => store.slug.current,\n                _type == "page" => slug.current\n              )\n            }\n          }\n        },\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        }\n      }\n    }\n  }': HOME_PAGE_QUERYResult;
     '\n  *[_type == "redirect" && isEnabled == true] {\n      source,\n      destination,\n      permanent\n  }\n': REDIRECTS_QUERYResult;
     '\n  *[_id == $id][0]{\n    title,\n    "image": mainImage.asset->{\n      url,\n      metadata {\n        palette\n      }\n    }\n  }\n': OG_IMAGE_QUERYResult;
     '\n*[_type in ["page", "post"] && defined(slug.current)] {\n    "href": select(\n      _type == "page" => "/" + slug.current,\n      _type == "post" => select(\n        defined(language) => "/" + language + "/posts/" + slug.current,\n        "/posts/" + slug.current\n      ),\n      slug.current\n    ),\n    _updatedAt,\n    language\n}\n': SITEMAP_QUERYResult;
