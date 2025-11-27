@@ -19,14 +19,16 @@ export default async function InfoPage({
 
     revalidate: 3600,
   });
-  console.log(pageContent, 'pageContent');
   return (
-    <PageBuilder
-      //@ts-ignore
-      content={pageContent?.content}
-      //@ts-ignore
-      documentId={pageContent?._id}
-      documentType="page"
-    />
+    <article className=" container prose md:prose-lg lg:prose-xl mb-10">
+      <PageBuilder
+        //@ts-ignore
+        content={pageContent?.content}
+        //@ts-ignore
+        documentId={pageContent?._id}
+        language={locale}
+        documentType="page"
+      />
+    </article>
   );
 }

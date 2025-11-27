@@ -32,6 +32,7 @@ export default async function ProductPage({ params }: Props) {
         //@ts-ignore
         selectedVariant={selectedVariant}
         content={sanityProduct?.content}
+        //@ts-ignore
         sanityDocumentId={sanityProduct?._id}
         sanityDocumentType="page"
       />

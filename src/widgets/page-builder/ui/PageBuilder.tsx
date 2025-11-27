@@ -1,3 +1,5 @@
+import { PortableText } from 'next-sanity'; // New import
+import { components as portableTextComponents } from '@/shared/sanity/components/portableText'; // New import
 import { PAGE_QUERYResult } from '@/shared/sanity/types';
 import { ProductCarousel, SimilarProducts } from '@entities/product';
 import { CollectionsCarousel } from '@entities/collection';
@@ -13,12 +15,14 @@ type PageBuilderProps = {
   content: NonNullable<PAGE_QUERYResult>['content'];
   documentId: string;
   documentType: string;
+  language?: string;
 };
 
 export function PageBuilder({
   content,
   documentId,
   documentType,
+  language,
 }: PageBuilderProps) {
   const blockComponents = {
     hero: Hero,
@@ -34,14 +38,29 @@ export function PageBuilder({
   return (
     <main className="w-full flex justify-center flex-col space-y-6 pt-4">
       {content?.map((block, index) => {
-        const Component =
-          blockComponents[block._type as keyof typeof blockComponents];
         const dataAttribute = createDataAttribute({
           ...createDataAttributeConfig,
           id: documentId,
           type: documentType,
           path: ['content'],
         }).toString();
+        if (block._type === 'contentPageBlock') {
+          const localizedBody = (block.body as any)?.[language || 'en'];
+          if (!localizedBody) {
+            return null;
+          }
+          return (
+            <div key={block._key} data-sanity={dataAttribute}>
+              <PortableText
+                value={localizedBody}
+                components={portableTextComponents}
+              />
+            </div>
+          );
+        }
+
+        const Component =
+          blockComponents[block._type as keyof typeof blockComponents];
 
         if (!Component) {
           return null;
@@ -57,6 +76,8 @@ export function PageBuilder({
               documentType={documentType}
               /*@ts-expect-error sanity*/
               blockIndex={index}
+              /*@ts-expect-error sanity*/
+              language={language}
             />
           </div>
         );

@@ -16,7 +16,7 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }>) {
   return (
-    <div>
+    <div className="mb-10">
       <Header />
       {children}
       <SanityLive />
