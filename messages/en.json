@@ -433,5 +433,10 @@
     "order_confirmation": "Order Confirmation",
     "order_confirmation_text": "You'll receive an email with your order details shortly.",
     "continue_shopping": "Continue Shopping"
+  },
+  "CheckoutSteps": {
+    "info": "Info",
+    "delivery": "Delivery",
+    "payment": "Payment"
   }
 }

@@ -414,5 +414,10 @@
     "order_confirmation": "Підтвердження замовлення",
     "order_confirmation_text": "Ви незабаром отримаєте електронний лист з деталями вашого замовлення.",
     "continue_shopping": "Продовжити покупки"
+  },
+  "CheckoutSteps": {
+    "info": "Інформація",
+    "delivery": "Доставка",
+    "payment": "Оплата"
   }
 }

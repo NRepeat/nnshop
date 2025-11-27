@@ -16,7 +16,6 @@ import { prisma } from '@shared/lib/prisma';
 export const Products = async ({ druftOrderId }: { druftOrderId?: string }) => {
   const t = await getTranslations('ReceiptPage');
   let lines, cost: any;
-  console.log('druftOrderId', druftOrderId);
   if (druftOrderId) {
     const draftOrder = await prisma.order.findUnique({
       where: {

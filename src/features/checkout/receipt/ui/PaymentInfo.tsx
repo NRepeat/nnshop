@@ -7,7 +7,6 @@ import { getTranslations } from 'next-intl/server';
 
 export default async function PaymentInfoSection() {
   const paymentInfo = await getPaymentInfo();
-  console.log('paymentInfo', paymentInfo);
   const t = await getTranslations('PaymentForm');
   const tr = await getTranslations('ReceiptPage');
   return (
