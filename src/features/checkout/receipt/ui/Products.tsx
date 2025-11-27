@@ -1,15 +1,8 @@
 import { getCart } from '@entities/cart/api/get';
 import { getTranslations } from 'next-intl/server';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@shared/ui/card';
 import { Separator } from '@shared/ui/separator';
 import Image from 'next/image';
-import { CheckoutConfig } from '@features/checkout/config';
 import { getOrder } from '@entities/order/api/getOrder';
 import { prisma } from '@shared/lib/prisma';
 
