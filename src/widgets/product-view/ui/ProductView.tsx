@@ -14,6 +14,7 @@ export async function ProductView({
 }: {
   product: Product;
   selectedVariant: ProductVariant | undefined;
+  //@ts-ignore
   content: PAGE_QUERYResult['content'];
   sanityDocumentId: string;
   sanityDocumentType: string;
@@ -28,10 +29,12 @@ export async function ProductView({
 
   return (
     <div className="container mx-auto py-12 space-y-12">
-      <div className="grid grid-cols-1 md:grid-cols-8 gap-12 h-full md:h-screen">
-        <Gallery images={images} selectedVariant={selectedVariant} />
-        <Description product={product} selectedVariant={selectedVariant} />
-      </div>
+      {selectedVariant && (
+        <div className="grid grid-cols-1 md:grid-cols-8 gap-12 h-full md:h-screen">
+          <Gallery images={images} selectedVariant={selectedVariant} />
+          <Description product={product} selectedVariant={selectedVariant} />
+        </div>
+      )}
       <PageBuilder
         content={content}
         documentId={sanityDocumentId}

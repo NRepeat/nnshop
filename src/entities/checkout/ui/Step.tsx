@@ -3,24 +3,24 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import { type ReactNode } from 'react';
 
-const Step = ({
+const Step = async ({
   title,
   link,
   isActive,
-  isCompleted,
+  disabled,
   icon,
 }: {
   title: string;
   link: string;
   isActive: boolean;
-  isCompleted?: boolean;
+  disabled?: boolean;
   icon: ReactNode;
 }) => {
   return (
     <Button
       key={title}
       className={clsx('min-w-[50px] sm:min-w-[100px]')}
-      disabled={isCompleted}
+      disabled={disabled}
       variant={isActive ? 'default' : 'ghost'}
     >
       <Link href={link} className={clsx('flex')}>

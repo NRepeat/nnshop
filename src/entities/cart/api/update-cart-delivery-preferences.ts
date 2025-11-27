@@ -55,15 +55,6 @@ export async function updateCartDeliveryPreferences(
   deliveryInfo: DeliveryInfo,
   contactInfo: ContactInformation, // Added ContactInformation
 ): Promise<{ success: boolean; cart?: Cart; errors?: string[] }> {
-  console.log(
-    'updateCartDeliveryPreferences: Received cartId:',
-    cartId,
-    'deliveryInfo:',
-    JSON.stringify(deliveryInfo),
-    'contactInfo:',
-    JSON.stringify(contactInfo),
-  );
-
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
@@ -113,10 +104,6 @@ export async function updateCartDeliveryPreferences(
         JSON.stringify(deliveryAddressInput),
       );
     } else if (deliveryInfo.deliveryMethod === 'ukrPoshta') {
-      console.log(
-        'updateCartDeliveryPreferences: Handling UkrPoshta delivery method.',
-      );
-      // For UkrPoshta, use the provided address fields directly
       deliveryAddressInput = {
         address1: deliveryInfo.address || '',
         city: deliveryInfo.city || '',

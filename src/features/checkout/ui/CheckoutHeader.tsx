@@ -3,7 +3,7 @@ import Logo from '@shared/assets/Logo';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
-export default function CheckoutHeader({ slug }: { slug: string[] }) {
+export default async function CheckoutHeader({ slug }: { slug: string[] }) {
   if (!slug || slug.length === 0) return redirect('/');
   const currentStep = slug[0];
   return (

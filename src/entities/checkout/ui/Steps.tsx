@@ -1,7 +1,13 @@
-import { ChevronRight, User, Truck, CreditCard } from 'lucide-react';
+import {
+  ChevronRight,
+  User,
+  Truck,
+  CreditCard,
+  CheckCircle,
+} from 'lucide-react';
 import Step from './Step';
 import clsx from 'clsx';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 const steps = {
   info: {
@@ -19,10 +25,20 @@ const steps = {
     link: '/checkout/payment',
     icon: <CreditCard />,
   },
+  success: {
+    slug: 'success',
+    link: '/checkout/success',
+    icon: <CheckCircle />,
+  },
 };
 
-export const Steps = ({ slug }: { slug: string }) => {
-  const t = useTranslations('CheckoutSteps');
+export const Steps = async ({ slug }: { slug: string }) => {
+  const t = await getTranslations('CheckoutSteps');
+  const disablePaymentButton = (slug: string) => {
+    const isPaymentStep = slug === 'payment';
+    return isPaymentStep;
+  };
+
   return (
     <div className="flex  justify-around items-center py-4 px-4">
       {(Object.keys(steps) as Array<keyof typeof steps>).map((step, index) => (
@@ -32,7 +48,7 @@ export const Steps = ({ slug }: { slug: string }) => {
             title={t(steps[step].slug)}
             icon={steps[step].icon}
             isActive={slug === steps[step].slug}
-            isCompleted={index < Object.keys(steps).indexOf(slug)}
+            disabled={disablePaymentButton(step) || slug === 'success'}
           />
           <div className="w-full flex items-center justify-center">
             {index < Object.keys(steps).length - 1 && (

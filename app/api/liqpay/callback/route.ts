@@ -1,6 +1,8 @@
 import LiqPay from '@entities/liqpay/model';
 import resetCartSession from '@features/cart/api/resetCartSession';
 import { completeOrder } from '@features/checkout/payment/api/completeOrder';
+import { savePaymentInfo } from '@features/checkout/payment/api/savePaymentInfo';
+import { PaymentInfo } from '@features/checkout/payment/schema/paymentSchema';
 import { NextRequest, NextResponse } from 'next/server';
 
 if (!process.env.LIQPAY_PUBLIC_KEY || !process.env.LIQPAY_PRIVATE_KEY) {
@@ -31,7 +33,15 @@ export async function POST(request: NextRequest) {
       }
 
       const completedOrder = await completeOrder(dtuftOrderId);
-
+      const paymentInfo: PaymentInfo = {
+        amount: paymentData.amount,
+        currency: paymentData.currency,
+        paymentMethod: 'pay-now',
+        paymentProvider: 'liqpay',
+        description: '',
+        orderId: completedOrder.id,
+      };
+      await savePaymentInfo(paymentInfo, completedOrder.id);
       await resetCartSession(completedOrder.id);
       return NextResponse.json(
         {

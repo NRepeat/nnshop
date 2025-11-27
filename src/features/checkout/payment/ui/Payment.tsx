@@ -6,12 +6,14 @@ import { getPaymentInfo } from '../api/getPaymentInfo';
 import { headers } from 'next/headers';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 export default async function Payment({
   draftOrderId,
 }: {
   draftOrderId: string;
 }) {
+  const t = await getTranslations('CheckoutPage');
   const liqpayPublicKey = process.env.LIQPAY_PUBLIC_KEY;
   const liqpayPrivateKey = process.env.LIQPAY_PRIVATE_KEY;
 
@@ -45,7 +47,6 @@ export default async function Payment({
       cartAmount = parseFloat(cartResult.cart.cost.totalAmount.amount);
       currency = cartResult.cart.cost.totalAmount.currencyCode;
     }
-    console.log(draftOrderId, 'draftOrderId');
     draftOrder = await prisma.order.findUnique({
       where: {
         shopifyDraftOrderId: 'gid://shopify/DraftOrder/' + draftOrderId,
@@ -53,6 +54,10 @@ export default async function Payment({
     });
     if (!draftOrder) {
       throw new Error('Draft order not found');
+    }
+    console.log('draftOrder', draftOrder);
+    if (draftOrder.shopifyOrderId) {
+      throw new Error('Order already exists');
     }
   } catch (error) {
     console.error('Error fetching cart data:', error);
@@ -62,10 +67,10 @@ export default async function Payment({
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Payment</h1>
-        <p className="text-gray-600">
-          Complete your order with secure payment processing
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          {t('payment_title')}
+        </h1>
+        <p className="text-gray-600">{t('payment_description')}</p>
       </div>
 
       <PaymentForm

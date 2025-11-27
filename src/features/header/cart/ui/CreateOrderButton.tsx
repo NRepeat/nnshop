@@ -11,7 +11,6 @@ export const CreateOrderButton = () => {
   const handleCreateOrder = () => {
     startTransition(async () => {
       redirect('/checkout/info');
-      // const { success, order, errors } = await createDraftOrder(cartId);
     });
   };
 

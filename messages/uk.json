@@ -298,7 +298,10 @@
   },
   "CheckoutPage": {
     "contact_info_title": "Контактна інформація",
-    "contact_info_description": "Будь ласка, надайте свої контактні дані"
+    "contact_info_description": "Будь ласка, надайте свої контактні дані",
+    "delivery_title": "Доставка",
+    "payment_title": "Оплата",
+    "payment_description": "Завершіть замовлення безпечною обробкою платежів"
   },
   "NotFound": {
     "errorCode": "404",
@@ -418,6 +421,7 @@
   "CheckoutSteps": {
     "info": "Інформація",
     "delivery": "Доставка",
-    "payment": "Оплата"
+    "payment": "Оплата",
+    "success": "Успіх"
   }
 }

@@ -78,7 +78,7 @@ const Content = async ({
             {currencySymbol} {estimateTotal}
           </span>
         </div>
-        <CreateOrderButton cartId={cartId} />
+        <CreateOrderButton />
       </div>
     </SheetContent>
   );

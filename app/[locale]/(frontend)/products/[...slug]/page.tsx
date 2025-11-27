@@ -2,7 +2,6 @@ import { getProduct } from '@/entities/product/api/getProduct';
 import { getProductPage } from '@/entities/product/api/getProductPage';
 import { ProductView } from '@/widgets/product-view';
 import { notFound } from 'next/navigation';
-import { Locale } from '@/shared/i18n/routing';
 
 type Props = {
   params: Promise<{ slug: string[]; locale: string }>;
@@ -21,9 +20,7 @@ export default async function ProductPage({ params }: Props) {
       return notFound();
     }
 
-    const sanityProduct = await getProductPage({
-      language: p.locale as Locale,
-    });
+    const sanityProduct = await getProductPage();
     const selectedVariant = variant
       ? product.variants.edges.find(
           (e) => e.node.id.split('/').pop() === variant,
@@ -32,6 +29,7 @@ export default async function ProductPage({ params }: Props) {
     return (
       <ProductView
         product={product}
+        //@ts-ignore
         selectedVariant={selectedVariant}
         content={sanityProduct?.content}
         sanityDocumentId={sanityProduct?._id}

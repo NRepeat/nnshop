@@ -58,16 +58,6 @@ export default async function CollectionPage({ params, searchParams }: Props) {
     <div className="container mx-auto px-4 py-8 relative">
       <header className="mb-8">
         <h1 className="text-4xl font-bold mb-4">{collection.title}</h1>
-        {collection.image && (
-          <div className="relative h-64 w-full rounded-lg overflow-hidden mb-4">
-            <Image
-              src={collection.image.url}
-              alt={collection.image?.altText || collection.title}
-              fill
-              className="object-cover"
-            />
-          </div>
-        )}
         {collection.description && (
           <p className="text-lg text-gray-600">{collection.description}</p>
         )}

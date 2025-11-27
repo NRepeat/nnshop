@@ -16,6 +16,7 @@ export async function getPaymentInfo(): Promise<PaymentInfo | null> {
         userId: session.user.id,
       },
     });
+    console.log(paymentInfo);
     return paymentInfo as PaymentInfo | null;
   } catch (error) {
     console.error('Error getting payment info:', error);

@@ -320,7 +320,10 @@
   },
   "CheckoutPage": {
     "contact_info_title": "Contact Information",
-    "contact_info_description": "Please provide your contact details"
+    "contact_info_description": "Please provide your contact details",
+    "delivery_title": "Delivery",
+    "payment_title": "Payment",
+    "payment_description": "Complete your order with secure payment processing"
   },
   "NotFound": {
     "errorCode": "404",
@@ -437,6 +440,7 @@
   "CheckoutSteps": {
     "info": "Info",
     "delivery": "Delivery",
-    "payment": "Payment"
+    "payment": "Payment",
+    "success": "Success"
   }
 }

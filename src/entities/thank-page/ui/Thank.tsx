@@ -21,7 +21,7 @@ export const Thank = async ({ orderId }: { orderId: string }) => {
   }
   return (
     <div className="flex items-center justify-center dark:bg-gray-900">
-      <Card className="w-full max-w-full p-6 sm:p-8 shadow-none">
+      <Card className="w-full max-w-full p-4 sm:p-4 shadow-none">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">{t('title')}</CardTitle>
           <CardDescription className="text-gray-500 dark:text-gray-400">
