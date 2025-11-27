@@ -22,10 +22,10 @@ function SubmitButton({
   return (
     <Button
       type="submit"
-      size="lg"
+      // size="lg"
       //@ts-expect-error
       variant={variant}
-      className="w-full h-14 text-md rounded-none"
+      className="w-full h-10 md:h-14 text-md rounded-none"
       disabled={disabled || pending}
       aria-disabled={pending}
     >
@@ -73,7 +73,7 @@ export function AddToCartButton({
             : product?.variants.edges[0].node.id
         }
       />
-      <div className={clsx('product-form__buttons  mt-4', className)}>
+      <div className={clsx('product-form__buttons mt-1 md:mt-4', className)}>
         <SubmitButton variant={variant} disabled={!isProductAvalible} />
       </div>
     </form>

@@ -31,7 +31,7 @@ const CollectionsCarousel = (props: {
   const locale = useLocale() as Locale;
   const t = useTranslations('productCarousel');
   return (
-    <div className="w-full container flex flex-col gap-8 py-16">
+    <div className="w-full container flex flex-col gap-8 py-1">
       <div className="flex justify-between items-end">
         <h2 className="text-2xl md:text-5xl font-bold">
           {title ? title[locale as keyof typeof title] : ''}
