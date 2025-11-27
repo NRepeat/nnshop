@@ -12,32 +12,69 @@ export async function savePaymentInfo(
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
-      return { success: false, message: 'Session not found' };
-    }
-    const user = await prisma.user.update({
-      where: { id: session.user.id },
-      data: {
-        paymentInformation: {
-          upsert: {
-            where: { userId: session.user.id },
-            create: {
-              ...data,
-              orderId: orderId,
-            },
-            update: {
-              ...data,
-              orderId: orderId,
+      const user = await prisma.user.findFirst({
+        where: {
+          orders: {
+            some: {
+              id: orderId,
             },
           },
         },
-      },
-    });
+      });
+      if (!user) {
+        throw new Error('User not found');
+      }
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          paymentInformation: {
+            upsert: {
+              where: { userId: user.id },
+              create: {
+                ...data,
+                orderId: orderId,
+              },
+              update: {
+                ...data,
+                orderId: orderId,
+              },
+            },
+          },
+        },
+      });
+      return {
+        success: true,
+        user,
+        message: 'Payment information saved successfully!',
+      };
+    } else {
+      const user = await prisma.user.update({
+        where: { id: session.user.id },
+        data: {
+          paymentInformation: {
+            upsert: {
+              where: { userId: session.user.id },
+              create: {
+                ...data,
+                orderId: orderId,
+              },
+              update: {
+                ...data,
+                orderId: orderId,
+              },
+            },
+          },
+        },
+      });
 
-    return {
-      success: true,
-      user,
-      message: 'Payment information saved successfully!',
-    };
+      return {
+        success: true,
+        user,
+        message: 'Payment information saved successfully!',
+      };
+    }
   } catch (error) {
     console.error('Error saving payment info:', error);
     return {
