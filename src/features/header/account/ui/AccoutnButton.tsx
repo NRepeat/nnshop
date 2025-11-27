@@ -29,14 +29,14 @@ export const AccountButton = async () => {
     );
   }
   return (
-    <div className="flex items-center">
+    <div className="flex items-center cursor-pointer">
       <Avatar>
         <AvatarImage src="https://github.com/shadcn.png" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
-      <div className="ml-2">
+      <div className="ml-2 hidden md:block ">
         <p className="text-sm font-medium leading-none">{session.user.name}</p>
-        <p className="text-sm text-muted-foreground">{session.user.email}</p>
+        {/*<p className="text-sm text-muted-foreground">{session.user.email}</p>*/}
       </div>
     </div>
   );

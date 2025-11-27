@@ -10,7 +10,7 @@ import {
 } from '@/shared/ui/carousel';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Locale } from '@/shared/i18n/routing';
 import { Button } from '@/shared/ui/button';
 
@@ -29,6 +29,7 @@ const CollectionsCarousel = (props: {
 }) => {
   const { collections, title, action_text, action_link } = props;
   const locale = useLocale() as Locale;
+  const t = useTranslations('productCarousel');
   return (
     <div className="w-full container flex flex-col gap-8 py-16">
       <div className="flex justify-between items-end">
@@ -36,14 +37,15 @@ const CollectionsCarousel = (props: {
           {title ? title[locale as keyof typeof title] : ''}
         </h2>
         <div className="hidden md:flex items-center">
-          <Button
-            className="border-black border rounded-none hover:bg-black hover:text-card"
-            variant={'outline'}
-          >
-            <Link href={action_link || ''}>
-              {action_text ? action_text[locale as keyof typeof title] : ''}
+          <div className="flex h-full justify-end">
+            <Link href={`/collection/all`} className="text-md underline">
+              {action_text
+                ? action_text[locale as keyof typeof title]
+                  ? action_text[locale as keyof typeof title]
+                  : t('VIEW_ALL')
+                : t('VIEW_ALL')}
             </Link>
-          </Button>
+          </div>
         </div>
       </div>
       <Carousel className="w-full" opts={{ loop: true, dragFree: true }}>
