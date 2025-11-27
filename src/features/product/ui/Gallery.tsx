@@ -1,4 +1,3 @@
-'use client';
 import type {
   ProductVariant,
   Image as ShoipidyImage,
@@ -12,7 +11,7 @@ import {
 } from '@shared/ui/carousel';
 import { Bookmark } from 'lucide-react';
 import Image from 'next/image';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import * as React from 'react';
 
 const Gallery = ({
   images,
@@ -23,14 +22,16 @@ const Gallery = ({
   }[];
   selectedVariant: ProductVariant;
 }) => {
-  const [mainApi, setMainApi] = useState<CarouselApi>();
-  const onThumbClick = useCallback(
+  const [mainApi, setMainApi] = React.useState<CarouselApi>();
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const onThumbClick = React.useCallback(
     (index: number) => {
       mainApi?.scrollTo(index);
+      setSelectedIndex(index);
     },
     [mainApi],
   );
-  const selectedVariantImageIndex = useMemo(() => {
+  const selectedVariantImageIndex = React.useMemo(() => {
     return images.findIndex(
       (image) =>
         image.node.url.split('?')[0] ===
@@ -38,7 +39,7 @@ const Gallery = ({
     );
   }, [selectedVariant]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (mainApi) {
       mainApi?.scrollTo(selectedVariantImageIndex, false);
     }
@@ -89,7 +90,10 @@ const Gallery = ({
               >
                 <div
                   className={
-                    'aspect-square relative border rounded-none overflow-hidden'
+                    'aspect-square relative border rounded-none overflow-hidden ' +
+                    (index === selectedIndex
+                      ? 'border-primary'
+                      : 'border-transparent opacity-50')
                   }
                 >
                   <Image

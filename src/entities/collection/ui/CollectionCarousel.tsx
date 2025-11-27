@@ -12,7 +12,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 import { Locale } from '@/shared/i18n/routing';
-import { Button } from '@/shared/ui/button';
 
 type ProductCarouselProps = Extract<
   NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],
@@ -25,9 +24,8 @@ const CollectionsCarousel = (props: {
     | undefined;
   title: ProductCarouselProps['title'];
   action_text: ProductCarouselProps['action_text'];
-  action_link: ProductCarouselProps['action_link'];
 }) => {
-  const { collections, title, action_text, action_link } = props;
+  const { collections, title, action_text } = props;
   const locale = useLocale() as Locale;
   const t = useTranslations('productCarousel');
   return (

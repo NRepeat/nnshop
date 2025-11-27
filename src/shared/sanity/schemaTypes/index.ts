@@ -22,13 +22,16 @@ import { productCarousel } from './blokcs/productCarousel';
 import { collectionsCarousel } from './blokcs/collectionsCarouselWithActionButton';
 import { localizedString } from './localizedStringType';
 import { localizedText } from './localizedText';
+import { localizedBlockContent } from './localizedBlockContentType';
 import { sliderBlock } from './blokcs/slider';
-import { similarProducts } from './blocks/similarProducts';
+import { similarProducts } from './blokcs/similarProducts';
+import { contentPageBlock } from './blokcs/contentPageBlock';
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
     ...shopifySchemaTypes,
     localizedText,
+    localizedBlockContent,
     sliderBlock,
     collectionsCarousel,
     productCarousel,
@@ -51,5 +54,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     heroType,
     splitImageType,
     similarProducts,
+    contentPageBlock,
   ],
 };

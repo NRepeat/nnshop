@@ -423,5 +423,13 @@
     "delivery": "Доставка",
     "payment": "Оплата",
     "success": "Успіх"
+  },
+  "Footer": {
+    "contacts": "Контакти",
+    "delivery": "Доставка",
+    "payment_returns": "Оплата і повернення",
+    "public_offer_agreement": "Договір публічної оферти",
+    "privacy_policy": "Конфіденційність",
+    "info_column_title": "Інформація"
   }
 }
