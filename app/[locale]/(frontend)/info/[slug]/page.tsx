@@ -1,16 +1,32 @@
 import { sanityFetch } from '@/shared/sanity/lib/client';
 import { normalizeLocaleForSanity } from '@shared/lib/locale';
-import { PAGE_QUERY } from '@shared/sanity/lib/query';
+import { PAGE_QUERY, PAGE_SLUGS_QUERY } from '@/shared/sanity/lib/query';
 import { PageBuilder } from '@widgets/page-builder';
 
-export default async function InfoPage({
-  params,
-}: {
+type Props = {
   params: Promise<{ slug: string; locale: string }>;
-}) {
-  const { slug } = await params;
-  const { locale } = await params;
+};
 
+export async function generateStaticParams() {
+  const slugs = [
+    'contacts',
+    'delivery',
+    'payment-returns',
+    'public-offer-agreement',
+    'privacy-policy',
+  ];
+  const pages = await sanityFetch({
+    query: PAGE_SLUGS_QUERY,
+    revalidate: 60,
+  });
+
+  return pages
+    .filter((page) => page.language)
+    .map((page) => ({ slug: page.slug, locale: page.language! }));
+}
+
+export default async function InfoPage({ params }: Props) {
+  const { slug, locale } = await params;
   const sanityLocale = await normalizeLocaleForSanity(locale);
 
   const pageContent = await sanityFetch({

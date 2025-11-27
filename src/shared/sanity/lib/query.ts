@@ -133,6 +133,12 @@ export const POSTS_SLUGS_BY_LANGUAGE_QUERY =
   language
 }`);
 
+export const PAGE_SLUGS_QUERY =
+  defineQuery(`*[_type == "page" && defined(slug.current)]{
+  "slug": slug.current,
+  language
+}`);
+
 export const POST_QUERY =
   defineQuery(`*[_type == "post" && slug.current == $slug][0]{
   _id,
@@ -266,6 +272,30 @@ export const PAGE_QUERY =
    },
   content[]{
     ...,
+    _type == "contentPageBlock" => {
+      body {
+        en[]{
+          ...,
+          markDefs[]{
+            ...,
+            _type == "link" => {
+              ...,
+              "href": @.href,
+            }
+          }
+        },
+        uk[]{
+          ...,
+          markDefs[]{
+            ...,
+            _type == "link" => {
+              ...,
+              "href": @.href,
+            }
+          }
+        }
+      }
+    },
     _type == "similarProducts" => {
       collection -> {
         _id,
