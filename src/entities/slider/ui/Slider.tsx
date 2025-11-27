@@ -17,24 +17,25 @@ export function HeroSwiper({ slides }: HeroSwiperProps) {
 
   return (
     <Carousel
-      className="w-full"
+      className="w-full "
       autoplay={{ active: true, dellay: 3500 }}
       opts={{ loop: true }}
     >
       <CarouselContent className="-ml-1 ">
         {slides.map((slide, index) => (
           <CarouselItem key={slide._key || index}>
-            <div className="relative w-full overflow-hidden">
+            <div className="relative w-full overflow-hidden  ">
               <Link
                 href={resolveLink(slide.link?.[0]) || '/'}
-                className="flex justify-center"
+                className="flex justify-center "
               >
                 <Image
                   //@ts-expect-error sanity
                   src={slide.backgroundImage?.asset.url}
-                  alt={'asd'}
+                  className="min-h-[250px] object-cover md:min-h-fit md:object-contain"
+                  alt={slide.title?.en || 'Slider Image'}
                   width={1920}
-                  height={1080}
+                  height={1280}
                   priority
                 />
               </Link>

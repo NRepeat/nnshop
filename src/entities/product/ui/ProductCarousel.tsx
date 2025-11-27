@@ -55,7 +55,7 @@ const ProductCarousel = async ({
               key={index}
               className=" basis-1/2 md:basis-1/3 lg:basis-1/4 "
             >
-              <div className="h-full  px-1 pl-2">
+              <div className="h-full px-0  pl-0.5 md:px-1 md:pl-2">
                 <ProductCard product={product as Product} />
               </div>
             </CarouselItem>

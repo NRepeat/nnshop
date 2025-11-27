@@ -19,7 +19,7 @@ export const ProductCard = async ({
   return (
     <Card
       className={clsx(
-        'h-full shadow-none backdrop-blur-sm bg-transparent border-gray-200 border-nonerounded-xl  py-1 px-1.5 ',
+        'h-full shadow-none backdrop-blur-sm bg-transparent border-gray-200 border-nonerounded-xl  py-1 px-0.5 md:px-1.5 ',
         className,
       )}
     >

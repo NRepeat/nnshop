@@ -1,6 +1,5 @@
 import { getCollection } from '@entities/collection/api/getCollection';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import { ProductCard } from '@entities/product/ui/ProductCard';
 import {
   Product,
