@@ -1,10 +1,6 @@
 'use server';
 
-export async function createInvoice(formData: FormData) {
-  const rawFormData = {
-    test: formData.get('test'),
-    department: formData.get('department'),
-  };
+export async function createInvoice() {
   const saveData = async () => {
     // await prisma.order.create({
     //   data: {

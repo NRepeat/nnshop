@@ -1,10 +1,9 @@
 import Gallery from '@features/product/ui/Gallery';
 import Description from '@features/product/ui/Description';
 import { Product } from '@shared/types/product/types';
-import { ProductVariant } from '@shared/lib/shopify/types/storefront.types';
 import { PageBuilder } from '@widgets/page-builder';
-import { SimilarProducts } from '@entities/product';
-import { getCollection } from '@entities/collection/api/getCollection';
+import { ProductVariant } from '@shared/lib/shopify/types/storefront.types';
+import { PAGE_QUERYResult } from '@shared/sanity/types';
 
 export async function ProductView({
   product,
@@ -14,8 +13,8 @@ export async function ProductView({
   sanityDocumentType,
 }: {
   product: Product;
-  selectedVariant: any | undefined;
-  content: any;
+  selectedVariant: ProductVariant | undefined;
+  content: PAGE_QUERYResult['content'];
   sanityDocumentId: string;
   sanityDocumentType: string;
 }) {
@@ -26,10 +25,6 @@ export async function ProductView({
       : product.featuredImage
         ? [{ node: product.featuredImage }]
         : [];
-  const sliderEnable = content.find((c: any) => c._type === 'similarProducts');
-  const collectionHandle = sliderEnable
-    ? sliderEnable.collection.store.slug.current
-    : '';
 
   return (
     <div className="container mx-auto py-12 space-y-12">

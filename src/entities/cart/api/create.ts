@@ -2,7 +2,6 @@
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { storefrontClient } from '@shared/lib/shopify/client';
-import { tryCatch } from '@shared/lib/try-catch';
 import {
   CartCreatePayload,
   CartInput,

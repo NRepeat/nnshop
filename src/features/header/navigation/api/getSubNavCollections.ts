@@ -1,7 +1,7 @@
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { GetSubMenuQuery } from '@shared/lib/shopify/types/storefront.generated';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { getLocale } from 'next-intl/server';
 
 const query = `#graphql
   query GetSubMenu ($handle: String!) {

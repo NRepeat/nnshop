@@ -5,7 +5,6 @@ import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { headers } from 'next/headers';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
-import { PaymentInfo } from '@features/checkout/payment/schema/paymentSchema';
 type DrafOrder = {
   id: string;
   name: string;

@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, User, Truck, CreditCard } from 'lucide-react';
 import Step from './Step';
 import clsx from 'clsx';
 import { useTranslations } from 'next-intl';
@@ -7,14 +7,17 @@ const steps = {
   info: {
     slug: 'info',
     link: '/checkout/info',
+    icon: <User />,
   },
   delivery: {
     slug: 'delivery',
     link: '/checkout/delivery',
+    icon: <Truck />,
   },
   payment: {
     slug: 'payment',
     link: '/checkout/payment',
+    icon: <CreditCard />,
   },
 };
 
@@ -27,6 +30,7 @@ export const Steps = ({ slug }: { slug: string }) => {
           <Step
             link={steps[step].link}
             title={t(steps[step].slug)}
+            icon={steps[step].icon}
             isActive={slug === steps[step].slug}
             isCompleted={index < Object.keys(steps).indexOf(slug)}
           />

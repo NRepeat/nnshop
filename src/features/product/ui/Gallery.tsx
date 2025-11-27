@@ -1,10 +1,8 @@
 'use client';
 import type {
-  Product,
   ProductVariant,
   Image as ShoipidyImage,
 } from '@shared/lib/shopify/types/storefront.types';
-import { cn } from '@shared/lib/utils';
 import { Button } from '@shared/ui/button';
 import {
   Carousel,
@@ -26,12 +24,9 @@ const Gallery = ({
   selectedVariant: ProductVariant;
 }) => {
   const [mainApi, setMainApi] = useState<CarouselApi>();
-  const [thumbApi, setThumbApi] = useState<CarouselApi>();
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const onThumbClick = useCallback(
     (index: number) => {
       mainApi?.scrollTo(index);
-      setSelectedIndex(index);
     },
     [mainApi],
   );
@@ -82,7 +77,6 @@ const Gallery = ({
       </div>
       {images.length > 1 && (
         <Carousel
-          setApi={setThumbApi}
           opts={{ containScroll: 'keepSnaps', dragFree: true }}
           className="mt-4"
         >
@@ -94,12 +88,9 @@ const Gallery = ({
                 className="basis-1/4 cursor-pointer"
               >
                 <div
-                  className={cn(
-                    'aspect-square relative border rounded-none overflow-hidden',
-                    index === selectedIndex
-                      ? 'border-primary'
-                      : 'border-transparent opacity-50',
-                  )}
+                  className={
+                    'aspect-square relative border rounded-none overflow-hidden'
+                  }
                 >
                   <Image
                     src={image.node.url}

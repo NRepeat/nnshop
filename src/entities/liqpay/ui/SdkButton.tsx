@@ -4,20 +4,12 @@ import Image from 'next/image';
 
 interface SdkButtonProps {
   label?: string;
-  color?: string;
-  background?: string;
-  textTransform?: 'uppercase' | 'lowercase' | 'capitalize' | 'none';
   onClick?: () => void;
-  className?: string;
 }
 
 const SdkButton: React.FC<SdkButtonProps> = ({
   label = 'Pay with LiqPay',
-  color = '#fff',
-  background = '#77CC5D',
-  textTransform = 'uppercase',
   onClick,
-  className = '',
 }) => {
   return (
     <Button

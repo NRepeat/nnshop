@@ -6,9 +6,7 @@ import {
   Product,
   ProductFilter,
 } from '@shared/lib/shopify/types/storefront.types';
-import { Button } from '@shared/ui/button';
 import { CollectionFilters } from './CollectionFilters';
-import { getTranslations } from 'next-intl/server';
 import { FilterSheet } from './FilterSheet';
 import { getCollections } from '@entities/collection/api/getCollections';
 
@@ -36,13 +34,12 @@ export default async function CollectionPage({ params, searchParams }: Props) {
     return notFound();
   }
 
-  const t = await getTranslations('CollectionPage');
   const { filters: filtersString } = await searchParams;
   let filters: ProductFilter[] = [];
   if (filtersString) {
     try {
       filters = JSON.parse(filtersString);
-    } catch (e) {}
+    } catch {}
   }
 
   const collectionData = await getCollection({

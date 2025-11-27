@@ -7,20 +7,12 @@ import {
 } from '@shared/ui/sheet';
 import { getTranslations } from 'next-intl/server';
 import BurgerIcon from './BurgerIcon';
-import Link from 'next/link';
-import { Separator } from '@shared/ui/separator';
-import { Button } from '@shared/ui/button';
 import { getMainMenu } from '../api/getMainMenu';
 import { InternalMenu } from './InternalMenu';
 
 const NavigationSheet = async () => {
   const t = await getTranslations('Header.nav.drawer');
   const meinMenu = await getMainMenu();
-  const menu = meinMenu.map((item) => (
-    <Link href={item.url} className="text-sm py-4 px-4 hover:bg-accent">
-      {item.title}
-    </Link>
-  ));
   return (
     <Sheet>
       <SheetTrigger className="cursor-pointer block md:hidden hover:bg-accent p-2 rounded-lg">

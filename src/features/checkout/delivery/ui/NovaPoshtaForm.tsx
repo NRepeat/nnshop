@@ -17,9 +17,8 @@ export default function NovaPoshtaForm({
 }: {
   handleDepartmentSelect: (department: any) => void;
 }) {
-  const { control, watch } = useFormContext();
+  const { control } = useFormContext();
   const t = useTranslations('DeliveryForm');
-  const novaPoshtaDepartment = watch('novaPoshtaDepartment');
 
   return (
     <div className=" border border-gray-200 p-6 ">

@@ -26,7 +26,7 @@ export function CollectionFilters({ filters }: Props) {
     if (filtersFromUrl) {
       try {
         setActiveFilters(JSON.parse(filtersFromUrl));
-      } catch (e) {
+      } catch {
         setActiveFilters([]);
       }
     } else {
@@ -156,7 +156,7 @@ function PriceRangeFilter({
           minFromUrl = priceFilter.price.min?.toString() || '';
           maxFromUrl = priceFilter.price.max?.toString() || '';
         }
-      } catch (e) {
+      } catch {
         /* ignore */
       }
     }

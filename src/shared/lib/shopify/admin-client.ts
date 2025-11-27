@@ -1,4 +1,4 @@
-import { shopifyFactory, ShopifyClientType, ShopifyClient } from '../clients';
+import { shopifyFactory, ShopifyClientType } from '../clients';
 
 const adminAccessToken = process.env.SHOPIFY_ADMIN_API_SECRET_KEY;
 

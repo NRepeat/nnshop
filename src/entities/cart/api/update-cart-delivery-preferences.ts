@@ -8,7 +8,6 @@ import { revalidateTag } from 'next/cache';
 import { headers } from 'next/headers';
 import { DeliveryInfo } from '@features/checkout/delivery/model/deliverySchema';
 import { ContactInformation } from '~/generated/prisma/client';
-import { getCart } from './get';
 
 const CART_DELIVERY_ADDRESSES_ADD_MUTATION = `
   #graphql

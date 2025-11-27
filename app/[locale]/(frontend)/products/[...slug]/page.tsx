@@ -38,7 +38,7 @@ export default async function ProductPage({ params }: Props) {
         sanityDocumentType="page"
       />
     );
-  } catch (e) {
+  } catch {
     return notFound();
   }
 }

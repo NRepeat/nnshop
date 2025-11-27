@@ -1,4 +1,4 @@
-import { shopifyFactory, ShopifyClientType, ShopifyClient } from '../clients';
+import { shopifyFactory, ShopifyClientType } from '../clients';
 
 const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_SECRET_TOKEN;
 

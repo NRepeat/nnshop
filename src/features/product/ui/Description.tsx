@@ -19,10 +19,6 @@ const Description = async ({
   const price = product.priceRange?.maxVariantPrice;
   const isDiscounted = false;
   const compareAtPrice = product.priceRange?.maxVariantPrice;
-  const selectedOption = selectedVariant
-    ? selectedVariant?.selectedOptions.find((option) => option.name === 'Color')
-        ?.value
-    : '';
   // const isDiscounted = compareAtPrice && compareAtPrice.amount > price.amount;
 
   return (

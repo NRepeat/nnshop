@@ -3,7 +3,7 @@
 import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
-import { useRouter, useParams, redirect } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { PaymentInfo, getPaymentSchema } from '../schema/paymentSchema';
 import { savePaymentInfo } from '../api/savePaymentInfo';
 import { Button } from '@shared/ui/button';
@@ -15,7 +15,6 @@ import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { paymentMethods, paymentProviders } from '../lib/constants';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
-import { createDraftOrder } from '@features/order/api/create';
 import { completeOrder } from '../api/completeOrder';
 import resetCartSession from '@features/cart/api/resetCartSession';
 import { Order } from '~/generated/prisma/client';
@@ -132,7 +131,8 @@ export default function PaymentForm({
         {selectedPaymentMethodValue === 'pay-now' &&
           selectedProviderValue === 'liqpay' &&
           liqpayPublicKey &&
-          liqpayPrivateKey && (
+          liqpayPrivateKey &&
+          draftOrder.shopifyDraftOrderId && (
             <LiqPayForm
               liqpayPublicKey={liqpayPublicKey}
               liqpayPrivateKey={liqpayPrivateKey}

@@ -1,14 +1,11 @@
-import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 
 import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  NavigationMenuViewport,
 } from '@shared/ui/navigation-menu';
 import { Button } from '@shared/ui/button';
 import { getMainMenu } from '../api/getMainMenu';

@@ -1,7 +1,6 @@
 import { getCart } from '@entities/cart/api/get';
 import { auth } from '@features/auth/lib/auth';
 import CheckoutHeader from '@features/checkout/ui/CheckoutHeader';
-import { tryCatch } from '@shared/lib/try-catch';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 export default async function Layout({

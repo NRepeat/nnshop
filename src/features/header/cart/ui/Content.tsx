@@ -1,4 +1,3 @@
-import { Button } from '@shared/ui/button';
 import { SheetContent, SheetHeader, SheetTitle } from '@shared/ui/sheet';
 import { Textarea } from '@shared/ui/textarea';
 import CartItem from './Item';

@@ -8,10 +8,7 @@ import {
 } from '@shared/ui/card';
 import { Button } from '@shared/ui/button';
 import Link from 'next/link';
-import { completeOrder } from '@features/checkout/payment/api/completeOrder';
 import { getTranslations } from 'next-intl/server';
-import resetCartSession from '@features/cart/api/resetCartSession';
-import { getOrder } from '@entities/order/api/getOrder';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
 

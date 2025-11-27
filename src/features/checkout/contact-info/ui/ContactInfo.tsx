@@ -1,4 +1,3 @@
-import { getUserInfo } from '@shared/lib/customer-account';
 import getContactInfo from '../api/get-contact-info';
 import ContactInfoForm from './ContactInfoForm';
 import { getTranslations } from 'next-intl/server';

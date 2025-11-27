@@ -1,7 +1,6 @@
 'use server';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
-import { Order } from '@shared/lib/shopify/types/storefront.types';
 
 const DRAFT_ORDER_COMPLITE_MUTATION = `
   mutation draftOrderComplete($id: ID!) {

@@ -1,4 +1,4 @@
-import { CreditCard, DollarSign, PackageCheck } from 'lucide-react';
+import { CreditCard, PackageCheck } from 'lucide-react';
 import { PaymentInfo } from '../schema/paymentSchema';
 
 export const paymentMethods: {

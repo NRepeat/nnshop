@@ -1,4 +1,3 @@
-import { Card, CardContent } from '@/shared/ui/card';
 import {
   Carousel,
   CarouselContent,
@@ -6,12 +5,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/shared/ui/carousel';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Collection, PAGE_QUERYResult } from '@/shared/sanity/types';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { getCollection } from '@entities/collection/api/getCollection';
-import { Button } from '@shared/ui/button';
 import { ProductCard } from './ProductCard';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 

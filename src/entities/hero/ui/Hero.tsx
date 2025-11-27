@@ -30,6 +30,7 @@ export function Hero({ title, text, image }: HeroProps) {
           width={1600}
           height={800}
           alt=""
+          priority
         />
       ) : null}
     </section>

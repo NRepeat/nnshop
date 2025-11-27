@@ -12,13 +12,7 @@ type HeroSwiperProps = Extract<
   documentType: string;
   blockIndex: number;
 };
-export function HeroSwiper({
-  slides,
-  documentId,
-  documentType,
-  blockIndex,
-  _type,
-}: HeroSwiperProps) {
+export function HeroSwiper({ slides }: HeroSwiperProps) {
   if (!slides || slides.length === 0) return null;
 
   return (

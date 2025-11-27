@@ -38,7 +38,7 @@ export const Products = async ({ druftOrderId }: { druftOrderId?: string }) => {
     };
     return (
       <Card className="w-full shadow-none rounded-none  bg-gray-100 p-0 ">
-        <CardHeader>
+        <CardHeader className="p-0">
           <CardTitle>{t('products_title')}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 p-0 ">
@@ -46,7 +46,7 @@ export const Products = async ({ druftOrderId }: { druftOrderId?: string }) => {
             {lines?.map((line) => (
               <div
                 key={line.node.title}
-                className="flex items-center h-28 gap-4 px-2.5 py-2.5  bg-white border border-gray-300"
+                className="flex items-center h-28 gap-4 px-2.5 py-2.5  bg-card border border-border"
               >
                 <Image
                   alt={line.node.title}
@@ -56,18 +56,20 @@ export const Products = async ({ druftOrderId }: { druftOrderId?: string }) => {
                   width={80}
                 />
                 <div className="grid gap-1 text-sm w-full">
-                  <p className="font-medium text-start">{line.node.title}</p>
+                  <p className="font-medium text-start text-foreground">
+                    {line.node.title}
+                  </p>
                   <div className="flex items-center gap-2">
-                    <p className="text-gray-500 dark:text-gray-400">
+                    <p className="text-muted-foreground">
                       {/* @ts-ignore */}
                       {line.node.quantity} x {line.node.variant.price}
                     </p>
-                    <p className="text-gray-900 dark:text-gray-100">
+                    <p className="text-foreground">
                       {/* @ts-ignore */}
                       {Number(line.node.variant.price) *
                         Number(line.node.quantity)}
                     </p>
-                    <p className="text-gray-900 dark:text-gray-100">
+                    <p className="text-muted-foreground">
                       {cost.totalAmount.currencyCode}
                     </p>
                   </div>
@@ -79,10 +81,8 @@ export const Products = async ({ druftOrderId }: { druftOrderId?: string }) => {
           <Separator />
           <div className="grid gap-2">
             <div className="flex items-center justify-between">
-              <p className="text-gray-500 dark:text-gray-400">
-                {t('subtotal')}
-              </p>
-              <p className="font-medium">
+              <p className="text-muted-foreground">{t('subtotal')}</p>
+              <p className="font-medium text-foreground">
                 {cost.totalAmount.currencyCode}{' '}
                 {cost.subtotalAmount.amount.toLocaleString('en-US', {
                   style: 'currency',
@@ -92,8 +92,8 @@ export const Products = async ({ druftOrderId }: { druftOrderId?: string }) => {
             </div>
             <Separator />
             <div className="flex items-center justify-between font-medium">
-              <p>{t('total')}</p>
-              <p>
+              <p className="text-foreground">{t('total')}</p>
+              <p className="text-foreground">
                 {cost.totalAmount.currencyCode}{' '}
                 {cost.totalAmount.amount.toLocaleString('en-US', {
                   style: 'currency',
@@ -120,8 +120,8 @@ export const Products = async ({ druftOrderId }: { druftOrderId?: string }) => {
         <div className="max-h-[50vh] flex flex-col gap-2 overflow-y-auto">
           {lines?.map((line) => (
             <div
-              key={line.node.title}
-              className="flex items-center min-h-28 gap-4 px-2.5 py-2.5  bg-white border border-gray-300"
+              key={line.node.id}
+              className="flex items-center min-h-28 gap-4 px-2.5 py-2.5  bg-card border border-border"
             >
               <Image
                 alt={line.node.merchandise.product.title}
@@ -131,18 +131,18 @@ export const Products = async ({ druftOrderId }: { druftOrderId?: string }) => {
                 width={80}
               />
               <div className="grid gap-1 text-sm w-full">
-                <p className="font-medium text-start">
+                <p className="font-medium text-start text-foreground">
                   {line.node.merchandise.product.title}
                 </p>
                 <div className="flex items-center gap-2">
-                  <p className="text-gray-500 dark:text-gray-400">
+                  <p className="text-muted-foreground">
                     {line.node.quantity} x{' '}
                     {line.node.cost.amountPerQuantity.amount}
                   </p>
-                  <p className="text-gray-900 dark:text-gray-100">
+                  <p className="text-foreground">
                     {line.node.cost.totalAmount.amount}
                   </p>
-                  <p className="text-gray-900 dark:text-gray-100">
+                  <p className="text-muted-foreground">
                     {line.node.cost.totalAmount.currencyCode}
                   </p>
                 </div>
@@ -154,8 +154,8 @@ export const Products = async ({ druftOrderId }: { druftOrderId?: string }) => {
         <Separator />
         <div className="grid gap-2">
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 dark:text-gray-400">{t('subtotal')}</p>
-            <p className="font-medium">
+            <p className="text-muted-foreground">{t('subtotal')}</p>
+            <p className="font-medium text-foreground">
               {cost.totalAmount.currencyCode}{' '}
               {cost.subtotalAmount.amount.toLocaleString('en-US', {
                 style: 'currency',
@@ -165,8 +165,8 @@ export const Products = async ({ druftOrderId }: { druftOrderId?: string }) => {
           </div>
           <Separator />
           <div className="flex items-center justify-between font-medium">
-            <p>{t('total')}</p>
-            <p>
+            <p className="text-foreground">{t('total')}</p>
+            <p className="text-foreground">
               {cost.totalAmount.currencyCode}{' '}
               {cost.totalAmount.amount.toLocaleString('en-US', {
                 style: 'currency',

@@ -1,6 +1,5 @@
 import { auth } from '@features/auth/lib/auth';
 import { Avatar, AvatarFallback, AvatarImage } from '@shared/ui/avatar';
-import { Button } from '@shared/ui/button';
 import { User } from 'lucide-react';
 import { headers } from 'next/headers';
 import Link from 'next/link';

@@ -1,10 +1,4 @@
-import { PageBuilder } from '@/widgets/page-builder';
 import { Locale } from '@/shared/i18n/routing';
-import { sanityFetch } from '@/shared/sanity/lib/client';
-import { urlFor } from '@/shared/sanity/lib/image';
-import { PAGE_QUERY } from '@/shared/sanity/lib/query';
-import { isLocalizedString } from '@/shared/sanity/utils/checkLocaliztionType';
-import { Metadata } from 'next';
 
 type RouteProps = {
   params: Promise<{ slug: string; locale: Locale }>;
@@ -51,6 +45,6 @@ type RouteProps = {
 // }
 
 export default async function Page({ params }: RouteProps) {
-  const { locale, slug } = await params;
+  const { slug } = await params;
   return <>{slug}</>;
 }

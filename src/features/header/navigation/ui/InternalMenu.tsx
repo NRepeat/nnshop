@@ -1,7 +1,5 @@
 'use client';
-import { GetMainMenuQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { Maybe } from '@shared/lib/shopify/types/storefront.types';
-import { Button } from '@shared/ui/button';
 import clsx from 'clsx';
 import { ArrowLeftFromLine } from 'lucide-react';
 import Link from 'next/link';
