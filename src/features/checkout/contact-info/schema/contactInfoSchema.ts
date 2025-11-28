@@ -8,7 +8,7 @@ export const getContactInfoSchema = (t: (key: string) => string) => {
     phone: z
       .string()
       .min(1, t('phoneRequired'))
-      .regex(/^\+?[1-9]\d{1,14}$/, t('invalidPhoneNumber')),
+      .regex(/^\+[1-9]\d{1,14}$/, t('invalidPhoneNumber')),
     countryCode: z.string().min(1, t('countryCodeRequired')),
   });
 };

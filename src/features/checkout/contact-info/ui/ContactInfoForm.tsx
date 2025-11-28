@@ -45,7 +45,7 @@ export default function ContactInfoForm({
       name: contactInfo?.name ? contactInfo.name : user?.name || '',
       lastName: contactInfo?.lastName || '',
       email: contactInfo?.email || user?.email || '',
-      phone: contactInfo?.phone || '',
+      phone: contactInfo?.phone || '+380',
       countryCode: contactInfo?.countryCode || 'UA',
     },
   });
