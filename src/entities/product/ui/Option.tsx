@@ -23,7 +23,7 @@ const Option = ({
         {product.options.map((option) => (
           <div key={option.name}>
             <Label className="text-sm font-medium">{option.name}</Label>
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="flex flex-wrap gap-2 mx-2">
               {option.values.map((value) => {
                 const currentOptionValue =
                   selectedVariant?.selectedOptions.find(

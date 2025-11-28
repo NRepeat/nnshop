@@ -75,7 +75,6 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   const products = collection.products.edges.map((edge) => edge.node);
   const { hasNextPage, endCursor, hasPreviousPage, startCursor } =
     collection.products.pageInfo;
-  console.log('hasNextPage', collection.products.pageInfo);
   const getFilterParams = (currentFilters: string | undefined): string => {
     return currentFilters ? `&filters=${currentFilters}` : '';
   };

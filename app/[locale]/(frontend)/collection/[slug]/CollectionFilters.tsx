@@ -141,7 +141,6 @@ function PriceRangeFilter({
 
   const [min, setMin] = useState('');
   const [max, setMax] = useState('');
-  console.log('min', min);
   const [appliedMin, setAppliedMin] = useState('');
   const [appliedMax, setAppliedMax] = useState('');
 

@@ -34,6 +34,11 @@ export const linkAnonymousDataToUser = async ({
         where: { userId: anonymousUserId },
         data: { userId: newUserId },
       });
+
+      await tx.favoriteProduct.updateMany({
+        where: { userId: anonymousUserId },
+        data: { userId: newUserId },
+      });
     });
   } catch (error) {
     console.error('Error linking anonymous data to user:', error);

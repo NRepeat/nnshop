@@ -24,7 +24,6 @@ const query = `#graphql
         altText
       }
 
-      # 💡 MODIFIED: Pass all pagination variables to the 'products' connection
       products(
         first: $first
         last: $last
