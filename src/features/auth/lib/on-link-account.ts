@@ -23,13 +23,11 @@ export const linkAnonymousDataToUser = async ({
         data: { userId: newUserId },
       });
 
-      // Update PaymentInformation
       await tx.paymentInformation.updateMany({
         where: { userId: anonymousUserId },
         data: { userId: newUserId },
       });
 
-      // Update Orders
       await tx.order.updateMany({
         where: { userId: anonymousUserId },
         data: { userId: newUserId },

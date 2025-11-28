@@ -18,8 +18,10 @@ export default async function Receipt({
   const t = await getTranslations('ReceiptPage');
   try {
     const { slug } = await params;
-    const druftOrderId = slug.length > 2 ? slug[2] : slug[1];
-
+    let druftOrderId = slug.length >= 2 ? slug[2] : slug[1];
+    if (slug[0] === 'success') {
+      druftOrderId = slug[1];
+    }
     return (
       <div className="flex flex-col items-center  w-full container">
         <Card className="w-full shadow-none rounded-none  bg-gray-100">
