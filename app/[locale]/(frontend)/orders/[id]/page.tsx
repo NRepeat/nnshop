@@ -5,10 +5,11 @@ import { Breadcrumbs } from '@shared/ui/breadcrumbs';
 import { OrderDetails } from '@features/order/ui/OrderDetails';
 
 export default async function OrderPage({
-  params: { id },
+  params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const tHeader = await getTranslations('Header.nav');
   const tOrderPage = await getTranslations('OrderPage');
 

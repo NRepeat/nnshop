@@ -5,6 +5,7 @@ import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { headers } from 'next/headers';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
+
 type DrafOrder = {
   id: string;
   name: string;
@@ -19,9 +20,35 @@ type DrafOrder = {
     }[];
   };
 };
+
 const DRAFT_ORDER_CREATE_MUTATION = `
   mutation draftOrderCreate($input: DraftOrderInput!) {
     draftOrderCreate(input: $input) {
+      draftOrder {
+        id
+        name
+        totalPrice
+        lineItems(first: 10) {
+          edges {
+            node {
+              id
+              title
+              quantity
+            }
+          }
+        }
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
+const DRAFT_ORDER_UPDATE_MUTATION = `
+  mutation draftOrderUpdate($id: ID!, $input: DraftOrderInput!) {
+    draftOrderUpdate(id: $id, input: $input) {
       draftOrder {
         id
         name
@@ -62,6 +89,9 @@ export async function createDraftOrder(
     }
     const cartId = await prisma.cart.findFirst({
       where: { userId: session.user.id, completed: false },
+    });
+    const existDraftOrder = await prisma.order.findFirst({
+      where: { userId: session.user.id, draft: true },
     });
     const result = await getCart(cartId?.cartToken);
     if (!result) {
@@ -125,67 +155,86 @@ export async function createDraftOrder(
     };
     input.shippingAddress = shippingAddress;
 
-    const orderResponse = await adminClient.client.request<{
-      draftOrderCreate: {
-        draftOrder: DrafOrder | null;
-        userErrors: Array<{ field: string; message: string }>;
-      };
-    }>({
-      query: DRAFT_ORDER_CREATE_MUTATION,
-      variables: { input },
-    });
+    let draftOrder: DrafOrder | null = null;
+    let userErrors: Array<{ field: string; message: string }> = [];
 
-    if (orderResponse.draftOrderCreate.userErrors.length > 0) {
-      console.error(
-        ' ADMIN API USER ERRORS:',
-        orderResponse.draftOrderCreate.userErrors,
-      );
+    if (existDraftOrder?.shopifyDraftOrderId) {
+      const variables = {
+        id: existDraftOrder.shopifyDraftOrderId,
+        input: input,
+      };
+      const orderResponse = await adminClient.client.request<{
+        draftOrderUpdate: {
+          draftOrder: DrafOrder | null;
+          userErrors: Array<{ field: string; message: string }>;
+        };
+      }>({
+        query: DRAFT_ORDER_UPDATE_MUTATION,
+        variables,
+      });
+
+      draftOrder = orderResponse.draftOrderUpdate.draftOrder;
+      userErrors = orderResponse.draftOrderUpdate.userErrors;
+    } else {
+      const orderResponse = await adminClient.client.request<{
+        draftOrderCreate: {
+          draftOrder: DrafOrder | null;
+          userErrors: Array<{ field: string; message: string }>;
+        };
+      }>({
+        query: DRAFT_ORDER_CREATE_MUTATION,
+        variables: { input },
+      });
+      draftOrder = orderResponse.draftOrderCreate.draftOrder;
+      userErrors = orderResponse.draftOrderCreate.userErrors;
+    }
+
+    if (userErrors.length > 0) {
+      console.error(' ADMIN API USER ERRORS:', userErrors);
       return {
         success: false,
-        errors: orderResponse.draftOrderCreate.userErrors.map(
-          (error) => error.message,
-        ),
+        errors: userErrors.map((error) => error.message),
       };
     }
 
-    if (!orderResponse.draftOrderCreate.draftOrder) {
+    if (!draftOrder) {
       console.error(' NO DRAFT ORDER RETURNED FROM ADMIN API');
       return {
         success: false,
-        errors: ['Failed to create draft order - no order returned'],
+        errors: ['Failed to create/update draft order - no order returned'],
       };
     }
 
-    const createdOrder = orderResponse.draftOrderCreate.draftOrder;
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-    });
-    if (user) {
+    if (!existDraftOrder) {
       await prisma.order.create({
         data: {
-          shopifyDraftOrderId: createdOrder.id,
+          shopifyDraftOrderId: draftOrder.id,
           userId: session.user.id,
           draft: true,
         },
       });
     }
+
     return {
       success: true,
-      order: createdOrder,
+      order: draftOrder,
     };
   } catch (error) {
-    console.error(' ERROR CREATING DRAFT ORDER WITH ADMIN API:', error);
+    console.error(
+      ' ERROR CREATING/UPDATING DRAFT ORDER WITH ADMIN API:',
+      error,
+    );
     console.error(' ERROR DETAILS:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      cartId: '',
+      cartId: '', // Consider adding cartId here for better debugging
     });
     return {
       success: false,
       errors: [
         error instanceof Error
           ? error.message
-          : 'Failed to create draft order with Admin API',
+          : 'Failed to create/update draft order with Admin API',
       ],
     };
   }
