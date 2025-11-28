@@ -10,11 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from '@shared/ui/table';
-import { Button } from '@shared/ui/button';
 import { ArrowUp, ArrowDown } from 'lucide-react';
 
-// This is a temporary Order type.
-// The real one from Shopify has more fields.
 type Order = {
   id: string;
   name: string;

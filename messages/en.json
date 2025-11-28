@@ -495,5 +495,9 @@
       "taxes": "taxes",
       "sameAsShipping": "Same as shipping address"
     }
+  },
+  "FavoritesPage": {
+    "title": "Favorites",
+    "empty": "You have no favorite products yet."
   }
 }

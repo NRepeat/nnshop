@@ -13,15 +13,21 @@ import {
 import { Bookmark } from 'lucide-react';
 import Image from 'next/image';
 import * as React from 'react';
+import { toggleFavoriteProduct } from '../api/toggle-favorite';
+import { BookmarkFilledIcon } from '@sanity/icons';
 
 const Gallery = ({
   images,
   selectedVariant,
+  isFavorite,
+  productId,
 }: {
   images: {
     node: Pick<ShoipidyImage, 'url' | 'altText' | 'width' | 'height'>;
   }[];
   selectedVariant: ProductVariant;
+  productId: string;
+  isFavorite?: boolean;
 }) => {
   const [mainApi, setMainApi] = React.useState<CarouselApi>();
   const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -46,7 +52,13 @@ const Gallery = ({
     }
     setSelectedIndex(selectedVariantImageIndex);
   }, [mainApi, selectedVariantImageIndex, selectedVariant]);
-
+  const handleFavoriteToggle = async (id: string) => {
+    try {
+      await toggleFavoriteProduct(id);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div className="md:col-span-4">
       <div className="relative">
@@ -71,9 +83,16 @@ const Gallery = ({
           <Button
             variant="ghost"
             size="icon"
+            onClick={async () => {
+              await handleFavoriteToggle(productId);
+            }}
             className="rounded-full bg-white/50 backdrop-blur-sm"
           >
-            <Bookmark className="h-6 w-6" />
+            {isFavorite ? (
+              <BookmarkFilledIcon className="min-h-6 min-w-8" />
+            ) : (
+              <Bookmark className="h-6 w-6" />
+            )}
           </Button>
         </div>
       </div>

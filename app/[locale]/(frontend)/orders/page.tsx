@@ -55,13 +55,17 @@ export default async function OrdersPage({
   let sortedOrders = [...orders];
   if (sortBy === 'date') {
     sortedOrders.sort((a, b) => {
+      //@ts-ignore
       const dateA = new Date(a.createdAt).getTime();
+      //@ts-ignore
       const dateB = new Date(b.createdAt).getTime();
       return order === 'asc' ? dateA - dateB : dateB - dateA;
     });
   } else if (sortBy === 'status') {
     sortedOrders.sort((a, b) => {
+      //@ts-ignore
       const statusA = a.displayFulfillmentStatus;
+      //@ts-ignore
       const statusB = b.displayFulfillmentStatus;
       if (statusA < statusB) return order === 'asc' ? -1 : 1;
       if (statusA > statusB) return order === 'asc' ? 1 : -1;

@@ -23,6 +23,7 @@ model User {
   contactInformation  ContactInformation?
   deliveryInformation DeliveryInformation?
   paymentInformation  PaymentInformation?
+  favoriteProducts    FavoriteProduct[]
 
   @@unique([email])
   @@map("user")
@@ -164,4 +165,15 @@ model ShopifySession {
   expiresIn   DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model FavoriteProduct {
+  id        String @id @default(cuid())
+  userId    String
+  productId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
 }

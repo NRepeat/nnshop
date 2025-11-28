@@ -4,6 +4,7 @@ import { Product } from '@shared/types/product/types';
 import { PageBuilder } from '@widgets/page-builder';
 import { ProductVariant } from '@shared/lib/shopify/types/storefront.types';
 import { PAGE_QUERYResult } from '@shared/sanity/types';
+import { isProductFavorite } from '@features/product/api/isProductFavorite';
 
 export async function ProductView({
   product,
@@ -26,12 +27,17 @@ export async function ProductView({
       : product.featuredImage
         ? [{ node: product.featuredImage }]
         : [];
-
+  const isFavorite = await isProductFavorite(product.id);
   return (
     <div className="container mx-auto py-12 space-y-12">
       {selectedVariant && (
         <div className="grid grid-cols-1 md:grid-cols-8 gap-12 h-full md:h-screen">
-          <Gallery images={images} selectedVariant={selectedVariant} />
+          <Gallery
+            images={images}
+            productId={product.id}
+            selectedVariant={selectedVariant}
+            isFavorite={isFavorite}
+          />
           <Description product={product} selectedVariant={selectedVariant} />
         </div>
       )}
