@@ -30,7 +30,7 @@ export default async function Layout({
   return (
     <>
       <CheckoutHeader slug={slug} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 mb-10">
         {children}
         {receipt}
       </div>

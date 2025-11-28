@@ -19,6 +19,7 @@ export const Products = async ({ druftOrderId }: { druftOrderId?: string }) => {
       throw new Error('Draft order not found');
     }
     if (!draftOrder.shopifyOrderId) {
+      return null;
       throw new Error('Shopify order ID not found');
     }
     const order = await getOrder(draftOrder.shopifyOrderId);

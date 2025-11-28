@@ -8,7 +8,6 @@ type Props = {
 export default async function Page(props: Props) {
   const params = await props.params;
   const { slug } = params;
-
   if (!slug || slug.length === 0) {
     return redirect('/');
   }
@@ -16,13 +15,10 @@ export default async function Page(props: Props) {
 
   if (slug.length > 1 && slug[0] === 'payment') {
     orderId = slug[1];
-    return;
   } else if (slug.length > 1 && slug[1] === 'liqpay') {
     orderId = slug[2];
-    return;
   } else if (slug.length > 2) {
-    orderId = slug[2];
-    return;
+    orderId = slug[1];
   } else if (slug.length >= 1) {
     orderId = slug[1];
   }

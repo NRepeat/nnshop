@@ -19,7 +19,6 @@ export default async function Receipt({
   try {
     const { slug } = await params;
     const druftOrderId = slug.length > 2 ? slug[2] : slug[1];
-    console.log(slug, druftOrderId, 'druftOrderId');
 
     return (
       <div className="flex flex-col items-center  w-full container">
