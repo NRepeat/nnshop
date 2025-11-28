@@ -450,5 +450,12 @@
     "public_offer_agreement": "Public Offer Agreement",
     "privacy_policy": "Privacy Policy",
     "info_column_title": "Information"
+  },
+  "AccountButton": {
+    "myAccount": "My Account",
+    "profile": "Profile",
+    "orders": "Orders",
+    "favorites": "Favorites",
+    "settings": "Settings"
   }
 }

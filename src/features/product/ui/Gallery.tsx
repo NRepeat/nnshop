@@ -1,3 +1,4 @@
+'use client';
 import type {
   ProductVariant,
   Image as ShoipidyImage,

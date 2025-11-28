@@ -20,7 +20,8 @@ export async function SplitImage({
   link,
 }: SplitImageProps) {
   const locale = await getLocale();
-  const linkUrl = resolveLink(link?.[0]);
+  //@ts-expect-error sanity
+  const linkUrl = resolveLink(link[0]);
 
   const ImageComponent = image ? (
     <Image

@@ -14,11 +14,10 @@ export default async function AuthPage({
   params: Promise<{ authView: string }>;
 }) {
   const { authView } = await params;
-  console.log(authView);
   const tBetterAuth = await getTranslations('BetterAuthUI');
 
   return (
-    <main className="container flex grow flex-col items-center justify-center self-center  mt-2.5 py-6 md:py-10">
+    <main className="container flex grow flex-col items-center justify-center self-center  mt-2.5 py-6 md:py-10 mb-10 h-screen">
       <AuthViewRenderer authView={authView} tBetterAuth={tBetterAuth} />
     </main>
   );

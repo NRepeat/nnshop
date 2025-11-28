@@ -26,7 +26,8 @@ export function HeroSwiper({ slides }: HeroSwiperProps) {
           <CarouselItem key={slide._key || index}>
             <div className="relative w-full overflow-hidden  ">
               <Link
-                href={resolveLink(slide.link?.[0]) || '/'}
+                //@ts-expect-error sanity
+                href={resolveLink(slide.link) || '/'}
                 className="flex justify-center "
               >
                 <Image

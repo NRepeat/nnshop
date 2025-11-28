@@ -20,8 +20,10 @@ export default async function AccountPage({
   const { title, description } = getPageInfo(path, t);
 
   return (
-    <SettingsPageLayout title={title} description={description}>
-      {renderView(path, tBetterAuth)}
-    </SettingsPageLayout>
+    <div className="mt-10">
+      <SettingsPageLayout title={title} description={description}>
+        {renderView(path, tBetterAuth)}
+      </SettingsPageLayout>
+    </div>
   );
 }

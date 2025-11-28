@@ -431,5 +431,12 @@
     "public_offer_agreement": "Договір публічної оферти",
     "privacy_policy": "Конфіденційність",
     "info_column_title": "Інформація"
+  },
+  "AccountButton": {
+    "myAccount": "Мій кабінет",
+    "profile": "Профіль",
+    "orders": "Замовлення",
+    "favorites": "Обране",
+    "settings": "Налаштування"
   }
 }
