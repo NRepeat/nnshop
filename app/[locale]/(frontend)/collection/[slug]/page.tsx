@@ -8,13 +8,27 @@ import {
 import { CollectionFilters } from './CollectionFilters';
 import { FilterSheet } from './FilterSheet';
 import { getCollections } from '@entities/collection/api/getCollections';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationNext,
+} from '@/shared/ui/pagination';
+
+const PRODUCTS_PER_PAGE = 6;
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
   searchParams: Promise<{
     filters?: string;
+    after?: string;
+    // 💡 ADDED: before cursor for previous page
+    before?: string;
   }>;
 };
+
+// Next.js function to pre-render pages
 export async function generateStaticParams() {
   const { collections } = await getCollections();
 
@@ -27,13 +41,15 @@ export async function generateStaticParams() {
 
   return paths;
 }
+
 export default async function CollectionPage({ params, searchParams }: Props) {
   const { slug } = await params;
   if (!slug) {
     return notFound();
   }
 
-  const { filters: filtersString } = await searchParams;
+  // 💡 MODIFIED: Destructure both `after` and `before`
+  const { filters: filtersString, after, before } = await searchParams;
   let filters: ProductFilter[] = [];
   if (filtersString) {
     try {
@@ -41,9 +57,14 @@ export default async function CollectionPage({ params, searchParams }: Props) {
     } catch {}
   }
 
+  const paginationArgs = before
+    ? { last: PRODUCTS_PER_PAGE, before }
+    : { first: PRODUCTS_PER_PAGE, after };
+
   const collectionData = await getCollection({
     handle: slug,
     filters,
+    ...paginationArgs,
   });
   const collection = collectionData.collection;
 
@@ -52,6 +73,14 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   }
 
   const products = collection.products.edges.map((edge) => edge.node);
+  const { hasNextPage, endCursor, hasPreviousPage, startCursor } =
+    collection.products.pageInfo;
+  console.log('hasNextPage', collection.products.pageInfo);
+  const getFilterParams = (currentFilters: string | undefined): string => {
+    return currentFilters ? `&filters=${currentFilters}` : '';
+  };
+
+  const filterParams = getFilterParams(filtersString);
 
   return (
     <div className="container mx-auto px-4 py-8 relative">
@@ -71,7 +100,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
           </div>
         </aside>
         <main className="lg:col-span-4">
-          <div className="grid grid-cols-2 gap-2  sm:gap-2 sm:grid-cols-2 md:grid-cols-3 lg:gap-8 lg:grid-cols-3 xl:grid-cols-4 ">
+          <div className="grid grid-cols-2 gap-2 sm:gap-2 sm:grid-cols-2 md:grid-cols-3 lg:gap-8 lg:grid-cols-3 xl:grid-cols-4 ">
             {products.map((product) => (
               <ProductCard
                 key={product.id}
@@ -80,6 +109,35 @@ export default async function CollectionPage({ params, searchParams }: Props) {
               />
             ))}
           </div>
+
+          {/* 💡 MODIFIED: Render full pagination controls based on pageInfo */}
+          {(hasPreviousPage || hasNextPage) && (
+            <div className="mt-8 flex justify-center">
+              <Pagination>
+                <PaginationContent>
+                  {/* Previous Button */}
+                  {hasPreviousPage && (
+                    <PaginationItem>
+                      <PaginationPrevious
+                        // Navigate back using the startCursor and maintain filters
+                        href={`/collection/${slug}?before=${startCursor}${filterParams}`}
+                      />
+                    </PaginationItem>
+                  )}
+
+                  {/* Next Button */}
+                  {hasNextPage && (
+                    <PaginationItem>
+                      <PaginationNext
+                        // Navigate forward using the endCursor and maintain filters
+                        href={`/collection/${slug}?after=${endCursor}${filterParams}`}
+                      />
+                    </PaginationItem>
+                  )}
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </main>
       </div>
     </div>

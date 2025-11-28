@@ -4,7 +4,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from '@shared/i18n/navigation';
 import { getContactInfoSchema } from '../schema/contactInfoSchema';
 import {
   Form,
@@ -22,6 +22,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { ContactInformation } from '~/generated/prisma/client';
 import { User } from 'better-auth';
+import { useParams } from 'next/navigation';
 
 export default function ContactInfoForm({
   contactInfo,

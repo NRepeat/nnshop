@@ -3,8 +3,7 @@
 import { Product } from '@shared/types/product/types';
 import { Label } from '@shared/ui/label';
 import clsx from 'clsx';
-import { Link } from '@shared/i18n/navigation';
-import { usePathname } from 'next/navigation';
+import { Link, usePathname } from '@shared/i18n/navigation';
 import { ProductVariant } from '@shared/lib/shopify/types/storefront.types';
 
 const Option = ({

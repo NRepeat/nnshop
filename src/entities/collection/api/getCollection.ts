@@ -4,19 +4,40 @@ import { storefrontClient } from '@shared/lib/shopify/client';
 import { GetCollectionQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
 import { getLocale } from 'next-intl/server';
+
 const query = `#graphql
-  query GetCollection($handle: String!, $filters: [ProductFilter!]) {
+  query GetCollection(
+    $handle: String!
+    $filters: [ProductFilter!]
+    $first: Int
+    $after: String
+    $last: Int
+    $before: String
+  ) {
     collection(handle: $handle) {
-    id
-    title
-    handle
-    description
+      id
+      title
+      handle
+      description
       image {
         url
         altText
       }
 
-      products(first: 250, filters: $filters) {
+      # 💡 MODIFIED: Pass all pagination variables to the 'products' connection
+      products(
+        first: $first
+        last: $last
+        filters: $filters
+        after: $after
+        before: $before
+      ) {
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          endCursor
+          startCursor
+        }
         edges {
           node {
             id
@@ -55,9 +76,9 @@ const query = `#graphql
                 }
               }
             }
-            options{
+            options {
               name
-              optionValues{
+              optionValues {
                 name
               }
             }
@@ -80,16 +101,16 @@ const query = `#graphql
           }
         }
         filters {
-      id
-      label
-      type
-      values {
-        id
-        label
-        count
-        input
-      }
-    }
+          id
+          label
+          type
+          values {
+            id
+            label
+            count
+            input
+          }
+        }
       }
     }
   }
@@ -98,14 +119,22 @@ const query = `#graphql
 export const getCollection = async ({
   handle,
   filters,
+  first,
+  after,
+  last,
+  before,
 }: {
   handle: string;
   filters?: ProductFilter[];
+  first?: number;
+  after?: string;
+  last?: number;
+  before?: string;
 }) => {
   const locale = await getLocale();
   const collection = await storefrontClient.request<GetCollectionQuery>({
     query,
-    variables: { handle, filters },
+    variables: { handle, filters, first, after, last, before },
     language: locale.toUpperCase() as StorefrontLanguageCode,
   });
   return collection;

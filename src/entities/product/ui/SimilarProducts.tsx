@@ -13,7 +13,10 @@ import { Product } from '@shared/lib/shopify/types/storefront.types';
 const SimilarProducts = async ({ collection }: { collection: Collection }) => {
   const collectionHandle = collection?.store?.slug?.current;
   if (!collectionHandle) return null;
-  const shopifyCollection = await getCollection({ handle: collectionHandle });
+  const shopifyCollection = await getCollection({
+    handle: collectionHandle,
+    first: 12,
+  });
   if (!shopifyCollection) return null;
   const products = shopifyCollection.collection?.products.edges.map(
     (edge) => edge.node,

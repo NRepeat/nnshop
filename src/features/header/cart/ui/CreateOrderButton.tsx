@@ -2,7 +2,7 @@
 
 import { Button } from '@shared/ui/button';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@shared/i18n/navigation';
 
 export const CreateOrderButton = () => {
   const t = useTranslations('Header.cart.drawer');

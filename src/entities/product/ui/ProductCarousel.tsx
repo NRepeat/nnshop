@@ -28,7 +28,10 @@ const ProductCarousel = async ({
   const collectionHandle = collection?.store?.slug?.current;
   const locale = await getLocale();
   if (!collectionHandle) return null;
-  const shopifyCollection = await getCollection({ handle: collectionHandle });
+  const shopifyCollection = await getCollection({
+    handle: collectionHandle,
+    first: 12,
+  });
   if (!shopifyCollection) return null;
   const products = shopifyCollection.collection?.products.edges.map(
     (edge) => edge.node,

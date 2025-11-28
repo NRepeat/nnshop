@@ -3,7 +3,7 @@
 import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from '@shared/i18n/navigation';
 import { PaymentInfo, getPaymentSchema } from '../schema/paymentSchema';
 import { savePaymentInfo } from '../api/savePaymentInfo';
 import { Button } from '@shared/ui/button';
@@ -18,6 +18,7 @@ import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { completeOrder } from '../api/completeOrder';
 import resetCartSession from '@features/cart/api/resetCartSession';
 import { Order } from '~/generated/prisma/client';
+import { useParams } from 'next/navigation';
 
 interface PaymentFormProps {
   defaultValues?: PaymentInfo | null;

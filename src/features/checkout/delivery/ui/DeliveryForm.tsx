@@ -4,7 +4,7 @@ import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
 import { toast } from 'sonner';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from '@shared/i18n/navigation';
 import { DeliveryInfo, getDeliverySchema } from '../model/deliverySchema';
 import { SelectedDepartment } from '@features/novaPoshta';
 import { Button } from '@shared/ui/button';
@@ -16,6 +16,7 @@ import DeliveryMethodSelection from './DeliveryMethodSelection';
 import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createDraftOrder } from '@features/order/api/create';
+import { useParams } from 'next/navigation';
 
 interface DeliveryFormProps {
   defaultValues?: DeliveryInfo | null;
