@@ -16,8 +16,15 @@ export default async function Page(props: Props) {
 
   if (slug.length > 1 && slug[0] === 'payment') {
     orderId = slug[1];
+    return;
   } else if (slug.length > 1 && slug[1] === 'liqpay') {
     orderId = slug[2];
+    return;
+  } else if (slug.length > 2) {
+    orderId = slug[2];
+    return;
+  } else if (slug.length >= 1) {
+    orderId = slug[1];
   }
   return <CheckoutView orderId={orderId} slug={slug[0]} />;
 }

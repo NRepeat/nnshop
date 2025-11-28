@@ -55,7 +55,7 @@ export default async function OrdersPage({
   ];
 
   return (
-    <div className="container mx-auto py-10 h-screen mt-10">
+    <div className="container mx-auto py-10 h-screen mt-2 md:mt-10">
       <Breadcrumbs items={breadcrumbItems} />
       <h1 className="text-2xl font-bold my-4">{t('title')}</h1>
       <OrderList orders={orders as any} />

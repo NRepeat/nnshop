@@ -62,11 +62,15 @@ export default function PaymentForm({
   const selectedProviderValue = form.watch('paymentProvider');
 
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
+    console.log('Payment information saved', data, draftOrder);
     try {
-      if (draftOrder && draftOrder.shopifyOrderId) {
+      if (draftOrder && draftOrder.shopifyDraftOrderId) {
         toast.success(t('paymentInformationSaved'));
+        console.log('Payment information saved', data);
         if (data.paymentMethod === 'after-delivered') {
-          const completedOrder = await completeOrder(draftOrder.shopifyOrderId);
+          const completedOrder = await completeOrder(
+            draftOrder.shopifyDraftOrderId,
+          );
           await savePaymentInfo(data, completedOrder.id);
           await resetCartSession();
           return router.push(

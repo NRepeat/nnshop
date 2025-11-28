@@ -18,7 +18,8 @@ export default async function Receipt({
   const t = await getTranslations('ReceiptPage');
   try {
     const { slug } = await params;
-    const druftOrderId = slug.length > 1 ? slug[2] : undefined;
+    const druftOrderId = slug.length > 2 ? slug[2] : slug[1];
+    console.log(slug, druftOrderId, 'druftOrderId');
 
     return (
       <div className="flex flex-col items-center  w-full container">
