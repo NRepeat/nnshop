@@ -65,7 +65,6 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
       if (result.success) {
         const completeCheckoutData = await getCompleteCheckoutData();
         const draftOrder = await createDraftOrder(completeCheckoutData);
-        console.log('draftOrder------', draftOrder);
         toast.success(t('deliveryInformationSavedSuccessfully'));
         router.push(
           `/${locale}/checkout/payment/${draftOrder.order?.id.split('/').pop()}`,

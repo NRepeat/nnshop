@@ -28,7 +28,7 @@ export interface ShopifyClient {
     language,
   }: {
     query: string;
-    variables?: Record<string, unknown>;
+    variables?: Record<string, unknown | null>;
     language?: StorefrontLanguageCode;
   }): Promise<T>;
   buildHeaders(): Promise<Record<string, string>>;

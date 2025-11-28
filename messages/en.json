@@ -457,5 +457,12 @@
     "orders": "Orders",
     "favorites": "Favorites",
     "settings": "Settings"
+  },
+  "OrderPage": {
+    "emptyState": {
+      "title": "You are not logged in",
+      "description": "Please log in to see your orders.",
+      "login": "Login"
+    }
   }
 }
