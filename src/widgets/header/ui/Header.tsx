@@ -1,5 +1,6 @@
 import { AccountButton } from '@features/header/account/ui/AccoutnButton';
 import CartSheet from '@features/header/cart/ui/Sheet';
+import { LanguageSwitcher } from '@features/header/language-switcher/ui/LanguageSwitcher';
 import Navigation from '@features/header/navigation/ui/Navigation';
 import NavigationSheet from '@features/header/navigation/ui/Sheet';
 import Logo from '@shared/assets/Logo';
@@ -19,6 +20,7 @@ export const Header = async () => {
           </Link>
         </div>
         <div className="justify-items-end flex gap-4 justify-end items-center  py-5 ">
+          <LanguageSwitcher />
           <AccountButton />
           <CartSheet />
         </div>
