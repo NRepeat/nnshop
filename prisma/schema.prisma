@@ -1,32 +1,112 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
-  sessions      Session[]
-  accounts      Account[]
+  id                  String               @id
+  name                String
+  email               String
+  emailVerified       Boolean              @default(false)
+  image               String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @default(now()) @updatedAt
+  sessions            Session[]
+  accounts            Account[]
+  orders              Order[]
+  isAnonymous         Boolean?
+  cart                Cart[]
+  contactInformation  ContactInformation?
+  deliveryInformation DeliveryInformation?
+  paymentInformation  PaymentInformation?
+  favoriteProducts    FavoriteProduct[]
 
   @@unique([email])
   @@map("user")
+}
+
+// === MODELS WITH CASCADING DELETE ===
+
+model ContactInformation {
+  id          String @id @default(cuid())
+  name        String
+  lastName    String
+  email       String
+  phone       String
+  countryCode String
+
+  // ADDED onDelete: Cascade
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+}
+
+model DeliveryInformation {
+  id             String  @id @default(cuid())
+  deliveryMethod String
+  country        String?
+  address        String?
+  apartment      String?
+  city           String?
+  postalCode     String?
+
+  // ADDED onDelete: Cascade
+  user                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId               String                @unique
+  novaPoshtaDepartment NovaPoshtaDepartment?
+}
+
+model PaymentInformation {
+  id              String  @id @default(cuid())
+  paymentMethod   String
+  paymentProvider String
+  amount          Float
+  currency        String
+  orderId         String
+  description     String?
+
+  // ADDED onDelete: Cascade
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Cart {
+  id        String @id @default(cuid())
+  cartToken String @unique
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id                  String  @id @default(cuid())
+  shopifyOrderId      String? @unique
+  shopifyDraftOrderId String? @unique
+  draft               Boolean @default(false)
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NovaPoshtaDepartment {
+  id                    String              @id @default(cuid())
+  shortName             String
+  city                  String?
+  street                String?
+  building              String?
+  latitude              Float?
+  longitude             Float?
+  deliveryInformation   DeliveryInformation @relation(fields: [deliveryInformationId], references: [id])
+  deliveryInformationId String              @unique
 }
 
 model Session {
@@ -38,9 +118,10 @@ model Session {
   ipAddress String?
   userAgent String?
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Already set
 
   @@unique([token])
+  @@index([userId])
   @@map("session")
 }
 
@@ -49,7 +130,7 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade) // Already set
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -60,6 +141,7 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
+  @@index([userId])
   @@map("account")
 }
 
@@ -71,6 +153,7 @@ model Verification {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
 
+  @@index([identifier])
   @@map("verification")
 }
 
@@ -82,4 +165,15 @@ model ShopifySession {
   expiresIn   DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model FavoriteProduct {
+  id        String @id @default(cuid())
+  userId    String
+  productId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
 }

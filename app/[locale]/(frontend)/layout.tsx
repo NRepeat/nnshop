@@ -1,0 +1,31 @@
+import { VisualEditing } from 'next-sanity/visual-editing';
+import { routing } from '@/shared/i18n/routing';
+import { Header } from '@widgets/header/ui/Header';
+import { SanityLive } from '@shared/sanity/lib/live';
+import { DisableDraftMode } from '@shared/sanity/components/live/DisableDraftMode';
+import { draftMode } from 'next/headers';
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
+export default async function LocaleLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}>) {
+  return (
+    <div className="mb-10">
+      <Header />
+      {children}
+      <SanityLive />
+      {(await draftMode()).isEnabled && (
+        <>
+          <DisableDraftMode />
+          <VisualEditing />
+        </>
+      )}
+    </div>
+  );
+}

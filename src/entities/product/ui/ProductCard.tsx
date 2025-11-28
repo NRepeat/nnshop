@@ -1,0 +1,80 @@
+import { Card, CardContent } from '@/shared/ui/card';
+import Image from 'next/image';
+import { Link } from '@shared/i18n/navigation';
+import { Product } from '@shared/lib/shopify/types/storefront.types';
+import { AddToCartButton } from './AddToCartButton';
+import clsx from 'clsx';
+
+type ProductCardProps = {
+  product: Product;
+  addToCard?: boolean;
+  className?: string;
+};
+
+export const ProductCard = async ({
+  product,
+  addToCard = true,
+  className,
+}: ProductCardProps) => {
+  return (
+    <Card
+      className={clsx(
+        'h-full shadow-none backdrop-blur-sm bg-transparent border-gray-200 border-nonerounded-xl  py-1 px-0.5 md:px-1.5 ',
+        className,
+      )}
+    >
+      <CardContent className="  flex flex-col  rounded-none p-0 border-0 shadow-none h-full justify-between bg-transparent">
+        <Link href={`/products/${product.handle}`}>
+          <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full">
+            <Image
+              className="h-auto w-full "
+              src={
+                product?.variants.edges[0].node.image?.url ||
+                product.featuredImage?.url
+              }
+              alt={product.featuredImage?.altText || ''}
+              width={product.featuredImage?.width || 300}
+              height={product.featuredImage?.height || 300}
+            />
+            {/*<div className="absolute right-3 top-3 group">
+              <Bookmark className="group-hover:fill-black" />
+            </div>*/}
+          </div>
+        </Link>
+        {
+          <div className="w-full pt-2 md:pt-6  flex flex-col gap-1">
+            <span className="text-md font-bold">{product.vendor}</span>
+            <div>
+              <div className=" w-full flex-col  justify-between flex pb-4">
+                <Link href={`/products/${product.handle}`}>
+                  <p className="text-md font-light  text-pretty">
+                    {product?.title}
+                  </p>
+                </Link>
+                <span className="text-md font-light text-pretty">
+                  Slize:{' '}
+                  {product?.options.find((f) => f.name === 'Size')
+                    ?.optionValues[0].name || 'N/A'}
+                </span>
+              </div>
+              <span>
+                {product.priceRange.maxVariantPrice.currencyCode}{' '}
+                {product.priceRange.maxVariantPrice.amount}
+              </span>
+            </div>
+          </div>
+        }
+
+        {addToCard && (
+          <div className=" w-full mt-1 md:mt-4 flex justify-center">
+            <AddToCartButton
+              product={product}
+              variant="outline"
+              className="w-full   rounded-none mt-2 bg-transparent border shadow-none"
+            />
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};

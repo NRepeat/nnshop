@@ -2,6 +2,74 @@
   "HomePage": {
     "title": "Hello world!"
   },
+  "productCarousel": {
+    "TITLE": "Products",
+    "DESCRIPTION": "View and filter products",
+    "VIEW_ALL": "View all",
+    "add_to_cart": "ADD TO CART",
+    "size": "Size"
+  },
+  "Header": {
+    "subnav": {
+      "clothes": {
+        "title": "Clothes"
+      },
+      "shoes": {
+        "title": "Shoes"
+      },
+      "bags": {
+        "title": "Bags"
+      },
+      "accessories": {
+        "title": "Accessories",
+        "href": "/accessories"
+      }
+    },
+    "nav": {
+      "home": "Home",
+      "collections": {
+        "title": "Collections",
+        "forMan": {
+          "title": "For Man"
+        },
+        "forWoman": {
+          "title": "For Woman"
+        }
+      },
+      "new": "New Arrivals",
+      "drawer": {
+        "title": "Menu",
+        "close": "Close",
+        "home": "Home",
+        "collections": "Collections",
+        "new": "New Arrivals"
+      }
+    },
+    "cart": {
+      "drawer": {
+        "title": "Cart",
+        "close": "Close",
+        "empty": "Your cart is empty",
+        "checkout": "Checkout",
+        "tax_information": "Taxes, discounts and shipping calculated at checkout.",
+        "estimate_total": "Estimated total.",
+        "order_instraction": "Order special instractions",
+        "order_instraction_placeholder": "Type your message here.",
+        "product": "Product",
+        "total": "Total",
+        "remove": "Remove",
+        "empty_state": {
+          "header": "Your cart is empty",
+          "description": "You haven&apos;t added any products yet. Get started by browsing our store.",
+          "continue_shopping": "Continue Shopping",
+          "account": "Have an account?",
+          "login": "Log in",
+          "login_description": " to check out faster.",
+          "new_arrivals": "New Arrivals"
+        }
+      }
+    }
+  },
   "Auth": {
     "signIn": {
       "title": "Welcome back",
@@ -227,5 +295,209 @@
     "ORGANIZATION_NAME": "Name",
     "ORGANIZATION_NAME_PLACEHOLDER": "Acme Inc.",
     "ORGANIZATION_NAME_DESCRIPTION": "This is your organization's visible name."
+  },
+  "ProductPage": {
+    "addToCart": "Add to Cart",
+    "addingToCart": "Adding to cart...",
+    "soldOut": "Sold Out",
+    "fromMoWith": "From {price}/mo with",
+    "shopPay": "Shop Pay",
+    "productCondition": "Product Condition",
+    "greatOverallCondition": "Great Overall Condition",
+    "conditionDetails": "Great condition with cut tags. Please review all pictures for details.",
+    "guaranteedAuthenticity": "Guaranteed Authenticity",
+    "authenticityDetails": "Every item is rigorously authenticated by our experts. All photos are of the actual product you will receive. We are confident in our processes and stand behind the authenticity of each item sold."
+  },
+  "CollectionPage": {
+    "showFilters": "Show Filters",
+    "filters": {
+      "title": "Filters",
+      "min": "Min",
+      "max": "Max",
+      "apply": "Apply",
+      "clear": "Clear"
+    }
+  },
+  "CheckoutPage": {
+    "contact_info_title": "Contact Information",
+    "contact_info_description": "Please provide your contact details",
+    "delivery_title": "Delivery",
+    "payment_title": "Payment",
+    "payment_description": "Complete your order with secure payment processing"
+  },
+  "NotFound": {
+    "errorCode": "404",
+    "title": "Page Not Found",
+    "description": "The page you are looking for does not exist.",
+    "goHome": "Go back to Home"
+  },
+  "ContactInfoForm": {
+    "contactInformationSaved": "Contact information saved successfully",
+    "errorSavingContactInformation": "An error occurred while saving your contact information.",
+    "pleaseFixErrors": "Please fix the following errors:",
+    "firstName": "First Name",
+    "enterYourName": "Enter your name",
+    "lastName": "Last Name",
+    "enterYourLastName": "Enter your last name",
+    "emailAddress": "Email Address",
+    "enterYourEmail": "Enter your email",
+    "country": "Country",
+    "phoneNumber": "Phone Number",
+    "saving": "Saving...",
+    "continueToDelivery": "Continue to Delivery",
+    "invalidPhoneNumber": "Invalid phone number",
+    "nameRequired": "Name is required",
+    "lastNameRequired": "Last name is required",
+    "invalidEmail": "Invalid email address",
+    "phoneRequired": "Phone is required",
+    "countryCodeRequired": "Country code is required"
+  },
+  "DeliveryForm": {
+    "pleaseFixErrors": "Please fix the following errors:",
+    "savingDeliveryInfo": "Saving Delivery Info...",
+    "saveAndContinue": "Save Delivery Info & Continue",
+    "errorSavingDeliveryInformation": "An error occurred while saving your delivery information.",
+    "selectNovaPoshtaDepartment": "Select Nova Poshta Department",
+    "novaPoshtaDescription": "Choose the most convenient Nova Poshta branch or parcel locker for your delivery.",
+    "chooseDepartment": "Choose a branch or post office",
+    "deliveryAddress": "Delivery Address",
+    "ukrPoshtaDescription": "Please provide your complete delivery address for UkrPoshta.",
+    "countryRegion": "Country/Region",
+    "enterCountryRegion": "Enter country/region",
+    "address": "Address",
+    "enterStreetAddress": "Enter street address",
+    "apartment": "Apartment",
+    "enterApartmentNumber": "Enter apartment number",
+    "city": "City",
+    "enterCity": "Enter city",
+    "postalCode": "Postal Code",
+    "enterPostalCode": "Enter postal code",
+    "chooseDeliveryMethod": "Choose Delivery Method",
+    "deliveryPreferencesDescription": "Your delivery preferences will be saved to your cart for faster checkout.",
+    "novaPoshta": "Nova Poshta",
+    "novaPoshtaDelivery": "Fast and reliable delivery",
+    "ukrPoshta": "UkrPoshta",
+    "ukrPoshtaDelivery": "Traditional postal service",
+    "departmentIdRequired": "Department ID is required",
+    "departmentNameRequired": "Department name is required",
+    "fillAllFields": "Please fill in all required fields for the selected delivery method",
+    "deliveryInformationSavedSuccessfully": "Delivery information saved successfully!"
+  },
+  "PaymentForm": {
+    "pleaseFixErrors": "Please fix the following errors:",
+    "errorSavingPaymentInformation": "An error occurred while saving your payment information.",
+    "payNow": "Pay Now",
+    "afterDelivered": "After Delivered",
+    "payLater": "Pay Later",
+    "liqpay": "LiqPay",
+    "credit-card": "Credit Card",
+    "paypal": "PayPal",
+    "stripe": "Stripe",
+    "processingPayment": "Processing Payment...",
+    "completePayment": "Complete Payment",
+    "paymentInformationSaved": "Payment information saved successfully!",
+    "amountMustBeGreaterThanZero": "Amount must be greater than 0",
+    "orderIdIsRequired": "Order ID is required",
+    "choosePaymentMethod": "Choose Payment Method",
+    "selectPaymentMethodDescription": "Select when you would like to pay for your order.",
+    "payNowDescription": "Pay immediately with card or online",
+    "afterDeliveredDescription": "Pay after receiving your order",
+    "payLaterDescription": "Pay within 30 days",
+    "pay-now": "Pay Now",
+    "after-delivered": "After Delivered",
+    "pay-later": "Pay Later",
+    "orderPaymentFor": "Order payment for",
+    "choosePaymentProvider": "Choose Payment Provider",
+    "liqpayDescription": "Safe online payments",
+    "selectPaymentProviderDescription": "Select the payment provider you would like to use."
+  },
+  "ReceiptPage": {
+    "title": "Order Summary",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "contact_information": "Contact information",
+    "address": "Address",
+    "country": "Country",
+    "city": "City",
+    "delivery_information": "Delivery information",
+    "payment_method": "Payment Method",
+    "payment_information": "Payment information",
+    "products_title": "Products",
+    "total": "Total",
+    "continue_shopping": "Continue Shopping",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "tax": "Tax"
+  },
+  "ThankYouPage": {
+    "title": "Thank you for your order!",
+    "order_id": "Your order ID is:",
+    "order_confirmation": "Order Confirmation",
+    "order_confirmation_text": "You'll receive an email with your order details shortly.",
+    "continue_shopping": "Continue Shopping"
+  },
+  "CheckoutSteps": {
+    "info": "Info",
+    "delivery": "Delivery",
+    "payment": "Payment",
+    "success": "Success"
+  },
+  "Footer": {
+    "contacts": "Contacts",
+    "delivery": "Delivery",
+    "payment_returns": "Payment and Returns",
+    "public_offer_agreement": "Public Offer Agreement",
+    "privacy_policy": "Privacy Policy",
+    "info_column_title": "Information"
+  },
+  "AccountButton": {
+    "myAccount": "My Account",
+    "profile": "Profile",
+    "orders": "Orders",
+    "favorites": "Favorites",
+    "settings": "Settings"
+  },
+  "OrderPage": {
+    "title": "My Orders",
+    "list": {
+      "order": "Order",
+      "date": "Date",
+      "fulfillmentStatus": "Fulfillment Status",
+      "total": "Total"
+    },
+    "emptyState": {
+      "title": "You have no orders yet",
+      "description": "When you place an order, it will appear here.",
+      "continueShopping": "Continue Shopping"
+    },
+    "notLoggedIn": {
+      "title": "You are not logged in",
+      "description": "Please log in to see your orders.",
+      "login": "Login"
+    },
+    "details": {
+      "title": "Order Details",
+      "contactInfo": "Contact Information",
+      "shippingAddress": "Shipping Address",
+      "payment": "Payment",
+      "billingAddress": "Billing Address",
+      "summary": "Order Summary",
+      "items": "Ordered Items",
+      "product": "Product",
+      "quantity": "Quantity",
+      "price": "Price",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "tax": "Tax",
+      "total": "Total",
+      "including": "Including",
+      "taxes": "taxes",
+      "sameAsShipping": "Same as shipping address"
+    }
+  },
+  "FavoritesPage": {
+    "title": "Favorites",
+    "empty": "You have no favorite products yet."
   }
 }
