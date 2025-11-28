@@ -8,12 +8,12 @@ import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
 
 export default async function OrdersPage({
-  params: { locale },
+  searchParams,
 }: {
-  params: { locale: string };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const t = await getTranslations({ locale, namespace: 'OrderPage' });
-  const tHeader = await getTranslations({ locale, namespace: 'Header.nav' });
+  const t = await getTranslations('OrderPage');
+  const tHeader = await getTranslations('Header.nav');
 
   const headersList = await headers();
   const session = await auth.api.getSession({ headers: headersList });
@@ -48,6 +48,26 @@ export default async function OrdersPage({
   if (orders.length === 0) {
     return <OrderEmptyState type="emptyState" />;
   }
+  const searchParamsData = await searchParams;
+  const sortBy = searchParamsData?.sortBy as string;
+  const order = searchParamsData?.order as string;
+
+  let sortedOrders = [...orders];
+  if (sortBy === 'date') {
+    sortedOrders.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return order === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+  } else if (sortBy === 'status') {
+    sortedOrders.sort((a, b) => {
+      const statusA = a.displayFulfillmentStatus;
+      const statusB = b.displayFulfillmentStatus;
+      if (statusA < statusB) return order === 'asc' ? -1 : 1;
+      if (statusA > statusB) return order === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
 
   const breadcrumbItems = [
     { label: tHeader('home'), href: '/' },
@@ -58,7 +78,7 @@ export default async function OrdersPage({
     <div className="container mx-auto py-10 h-screen mt-2 md:mt-10">
       <Breadcrumbs items={breadcrumbItems} />
       <h1 className="text-2xl font-bold my-4">{t('title')}</h1>
-      <OrderList orders={orders as any} />
+      <OrderList orders={sortedOrders as any} />
     </div>
   );
 }

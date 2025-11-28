@@ -26,7 +26,7 @@ export const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
     <Breadcrumb>
       <BreadcrumbList>
         {items.map((item, index) => (
-          <>
+          <div key={item.label} className="flex items-center ">
             <BreadcrumbItem>
               {item.isCurrent ? (
                 <BreadcrumbPage>{item.label}</BreadcrumbPage>
@@ -36,8 +36,10 @@ export const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
                 </BreadcrumbLink>
               )}
             </BreadcrumbItem>
-            {index < items.length - 1 && <BreadcrumbSeparator />}
-          </>
+            {index < items.length - 1 && (
+              <BreadcrumbSeparator className="px-2 pt-0.5" />
+            )}
+          </div>
         ))}
       </BreadcrumbList>
     </Breadcrumb>
