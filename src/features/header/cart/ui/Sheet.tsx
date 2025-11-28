@@ -3,6 +3,7 @@ import { EmptyState } from './EmptyState';
 import Content from './Content';
 import { ShoppingCart } from 'lucide-react';
 import { getCart } from '@entities/cart/api/get';
+import { Badge } from '@shared/ui/badge';
 
 const CartSheet = async () => {
   const cart = await getCart();
@@ -32,10 +33,19 @@ const CartSheet = async () => {
     (acc, item) => acc + Number(item.totalPrice),
     0,
   );
+  const totalQuantity = mockProducts?.reduce(
+    (acc, item) => acc + Number(item.quantity),
+    0,
+  );
   return (
     <Sheet>
-      <SheetTrigger className="cursor-pointer block hover:bg-accent p-2 rounded-none">
+      <SheetTrigger className="cursor-pointer block hover:bg-accent p-2 rounded-none relative">
         <ShoppingCart />
+        {mockProducts && mockProducts.length > 0 && (
+          <Badge className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums top-0 right-0 absolute">
+            {totalQuantity}
+          </Badge>
+        )}
       </SheetTrigger>
       <CartWithEmptyState
         products={mockProducts}

@@ -22,7 +22,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { ContactInformation } from '~/generated/prisma/client';
 import { User } from 'better-auth';
-import { useParams } from 'next/navigation';
 
 export default function ContactInfoForm({
   contactInfo,
@@ -32,8 +31,6 @@ export default function ContactInfoForm({
   user: User | null;
 }) {
   const router = useRouter();
-  const params = useParams();
-  const locale = params.locale as string;
   const t = useTranslations('ContactInfoForm');
 
   const contactInfoSchema = getContactInfoSchema(t);
@@ -58,7 +55,7 @@ export default function ContactInfoForm({
       const result = await saveContactInfo(data);
       if (result) {
         toast.success(t('contactInformationSaved'));
-        router.push(`/${locale}/checkout/delivery`);
+        router.push(`/checkout/delivery`);
       } else {
         toast.error(t('errorSavingContactInformation'));
       }

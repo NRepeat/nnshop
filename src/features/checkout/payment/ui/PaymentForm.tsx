@@ -18,7 +18,6 @@ import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { completeOrder } from '../api/completeOrder';
 import resetCartSession from '@features/cart/api/resetCartSession';
 import { Order } from '~/generated/prisma/client';
-import { useParams } from 'next/navigation';
 
 interface PaymentFormProps {
   defaultValues?: PaymentInfo | null;
@@ -40,8 +39,6 @@ export default function PaymentForm({
   completeCheckoutData,
 }: PaymentFormProps) {
   const router = useRouter();
-  const params = useParams();
-  const locale = params.locale as string;
   const t = useTranslations('PaymentForm');
   const paymentSchema = getPaymentSchema(t);
   const form = useForm<PaymentInfo>({
@@ -73,7 +70,7 @@ export default function PaymentForm({
           await savePaymentInfo(data, completedOrder.id);
           await resetCartSession();
           return router.push(
-            `/${locale}/checkout/success/${completedOrder?.shopifyDraftOrderId?.split('/').pop()}`,
+            `/checkout/success/${completedOrder?.shopifyDraftOrderId?.split('/').pop()}`,
           );
         }
 

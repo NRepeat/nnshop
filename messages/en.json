@@ -309,6 +309,8 @@
     "authenticityDetails": "Every item is rigorously authenticated by our experts. All photos are of the actual product you will receive. We are confident in our processes and stand behind the authenticity of each item sold."
   },
   "CollectionPage": {
+    "explore": "Back to Search",
+    "noProducts": "No products found.",
     "showFilters": "Show Filters",
     "filters": {
       "title": "Filters",

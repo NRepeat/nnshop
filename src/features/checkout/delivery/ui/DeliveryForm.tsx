@@ -16,7 +16,6 @@ import DeliveryMethodSelection from './DeliveryMethodSelection';
 import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createDraftOrder } from '@features/order/api/create';
-import { useParams } from 'next/navigation';
 
 interface DeliveryFormProps {
   defaultValues?: DeliveryInfo | null;
@@ -24,8 +23,6 @@ interface DeliveryFormProps {
 
 export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
   const router = useRouter();
-  const params = useParams();
-  const locale = params.locale as string;
   const t = useTranslations('DeliveryForm');
 
   const deliverySchema = getDeliverySchema(t);
@@ -68,7 +65,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
         const draftOrder = await createDraftOrder(completeCheckoutData);
         toast.success(t('deliveryInformationSavedSuccessfully'));
         router.push(
-          `/${locale}/checkout/payment/${draftOrder.order?.id.split('/').pop()}`,
+          `/checkout/payment/${draftOrder.order?.id.split('/').pop()}`,
         );
       } else {
         toast.error(result.message);

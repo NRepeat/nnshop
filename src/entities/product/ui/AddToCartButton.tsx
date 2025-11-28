@@ -22,7 +22,6 @@ function SubmitButton({
   return (
     <Button
       type="submit"
-      // size="lg"
       //@ts-expect-error
       variant={variant}
       className="w-full h-10 md:h-14 text-md rounded-none"

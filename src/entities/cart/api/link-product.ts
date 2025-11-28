@@ -118,7 +118,7 @@ const linkProduct = async ({
         ? Object.entries(attributes).map(([key, value]) => ({ key, value }))
         : undefined,
     };
-
+    console.log(cartLineInput);
     const response = await storefrontClient.request<{
       cartLinesAdd: { cart?: Cart; userErrors: CartUserError[] };
     }>({
@@ -128,7 +128,7 @@ const linkProduct = async ({
         lines: [cartLineInput],
       },
     });
-
+    console.log(JSON.stringify(response, null, 2));
     const { cartLinesAdd } = response;
 
     if (cartLinesAdd.userErrors && cartLinesAdd.userErrors.length > 0) {

@@ -1,7 +1,8 @@
 'use server';
 
 import { addToCartAction } from '@entities/cart/api/add-product';
-import { revalidatePath } from 'next/cache';
+import { CART_TAGS } from '@shared/lib/cached-fetch';
+import { revalidateTag } from 'next/cache';
 
 async function addToCart(_: any, formData: FormData) {
   try {
@@ -17,7 +18,8 @@ async function addToCart(_: any, formData: FormData) {
       return { success: false, message: result.error };
     }
 
-    revalidatePath('/products');
+    revalidateTag(CART_TAGS.CART);
+    revalidateTag(CART_TAGS.CART_ITEMS);
     return { success: true, message: 'Added to cart' };
   } catch (error) {
     return { success: false, message: String(error) };

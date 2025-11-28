@@ -102,12 +102,10 @@ export function getLocalizedPath(
   locale: string,
   defaultLocale: string = 'uk',
 ): string {
-  // Don't add locale prefix for default locale
   if (locale === defaultLocale) {
     return path;
   }
 
-  // Ensure path starts with /
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
 
   return `/${locale}${cleanPath}`;

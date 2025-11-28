@@ -15,20 +15,21 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from '@/shared/ui/pagination';
+import { getTranslations } from 'next-intl/server';
+import { Button } from '@shared/ui/button';
+import { Link } from '@shared/i18n/navigation';
 
-const PRODUCTS_PER_PAGE = 6;
+const PRODUCTS_PER_PAGE = 12;
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
   searchParams: Promise<{
     filters?: string;
     after?: string;
-    // 💡 ADDED: before cursor for previous page
     before?: string;
   }>;
 };
 
-// Next.js function to pre-render pages
 export async function generateStaticParams() {
   const { collections } = await getCollections();
 
@@ -44,11 +45,11 @@ export async function generateStaticParams() {
 
 export default async function CollectionPage({ params, searchParams }: Props) {
   const { slug } = await params;
+  const t = await getTranslations('CollectionPage');
   if (!slug) {
     return notFound();
   }
 
-  // 💡 MODIFIED: Destructure both `after` and `before`
   const { filters: filtersString, after, before } = await searchParams;
   let filters: ProductFilter[] = [];
   if (filtersString) {
@@ -80,7 +81,16 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   };
 
   const filterParams = getFilterParams(filtersString);
-
+  if (collection.products.edges.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <p className="text-lg text-gray-600">{t('noProducts')}</p>
+        <Button size="lg" className="mt-4 rounded-none">
+          <Link href={'/'}>{t('explore')}</Link>
+        </Button>
+      </div>
+    );
+  }
   return (
     <div className="container mx-auto px-4 py-8 relative">
       <header className="mb-8">
@@ -109,26 +119,21 @@ export default async function CollectionPage({ params, searchParams }: Props) {
             ))}
           </div>
 
-          {/* 💡 MODIFIED: Render full pagination controls based on pageInfo */}
           {(hasPreviousPage || hasNextPage) && (
             <div className="mt-8 flex justify-center">
               <Pagination>
                 <PaginationContent>
-                  {/* Previous Button */}
                   {hasPreviousPage && (
                     <PaginationItem>
                       <PaginationPrevious
-                        // Navigate back using the startCursor and maintain filters
                         href={`/collection/${slug}?before=${startCursor}${filterParams}`}
                       />
                     </PaginationItem>
                   )}
 
-                  {/* Next Button */}
                   {hasNextPage && (
                     <PaginationItem>
                       <PaginationNext
-                        // Navigate forward using the endCursor and maintain filters
                         href={`/collection/${slug}?after=${endCursor}${filterParams}`}
                       />
                     </PaginationItem>

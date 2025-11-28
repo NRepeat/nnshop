@@ -85,7 +85,6 @@ export function CollectionFilters({ filters }: Props) {
     });
   };
 
-  // const sortedFilters = [...filters].sort((a, b) => a.id.localeCompare(b.id));
   const sortedFilters = filters;
   return (
     <div>
