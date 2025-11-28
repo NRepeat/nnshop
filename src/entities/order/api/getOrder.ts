@@ -6,6 +6,27 @@ const GET_ORDER_BY_ID_QUERY = `
     order(id: $id) {
       id
       name
+      processedAt
+      displayFulfillmentStatus
+      email
+      shippingAddress {
+        firstName
+        lastName
+        address1
+        city
+        zip
+        country
+        phone
+      }
+      billingAddress {
+        firstName
+        lastName
+        address1
+        city
+        zip
+        country
+        phone
+      }
       lineItems(first: 10) {
         edges {
           node {
@@ -13,6 +34,7 @@ const GET_ORDER_BY_ID_QUERY = `
             quantity
             variant {
               price
+              title
             }
             image {
               url

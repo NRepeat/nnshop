@@ -12,6 +12,7 @@ const GET_ORDERS_PAGINATED_BY_ID = `
           id
           name
           createdAt
+          displayFulfillmentStatus
           totalPriceSet {
             shopMoney {
               amount

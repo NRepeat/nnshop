@@ -56,8 +56,9 @@ export const AccountButton = async () => {
         <DropdownMenuContent>
           <DropdownMenuLabel>{t('myAccount')}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {/*<DropdownMenuItem>{t('profile')}</DropdownMenuItem>*/}
-          <DropdownMenuItem>{t('orders')}</DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link href="/orders">{t('orders')}</Link>
+          </DropdownMenuItem>
           <DropdownMenuItem>{t('favorites')}</DropdownMenuItem>
           <DropdownMenuItem>
             <Link href="/account/settings">{t('settings')}</Link>

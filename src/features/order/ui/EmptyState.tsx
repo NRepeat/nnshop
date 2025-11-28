@@ -9,8 +9,12 @@ import {
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 
-export async function OrderEmptyState() {
-  const t = await getTranslations('OrderPage.emptyState');
+export async function OrderEmptyState({
+  type,
+}: {
+  type: 'notLoggedIn' | 'emptyState';
+}) {
+  const t = await getTranslations(`OrderPage.${type}`);
   return (
     <Empty>
       <EmptyHeader>
@@ -18,9 +22,15 @@ export async function OrderEmptyState() {
         <EmptyDescription>{t('description')}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button asChild>
-          <Link href="/auth/sign-in">{t('login')}</Link>
-        </Button>
+        {type === 'notLoggedIn' ? (
+          <Button asChild>
+            <Link href="/auth/sign-in">{t('login')}</Link>
+          </Button>
+        ) : (
+          <Button asChild>
+            <Link href="/">{t('continueShopping')}</Link>
+          </Button>
+        )}
       </EmptyContent>
     </Empty>
   );

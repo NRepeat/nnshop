@@ -459,10 +459,41 @@
     "settings": "Settings"
   },
   "OrderPage": {
+    "title": "My Orders",
+    "list": {
+      "order": "Order",
+      "date": "Date",
+      "fulfillmentStatus": "Fulfillment Status",
+      "total": "Total"
+    },
     "emptyState": {
+      "title": "You have no orders yet",
+      "description": "When you place an order, it will appear here.",
+      "continueShopping": "Continue Shopping"
+    },
+    "notLoggedIn": {
       "title": "You are not logged in",
       "description": "Please log in to see your orders.",
       "login": "Login"
+    },
+    "details": {
+      "title": "Order Details",
+      "contactInfo": "Contact Information",
+      "shippingAddress": "Shipping Address",
+      "payment": "Payment",
+      "billingAddress": "Billing Address",
+      "summary": "Order Summary",
+      "items": "Ordered Items",
+      "product": "Product",
+      "quantity": "Quantity",
+      "price": "Price",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "tax": "Tax",
+      "total": "Total",
+      "including": "Including",
+      "taxes": "taxes",
+      "sameAsShipping": "Same as shipping address"
     }
   }
 }
