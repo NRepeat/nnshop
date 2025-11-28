@@ -1,7 +1,7 @@
 import { Steps } from '@entities/checkout/ui/Steps';
 import { LanguageSwitcher } from '@features/header/language-switcher/ui/LanguageSwitcher';
 import Logo from '@shared/assets/Logo';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { redirect } from 'next/navigation';
 
 export default async function CheckoutHeader({ slug }: { slug: string[] }) {

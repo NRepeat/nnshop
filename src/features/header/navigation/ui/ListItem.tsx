@@ -1,5 +1,5 @@
 import { NavigationMenuLink } from '@shared/ui/navigation-menu';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 
 export function ListItem({
   title,

@@ -2,7 +2,7 @@
 import { Maybe } from '@shared/lib/shopify/types/storefront.types';
 import clsx from 'clsx';
 import { ArrowLeftFromLine } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 

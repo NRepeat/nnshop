@@ -4,7 +4,7 @@ import {
 } from '@/shared/sanity/types';
 import { urlFor } from '@/shared/sanity/lib/image';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { Author } from '@/entities/author';
 import { Categories } from '@/entities/category';
 import { PublishedAt } from '@/entities/published-at';

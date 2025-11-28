@@ -2,7 +2,7 @@
 
 import { client } from '@/features/auth/lib/client';
 import { AuthUIProvider } from '@daveyplate/better-auth-ui';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 

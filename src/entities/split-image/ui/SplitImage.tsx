@@ -1,6 +1,6 @@
 import { getLocale } from 'next-intl/server';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 
 import { resolveLink } from '@/features/blocks/split-image/lib/resolveLink';
 import { urlFor } from '@/shared/sanity/lib/image';

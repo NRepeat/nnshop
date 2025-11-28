@@ -1,6 +1,6 @@
 import { routing } from '@/shared/i18n/routing';
 import Logo from '@shared/assets/Logo';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

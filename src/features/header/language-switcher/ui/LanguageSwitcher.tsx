@@ -7,9 +7,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
-import { useRouter } from '@shared/i18n/navigation';
+import { usePathname, useRouter } from '@shared/i18n/navigation';
 import { Globe } from 'lucide-react';
-import { usePathname } from 'next/navigation';
 
 export function LanguageSwitcher() {
   const router = useRouter();
