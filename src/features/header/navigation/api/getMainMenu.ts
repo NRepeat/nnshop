@@ -26,7 +26,6 @@ export const getMainMenu = async () => {
     query,
     language: locale.toUpperCase() as StorefrontLanguageCode,
   });
-
   const mainMenu =
     responce.menu?.items.reverse().map((item) => ({
       id: item.resourceId,

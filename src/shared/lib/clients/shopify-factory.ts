@@ -181,7 +181,7 @@ export class ShopifyFactory implements ShopifyClientFactory {
       client_secret: SHOPIFY_ADMIN_API_SECRET_KEY,
       grant_type: 'client_credentials' as const,
     };
-
+    console.log(JSON.stringify(body, null, 2));
     const response = await fetch(tokenEndpoint, {
       method: 'POST',
       headers: {

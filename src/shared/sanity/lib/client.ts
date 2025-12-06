@@ -10,14 +10,14 @@ export const client = createClient({
     enabled: true,
     studioUrl: process.env.NEXT_PUBLIC_BASE_URL + '/studio',
   },
-  apiVersion, // https://www.sanity.io/docs/api-versioning
-  useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
+  apiVersion,
+  useCdn: true,
 });
 
 export async function sanityFetch<const QueryString extends string>({
   query,
   params = {},
-  revalidate = 60, // default revalidation time in seconds
+  revalidate = 60,
   tags = [],
 }: {
   query: QueryString;
