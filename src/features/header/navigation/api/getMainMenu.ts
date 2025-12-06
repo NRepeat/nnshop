@@ -4,7 +4,7 @@ import { GetMainMenuQuery } from '@shared/lib/shopify/types/storefront.generated
 import { getLocale } from 'next-intl/server';
 const query = `#graphql
   query GetMainMenu {
-    menu(handle: "main-menu") {
+    menu(handle: "shop-main-menu") {
       handle
       items {
         title
