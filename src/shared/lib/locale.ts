@@ -118,20 +118,17 @@ export function extractLocaleFromPath(
   pathname: string,
   supportedLocales: string[] = ['en', 'uk'],
 ): {
-  locale: string;
   pathWithoutLocale: string;
 } {
   const segments = pathname.split('/').filter(Boolean);
 
   if (segments.length > 0 && supportedLocales.includes(segments[0])) {
     return {
-      locale: segments[0],
       pathWithoutLocale: `/${segments.slice(1).join('/')}`,
     };
   }
 
   return {
-    locale: 'uk', // default locale
     pathWithoutLocale: pathname,
   };
 }

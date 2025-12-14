@@ -77,7 +77,10 @@ const query = `#graphql
 
 export const getProduct = async ({ handle }: { handle: string }) => {
   const locale = await getLocale();
-  const product = await storefrontClient.request<GetProductByHandleQuery>({
+  const product = await storefrontClient.request<
+    GetProductByHandleQuery,
+    { handle: string }
+  >({
     query,
     variables: { handle },
     language: locale.toUpperCase() as StorefrontLanguageCode,

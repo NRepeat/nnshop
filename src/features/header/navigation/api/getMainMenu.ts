@@ -22,7 +22,13 @@ const query = `#graphql
 
 export const getMainMenu = async () => {
   const locale = await getLocale();
-  const responce = await storefrontClient.request<GetMainMenuQuery>({
+  const responce = await storefrontClient.request<
+    GetMainMenuQuery,
+    {
+      handle: string;
+      language: StorefrontLanguageCode;
+    }
+  >({
     query,
     language: locale.toUpperCase() as StorefrontLanguageCode,
   });

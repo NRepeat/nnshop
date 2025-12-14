@@ -15,6 +15,22 @@ const Navigation = async () => {
   const menu = meinMenu.map((item, index) => {
     if (item.items.length > 0) {
       return (
+        <ul className=" w-[250px] gap-4  bg-transparent flex">
+          {item.items.map((subItem) => (
+            <li key={subItem.title}>
+              <Button
+                variant={'ghost'}
+                className="w-full rounded-none justify-start bg-transparent hover:bg-transparent hover:underline"
+              >
+                <Link href={subItem.url} className="text-md">
+                  {subItem.title}
+                </Link>
+              </Button>
+            </li>
+          ))}
+        </ul>
+      );
+      return (
         <NavigationMenuItem key={item.title}>
           <NavigationMenuTrigger
             variant={'ghost'}

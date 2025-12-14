@@ -2,9 +2,10 @@ import { sanityFetch } from '@/shared/sanity/lib/client';
 import { normalizeLocaleForSanity } from '@shared/lib/locale';
 import { PAGE_QUERY } from '@/shared/sanity/lib/query';
 import { PageBuilder } from '@widgets/page-builder';
+import { getLocale } from 'next-intl/server';
 
 type Props = {
-  params: { slug: string; locale: string };
+  params: { slug: string };
 };
 
 export async function generateStaticParams() {
@@ -30,7 +31,8 @@ export async function generateStaticParams() {
   return staticParams;
 }
 
-export default async function InfoPage({ params: { slug, locale } }: Props) {
+export default async function InfoPage({ params: { slug } }: Props) {
+  const locale = await getLocale();
   const sanityLocale = await normalizeLocaleForSanity(locale);
 
   const pageContent = await sanityFetch({

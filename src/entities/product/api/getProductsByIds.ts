@@ -95,7 +95,10 @@ export const getProductsByIds = async (ids: string[]): Promise<Product[]> => {
     while (hasNextPage) {
       try {
         const response: PaginatedProductsResponse =
-          await storefrontClient.request<PaginatedProductsResponse>({
+          await storefrontClient.request<
+            PaginatedProductsResponse,
+            { query: string; first: number; after: string | null }
+          >({
             query: GET_PRODUCTS_BY_IDS,
             variables: {
               query: searchQuery,

@@ -87,13 +87,13 @@ export class StorefrontClient implements ShopifyClient {
     return data as GraphQLResponse<T>;
   }
 
-  async request<T>({
+  async request<T, V>({
     query,
-    variables = {},
+    variables,
     language,
   }: {
     query: string;
-    variables: Record<string, unknown>;
+    variables: V;
     language?: StorefrontLanguageCode;
   }): Promise<T> {
     try {
@@ -102,7 +102,8 @@ export class StorefrontClient implements ShopifyClient {
       if (language) {
         modifiedQuery = this.addLanguageContext(query, language);
       }
-      const response = await this.client.request(modifiedQuery, { variables });
+      const ver = variables as Record<string, unknown>;
+      const response = await this.client.request(modifiedQuery, ver);
 
       if (response.errors) {
         console.error(response.errors);

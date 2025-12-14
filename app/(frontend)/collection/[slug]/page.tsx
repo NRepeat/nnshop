@@ -3,7 +3,7 @@ import { getCollections } from '@entities/collection/api/getCollections';
 import CollectionView from '@widgets/collection/ui/CollectionView';
 
 type Props = {
-  params: Promise<{ slug: string; locale: string }>;
+  params: Promise<{ slug: string }>;
   searchParams: Promise<{
     filters?: string;
     after?: string;

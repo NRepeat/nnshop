@@ -131,7 +131,17 @@ export const getCollection = async ({
   before?: string;
 }) => {
   const locale = await getLocale();
-  const collection = await storefrontClient.request<GetCollectionQuery>({
+  const collection = await storefrontClient.request<
+    GetCollectionQuery,
+    {
+      handle: string;
+      filters?: ProductFilter[];
+      first?: number;
+      after?: string;
+      last?: number;
+      before?: string;
+    }
+  >({
     query,
     variables: { handle, filters, first, after, last, before },
     language: locale.toUpperCase() as StorefrontLanguageCode,

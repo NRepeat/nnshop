@@ -163,12 +163,18 @@ export async function createDraftOrder(
         id: existDraftOrder.shopifyDraftOrderId,
         input: input,
       };
-      const orderResponse = await adminClient.client.request<{
-        draftOrderUpdate: {
-          draftOrder: DrafOrder | null;
-          userErrors: Array<{ field: string; message: string }>;
-        };
-      }>({
+      const orderResponse = await adminClient.client.request<
+        {
+          draftOrderUpdate: {
+            draftOrder: DrafOrder | null;
+            userErrors: Array<{ field: string; message: string }>;
+          };
+        },
+        {
+          id: string;
+          input: any;
+        }
+      >({
         query: DRAFT_ORDER_UPDATE_MUTATION,
         variables,
       });
@@ -176,12 +182,17 @@ export async function createDraftOrder(
       draftOrder = orderResponse.draftOrderUpdate.draftOrder;
       userErrors = orderResponse.draftOrderUpdate.userErrors;
     } else {
-      const orderResponse = await adminClient.client.request<{
-        draftOrderCreate: {
-          draftOrder: DrafOrder | null;
-          userErrors: Array<{ field: string; message: string }>;
-        };
-      }>({
+      const orderResponse = await adminClient.client.request<
+        {
+          draftOrderCreate: {
+            draftOrder: DrafOrder | null;
+            userErrors: Array<{ field: string; message: string }>;
+          };
+        },
+        {
+          input: any;
+        }
+      >({
         query: DRAFT_ORDER_CREATE_MUTATION,
         variables: { input },
       });

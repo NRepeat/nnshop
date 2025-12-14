@@ -4,7 +4,7 @@ import { ProductView } from '@/widgets/product-view';
 import { notFound } from 'next/navigation';
 
 type Props = {
-  params: Promise<{ slug: string[]; locale: string }>;
+  params: Promise<{ slug: string[] }>;
 };
 
 export default async function ProductPage({ params }: Props) {

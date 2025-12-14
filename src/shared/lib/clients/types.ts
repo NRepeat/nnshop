@@ -25,9 +25,11 @@ export interface ShopifyClient {
   request<T, V>({
     query,
     variables,
+    language,
   }: {
     query: string;
     variables?: V;
+    language?: StorefrontLanguageCode;
   }): Promise<T>;
   buildHeaders(): Promise<Record<string, string>>;
   buildBody(

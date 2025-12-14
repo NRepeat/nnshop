@@ -10,13 +10,14 @@ import {
   POSTS_SLUGS_BY_LANGUAGE_QUERY,
 } from '@/shared/sanity/lib/query';
 import { Post } from '@/widgets/post';
+import { getLocale } from 'next-intl/server';
 
 type RouteProps = {
-  params: Promise<{ slug: string; locale: string }>;
+  params: Promise<{ slug: string }>;
 };
 const getPage = async (params: RouteProps['params']) => {
-  const { slug, locale } = await params;
-
+  const { slug } = await params;
+  const locale = await getLocale();
   const sanityLocale = await normalizeLocaleForSanity(locale);
   let post = await sanityFetch({
     query: POST_BY_LANGUAGE_QUERY,
@@ -90,9 +91,9 @@ export async function generateMetadata({
 export default async function Page({
   params,
 }: {
-  params: Promise<{ slug: string; locale: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { locale } = await params;
+  const locale = await getLocale();
   const post = await getPage(params);
 
   if (!post) {

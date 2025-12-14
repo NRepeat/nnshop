@@ -129,12 +129,28 @@ export async function updateCartDeliveryPreferences(
       };
     }
 
-    const response = await storefrontClient.request<{
-      cartDeliveryAddressesAdd: {
-        cart: Cart | null;
-        userErrors: CartUserError[];
-      };
-    }>({
+    const response = await storefrontClient.request<
+      {
+        cartDeliveryAddressesAdd: {
+          cart: Cart | null;
+          userErrors: CartUserError[];
+        };
+      },
+      {
+        id: string;
+        addresses: {
+          selected: boolean;
+          address: {
+            deliveryAddress: {
+              address1: string | null;
+              city: string | null;
+              countryCode: string | null;
+              zip: string | null;
+            };
+          };
+        }[];
+      }
+    >({
       query: CART_DELIVERY_ADDRESSES_ADD_MUTATION,
       variables: {
         id: sessionCart.cartToken,

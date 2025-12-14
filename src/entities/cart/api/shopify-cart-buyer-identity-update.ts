@@ -62,13 +62,26 @@ export async function updateCartBuyerIdentity(
   },
 ): Promise<{ success: boolean; cart?: Cart; errors?: string[] }> {
   try {
-    const response = await storefrontClient.request<{
-      cartBuyerIdentityUpdate: {
-        cart: Cart | null;
-        userErrors: CartUserError[];
-        warnings: { message: string }[];
-      };
-    }>({
+    const response = await storefrontClient.request<
+      {
+        cartBuyerIdentityUpdate: {
+          cart: Cart | null;
+          userErrors: CartUserError[];
+          warnings: { message: string }[];
+        };
+      },
+      {
+        cartId: string;
+        buyerIdentity: {
+          email?: string;
+          phone?: string;
+          countryCode?: string;
+          preferences?: {
+            delivery?: { deliveryMethod?: string[]; pickupHandle?: string[] };
+          };
+        };
+      }
+    >({
       query: CART_BUYER_IDENTITY_UPDATE_MUTATION,
       variables: {
         cartId,

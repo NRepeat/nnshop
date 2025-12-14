@@ -2,6 +2,7 @@ import { AccountButton } from '@features/header/account/ui/AccoutnButton';
 import CartSheet from '@features/header/cart/ui/Sheet';
 import { LanguageSwitcher } from '@features/header/language-switcher/ui/LanguageSwitcher';
 import Navigation from '@features/header/navigation/ui/Navigation';
+import { PersistLinkNavigation } from '@features/header/navigation/ui/PersistLinkNavigation';
 import NavigationSheet from '@features/header/navigation/ui/Sheet';
 import Logo from '@shared/assets/Logo';
 import Link from 'next/link';
@@ -12,7 +13,7 @@ export const Header = async () => {
       <div className="grid grid-cols-3  container   ">
         <div className="flex  justify-start items-center  py-5 ">
           <NavigationSheet />
-          <Navigation />
+          <PersistLinkNavigation />
         </div>
         <div className="justify-items-center justify-center flex  py-5 ">
           <Link className="flex" href="/">
@@ -25,7 +26,9 @@ export const Header = async () => {
           <CartSheet />
         </div>
       </div>
-      <div className="w-full bg-black"></div>
+      <div className="w-full flex flex-1">
+        <Navigation />
+      </div>
     </header>
   );
 };

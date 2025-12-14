@@ -62,7 +62,10 @@ export const fetchAllOrdersByIDs = async (
     while (hasNextPage) {
       try {
         const response: PaginatedOrdersResponse =
-          await adminClient.client.request<PaginatedOrdersResponse>({
+          await adminClient.client.request<
+            PaginatedOrdersResponse,
+            { query: string; first: number; after: string | null }
+          >({
             query: GET_ORDERS_PAGINATED_BY_ID,
             variables: {
               query: searchQuery,

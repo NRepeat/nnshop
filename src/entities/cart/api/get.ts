@@ -124,9 +124,12 @@ export async function getCart(
       return await cachedFetch(
         `cart-${cartId}`,
         async () => {
-          const response = await storefrontClient.request<{
-            cart: Cart | null;
-          }>({
+          const response = await storefrontClient.request<
+            {
+              cart: Cart | null;
+            },
+            { id: string }
+          >({
             query: CART_QUERY,
             variables: { id: cartId },
           });
@@ -177,7 +180,10 @@ export async function getCart(
     return await cachedFetch(
       `cart-${sessionCart?.cartToken}`,
       async () => {
-        const response = await storefrontClient.request<{ cart: Cart | null }>({
+        const response = await storefrontClient.request<
+          { cart: Cart | null },
+          { id: string }
+        >({
           query: CART_QUERY,
           variables: { id: sessionCart?.cartToken },
         });

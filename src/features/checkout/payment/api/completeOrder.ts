@@ -21,17 +21,20 @@ const DRAFT_ORDER_COMPLITE_MUTATION = `
 
 export const completeOrder = async (orderId: string) => {
   try {
-    const orderResponse = await adminClient.client.request<{
-      draftOrderComplete: {
-        userErrors: Array<{ field: string; message: string }>;
-        draftOrder: {
-          id: string;
-          order: {
+    const orderResponse = await adminClient.client.request<
+      {
+        draftOrderComplete: {
+          userErrors: Array<{ field: string; message: string }>;
+          draftOrder: {
             id: string;
+            order: {
+              id: string;
+            };
           };
         };
-      };
-    }>({
+      },
+      { id: string }
+    >({
       query: DRAFT_ORDER_COMPLITE_MUTATION,
       variables: { id: orderId },
     });

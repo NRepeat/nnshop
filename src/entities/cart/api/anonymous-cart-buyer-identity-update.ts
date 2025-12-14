@@ -53,11 +53,18 @@ export const anonymousCartBuyerIdentityUpdate = async ({
         cartId: updatedCart.cartToken.split('?')[0],
         buyerIdentity: { email: newUser.user.email },
       };
-      const response =
-        await storefrontClient.request<CartBuyerIdentityUpdatePayload>({
-          query: CART_BUYER_IDENTITY_UPDATE,
-          variables: input,
-        });
+      const response = await storefrontClient.request<
+        CartBuyerIdentityUpdatePayload,
+        {
+          cartId: string;
+          buyerIdentity: {
+            email: string;
+          };
+        }
+      >({
+        query: CART_BUYER_IDENTITY_UPDATE,
+        variables: input,
+      });
 
       if (response.userErrors && response.userErrors?.length > 0) {
         console.log('userErrors', response.userErrors);

@@ -14,7 +14,10 @@ const query = `#graphql
 `;
 
 export const getCollections = async () => {
-  const collections = await storefrontClient.request<GetCollectionsQuery>({
+  const collections = await storefrontClient.request<
+    GetCollectionsQuery,
+    { query: string }
+  >({
     query,
   });
   return collections;

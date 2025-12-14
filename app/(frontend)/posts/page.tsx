@@ -5,13 +5,10 @@ import {
 import { sanityFetch } from '@/shared/sanity/lib/client';
 import { Title } from '@/entities/title';
 import { PostCard } from '@/widgets/post-card';
-type PageProps = {
-  params: Promise<{ locale: string }>;
-};
+import { getLocale } from 'next-intl/server';
 
-export default async function Page({ params }: PageProps) {
-  const { locale } = await params;
-
+export default async function Page() {
+  const locale = await getLocale();
   let posts = [];
 
   if (locale === 'uk') {

@@ -119,9 +119,24 @@ const linkProduct = async ({
         : undefined,
     };
     console.log(cartLineInput);
-    const response = await storefrontClient.request<{
-      cartLinesAdd: { cart?: Cart; userErrors: CartUserError[] };
-    }>({
+    const response = await storefrontClient.request<
+      {
+        cartLinesAdd: { cart?: Cart; userErrors: CartUserError[] };
+      },
+      {
+        cartId: string;
+        lines: {
+          merchandiseId: string;
+          quantity: number;
+          attributes:
+            | {
+                key: string;
+                value: string;
+              }[]
+            | undefined;
+        }[];
+      }
+    >({
       query: CART_LINES_ADD_MUTATION,
       variables: {
         cartId,
