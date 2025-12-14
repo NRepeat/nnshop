@@ -2,7 +2,7 @@ import { getCollection } from '@entities/collection/api/getCollection';
 import { ProductCard } from '@entities/product/ui/ProductCard';
 import { CollectionFilters } from '@features/collection/ui/CollectionFilters';
 import { FilterSheet } from '@features/collection/ui/FilterSheet';
-import { Link } from '@shared/i18n/navigation';
+import Link from 'next/link';
 import {
   Product,
   ProductFilter,

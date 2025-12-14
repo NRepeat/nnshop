@@ -1,5 +1,5 @@
 import { auth } from '@features/auth/lib/auth';
-import { Link } from '@shared/i18n/navigation';
+import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@shared/ui/avatar';
 import {
   DropdownMenu,

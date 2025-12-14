@@ -2,7 +2,7 @@ import { resolveLink } from '@/features/blocks/split-image/lib/resolveLink';
 import { Carousel, CarouselContent, CarouselItem } from '@/shared/ui/carousel';
 import { PAGE_QUERYResult } from '@/shared/sanity/types';
 import Image from 'next/image';
-import { Link } from '@shared/i18n/navigation';
+import Link from 'next/link';
 
 type HeroSwiperProps = Extract<
   NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],

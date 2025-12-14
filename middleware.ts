@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const handleI18nRouting = createMiddleware(routing);
 
 export async function middleware(request: NextRequest) {
-  const response = handleI18nRouting(request);
+  // const response = handleI18nRouting(request);
 
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {

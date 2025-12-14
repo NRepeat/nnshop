@@ -1,6 +1,6 @@
 import { getPaymentInfo } from '@features/checkout/payment/api/getPaymentInfo';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@shared/ui/tooltip';
-import { Link } from '@shared/i18n/navigation';
+import Link from 'next/link';
 import { PlaceHolder } from './PlaceHolder';
 import PaymentInfo from '@shared/assets/PaymentInfo';
 import { getTranslations } from 'next-intl/server';

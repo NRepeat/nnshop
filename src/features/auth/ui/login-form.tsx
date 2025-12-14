@@ -9,7 +9,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Image from 'next/image';
-import { Link } from '@shared/i18n/navigation';
+import Link from 'next/link';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/shared/ui/button';

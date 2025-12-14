@@ -1,6 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import { Link } from '@shared/i18n/navigation';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
   Table,

@@ -7,7 +7,7 @@ import {
   EmptyTitle,
 } from '@shared/ui/empty';
 import { getTranslations } from 'next-intl/server';
-import { Link } from '@shared/i18n/navigation';
+import Link from 'next/link';
 
 export async function OrderEmptyState({
   type,

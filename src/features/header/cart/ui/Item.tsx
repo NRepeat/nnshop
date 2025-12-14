@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@shared/ui/card';
 import Image from 'next/image';
-import { Link } from '@shared/i18n/navigation';
+import Link from 'next/link';
 import { RemoveItemButton } from './RemoveItemButton';
 
 const CartItem = ({
