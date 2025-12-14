@@ -25,6 +25,7 @@ export const Header = async () => {
           <CartSheet />
         </div>
       </div>
+      <div className="w-full bg-black"></div>
     </header>
   );
 };
