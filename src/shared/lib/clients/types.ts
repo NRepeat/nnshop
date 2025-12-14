@@ -22,14 +22,12 @@ export interface GraphQLResponse<T = unknown> {
 }
 
 export interface ShopifyClient {
-  request<T>({
+  request<T, V>({
     query,
     variables,
-    language,
   }: {
     query: string;
-    variables?: Record<string, unknown | null>;
-    language?: StorefrontLanguageCode;
+    variables?: V;
   }): Promise<T>;
   buildHeaders(): Promise<Record<string, string>>;
   buildBody(
