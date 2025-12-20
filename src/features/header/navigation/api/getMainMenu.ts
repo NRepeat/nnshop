@@ -1,8 +1,6 @@
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { GetMainMenuQuery } from '@shared/lib/shopify/types/storefront.generated';
-import { getLocale } from 'next-intl/server';
-import { cookies } from 'next/headers';
 const query = `#graphql
   query GetMainMenu {
      menu(handle: "shop-main-menu") {

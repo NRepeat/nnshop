@@ -1,10 +1,6 @@
-import { AccountButton } from '@features/header/account/ui/AccoutnButton';
-import CartSheet from '@features/header/cart/ui/Sheet';
-import { LanguageSwitcher } from '@features/header/language-switcher/ui/LanguageSwitcher';
-import Navigation, {
-  CurrentNavigationSession,
-} from '@features/header/navigation/ui/Navigation';
+import { CurrentNavigationSession } from '@features/header/navigation/ui/Navigation';
 import { PersistLinkNavigation } from '@features/header/navigation/ui/PersistLinkNavigation';
+import NavigationSheet from '@features/header/navigation/ui/Sheet';
 import Logo from '@shared/assets/Logo';
 import Link from 'next/link';
 import { Suspense } from 'react';
@@ -15,8 +11,8 @@ export const Header = async () => {
       <div className="container">
         <div className="grid grid-cols-3  pt-2">
           <div className="flex  justify-start items-center  ">
-            {/*<NavigationSheet />*/}
             <Suspense fallback={<div>Loading...</div>}>
+              <NavigationSheet />
               <PersistLinkNavigation />
             </Suspense>
           </div>

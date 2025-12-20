@@ -5,9 +5,11 @@ import { ArrowLeftFromLine } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from '@shared/i18n/navigation';
 import { useState } from 'react';
+import { cookieFenderSet } from '../api/setCookieGender';
 
 export const InternalMenu = ({
   meinMenu,
+  currentGender,
 }: {
   meinMenu: {
     id: Maybe<string> | undefined;
@@ -17,57 +19,105 @@ export const InternalMenu = ({
       id: Maybe<string> | undefined;
       title: string;
       url: string;
+      items: {
+        id: Maybe<string> | undefined;
+        title: string;
+        url: string;
+      }[];
     }[];
-  }[];
+  }[][];
+  currentGender: string;
 }) => {
-  const [activeTab, setActiveTab] = useState<undefined | number>();
+  const [activeGender, setActiveGender] = useState<number>(
+    currentGender === 'men' ? 0 : 1,
+  );
+  const [activeSubTab, setActiveSubTab] = useState<undefined | number>();
   const navigate = useRouter();
-  const handleActiveTab = (index: number) => {
-    if (index === activeTab) {
-      setActiveTab(undefined);
+
+  const handleGenderChange = async (index: number) => {
+    await cookieFenderSet(index === 0 ? 'men' : 'women');
+    setActiveGender(index);
+    setActiveSubTab(undefined);
+  };
+
+  const handleActiveSubTab = (index: number) => {
+    if (index === activeSubTab) {
+      setActiveSubTab(undefined);
     } else {
-      setActiveTab(index);
+      setActiveSubTab(index);
     }
   };
-  const menu = meinMenu.map((item, index) => (
-    <div
-      className={clsx(
-        'text-sm py-4 px-4 hover:bg-accent flex justify-between items-center cursor-pointer',
-        {
-          'hidden ': (activeTab || activeTab === 0) && index !== activeTab,
-          'bg-accent': index === activeTab,
-        },
-      )}
-      onClick={() =>
-        item.items.length > 0 ? handleActiveTab(index) : navigate.push(item.url)
-      }
-      key={item.title + index}
-    >
-      {item.title}
-      <ArrowLeftFromLine
-        className={clsx('w-4 h-4', {
-          hidden: !activeTab && index !== activeTab,
-        })}
-      />
-    </div>
-  ));
-  const tabs = meinMenu.map((item, index) => (
+
+  const tabs = meinMenu[activeGender]?.map((item, index) => (
     <div
       key={item.title + index}
-      className={`text-sm  px-4 flex flex-col ${activeTab === index ? 'block' : 'hidden'}`}
+      className={`text-sm px-4 flex flex-col overflow-auto`}
     >
-      {item.items.length > 0 &&
-        item.items.map((subItem) => (
-          <Link key={subItem.title} href={subItem.url}>
-            <p className="text-sm py-4 px-4 hover:bg-accent">{subItem.title}</p>
-          </Link>
-        ))}
+      {item.items.map((subItem, subIndex) => (
+        <div
+          key={subItem.title}
+          onClick={() =>
+            subItem.items.length > 0
+              ? handleActiveSubTab(subIndex)
+              : navigate.push(subItem.url)
+          }
+        >
+          <div
+            className={clsx(
+              'text-sm py-4 px-4 hover:bg-accent flex justify-between items-center cursor-pointer',
+              {
+                'hidden ':
+                  (activeSubTab || activeSubTab === 0) &&
+                  subIndex !== activeSubTab,
+                'bg-accent': subIndex === activeSubTab,
+              },
+            )}
+          >
+            <p>{subItem.title}</p>
+            <ArrowLeftFromLine
+              className={clsx('w-4 h-4', {
+                hidden: !activeSubTab && subIndex !== activeSubTab,
+              })}
+            />
+          </div>
+          {subItem.items.length > 0 && (
+            <div
+              className={`text-sm px-4 flex flex-col overflow-auto ${activeSubTab === subIndex ? 'block' : 'hidden'}`}
+            >
+              {subItem.items.map((subSubItem) => (
+                <Link key={subSubItem.title} href={subSubItem.url}>
+                  <p className="text-sm py-4 px-4 hover:bg-accent">
+                    {subSubItem.title}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   ));
   return (
     <div className="flex flex-col space-y-2">
-      {menu}
-      {tabs}
+      <div className="flex justify-between px-4">
+        <button
+          className={clsx('py-2 px-4', {
+            'border-b-2 border-black': activeGender === 0,
+          })}
+          onClick={() => handleGenderChange(0)}
+        >
+          Жінки
+        </button>
+        <button
+          className={clsx('py-2 px-4', {
+            'border-b-2 border-black': activeGender === 1,
+          })}
+          onClick={() => handleGenderChange(1)}
+        >
+          Чоловіки
+        </button>
+      </div>
+      <div className="overflow-auto">{tabs}</div>
     </div>
   );
 };
