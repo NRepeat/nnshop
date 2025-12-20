@@ -69,6 +69,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.65.0",
+    "react-intersection-observer": "^10.0.0",
     "sanity": "^4.10.3",
     "sanity-plugin-hotspot-array": "^3.0.1",
     "sanity-plugin-internationalized-array": "^3.2.0",

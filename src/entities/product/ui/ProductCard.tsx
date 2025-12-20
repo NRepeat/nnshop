@@ -10,8 +10,6 @@ import {
   CarouselApi,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from '@shared/ui/carousel';
 import { useState } from 'react';
 import { useDotButton } from '@shared/hooks/useDotButton';

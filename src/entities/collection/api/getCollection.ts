@@ -7,7 +7,6 @@ import {
   GetCollectionsHandlesQueryVariables,
 } from '@shared/lib/shopify/types/storefront.generated';
 import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
-import { getLocale } from 'next-intl/server';
 
 const query = `
   #graphql
@@ -142,6 +141,7 @@ const GET_COLLECTION_SLUGS = `
   `;
 
 export const getCollectionSlugs = async () => {
+  'use cache';
   const handles: string[] = [];
   const locales: StorefrontLanguageCode[] = ['EN', 'UK'];
   try {
