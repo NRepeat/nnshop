@@ -9,9 +9,11 @@ const Sheet = async () => {
   const locale = await getLocale();
   const cookie = await cookies();
   const gender = cookie.get('gender')?.value || 'woman';
+  const controller = new AbortController();
+  const signal = controller.signal;
   const meinMenu = await Promise.all([
-    getMainMenu({ gender: 'woman', locale }),
-    getMainMenu({ gender: 'man', locale }),
+    getMainMenu({ gender: 'woman', locale, signal }),
+    getMainMenu({ gender: 'man', locale, signal }),
   ]);
 
   return (

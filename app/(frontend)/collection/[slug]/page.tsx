@@ -1,11 +1,15 @@
 import { notFound } from 'next/navigation';
 import { getCollections } from '@entities/collection/api/getCollections';
 import CollectionView from '@widgets/collection/ui/CollectionView';
-import { getCollection } from '@entities/collection/api/getCollection';
+import {
+  getCollection,
+  getCollectionSlugs,
+} from '@entities/collection/api/getCollection';
 import { ProductCard } from '@entities/product/ui/ProductCard';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { Suspense } from 'react';
 import { getLocale } from 'next-intl/server';
+import { cacheLife } from 'next/cache';
 type Props = {
   params: Promise<{ slug: string }>;
   // searchParams: Promise<{
@@ -15,18 +19,20 @@ type Props = {
   // }>;
 };
 
-// export async function generateStaticParams() {
-//   const { collections } = await getCollections();
+export async function generateStaticParams() {
+  const slugs = await getCollectionSlugs();
+  console.log('slugs', slugs);
+  // const paths = collections.edges.flatMap((edge) => {
+  //   return ['en', 'uk'].map((locale) => ({
+  //     slug: edge.node.handle,
+  //     locale: locale,
+  //   }));
+  // });
 
-//   const paths = collections.edges.flatMap((edge) => {
-//     return ['en', 'uk'].map((locale) => ({
-//       slug: edge.node.handle,
-//       locale: locale,
-//     }));
-//   });
-
-//   return paths;
-// }
+  return slugs.map((slug) => ({
+    slug,
+  }));
+}
 
 export default async function CollectionPage({ params }: Props) {
   return (
@@ -39,7 +45,6 @@ export default async function CollectionPage({ params }: Props) {
 const CollectionSession = async ({ params }: Props) => {
   const { slug } = await params;
   const locale = await getLocale();
-  console.log('slug', slug, locale);
   // const searchParamsData = await searchParams;
   if (!slug || !locale) {
     return notFound();
@@ -56,10 +61,11 @@ const CollectionGrid = async ({
   locale: string;
 }) => {
   'use cache';
+  cacheLife({ revalidate: 60, stale: 60 });
   const collectionData = await getCollection({
     handle: slug,
     first: 10,
-    locale: locale || 'uk',
+    locale: locale,
   });
   if (!collectionData) {
     return notFound();
@@ -77,6 +83,7 @@ const CollectionGrid = async ({
           key={product.id}
           product={product as Product}
           className="pl-0 pr-0"
+          withCarousel
         />
       ))}
     </div>

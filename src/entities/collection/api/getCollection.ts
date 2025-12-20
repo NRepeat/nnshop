@@ -1,7 +1,11 @@
 'use server';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { storefrontClient } from '@shared/lib/shopify/client';
-import { GetCollectionQuery } from '@shared/lib/shopify/types/storefront.generated';
+import {
+  GetCollectionQuery,
+  GetCollectionsHandlesQuery,
+  GetCollectionsHandlesQueryVariables,
+} from '@shared/lib/shopify/types/storefront.generated';
 import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
 import { getLocale } from 'next-intl/server';
 
@@ -124,6 +128,43 @@ const query = `
   }
 `;
 
+const GET_COLLECTION_SLUGS = `
+  #graphql
+  query GetCollectionsHandles{
+    collections(first:250) {
+    	edges{
+        node{
+          handle
+        }
+      }
+    }
+  }
+  `;
+
+export const getCollectionSlugs = async () => {
+  const handles: string[] = [];
+  const locales: StorefrontLanguageCode[] = ['EN', 'UK'];
+  try {
+    for (const locale of locales) {
+      const collection = await storefrontClient.request<
+        GetCollectionsHandlesQuery,
+        GetCollectionsHandlesQueryVariables
+      >({
+        query: GET_COLLECTION_SLUGS,
+        language: locale,
+      });
+      if (!collection) {
+        throw new Error();
+      }
+      handles.push(...collection.collections.edges.map((n) => n.node.handle));
+    }
+
+    return handles;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Can't fetch slugs");
+  }
+};
 export const getCollection = async ({
   handle,
   filters,

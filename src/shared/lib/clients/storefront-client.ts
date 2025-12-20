@@ -91,10 +91,12 @@ export class StorefrontClient implements ShopifyClient {
     query,
     variables,
     language,
+    signal,
   }: {
     query: string;
     variables: V;
     language?: StorefrontLanguageCode;
+    signal?: AbortSignal;
   }): Promise<T> {
     try {
       let modifiedQuery = query;
@@ -105,11 +107,14 @@ export class StorefrontClient implements ShopifyClient {
       const ver = variables as Record<string, unknown>;
       const response = await this.client.request(modifiedQuery, {
         variables: ver,
+        signal,
       });
 
       if (response.errors) {
-        console.error(response.errors);
-        throw new Error(`Storefront API GraphQL`);
+        console.error(JSON.stringify(response.errors, null, 2));
+        throw new Error(
+          `Storefront API GraphQL: ${JSON.stringify(response.errors)}`,
+        );
       }
 
       return response.data as T;

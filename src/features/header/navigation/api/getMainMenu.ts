@@ -34,6 +34,7 @@ export const getMainMenu = async ({
 }: {
   gender: string;
   locale: string;
+  signal?: AbortSignal;
 }) => {
   const responce = await storefrontClient.request<
     GetMainMenuQuery,

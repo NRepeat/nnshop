@@ -20,12 +20,14 @@ type ProductCardProps = {
   product: Product;
   addToCard?: boolean;
   className?: string;
+  withCarousel?: boolean;
 };
 
 export const ProductCard = ({
   product,
   addToCard = true,
   className,
+  withCarousel = false,
 }: ProductCardProps) => {
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const productImages = [
@@ -73,34 +75,48 @@ export const ProductCard = ({
     >
       <CardContent className="  flex flex-col  rounded-none p-0 border-0 shadow-none h-full justify-between bg-transparent">
         <Link href={`/products/${product.handle}`}>
-          <Carousel
-            className="relative"
-            opts={{ align: 'center' }}
-            setApi={setCarouselApi}
-          >
-            <CarouselContent>
-              {productImages.map((image, index) => (
-                <CarouselItem key={index} className=" ">
-                  <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full">
-                    <Image
-                      key={index}
-                      className=" w-full max-h-[350px] h-[350px]"
-                      src={image.url}
-                      alt={image.altText || ''}
-                      width={image.width || 300}
-                      height={image.height || 300}
-                    />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CardDots />
-          </Carousel>
+          {withCarousel ? (
+            <Carousel
+              className="relative"
+              opts={{ align: 'center' }}
+              setApi={setCarouselApi}
+            >
+              <CarouselContent>
+                {productImages.map((image, index) => (
+                  <CarouselItem key={index} className=" ">
+                    <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full">
+                      <Image
+                        key={index}
+                        className=" w-full max-h-[350px] h-[350px] object-contain"
+                        src={image.url}
+                        alt={image.altText || ''}
+                        width={image.width || 300}
+                        loading="lazy"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        height={image.height || 300}
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CardDots />
+            </Carousel>
+          ) : (
+            <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full">
+              <Image
+                className=" w-full max-h-[350px] h-[350px]"
+                src={productImages[0].url}
+                alt={productImages[0].altText || ''}
+                width={productImages[0].width || 300}
+                height={productImages[0].height || 300}
+              />
+            </div>
+          )}
         </Link>
         {
           <div className="w-full pt-2 md:pt-6  flex flex-col gap-1 flex-1">
             <span className="text-md font-bold">{product.vendor}</span>
-            <div className="flex flex-col flex-1">
+            <div className="flex flex-col justify-between flex-1">
               <div className=" w-full flex-col  justify-between flex pb-4">
                 <Link href={`/products/${product.handle}`}>
                   <p className="text-md font-light  text-pretty">
