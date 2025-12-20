@@ -10,9 +10,15 @@ import BurgerIcon from './BurgerIcon';
 import { getMainMenu } from '../api/getMainMenu';
 import { InternalMenu } from './InternalMenu';
 
+import { getLocale } from 'next-intl/server';
+import { cookies } from 'next/headers';
+
 const NavigationSheet = async () => {
   const t = await getTranslations('Header.nav.drawer');
-  const meinMenu = await getMainMenu();
+  const locale = await getLocale();
+  const cookie = await cookies();
+  const gender = cookie.get('gender')?.value || 'woman';
+  const meinMenu = await getMainMenu({ gender, locale });
   return (
     <Sheet>
       <SheetTrigger className="cursor-pointer block md:hidden hover:bg-accent p-2 rounded-lg">

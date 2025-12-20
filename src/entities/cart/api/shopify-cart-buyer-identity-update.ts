@@ -105,7 +105,9 @@ export async function updateCartBuyerIdentity(
       };
     }
 
+    // @ts-ignore
     revalidateTag(CART_TAGS.CART);
+    // @ts-ignore
     revalidateTag(CART_TAGS.CART_SESSION);
 
     return {

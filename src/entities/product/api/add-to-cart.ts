@@ -18,7 +18,9 @@ async function addToCart(_: any, formData: FormData) {
       return { success: false, message: result.error };
     }
 
+    // @ts-ignore
     revalidateTag(CART_TAGS.CART);
+    // @ts-ignore
     revalidateTag(CART_TAGS.CART_ITEMS);
     return { success: true, message: 'Added to cart' };
   } catch (error) {

@@ -406,7 +406,106 @@ export const PAGE_QUERY =
 }`);
 
 export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
-    homePage->{
+    homePageMan->{
+      ...,
+      content[]{
+        ...,
+        _id,
+        _type == "sliderBlock" => {
+          slides[]{
+             ...,
+            _key,
+            link[]{
+             ...,
+             reference->{
+               _id,
+               _type,
+               title,
+               "slug": select(
+                 _type == "product" => store.slug.current,
+                 _type == "collection" => store.slug.current,
+                 _type == "page" => slug.current
+               )
+             }
+           },
+            backgroundImage{
+              asset->{
+                _id,
+                url,
+                metadata{dimensions}
+              }
+            }
+          }
+        },
+        _type == "productCarousel" => {
+          products[]->{
+            _id,
+            store{
+              title,
+              isDeleted,
+              previewImageUrl,
+              priceRange{
+              maxVariantPrice,
+              minVariantPrice
+              },
+              productType
+            }
+          },
+          collection -> {
+            _id,
+            title,
+            store{
+             imageUrl,
+             isDeleted,
+             slug{
+             current
+             },
+             title
+            }
+          }
+        },
+        _type == "collectionsCarousel" => {
+          collections[]->{
+            _id,
+            title,
+            store{
+             imageUrl,
+             isDeleted,
+             slug{
+             current
+             },
+             title
+            }
+          }
+        },
+        _type == "splitImage" => {
+          ...,
+          link[]{
+            ...,
+            reference->{
+              _id,
+              _type,
+              title,
+              "slug": select(
+                _type == "product" => store.slug.current,
+                _type == "collection" => store.slug.current,
+                _type == "page" => slug.current
+              )
+            }
+          }
+        },
+        _type == "faqs" => {
+          ...,
+          faqs[]->{
+            _id,
+            title,
+            body,
+            "text": pt::text(body)
+          }
+        }
+      }
+    },
+    homePageWoman->{
       ...,
       content[]{
         ...,

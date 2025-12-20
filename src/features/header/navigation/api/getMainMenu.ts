@@ -47,7 +47,6 @@ export const getMainMenu = async ({
     query,
     language: locale.toUpperCase() as StorefrontLanguageCode,
   });
-  console.log(responce);
   const genderMap = {
     man: 'gid://shopify/Collection/323100639394',
     woman: 'gid://shopify/Collection/323100967074',

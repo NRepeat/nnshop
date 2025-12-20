@@ -198,7 +198,9 @@ export async function updateCartDeliveryPreferences(
       };
     }
 
+    // @ts-ignore
     revalidateTag(CART_TAGS.CART);
+    // @ts-ignore
     revalidateTag(CART_TAGS.CART_SESSION);
 
     console.log(

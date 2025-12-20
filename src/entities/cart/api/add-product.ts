@@ -28,7 +28,9 @@ export async function addToCartAction(productVariantId: string) {
         productVariantId,
       });
       if (result.success) {
+        // @ts-ignore
         revalidateTag(CART_TAGS.CART);
+        // @ts-ignore
         revalidateTag(CART_TAGS.CART_ITEMS);
         return { success: true, cart: result.cart };
       }
@@ -42,7 +44,9 @@ export async function addToCartAction(productVariantId: string) {
       });
     }
     if (result.success) {
+      // @ts-ignore
       revalidateTag(CART_TAGS.CART);
+      // @ts-ignore
       revalidateTag(CART_TAGS.CART_ITEMS);
       return { success: true, cart: result.cart };
     }

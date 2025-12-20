@@ -133,6 +133,7 @@ export async function removeProductFromCart(
       };
     }
 
+    // @ts-ignore
     revalidateTag(CART_TAGS.CART);
 
     return {

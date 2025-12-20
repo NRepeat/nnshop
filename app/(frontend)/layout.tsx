@@ -6,6 +6,7 @@ import { DisableDraftMode } from '@shared/sanity/components/live/DisableDraftMod
 import { draftMode } from 'next/headers';
 import { Footer } from '@widgets/footer/ui/Footer';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Suspense } from 'react';
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -20,7 +21,9 @@ export default async function LocaleLayout({
     <div className="mb-10">
       <Header />
       {children}
-      <SanityLive />
+      <Suspense fallback={<div>Loading...</div>}>
+        <SanityLive />
+      </Suspense>
       {(await draftMode()).isEnabled && (
         <>
           <DisableDraftMode />
