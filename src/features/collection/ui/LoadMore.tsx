@@ -23,7 +23,7 @@ export default function LoadMore({
   const { ref, inView } = useInView();
 
   const handleLoadMore = () => {
-    if (isPending) return;
+    if (!initialPageInfo.hasNextPage || isPending) return;
 
     startTransition(async () => {
       const result = await getCollectionProducts({
