@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const handleI18nRouting = createMiddleware(routing);
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // const response = handleI18nRouting(request);
 
   const session = await auth.api.getSession({
@@ -25,6 +25,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  runtime: 'nodejs',
   matcher: '/((?!api|trpc|_next|_vercel|studio|.*\\..*).*)',
 };
