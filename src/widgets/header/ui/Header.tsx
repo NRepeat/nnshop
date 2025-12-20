@@ -5,7 +5,6 @@ import Navigation, {
   CurrentNavigationSession,
 } from '@features/header/navigation/ui/Navigation';
 import { PersistLinkNavigation } from '@features/header/navigation/ui/PersistLinkNavigation';
-import NavigationSheet from '@features/header/navigation/ui/Sheet';
 import Logo from '@shared/assets/Logo';
 import Link from 'next/link';
 import { Suspense } from 'react';

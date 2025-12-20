@@ -12,7 +12,7 @@ export const projectId = assertValue(
 );
 
 export const revalidateSecret = assertValue(
-  process.env.SANITY_REVALIDATE_SECRET,
+  process.env.SANITY_REVALIDATE_SECRET || 'skTKt4RTZEKHysqXZZARGfBJ',
   'Missing environment variable: SANITY_REVALIDATE_SECRET',
 );
 

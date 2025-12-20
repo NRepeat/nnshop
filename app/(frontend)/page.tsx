@@ -4,6 +4,7 @@ import { PageBuilder } from '@widgets/page-builder';
 import { getLocale } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import { Suspense } from 'react';
+import Loading from './(checkout)/checkout/[...slug]/loading';
 
 export async function generateStaticParams() {
   return locales.map((locale) => ({
@@ -14,7 +15,7 @@ export async function generateStaticParams() {
 export default async function Page() {
   return (
     <div>
-      <Suspense>
+      <Suspense fallback={<Loading />}>
         <CurrentSession />
       </Suspense>
     </div>

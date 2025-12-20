@@ -19,7 +19,6 @@ export const getPage = async (params: RouteProps['params']) => {
     params: { language: sanityLocale },
     tags: ['siteSettings'],
   })) as HOME_PAGE_QUERYResult;
-  console.log(page);
   if (!page) throw new Error('Page not found');
   if (gender === 'man') {
     return page.homePageMan;

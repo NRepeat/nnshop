@@ -21,9 +21,9 @@ export async function POST(req: NextRequest) {
       return new Response(message, { status: 400 });
     }
 
-    revalidateTag(body._type);
+    revalidateTag(body._type, 'max');
     if (body.slug) {
-      revalidateTag(body.slug);
+      revalidateTag(body.slug, 'max');
     }
 
     return NextResponse.json({
