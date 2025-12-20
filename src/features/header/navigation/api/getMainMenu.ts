@@ -30,10 +30,13 @@ const query = `#graphql
    }
 `;
 
-export const getMainMenu = async () => {
-  const locale = await getLocale();
-  const cookie = await cookies();
-  const gender = cookie.get('gender')?.value || 'woman';
+export const getMainMenu = async ({
+  gender,
+  locale,
+}: {
+  gender: string;
+  locale: string;
+}) => {
   const responce = await storefrontClient.request<
     GetMainMenuQuery,
     {

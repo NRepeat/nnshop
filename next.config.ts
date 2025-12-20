@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       fullUrl: false,
     },
   },
+  cacheComponents: true,
   allowedDevOrigins: [
     'dev.nninc.uk',
     'development.nninc.uk',

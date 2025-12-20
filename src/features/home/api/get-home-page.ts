@@ -5,11 +5,12 @@ import { HOME_PAGE_QUERYResult } from '@/shared/sanity/types';
 import { Locale } from '@/shared/i18n/routing';
 
 type RouteProps = {
-  params: Promise<{ locale: Locale }>;
+  params: { locale: Locale };
 };
 
 export const getPage = async (params: RouteProps['params']) => {
-  const { locale } = await params;
+  'use cache';
+  const { locale } = params;
 
   const sanityLocale = await normalizeLocaleForSanity(locale);
 

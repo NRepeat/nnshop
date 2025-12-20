@@ -9,9 +9,29 @@ import {
 } from '@shared/ui/navigation-menu';
 import { Button } from '@shared/ui/button';
 import { getMainMenu } from '../api/getMainMenu';
+import { getLocale } from 'next-intl/server';
+import { cookies } from 'next/headers';
 
-const Navigation = async () => {
-  const meinMenu = await getMainMenu();
+export const CurrentNavigationSession = async () => {
+  const locale = await getLocale();
+  const cookie = await cookies();
+  const gender = cookie.get('gender')?.value || 'woman';
+  return (
+    <>
+      <Navigation gender={gender} locale={locale} />
+    </>
+  );
+};
+
+const Navigation = async ({
+  gender,
+  locale,
+}: {
+  gender: string;
+  locale: string;
+}) => {
+  'use cache';
+  const meinMenu = await getMainMenu({ gender, locale });
   const menu = meinMenu.map((item, index) => {
     if (item.items.length > 0) {
       return (
