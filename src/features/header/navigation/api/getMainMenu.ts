@@ -36,6 +36,7 @@ export const getMainMenu = async ({
   locale: string;
   signal?: AbortSignal;
 }) => {
+  'use cache';
   const responce = await storefrontClient.request<
     GetMainMenuQuery,
     {

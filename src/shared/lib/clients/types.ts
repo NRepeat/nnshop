@@ -4,7 +4,7 @@ export interface ShopifyClientConfig {
   apiVersion?: string;
   customFetchApi?: typeof fetch;
 }
-export type StorefrontLanguageCode = 'EN' | 'UK';
+export type StorefrontLanguageCode = 'RU' | 'UK';
 
 export interface GraphQLRequest {
   query: string;

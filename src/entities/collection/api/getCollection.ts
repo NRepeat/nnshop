@@ -143,7 +143,7 @@ const GET_COLLECTION_SLUGS = `
 export const getCollectionSlugs = async () => {
   'use cache';
   const handles: string[] = [];
-  const locales: StorefrontLanguageCode[] = ['EN', 'UK'];
+  const locales: StorefrontLanguageCode[] = ['RU', 'UK'];
   try {
     for (const locale of locales) {
       const collection = await storefrontClient.request<

@@ -15,11 +15,7 @@ export const CurrentNavigationSession = async () => {
   const locale = await getLocale();
   const cookie = await cookies();
   const gender = cookie.get('gender')?.value || 'woman';
-  return (
-    <>
-      <Navigation gender={gender} locale={locale} />
-    </>
-  );
+  return <Navigation gender={gender} locale={locale} />;
 };
 
 const Navigation = async ({
@@ -34,9 +30,9 @@ const Navigation = async ({
   const menu = meinMenu.map((item, index) => {
     if (item.items.length > 0) {
       return (
-        <ul className=" gap-4  bg-transparent flex">
+        <ul className=" gap-4  bg-transparent flex" key={index}>
           {item.items.map((subItem) => (
-            <NavigationMenuItem key={subItem.title}>
+            <NavigationMenuItem key={subItem.url + subItem.title + gender}>
               <NavigationMenuTrigger
                 variant={'ghost'}
                 className="rounded-none text-md"
@@ -45,9 +41,9 @@ const Navigation = async ({
               </NavigationMenuTrigger>
               <NavigationMenuContent className="bg-transparent w-full">
                 <ul className="grid gap-2 md:w-[400px] lg:w-[500px] md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr]">
-                  {subItem.items.map((subItem) => (
+                  {subItem.items.map((subItem, index) => (
                     <li
-                      key={subItem.title}
+                      key={subItem.title + gender}
                       className="w-[150px] row-span-3 ml-2"
                     >
                       <Button
