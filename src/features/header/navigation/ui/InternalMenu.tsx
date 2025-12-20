@@ -10,6 +10,7 @@ import { cookieFenderSet } from '../api/setCookieGender';
 export const InternalMenu = ({
   meinMenu,
   currentGender,
+  onClose,
 }: {
   meinMenu: {
     id: Maybe<string> | undefined;
@@ -27,6 +28,7 @@ export const InternalMenu = ({
     }[];
   }[][];
   currentGender: string;
+  onClose: () => void;
 }) => {
   const [activeGender, setActiveGender] = useState<number>(
     currentGender === 'men' ? 0 : 1,
@@ -56,11 +58,14 @@ export const InternalMenu = ({
       {item.items.map((subItem, subIndex) => (
         <div
           key={subItem.title}
-          onClick={() =>
-            subItem.items.length > 0
-              ? handleActiveSubTab(subIndex)
-              : navigate.push(subItem.url)
-          }
+          onClick={() => {
+            if (subItem.items.length > 0) {
+              handleActiveSubTab(subIndex);
+            } else {
+              navigate.push(subItem.url);
+              onClose();
+            }
+          }}
         >
           <div
             className={clsx(
@@ -85,7 +90,11 @@ export const InternalMenu = ({
               className={`text-sm px-4 flex flex-col overflow-auto ${activeSubTab === subIndex ? 'block' : 'hidden'}`}
             >
               {subItem.items.map((subSubItem) => (
-                <Link key={subSubItem.title} href={subSubItem.url}>
+                <Link
+                  key={subSubItem.title}
+                  href={subSubItem.url}
+                  onClick={() => onClose()}
+                >
                   <p className="text-sm py-4 px-4 hover:bg-accent">
                     {subSubItem.title}
                   </p>
