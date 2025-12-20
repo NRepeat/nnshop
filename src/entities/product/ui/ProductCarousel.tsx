@@ -31,6 +31,7 @@ const ProductCarousel = async ({
   const shopifyCollection = await getCollection({
     handle: collectionHandle,
     first: 12,
+    locale,
   });
   if (!shopifyCollection) return null;
   const products = shopifyCollection.collection?.products.edges.map(

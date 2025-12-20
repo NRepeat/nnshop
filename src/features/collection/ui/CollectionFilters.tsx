@@ -1,7 +1,5 @@
 'use client';
 
-import { usePathname, useRouter } from '@shared/i18n/navigation';
-
 import { Button } from '@shared/ui/button';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
@@ -9,7 +7,7 @@ import {
   Filter,
   ProductFilter,
 } from '@shared/lib/shopify/types/storefront.types';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 type Props = {
   filters: Filter[];

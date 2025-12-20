@@ -5,7 +5,8 @@ import { GetCollectionQuery } from '@shared/lib/shopify/types/storefront.generat
 import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
 import { getLocale } from 'next-intl/server';
 
-const query = `#graphql
+const query = `
+  #graphql
   query GetCollection(
     $handle: String!
     $filters: [ProductFilter!]
@@ -47,7 +48,7 @@ const query = `#graphql
             vendor
             totalInventory
             tags
-            variants(first: 50) {
+            variants(first: 250) {
               edges {
                 node {
                   id
@@ -66,12 +67,7 @@ const query = `#graphql
                     name
                     value
                   }
-                  image {
-                    url
-                    altText
-                    width
-                    height
-                  }
+
                 }
               }
             }
@@ -97,6 +93,19 @@ const query = `#graphql
               width
               height
             }
+            media(first:20){
+                    edges{
+                      node{
+
+                            previewImage{
+                              url
+                              width
+                              height
+                              altText
+                          }
+                      }
+                    }
+                  }
           }
         }
         filters {
@@ -122,6 +131,7 @@ export const getCollection = async ({
   after,
   last,
   before,
+  locale,
 }: {
   handle: string;
   filters?: ProductFilter[];
@@ -129,8 +139,10 @@ export const getCollection = async ({
   after?: string;
   last?: number;
   before?: string;
+  locale: string;
 }) => {
-  const locale = await getLocale();
+  'use cache';
+
   const collection = await storefrontClient.request<
     GetCollectionQuery,
     {
@@ -146,5 +158,5 @@ export const getCollection = async ({
     variables: { handle, filters, first, after, last, before },
     language: locale.toUpperCase() as StorefrontLanguageCode,
   });
-  return collection;
+  return collection as GetCollectionQuery;
 };

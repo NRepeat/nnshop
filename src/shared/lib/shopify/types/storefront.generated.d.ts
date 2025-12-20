@@ -250,12 +250,6 @@ export type GetCollectionQuery = {
                   selectedOptions: Array<
                     Pick<StorefrontTypes.SelectedOption, 'name' | 'value'>
                   >;
-                  image?: StorefrontTypes.Maybe<
-                    Pick<
-                      StorefrontTypes.Image,
-                      'url' | 'altText' | 'width' | 'height'
-                    >
-                  >;
                 };
               }>;
             };
@@ -282,6 +276,18 @@ export type GetCollectionQuery = {
                 'url' | 'altText' | 'width' | 'height'
               >
             >;
+            media: {
+              edges: Array<{
+                node: {
+                  previewImage?: StorefrontTypes.Maybe<
+                    Pick<
+                      StorefrontTypes.Image,
+                      'url' | 'width' | 'height' | 'altText'
+                    >
+                  >;
+                };
+              }>;
+            };
           };
         }>;
         filters: Array<
@@ -388,7 +394,17 @@ export type GetMainMenuQuery = {
           items: Array<
             Pick<StorefrontTypes.MenuItem, 'title' | 'url' | 'resourceId'> & {
               items: Array<
-                Pick<StorefrontTypes.MenuItem, 'title' | 'url' | 'resourceId'>
+                Pick<
+                  StorefrontTypes.MenuItem,
+                  'title' | 'url' | 'resourceId'
+                > & {
+                  items: Array<
+                    Pick<
+                      StorefrontTypes.MenuItem,
+                      'title' | 'url' | 'resourceId'
+                    >
+                  >;
+                }
               >;
             }
           >;
@@ -417,7 +433,7 @@ interface GeneratedQueryTypes {
     return: CartQuery;
     variables: CartQueryVariables;
   };
-  '#graphql\n  query GetCollection(\n    $handle: String!\n    $filters: [ProductFilter!]\n    $first: Int\n    $after: String\n    $last: Int\n    $before: String\n  ) {\n    collection(handle: $handle) {\n      id\n      title\n      handle\n      description\n      image {\n        url\n        altText\n      }\n\n      products(\n        first: $first\n        last: $last\n        filters: $filters\n        after: $after\n        before: $before\n      ) {\n        pageInfo {\n          hasNextPage\n          hasPreviousPage\n          endCursor\n          startCursor\n        }\n        edges {\n          node {\n            id\n            title\n            handle\n            availableForSale\n            productType\n            vendor\n            totalInventory\n            tags\n            variants(first: 50) {\n              edges {\n                node {\n                  id\n                  title\n                  availableForSale\n                  quantityAvailable\n                  price {\n                    amount\n                    currencyCode\n                  }\n                  compareAtPrice {\n                    amount\n                    currencyCode\n                  }\n                  selectedOptions {\n                    name\n                    value\n                  }\n                  image {\n                    url\n                    altText\n                    width\n                    height\n                  }\n                }\n              }\n            }\n            options {\n              name\n              optionValues {\n                name\n              }\n            }\n            priceRange {\n              minVariantPrice {\n                amount\n                currencyCode\n              }\n              maxVariantPrice {\n                amount\n                currencyCode\n              }\n            }\n            featuredImage {\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n        filters {\n          id\n          label\n          type\n          values {\n            id\n            label\n            count\n            input\n          }\n        }\n      }\n    }\n  }\n': {
+  '\n  #graphql\n  query GetCollection(\n    $handle: String!\n    $filters: [ProductFilter!]\n    $first: Int\n    $after: String\n    $last: Int\n    $before: String\n  ) {\n    collection(handle: $handle) {\n      id\n      title\n      handle\n      description\n      image {\n        url\n        altText\n      }\n\n      products(\n        first: $first\n        last: $last\n        filters: $filters\n        after: $after\n        before: $before\n      ) {\n        pageInfo {\n          hasNextPage\n          hasPreviousPage\n          endCursor\n          startCursor\n        }\n        edges {\n          node {\n            id\n            title\n            handle\n            availableForSale\n            productType\n            vendor\n            totalInventory\n            tags\n            variants(first: 250) {\n              edges {\n                node {\n                  id\n                  title\n                  availableForSale\n                  quantityAvailable\n                  price {\n                    amount\n                    currencyCode\n                  }\n                  compareAtPrice {\n                    amount\n                    currencyCode\n                  }\n                  selectedOptions {\n                    name\n                    value\n                  }\n\n                }\n              }\n            }\n            options {\n              name\n              optionValues {\n                name\n              }\n            }\n            priceRange {\n              minVariantPrice {\n                amount\n                currencyCode\n              }\n              maxVariantPrice {\n                amount\n                currencyCode\n              }\n            }\n            featuredImage {\n              url\n              altText\n              width\n              height\n            }\n            media(first:20){\n                    edges{\n                      node{\n\n                            previewImage{\n                              url\n                              width\n                              height\n                              altText\n                          }\n                      }\n                    }\n                  }\n          }\n        }\n        filters {\n          id\n          label\n          type\n          values {\n            id\n            label\n            count\n            input\n          }\n        }\n      }\n    }\n  }\n': {
     return: GetCollectionQuery;
     variables: GetCollectionQueryVariables;
   };
@@ -429,7 +445,7 @@ interface GeneratedQueryTypes {
     return: GetProductByHandleQuery;
     variables: GetProductByHandleQueryVariables;
   };
-  '#graphql\n  query GetMainMenu {\n     menu(handle: "shop-main-menu") {\n       handle\n       items {\n         title\n         url\n         resourceId\n           items {\n             title\n             url\n             resourceId\n             items{\n                title\n             url\n             resourceId\n             }\n           }\n       }\n     }\n   }\n': {
+  '#graphql\n  query GetMainMenu {\n     menu(handle: "shop-main-menu") {\n       handle\n       items {\n         title\n         url\n         resourceId\n           items {\n             title\n             url\n             resourceId\n                          items{\n                             title\n                             url\n                             resourceId\n                             items {\n                                 title\n                                 url\n                                 resourceId\n                             }\n                          }           }\n       }\n     }\n   }\n': {
     return: GetMainMenuQuery;
     variables: GetMainMenuQueryVariables;
   };

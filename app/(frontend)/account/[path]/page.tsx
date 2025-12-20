@@ -3,8 +3,6 @@ import { SettingsPageLayout } from '@/widgets/settings-nav';
 import { getTranslations } from 'next-intl/server';
 import { getPageInfo, renderView } from '@/features/account/ui/account-views';
 
-export const dynamicParams = false;
-
 export function generateStaticParams() {
   return Object.values(accountViewPaths).map((path) => ({ path }));
 }

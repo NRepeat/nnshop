@@ -25,7 +25,6 @@ export async function sanityFetch<const QueryString extends string>({
   revalidate?: number | false;
   tags?: string[];
 }) {
-  'use cache';
   return client.fetch(query, params, {
     next: {
       revalidate: tags.length ? false : revalidate,

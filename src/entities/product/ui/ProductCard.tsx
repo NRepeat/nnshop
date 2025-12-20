@@ -1,9 +1,20 @@
+'use client';
 import { Card, CardContent } from '@/shared/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { AddToCartButton } from './AddToCartButton';
 import clsx from 'clsx';
+import {
+  Carousel,
+  CarouselApi,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@shared/ui/carousel';
+import { useState } from 'react';
+import { useDotButton } from '@shared/hooks/useDotButton';
 
 type ProductCardProps = {
   product: Product;
@@ -11,40 +22,85 @@ type ProductCardProps = {
   className?: string;
 };
 
-export const ProductCard = async ({
+export const ProductCard = ({
   product,
   addToCard = true,
   className,
 }: ProductCardProps) => {
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+  const productImages = [
+    ...product?.media.edges.map((variant) => ({
+      url: variant.node.previewImage?.url || '',
+      altText: variant.node.previewImage?.altText || '',
+      width: variant.node.previewImage?.width || 300,
+      height: variant.node.previewImage?.height || 300,
+    })),
+  ]
+    .filter(Boolean)
+    .splice(0, 5);
+  const { selectedIndex, onDotButtonClick } = useDotButton(carouselApi);
+
+  const CardDots = () => {
+    if (!carouselApi) return null;
+    const handleDotClick = (
+      event: React.MouseEvent<HTMLButtonElement>,
+      index: number,
+    ) => {
+      event.stopPropagation();
+      onDotButtonClick(index);
+    };
+    return (
+      <div className="absolute bottom-2 left-0 right-0 flex justify-center z-20 gap-0.5">
+        {productImages.map((_, index) => (
+          <button
+            key={index}
+            className={clsx(
+              'w-2 h-2 rounded-full transition-all duration-300',
+              selectedIndex === index ? 'bg-primary' : 'bg-gray-300',
+            )}
+            onClick={(event) => handleDotClick(event, index)}
+          />
+        ))}
+      </div>
+    );
+  };
   return (
     <Card
       className={clsx(
-        'h-full shadow-none backdrop-blur-sm bg-transparent border-gray-200 border-nonerounded-xl  py-1 px-0.5 md:px-1.5 ',
+        'h-full shadow-none backdrop-blur-sm bg-transparent border-gray-200 border-nonerounded-xl cursor-pointer  py-1 px-0.5 md:px-1.5 ',
         className,
       )}
     >
       <CardContent className="  flex flex-col  rounded-none p-0 border-0 shadow-none h-full justify-between bg-transparent">
         <Link href={`/products/${product.handle}`}>
-          <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full">
-            <Image
-              className="h-auto w-full "
-              src={
-                product?.variants.edges[0].node.image?.url ||
-                product.featuredImage?.url
-              }
-              alt={product.featuredImage?.altText || ''}
-              width={product.featuredImage?.width || 300}
-              height={product.featuredImage?.height || 300}
-            />
-            {/*<div className="absolute right-3 top-3 group">
-              <Bookmark className="group-hover:fill-black" />
-            </div>*/}
-          </div>
+          <Carousel
+            className="relative"
+            opts={{ align: 'center' }}
+            setApi={setCarouselApi}
+          >
+            <CarouselContent>
+              {productImages.map((image, index) => (
+                <CarouselItem key={index} className=" ">
+                  <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full">
+                    <Image
+                      key={index}
+                      className=" w-full max-h-[350px] h-[350px]"
+                      src={image.url}
+                      alt={image.altText || ''}
+                      width={image.width || 300}
+                      height={image.height || 300}
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CardDots />
+          </Carousel>
         </Link>
         {
-          <div className="w-full pt-2 md:pt-6  flex flex-col gap-1">
+          <div className="w-full pt-2 md:pt-6  flex flex-col gap-1 flex-1">
             <span className="text-md font-bold">{product.vendor}</span>
-            <div>
+            <div className="flex flex-col flex-1">
               <div className=" w-full flex-col  justify-between flex pb-4">
                 <Link href={`/products/${product.handle}`}>
                   <p className="text-md font-light  text-pretty">

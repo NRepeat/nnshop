@@ -2,8 +2,6 @@ import { authViewPaths } from '@daveyplate/better-auth-ui/server';
 import { getTranslations } from 'next-intl/server';
 import { AuthViewRenderer } from '@/features/auth/ui/auth-view-renderer';
 
-export const dynamicParams = false;
-
 export function generateStaticParams() {
   return Object.values(authViewPaths).map((path) => ({ authView: path }));
 }
