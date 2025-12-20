@@ -386,7 +386,11 @@ export type GetMainMenuQuery = {
       items: Array<
         Pick<StorefrontTypes.MenuItem, 'title' | 'url' | 'resourceId'> & {
           items: Array<
-            Pick<StorefrontTypes.MenuItem, 'title' | 'url' | 'resourceId'>
+            Pick<StorefrontTypes.MenuItem, 'title' | 'url' | 'resourceId'> & {
+              items: Array<
+                Pick<StorefrontTypes.MenuItem, 'title' | 'url' | 'resourceId'>
+              >;
+            }
           >;
         }
       >;
@@ -425,7 +429,7 @@ interface GeneratedQueryTypes {
     return: GetProductByHandleQuery;
     variables: GetProductByHandleQueryVariables;
   };
-  '#graphql\n  query GetMainMenu {\n    menu(handle: "main-menu") {\n      handle\n      items {\n        title\n        url\n        resourceId\n          items {\n            title\n            url\n            resourceId\n          }\n      }\n    }\n  }\n': {
+  '#graphql\n  query GetMainMenu {\n     menu(handle: "shop-main-menu") {\n       handle\n       items {\n         title\n         url\n         resourceId\n           items {\n             title\n             url\n             resourceId\n             items{\n                title\n             url\n             resourceId\n             }\n           }\n       }\n     }\n   }\n': {
     return: GetMainMenuQuery;
     variables: GetMainMenuQueryVariables;
   };

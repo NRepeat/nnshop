@@ -15,18 +15,35 @@ const Navigation = async () => {
   const menu = meinMenu.map((item, index) => {
     if (item.items.length > 0) {
       return (
-        <ul className=" w-[250px] gap-4  bg-transparent flex">
+        <ul className=" gap-4  bg-transparent flex">
           {item.items.map((subItem) => (
-            <li key={subItem.title}>
-              <Button
+            <NavigationMenuItem key={subItem.title}>
+              <NavigationMenuTrigger
                 variant={'ghost'}
-                className="w-full rounded-none justify-start bg-transparent hover:bg-transparent hover:underline"
+                className="rounded-none text-md"
               >
-                <Link href={subItem.url} className="text-md">
-                  {subItem.title}
-                </Link>
-              </Button>
-            </li>
+                {subItem.title}
+              </NavigationMenuTrigger>
+              <NavigationMenuContent className="bg-transparent w-full">
+                <ul className="grid gap-2 md:w-[400px] lg:w-[500px] md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr]">
+                  {subItem.items.map((subItem) => (
+                    <li
+                      key={subItem.title}
+                      className="w-[150px] row-span-3 ml-2"
+                    >
+                      <Button
+                        variant={'ghost'}
+                        className="w-full rounded-none justify-start bg-transparent hover:bg-transparent hover:underline"
+                      >
+                        <Link href={subItem.url} className="text-md">
+                          {subItem.title}
+                        </Link>
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
           ))}
         </ul>
       );
@@ -39,9 +56,9 @@ const Navigation = async () => {
             {item.title}
           </NavigationMenuTrigger>
           <NavigationMenuContent className="bg-transparent">
-            <ul className="grid w-[250px] gap-4  bg-transparent">
+            <ul className="grid grid-cols-3 w-[750px] gap-4 bg-transparent">
               {item.items.map((subItem) => (
-                <li key={subItem.title}>
+                <li key={subItem.title} className="w-full">
                   <Button
                     variant={'ghost'}
                     className="w-full rounded-none justify-start bg-transparent hover:bg-transparent hover:underline"

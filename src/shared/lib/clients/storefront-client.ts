@@ -103,7 +103,9 @@ export class StorefrontClient implements ShopifyClient {
         modifiedQuery = this.addLanguageContext(query, language);
       }
       const ver = variables as Record<string, unknown>;
-      const response = await this.client.request(modifiedQuery, ver);
+      const response = await this.client.request(modifiedQuery, {
+        variables: ver,
+      });
 
       if (response.errors) {
         console.error(response.errors);

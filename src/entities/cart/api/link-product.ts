@@ -118,7 +118,6 @@ const linkProduct = async ({
         ? Object.entries(attributes).map(([key, value]) => ({ key, value }))
         : undefined,
     };
-    console.log(cartLineInput);
     const response = await storefrontClient.request<
       {
         cartLinesAdd: { cart?: Cart; userErrors: CartUserError[] };

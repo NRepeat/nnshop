@@ -6,8 +6,8 @@ import { useTranslations } from 'next-intl';
 
 export const PersistLinkNavigation = () => {
   const links = [
-    { name: 'Жінки', slug: 'women' },
-    { name: 'Чоловіки', slug: 'men' },
+    { name: 'Жінки', slug: 'woman' },
+    { name: 'Чоловіки', slug: 'man' },
   ];
   const t = useTranslations('Header.nav');
   return (
