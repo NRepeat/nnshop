@@ -65,8 +65,9 @@ const ProductSession = async ({ params }: Props) => {
     ? p.slug[p.slug.indexOf('variant') + 1]
     : undefined;
   const session = await auth.api.getSession({ headers: await headers() });
-
-  console.log('ProductSession', p, variant);
+  if (!session) {
+    return notFound();
+  }
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <ProductSessionView

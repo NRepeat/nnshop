@@ -1,11 +1,16 @@
 'use client';
 
-import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
+import {
+  PageInfo,
+  Product,
+  ProductFilter,
+} from '@shared/lib/shopify/types/storefront.types';
 import { Button } from '@shared/ui/button';
 import { Loader2 } from 'lucide-react';
-import { useEffect, useState, useTransition } from 'react';
+import { useCallback, useEffect, useState, useTransition } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { getCollectionProducts } from '../api/getCollectionProducts';
+import { useSearchParams } from 'next/navigation';
 
 export default function LoadMore({
   handle,
@@ -21,15 +26,26 @@ export default function LoadMore({
   const [pageInfo, setPageInfo] = useState<PageInfo>(initialPageInfo);
   const [isPending, startTransition] = useTransition();
   const { ref, inView } = useInView();
+  const searchParams = useSearchParams();
 
-  const handleLoadMore = () => {
-    if (!initialPageInfo.hasNextPage || isPending) return;
+  const handleLoadMore = useCallback(() => {
+    if (!pageInfo.hasNextPage || isPending) return;
 
     startTransition(async () => {
+      const filtersFromUrl = searchParams.get('filters');
+      let filters: ProductFilter[] = [];
+      if (filtersFromUrl) {
+        try {
+          filters = JSON.parse(filtersFromUrl);
+        } catch {
+          filters = [];
+        }
+      }
       const result = await getCollectionProducts({
         info: pageInfo,
         locale,
         slug: handle,
+        filters,
       });
 
       if (result) {
@@ -40,13 +56,13 @@ export default function LoadMore({
         );
       }
     });
-  };
+  }, [pageInfo, isPending, searchParams, locale, handle, onDataLoadedAction]);
 
   useEffect(() => {
     if (inView && !isPending && pageInfo?.hasNextPage) {
       handleLoadMore();
     }
-  }, [inView]);
+  }, [inView, handleLoadMore, isPending, pageInfo]);
 
   return (
     <div className="mt-10 flex flex-col items-center gap-4 p-4 min-h-[100px]">
@@ -59,7 +75,7 @@ export default function LoadMore({
       <Button
         variant="outline"
         onClick={handleLoadMore}
-        disabled={isPending}
+        disabled={isPending || !pageInfo.hasNextPage}
         className="px-8"
       >
         Показать больше
