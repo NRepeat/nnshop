@@ -13,13 +13,11 @@ export const FilterSide = ({ filters }: { filters: Filter[] }) => {
 
   return (
     <aside className="">
-      {/* Mobile filter sheet */}
       <div className="block md:hidden">
         <FilterSheet filters={filters} />
       </div>
 
-      {/* Desktop collapsible filters */}
-      <div className="hidden md:flex  sticky top-[145px] pt-10 ">
+      <div className="hidden md:flex  sticky top-[165px]  ">
         <AnimatePresence>
           {isOpen && (
             <motion.div

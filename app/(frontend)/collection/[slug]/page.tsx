@@ -2,8 +2,7 @@ import { getCollectionSlugs } from '@entities/collection/api/getCollection';
 import { Suspense } from 'react';
 import Loading from '@features/collection/ui/GridCollectionLoading';
 import { CollectionSession } from '@features/collection/ui/CollectionSession';
-import { FilterSheet } from '@features/collection/ui/FilterSheet';
-import { CollectionFilters } from '@features/collection/ui/CollectionFilters';
+
 export type Props = {
   params: Promise<{ slug: string }>;
   // searchParams: Promise<{

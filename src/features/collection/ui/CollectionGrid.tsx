@@ -3,7 +3,14 @@ import { cacheLife } from 'next/dist/server/use-cache/cache-life';
 import { notFound } from 'next/navigation';
 import { ClientGridWrapper } from './ClientGridWrapper';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
-
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@shared/ui/breadcrumb';
 export const CollectionGrid = async ({
   slug,
   locale,
@@ -29,12 +36,25 @@ export const CollectionGrid = async ({
   const pageInfo = collectionData.collection?.products.pageInfo;
   const products = collection.products.edges.map((edge) => edge.node);
   return (
-    <div className="flex justify-center pt-10 gap-8">
-      <ClientGridWrapper
-        filters={collection.products.filters}
-        initialPageInfo={pageInfo as PageInfo}
-        initialProducts={products as Product[]}
-      />
+    <div className="flex flex-col gap-8 pt-4">
+      <Breadcrumb className="px-3.5">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href={`/${locale}`}>Головна</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{collection?.title}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <div className="flex justify-center  gap-8 px-3.5">
+        <ClientGridWrapper
+          filters={collection.products.filters}
+          initialPageInfo={pageInfo as PageInfo}
+          initialProducts={products as Product[]}
+        />
+      </div>
     </div>
   );
 };

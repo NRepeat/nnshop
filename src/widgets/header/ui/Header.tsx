@@ -7,7 +7,7 @@ import { Suspense } from 'react';
 
 export const Header = async () => {
   return (
-    <header className=" sticky top-2   z-20  backdrop-blur-sm bg-card/60 border-card border-2">
+    <header className=" sticky top-0  z-20  backdrop-blur-sm bg-card/60 border-b-2 border-b-muted">
       <div className="container">
         <div className="grid grid-cols-3  pt-2">
           <div className="flex  justify-start items-center  ">

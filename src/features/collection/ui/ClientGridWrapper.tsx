@@ -34,10 +34,12 @@ export const ClientGridWrapper = ({
   };
   const params = useParams();
   return (
-    <>
+    <div className="flex">
       <FilterSide filters={filters} />
-
-      <div className="flex flex-col   max-w-[calc(100vw-200px)] ">
+      <div className="flex flex-col   max-w-[calc(100vw-300px)] ml-4">
+        <div className="flex w-full h-[40px]">
+          <div>sort</div>
+        </div>
         <ClientGrid products={products as Product[]} />
         <LoadMore
           initialPageInfo={pageInfo}
@@ -46,6 +48,6 @@ export const ClientGridWrapper = ({
           handle={params.slug as string}
         />
       </div>
-    </>
+    </div>
   );
 };
