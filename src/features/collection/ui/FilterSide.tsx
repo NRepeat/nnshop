@@ -1,7 +1,6 @@
 'use client';
 
 import { Filter } from '@shared/lib/shopify/types/storefront.types';
-import { FilterSheet } from './FilterSheet';
 import { CollectionFilters } from './CollectionFilters';
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -11,12 +10,8 @@ export const FilterSide = ({ filters }: { filters: Filter[] }) => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <aside className="">
-      <div className="block md:hidden">
-        <FilterSheet filters={filters} />
-      </div>
-
-      <div className="hidden md:flex  sticky top-[135px] ">
+    <aside className="hidden md:flex">
+      <div className="  sticky top-[135px] ">
         <AnimatePresence>
           {isOpen && (
             <motion.div

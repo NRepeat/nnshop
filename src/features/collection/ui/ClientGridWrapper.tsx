@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui/select';
+import { FilterSheet } from './FilterSheet';
 
 export const ClientGridWrapper = ({
   initialPageInfo,
@@ -46,8 +47,12 @@ export const ClientGridWrapper = ({
   return (
     <div className="flex">
       <FilterSide filters={filters} />
+
       <div className="flex flex-col items-end">
-        <div className="flex w-full justify-end">
+        <div className="flex w-full justify-between md:justify-end">
+          <div className="block md:hidden">
+            <FilterSheet filters={filters} />
+          </div>
           <Select>
             <SelectTrigger className="w-[180px] rounded-none">
               <SelectValue placeholder="Sort by" />
@@ -71,7 +76,7 @@ export const ClientGridWrapper = ({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex flex-col max-w-[calc(100%-19px)] justify-end">
+        <div className="flex flex-col w-full md:max-w-[calc(100%-19px)] justify-end">
           <ClientGrid products={products as Product[]} />
           <div className="w-full items-center">
             <LoadMore
