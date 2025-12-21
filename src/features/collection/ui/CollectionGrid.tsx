@@ -46,7 +46,7 @@ export const CollectionGrid = async ({
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/${locale}/collections/${slug}`}>
+            <BreadcrumbLink>
               {gender === 'man' ? 'Мужчини' : 'Жінки'}
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -56,7 +56,7 @@ export const CollectionGrid = async ({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="flex justify-center  gap-8 px-3.5 pt-4">
+      <div className="flex justify-center  gap-8 px-0.5 md:px-3.5 pt-4 h-full">
         <ClientGridWrapper
           filters={collection.products.filters}
           initialPageInfo={pageInfo as PageInfo}

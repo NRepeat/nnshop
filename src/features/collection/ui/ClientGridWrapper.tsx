@@ -45,9 +45,8 @@ export const ClientGridWrapper = ({
   };
   const params = useParams();
   return (
-    <div className="flex">
+    <div className="flex h-full">
       <FilterSide filters={filters} />
-
       <div className="flex flex-col items-end">
         <div className="flex w-full justify-between md:justify-end">
           <div className="block md:hidden">
@@ -76,7 +75,7 @@ export const ClientGridWrapper = ({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex flex-col w-full md:max-w-[calc(100%-19px)] justify-end">
+        <div className="flex flex-col w-full md:max-w-[calc(100%-19px)] justify-end pt-2 md:pt-0 h-full">
           <ClientGrid products={products as Product[]} />
           <div className="w-full items-center">
             <LoadMore

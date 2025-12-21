@@ -10,12 +10,12 @@ export const FilterSide = ({ filters }: { filters: Filter[] }) => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <aside className="hidden md:flex">
-      <div className="  sticky top-[135px] ">
+    <aside className="">
+      <div className="hidden md:flex  sticky top-[135px] ">
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ width: 0, opacity: 0, x: '-100%' }}
+              initial={{ width: 0, opacity: 1, x: '100%' }}
               animate={{ width: 'auto', opacity: 1, x: 0 }}
               exit={{ width: 0, opacity: 0, x: '-100%' }}
               transition={{ duration: 0.4, ease: 'easeInOut' }}
