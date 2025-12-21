@@ -90,9 +90,12 @@ export function CollectionFilters({ filters }: Props) {
 
   const sortedFilters = filters;
   return (
-    <div className="w-full md:w-[260px] overflow-y-scroll max-h-[calc(100vh-130px)]">
+    <div className="w-full md:w-[260px] ">
       <h3 className="text-xl font-semibold mb-4">{t('title')}</h3>
-      <Accordion type="multiple" className="w-full">
+      <Accordion
+        type="multiple"
+        className="pr-1 w-full overflow-y-scroll max-h-[calc(100vh-130px)] custom-scroll"
+      >
         {sortedFilters.map((filter) => (
           <AccordionItem key={filter.id} value={filter.id}>
             <AccordionTrigger className="font-medium cursor-pointer w-full">
