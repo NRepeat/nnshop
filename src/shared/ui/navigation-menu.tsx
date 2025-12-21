@@ -77,7 +77,7 @@ function NavigationMenuTrigger({
       className={cn(
         navigationMenuTriggerStyle(),
         buttonVariants({ variant, size: 'default', className }),
-        'group',
+        'group pl-0',
         className,
       )}
       {...props}

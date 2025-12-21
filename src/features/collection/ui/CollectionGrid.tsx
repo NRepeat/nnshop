@@ -31,23 +31,12 @@ export const CollectionGrid = async ({
   const pageInfo = collectionData.collection?.products.pageInfo;
   const products = collection.products.edges.map((edge) => edge.node);
   return (
-    <div className="flex ">
-      <FilterSide filters={collection.products.filters} />
+    <div className="flex pt-10">
       <ClientGridWrapper
+        filters={collection.products.filters}
         initialPageInfo={pageInfo as PageInfo}
         initialProducts={products as Product[]}
       />
     </div>
-  );
-};
-
-const FilterSide = ({ filters }: { filters: Filter[] }) => {
-  return (
-    <aside>
-      <div className="block md:hidden">
-        <FilterSheet filters={filters} />
-      </div>
-      <CollectionFilters filters={filters} />
-    </aside>
   );
 };

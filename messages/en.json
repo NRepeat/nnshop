@@ -317,7 +317,9 @@
       "min": "Min",
       "max": "Max",
       "apply": "Apply",
-      "clear": "Clear"
+      "clear": "Clear",
+      "show": "Show",
+      "hide": "Hide"
     }
   },
   "CheckoutPage": {

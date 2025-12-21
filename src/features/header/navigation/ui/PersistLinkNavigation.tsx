@@ -15,7 +15,7 @@ export const PersistLinkNavigation = () => {
       {links.map((link) => (
         <NavigationMenuItem key={link.slug} className={`block`}>
           <Button
-            className="rounded-none  cursor-pointer w-full text-nowrap text-md"
+            className="rounded-none  cursor-pointer w-full text-nowrap text-md "
             variant={'ghost'}
             onClick={() => cookieFenderSet(link.slug)}
           >

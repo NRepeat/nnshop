@@ -1,3 +1,4 @@
+'use client';
 import { getCollection } from '@entities/collection/api/getCollection';
 import { ProductCard } from '@entities/product/ui/ProductCard';
 import { CollectionFilters } from '@features/collection/ui/CollectionFilters';
@@ -17,46 +18,22 @@ import {
 } from '@shared/ui/pagination';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { useState } from 'react';
 
 const PRODUCTS_PER_PAGE = 12;
 
-export default async function CollectionView({
-  searchParams,
+export default function CollectionView({
+  collection,
+  t,
   slug,
+  filtersString,
 }: {
+  collection: Awaited<ReturnType<typeof getCollection>>['collection'];
+  t: Awaited<ReturnType<typeof getTranslations>>;
   slug: string;
-  searchParams: {
-    filters?: string;
-    after?: string;
-    before?: string;
-  };
+  filtersString?: string;
 }) {
-  const t = await getTranslations('CollectionPage');
-  if (!slug) {
-    return notFound();
-  }
-
-  const { filters: filtersString, after, before } = searchParams;
-  let filters: ProductFilter[] = [];
-  if (filtersString) {
-    try {
-      filters = JSON.parse(filtersString);
-    } catch {}
-  }
-
-  const paginationArgs = before
-    ? { last: PRODUCTS_PER_PAGE, before }
-    : { first: PRODUCTS_PER_PAGE, after };
-
-  const locale = await getLocale();
-
-  const collectionData = await getCollection({
-    handle: slug,
-    filters,
-    ...paginationArgs,
-    locale,
-  });
-  const collection = collectionData.collection;
+  const [showFilters, setShowFilters] = useState(true);
 
   if (!collection) {
     return notFound();
@@ -90,12 +67,18 @@ export default async function CollectionView({
           <FilterSheet filters={collection.products.filters} />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-x-8">
-          <aside className="hidden lg:block lg:col-span-1">
-            <div className="sticky top-24">
-              <CollectionFilters filters={collection.products.filters} />
-            </div>
-          </aside>
-          <main className="lg:col-span-4">
+          {showFilters && (
+            <aside className="hidden lg:block lg:col-span-1">
+              <div className="sticky top-24">
+                <CollectionFilters
+                  filters={collection.products.filters}
+                  showFilters={showFilters}
+                  setShowFilters={setShowFilters}
+                />
+              </div>
+            </aside>
+          )}
+          <main className={showFilters ? 'lg:col-span-4' : 'lg:col-span-5'}>
             <div className="grid grid-cols-2 gap-2 sm:gap-2 sm:grid-cols-2 md:grid-cols-3 lg:gap-8 lg:grid-cols-3 xl:grid-cols-4 ">
               {products.map((product) => (
                 <ProductCard

@@ -95,7 +95,7 @@ export function CollectionFilters({ filters }: Props) {
       <Accordion type="multiple" className="w-full">
         {sortedFilters.map((filter) => (
           <AccordionItem key={filter.id} value={filter.id}>
-            <AccordionTrigger className="font-medium ">
+            <AccordionTrigger className="font-medium cursor-pointer">
               {filter.label}
             </AccordionTrigger>
             <AccordionContent>
@@ -104,7 +104,7 @@ export function CollectionFilters({ filters }: Props) {
                   {[...filter.values]
                     .sort((a, b) => a.label.localeCompare(b.label))
                     .map((value) => (
-                      <li key={value.label}>
+                      <li key={value.label} className="cursor-pointer">
                         <label className="flex items-center space-x-2  cursor-pointer">
                           <input
                             type="checkbox"
@@ -190,13 +190,13 @@ function PriceRangeFilter({
 
   return (
     <div className="flex flex-col space-y-2">
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 px-1 pt-1">
         <input
           type="number"
           placeholder={t('min')}
           value={min}
           onChange={(e) => setMin(e.target.value)}
-          className="w-full border-gray-300 rounded-md shadow-sm p-2"
+          className="w-full border-gray-300 rounded-none shadow-sm p-2"
         />
         <span>-</span>
         <input
@@ -204,7 +204,7 @@ function PriceRangeFilter({
           placeholder={t('max')}
           value={max}
           onChange={(e) => setMax(e.target.value)}
-          className="w-full border-gray-300 rounded-md shadow-sm p-2"
+          className="w-full border-gray-300 rounded-none shadow-sm p-2"
         />
       </div>
       <div className="flex items-center space-x-2">
