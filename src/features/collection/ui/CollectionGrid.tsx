@@ -3,9 +3,7 @@ import { cacheLife } from 'next/dist/server/use-cache/cache-life';
 import { notFound } from 'next/navigation';
 import { ClientGridWrapper } from './ClientGridWrapper';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
-import { FilterSheet } from './FilterSheet';
-import { CollectionFilters } from './CollectionFilters';
-import { Filter } from '@shared/lib/shopify/types/storefront.types';
+
 export const CollectionGrid = async ({
   slug,
   locale,
@@ -31,7 +29,7 @@ export const CollectionGrid = async ({
   const pageInfo = collectionData.collection?.products.pageInfo;
   const products = collection.products.edges.map((edge) => edge.node);
   return (
-    <div className="flex pt-10">
+    <div className="flex justify-center pt-10 gap-8">
       <ClientGridWrapper
         filters={collection.products.filters}
         initialPageInfo={pageInfo as PageInfo}

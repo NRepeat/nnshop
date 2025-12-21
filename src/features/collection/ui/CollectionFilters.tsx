@@ -90,7 +90,7 @@ export function CollectionFilters({ filters }: Props) {
 
   const sortedFilters = filters;
   return (
-    <div className="w-[405px] sticky top-0">
+    <div className="w-[260px]">
       <h3 className="text-xl font-semibold mb-4">{t('title')}</h3>
       <Accordion type="multiple" className="w-full">
         {sortedFilters.map((filter) => (

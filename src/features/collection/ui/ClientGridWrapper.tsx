@@ -37,7 +37,7 @@ export const ClientGridWrapper = ({
     <>
       <FilterSide filters={filters} />
 
-      <div className="flex flex-col">
+      <div className="flex flex-col   max-w-[calc(100vw-200px)] ">
         <ClientGrid products={products as Product[]} />
         <LoadMore
           initialPageInfo={pageInfo}
