@@ -6,7 +6,6 @@ import { CollectionFilters } from './CollectionFilters';
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@shared/ui/button';
-import { ChevronRight } from 'lucide-react';
 
 export const FilterSide = ({ filters }: { filters: Filter[] }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +16,7 @@ export const FilterSide = ({ filters }: { filters: Filter[] }) => {
         <FilterSheet filters={filters} />
       </div>
 
-      <div className="hidden md:flex  sticky top-[165px]  ">
+      <div className="hidden md:flex  sticky top-[115px]  ">
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -43,10 +42,10 @@ export const FilterSide = ({ filters }: { filters: Filter[] }) => {
             className="   flex flex-row items-center justify-center "
           >
             <p>
-              <span className="whitespace-nowrap transform mb-2">Фільтр</span>
+              <span className="whitespace-nowrap transform mb-2">Фільтри</span>
             </p>
 
-            <ChevronRight className="h-4 w-4 rotate-90" />
+            {/*<ChevronRight className="h-4 w-4 rotate-90" />*/}
           </Button>
         </motion.div>
       </div>

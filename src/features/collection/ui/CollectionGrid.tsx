@@ -14,9 +14,11 @@ import {
 export const CollectionGrid = async ({
   slug,
   locale,
+  gender,
 }: {
   slug: string;
   locale: string;
+  gender?: string;
 }) => {
   'use cache';
   cacheLife({ revalidate: 60, stale: 60 });
@@ -44,11 +46,17 @@ export const CollectionGrid = async ({
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
+            <BreadcrumbLink href={`/${locale}/collections/${slug}`}>
+              {gender === 'man' ? 'Мужчини' : 'Жінки'}
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
             <BreadcrumbPage>{collection?.title}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="flex justify-center  gap-8 px-3.5">
+      <div className="flex justify-center  gap-8 px-3.5 pt-4">
         <ClientGridWrapper
           filters={collection.products.filters}
           initialPageInfo={pageInfo as PageInfo}

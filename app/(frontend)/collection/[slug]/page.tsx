@@ -20,8 +20,6 @@ export async function generateStaticParams() {
 }
 
 export default async function CollectionPage({ params }: Props) {
-  'use cache';
-
   return (
     <div className="container ">
       <Suspense fallback={<Loading />}>

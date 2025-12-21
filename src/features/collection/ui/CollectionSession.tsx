@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Props } from '~/app/(frontend)/collection/[slug]/page';
 import Loading from './GridCollectionLoading';
 import { Suspense } from 'react';
+import { cookies } from 'next/headers';
 
 export const CollectionSession = async ({ params }: Props) => {
   const { slug } = await params;
@@ -11,10 +12,11 @@ export const CollectionSession = async ({ params }: Props) => {
   if (!slug || !locale) {
     return notFound();
   }
-
+  const cookiesStore = await cookies();
+  const gender = cookiesStore.get('gender')?.value;
   return (
     <Suspense fallback={<Loading />}>
-      <CollectionGrid slug={slug} locale={locale} />
+      <CollectionGrid slug={slug} locale={locale} gender={gender} />
     </Suspense>
   );
 };
