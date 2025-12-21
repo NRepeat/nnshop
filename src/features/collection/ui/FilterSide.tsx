@@ -28,8 +28,9 @@ export const FilterSide = ({ filters }: { filters: Filter[] }) => {
         </AnimatePresence>
         <motion.div
           className="absolute  -right-[15px] "
-          initial={{ rotate: 0, y: 0 }}
+          initial={{ rotate: 0, y: 0, opacity: 0 }}
           animate={{
+            opacity: 1,
             rotate: isOpen ? 0 : -90,
             y: isOpen ? 0 : 25,
             x: isOpen ? 5 : 25,
