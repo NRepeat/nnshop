@@ -37,7 +37,7 @@ export const ClientGrid = ({ products }: { products: Product[] }) => {
   }, [products]);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 h-full">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 h-full ">
       <AnimatePresence mode="popLayout">
         {tempProducts.map((product) => (
           <motion.div
@@ -48,7 +48,7 @@ export const ClientGrid = ({ products }: { products: Product[] }) => {
             layout
             className="col-span-1"
           >
-            <ProductCard product={product} className="pl-0 pr-0" withCarousel />
+            <ProductCard product={product} className=" px-0" withCarousel />
           </motion.div>
         ))}
       </AnimatePresence>

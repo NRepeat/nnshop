@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@shared/ui/button';
 
 export const FilterSide = ({ filters }: { filters: Filter[] }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
     <aside className="">
@@ -16,7 +16,7 @@ export const FilterSide = ({ filters }: { filters: Filter[] }) => {
         <FilterSheet filters={filters} />
       </div>
 
-      <div className="hidden md:flex  sticky top-[115px]  ">
+      <div className="hidden md:flex  sticky top-[135px] ">
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -32,9 +32,13 @@ export const FilterSide = ({ filters }: { filters: Filter[] }) => {
           )}
         </AnimatePresence>
         <motion.div
-          className="absolute top-0 right-0 "
-          initial={{ rotate: -90 }}
-          animate={{ rotate: isOpen ? 0 : -90 }}
+          className="absolute  -right-[15px] "
+          initial={{ rotate: 0, y: 0 }}
+          animate={{
+            rotate: isOpen ? 0 : -90,
+            y: isOpen ? 0 : 25,
+            x: isOpen ? 5 : 25,
+          }}
           transition={{ duration: 0.3 }}
         >
           <Button
@@ -42,10 +46,10 @@ export const FilterSide = ({ filters }: { filters: Filter[] }) => {
             className="   flex flex-row items-center justify-center "
           >
             <p>
-              <span className="whitespace-nowrap transform mb-2">Фільтри</span>
+              <span className="whitespace-nowrap transform mb-2">
+                {isOpen ? 'Закрити' : 'Фільтри'}
+              </span>
             </p>
-
-            {/*<ChevronRight className="h-4 w-4 rotate-90" />*/}
           </Button>
         </motion.div>
       </div>

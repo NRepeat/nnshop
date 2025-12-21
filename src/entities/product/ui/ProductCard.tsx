@@ -67,11 +67,11 @@ export const ProductCard = ({
   return (
     <Card
       className={clsx(
-        'h-full shadow-none backdrop-blur-sm bg-transparent border-gray-200 border-nonerounded-xl cursor-pointer  py-1 px-0.5 md:px-1.5 ',
+        'h-full shadow-none backdrop-blur-sm bg-transparent border-gray-200 border-none rounded-none cursor-pointer  py-1 ',
         className,
       )}
     >
-      <CardContent className="  flex flex-col  rounded-none p-0 border-0 shadow-none h-full justify-between bg-transparent">
+      <CardContent className="  flex flex-col  rounded-none p-1 border-0 shadow-none h-full justify-between bg-transparent">
         <Link href={`/products/${product.handle}`}>
           {withCarousel ? (
             <Carousel
@@ -112,7 +112,7 @@ export const ProductCard = ({
           )}
         </Link>
         {
-          <div className="w-full pt-2 md:pt-6  flex flex-col gap-1 flex-1">
+          <div className="w-full pt-2 md:pt-6  flex flex-col gap-1 flex-1 px-2">
             <span className="text-md font-bold">{product.vendor}</span>
             <div className="flex flex-col justify-between flex-1">
               <div className=" w-full flex-col  justify-between flex pb-4">
@@ -136,7 +136,7 @@ export const ProductCard = ({
         }
 
         {addToCard && (
-          <div className=" w-full mt-1 md:mt-4 flex justify-center">
+          <div className=" w-full mt-1 md:mt-4 flex justify-center px-2">
             <AddToCartButton
               product={product}
               variant="outline"

@@ -11,6 +11,16 @@ import { useParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { FilterSide } from './FilterSide';
 
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/ui/select';
+
 export const ClientGridWrapper = ({
   initialPageInfo,
   initialProducts,
@@ -36,17 +46,42 @@ export const ClientGridWrapper = ({
   return (
     <div className="flex">
       <FilterSide filters={filters} />
-      <div className="flex flex-col   max-w-[calc(100vw-300px)] ml-4">
-        <div className="flex w-full h-[40px]">
-          <div>sort</div>
+      <div className="flex flex-col items-end">
+        <div className="flex w-full justify-end">
+          <Select>
+            <SelectTrigger className="w-[180px] rounded-none">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent className="rounded-none">
+              <SelectGroup>
+                <SelectLabel>Sort by</SelectLabel>
+                <SelectItem className="rounded-none" value="trending">
+                  Trending
+                </SelectItem>
+                <SelectItem className="rounded-none" value="price-asc">
+                  Price: Low to High
+                </SelectItem>
+                <SelectItem className="rounded-none" value="price-desc">
+                  Price: High to Low
+                </SelectItem>
+                <SelectItem className="rounded-none" value="created-desc">
+                  Newest
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
-        <ClientGrid products={products as Product[]} />
-        <LoadMore
-          initialPageInfo={pageInfo}
-          onDataLoadedAction={handleDataLoaded}
-          locale={locale}
-          handle={params.slug as string}
-        />
+        <div className="flex flex-col max-w-[calc(100%-19px)] justify-end">
+          <ClientGrid products={products as Product[]} />
+          <div className="w-full items-center">
+            <LoadMore
+              initialPageInfo={pageInfo}
+              onDataLoadedAction={handleDataLoaded}
+              locale={locale}
+              handle={params.slug as string}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
