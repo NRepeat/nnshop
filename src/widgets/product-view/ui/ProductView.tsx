@@ -6,6 +6,7 @@ import { ProductVariant } from '@shared/lib/shopify/types/storefront.types';
 import { PAGE_QUERYResult } from '@shared/sanity/types';
 import { isProductFavorite } from '@features/product/api/isProductFavorite';
 import { Suspense } from 'react';
+import { Session, User } from 'better-auth';
 
 export async function ProductView({
   product,
@@ -13,6 +14,7 @@ export async function ProductView({
   content,
   sanityDocumentId,
   sanityDocumentType,
+  session,
 }: {
   product: Product;
   selectedVariant: ProductVariant | undefined;
@@ -20,6 +22,7 @@ export async function ProductView({
   content: PAGE_QUERYResult['content'];
   sanityDocumentId: string;
   sanityDocumentType: string;
+  session: { session: Session; user: User };
 }) {
   if (!product) throw new Error('Product not found');
   const images =
@@ -28,7 +31,7 @@ export async function ProductView({
       : product.featuredImage
         ? [{ node: product.featuredImage }]
         : [];
-  const isFavorite = await isProductFavorite(product.id);
+  // const isFavorite = await isProductFavorite(product.id, session);
   return (
     <div className="container mx-auto py-12 space-y-12">
       {selectedVariant && (
@@ -38,7 +41,7 @@ export async function ProductView({
               images={images}
               productId={product.id}
               selectedVariant={selectedVariant}
-              isFavorite={isFavorite}
+              isFavorite={false}
             />
           </Suspense>
           <Description product={product} selectedVariant={selectedVariant} />
