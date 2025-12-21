@@ -1,5 +1,10 @@
 'use client';
-
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@shared/ui/accordion';
 import { Button } from '@shared/ui/button';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
@@ -85,44 +90,53 @@ export function CollectionFilters({ filters }: Props) {
 
   const sortedFilters = filters;
   return (
-    <div>
+    <div className="w-[405px] sticky top-0">
       <h3 className="text-xl font-semibold mb-4">{t('title')}</h3>
-      {sortedFilters.map((filter) => (
-        <div key={filter.id} className="py-6 border-b border-gray-200">
-          <h4 className="font-medium mb-3">{filter.label}</h4>
-          {filter.type === 'LIST' && (
-            <ul className="space-y-2">
-              {[...filter.values]
-                .sort((a, b) => a.label.localeCompare(b.label))
-                .map((value) => (
-                  <li key={value.label}>
-                    <label className="flex items-center space-x-2 text-gray-600 hover:text-black cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="rounded"
-                        checked={activeFilters.some(
-                          (f) => JSON.stringify(f) === value.input,
-                        )}
-                        onChange={() =>
-                          handleFilterChange(value.input as string, filter.type)
-                        }
-                      />
-                      <span>
-                        {value.label} ({value.count})
-                      </span>
-                    </label>
-                  </li>
-                ))}
-            </ul>
-          )}
-          {filter.type === 'PRICE_RANGE' && (
-            <PriceRangeFilter
-              filter={filter}
-              onPriceChange={handlePriceChange}
-            />
-          )}
-        </div>
-      ))}
+      <Accordion type="multiple" className="w-full">
+        {sortedFilters.map((filter) => (
+          <AccordionItem key={filter.id} value={filter.id}>
+            <AccordionTrigger className="font-medium ">
+              {filter.label}
+            </AccordionTrigger>
+            <AccordionContent>
+              {filter.type === 'LIST' && (
+                <ul className="space-y-2">
+                  {[...filter.values]
+                    .sort((a, b) => a.label.localeCompare(b.label))
+                    .map((value) => (
+                      <li key={value.label}>
+                        <label className="flex items-center space-x-2  cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="rounded"
+                            checked={activeFilters.some(
+                              (f) => JSON.stringify(f) === value.input,
+                            )}
+                            onChange={() =>
+                              handleFilterChange(
+                                value.input as string,
+                                filter.type,
+                              )
+                            }
+                          />
+                          <span>
+                            {value.label} ({value.count})
+                          </span>
+                        </label>
+                      </li>
+                    ))}
+                </ul>
+              )}
+              {filter.type === 'PRICE_RANGE' && (
+                <PriceRangeFilter
+                  filter={filter}
+                  onPriceChange={handlePriceChange}
+                />
+              )}
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
     </div>
   );
 }

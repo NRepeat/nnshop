@@ -27,7 +27,7 @@ export const ClientGridWrapper = ({
   };
   const params = useParams();
   return (
-    <>
+    <div className="flex flex-col">
       <ClientGrid products={products as Product[]} />
       <LoadMore
         initialPageInfo={pageInfo}
@@ -35,6 +35,6 @@ export const ClientGridWrapper = ({
         locale={locale}
         handle={params.slug as string}
       />
-    </>
+    </div>
   );
 };

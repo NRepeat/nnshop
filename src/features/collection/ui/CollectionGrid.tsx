@@ -3,7 +3,9 @@ import { cacheLife } from 'next/dist/server/use-cache/cache-life';
 import { notFound } from 'next/navigation';
 import { ClientGridWrapper } from './ClientGridWrapper';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
-
+import { FilterSheet } from './FilterSheet';
+import { CollectionFilters } from './CollectionFilters';
+import { Filter } from '@shared/lib/shopify/types/storefront.types';
 export const CollectionGrid = async ({
   slug,
   locale,
@@ -29,9 +31,23 @@ export const CollectionGrid = async ({
   const pageInfo = collectionData.collection?.products.pageInfo;
   const products = collection.products.edges.map((edge) => edge.node);
   return (
-    <ClientGridWrapper
-      initialPageInfo={pageInfo as PageInfo}
-      initialProducts={products as Product[]}
-    />
+    <div className="flex ">
+      <FilterSide filters={collection.products.filters} />
+      <ClientGridWrapper
+        initialPageInfo={pageInfo as PageInfo}
+        initialProducts={products as Product[]}
+      />
+    </div>
+  );
+};
+
+const FilterSide = ({ filters }: { filters: Filter[] }) => {
+  return (
+    <aside>
+      <div className="block md:hidden">
+        <FilterSheet filters={filters} />
+      </div>
+      <CollectionFilters filters={filters} />
+    </aside>
   );
 };
