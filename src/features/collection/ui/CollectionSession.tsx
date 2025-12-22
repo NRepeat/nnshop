@@ -6,11 +6,11 @@ import { cookies } from 'next/headers';
 
 export const CollectionSession = async ({ params }: Props) => {
   const { slug } = await params;
-  const locale = await getLocale();
-  if (!slug || !locale) {
+
+  if (!slug) {
     return notFound();
   }
   const cookiesStore = await cookies();
   const gender = cookiesStore.get('gender')?.value;
-  return <CollectionGrid slug={slug} locale={locale} gender={gender} />;
+  return <>test</>;
 };

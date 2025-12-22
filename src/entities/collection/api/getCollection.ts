@@ -141,7 +141,6 @@ const GET_COLLECTION_SLUGS = `
   `;
 
 export const getCollectionSlugs = async () => {
-  'use cache';
   const handles: string[] = [];
   const locales: StorefrontLanguageCode[] = ['RU', 'UK'];
   try {
@@ -182,8 +181,6 @@ export const getCollection = async ({
   before?: string;
   locale: string;
 }) => {
-  'use cache';
-
   const collection = await storefrontClient.request<
     GetCollectionQuery,
     {

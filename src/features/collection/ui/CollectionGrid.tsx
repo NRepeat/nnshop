@@ -1,5 +1,4 @@
 import { getCollection } from '@entities/collection/api/getCollection';
-import { cacheLife } from 'next/dist/server/use-cache/cache-life';
 import { notFound } from 'next/navigation';
 import { ClientGridWrapper } from './ClientGridWrapper';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
@@ -20,8 +19,6 @@ export const CollectionGrid = async ({
   locale: string;
   gender?: string;
 }) => {
-  'use cache';
-  cacheLife({ revalidate: 60, stale: 60 });
   const collectionData = await getCollection({
     handle: slug,
     first: 20,

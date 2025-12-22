@@ -62,7 +62,7 @@ export default function LoadMore({
     if (inView && !isPending && pageInfo?.hasNextPage) {
       handleLoadMore();
     }
-  }, [inView, handleLoadMore, isPending, pageInfo]);
+  }, [inView]);
 
   return (
     <div className="mt-10 flex flex-col items-center gap-4 p-4 min-h-[100px]">
