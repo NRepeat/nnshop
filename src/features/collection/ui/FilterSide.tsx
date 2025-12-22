@@ -12,20 +12,20 @@ export const FilterSide = ({ filters }: { filters: Filter[] }) => {
   return (
     <aside className="">
       <div className="hidden md:flex  sticky top-[135px] ">
-        {/*<AnimatePresence>*/}
-        {isOpen && (
-          <motion.div
-          // initial={{ width: 0, opacity: 1, x: '100%' }}
-          // animate={{ width: 'auto', opacity: 1, x: 0 }}
-          // exit={{ width: 0, opacity: 0, x: '-100%' }}
-          // transition={{ duration: 0.4, ease: 'easeInOut' }}
-          // className="overflow-hidden "
-          // style={{ position: 'relative' }}
-          >
-            <CollectionFilters filters={filters} />
-          </motion.div>
-        )}
-        {/*</AnimatePresence>*/}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ width: 0, opacity: 1, x: '100%' }}
+              animate={{ width: 'auto', opacity: 1, x: 0 }}
+              exit={{ width: 0, opacity: 0, x: '-100%' }}
+              transition={{ duration: 0.4, ease: 'easeInOut' }}
+              className="overflow-hidden "
+              style={{ position: 'relative' }}
+            >
+              <CollectionFilters filters={filters} />
+            </motion.div>
+          )}
+        </AnimatePresence>
         <motion.div
           className="absolute  -right-[15px] "
           initial={{ rotate: 0, y: 0, opacity: 0 }}
