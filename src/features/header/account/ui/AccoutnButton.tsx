@@ -9,39 +9,41 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@shared/ui/dropdown-menu';
-import { User } from 'lucide-react';
+import { User, User2 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
+import { Button } from '@shared/ui/button';
+import { cn } from '@shared/lib/utils';
 
-export const AccountButton = async () => {
+export const AccountButton = async ({ className }: { className?: string }) => {
   const headersList = await headers();
   const t = await getTranslations('AccountButton');
 
   const session = await auth.api.getSession({ headers: headersList });
   if (!session) {
     return (
-      <Link
-        href={'/auth/sign-in'}
-        className="cursor-pointer block hover:bg-accent p-2 rounded-none"
-      >
-        <User />
-      </Link>
+      <Button variant="ghost" size="icon" className={cn(className)}>
+        <Link href={'/auth/sign-in'} className="rounded-none">
+          <User2 />
+        </Link>
+      </Button>
     );
   }
   if (session && session.user?.isAnonymous) {
     return (
-      <Link
-        href={'/auth/sign-in'}
-        className="cursor-pointer block hover:bg-accent p-2 rounded-none"
-      >
-        <User />
-      </Link>
+      <Button variant="ghost" size="icon" className={cn(className)}>
+        <Link href={'/auth/sign-in'} className="rounded-none">
+          <User2 />
+        </Link>
+      </Button>
     );
   }
   return (
     <div className="flex items-center ">
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center cursor-pointer">
+        <DropdownMenuTrigger
+          className={cn(className, 'flex items-center cursor-pointer')}
+        >
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" />
             <AvatarFallback>CN</AvatarFallback>

@@ -6,10 +6,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@shared/ui/sheet';
-import BurgerIcon from './BurgerIcon';
 import { InternalMenu } from './InternalMenu';
 import { useState } from 'react';
 import { Maybe } from '@shared/lib/shopify/types/storefront.types';
+import { Button } from '@shared/ui/button';
+import { Menu } from 'lucide-react';
 
 const NavigationSheet = ({
   meinMenu,
@@ -38,8 +39,8 @@ const NavigationSheet = ({
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger className="cursor-pointer block md:hidden hover:bg-accent p-2 rounded-lg">
-        <BurgerIcon className="min-h-6 min-w-6" />
+      <SheetTrigger className="cursor-pointer h-full  justify-center items-center hover:underline hover:text-accent-foreground  rounded-none relative size-9 hover:bg-muted flex md:hidden">
+        <Menu className="max-w-5 max-h-5" />
       </SheetTrigger>
       <SheetContent side="left" className="w-full">
         <SheetHeader>

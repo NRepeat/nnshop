@@ -30,17 +30,20 @@ const Navigation = async ({
   const menu = meinMenu.map((item, index) => {
     if (item.items.length > 0) {
       return (
-        <ul className=" gap-4  bg-transparent flex" key={index}>
+        <ul className=" gap-4  bg-transparent flex container" key={index}>
           {item.items.map((subItem) => (
-            <NavigationMenuItem key={subItem.url + subItem.title + gender}>
+            <NavigationMenuItem
+              key={subItem.url + subItem.title + gender}
+              className="hover:underline"
+            >
               <NavigationMenuTrigger
                 variant={'ghost'}
-                className="rounded-none text-md pl-0"
+                className="rounded-none  cursor-pointer w-full text-nowrap text-xs font-300 font-sans h-full px-5 py-1.5 "
               >
                 {subItem.title}
               </NavigationMenuTrigger>
-              <NavigationMenuContent className="bg-transparent w-full">
-                <ul className="grid gap-2 md:w-[400px] lg:w-[500px] md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr]">
+              <NavigationMenuContent>
+                <ul className="grid gap-2 md:w-full lg:w-full md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr]">
                   {subItem.items.map((subItem, index) => (
                     <li
                       key={subItem.title + gender}

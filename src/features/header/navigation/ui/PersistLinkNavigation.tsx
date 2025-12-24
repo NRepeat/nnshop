@@ -8,14 +8,15 @@ export const PersistLinkNavigation = () => {
   const links = [
     { name: 'Жінки', slug: 'woman' },
     { name: 'Чоловіки', slug: 'man' },
+    { name: 'Нові надходження', slug: 'new' },
   ];
   const t = useTranslations('Header.nav');
   return (
     <div className=" justify-center hidden md:flex">
       {links.map((link) => (
-        <NavigationMenuItem key={link.slug} className={`block`}>
+        <NavigationMenuItem key={link.slug} className={`flex p-0`}>
           <Button
-            className="rounded-none  cursor-pointer w-full text-nowrap text-md "
+            className="rounded-none  cursor-pointer w-full text-nowrap text-xs font-300 font-sans h-full px-5 py-1.5"
             variant={'ghost'}
             onClick={() => cookieFenderSet(link.slug)}
           >

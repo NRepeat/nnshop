@@ -39,8 +39,8 @@ const CartSheet = async () => {
   );
   return (
     <Sheet>
-      <SheetTrigger className="cursor-pointer block hover:bg-accent p-2 rounded-none relative">
-        <ShoppingCart />
+      <SheetTrigger className="cursor-pointer h-full flex justify-center items-center hover:underline hover:text-accent-foreground  rounded-none relative size-9 hover:bg-muted">
+        <ShoppingCart className="h-4 w-4" />
         {mockProducts && mockProducts.length > 0 && (
           <Badge className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums top-0 right-0 absolute">
             {totalQuantity}

@@ -7,31 +7,36 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
-import { usePathname, useRouter } from '@shared/i18n/navigation';
 import { Globe } from 'lucide-react';
+import { useTranslations } from 'use-intl';
+import { setLocale } from '../api/set-locale';
 
-export function LanguageSwitcher() {
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const changeLocale = (newLocale: string) => {
-    router.replace(pathname, { locale: newLocale });
+export function LanguageSwitcher({ className }: { className?: string }) {
+  const t = useTranslations('Header.locale');
+  const changeLocale = async (newLocale: string) => {
+    await setLocale(newLocale);
   };
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <Globe className="h-[1.2rem] w-[1.2rem]" />
+      <DropdownMenuTrigger asChild className={className}>
+        <Button variant="ghost" size="icon" className="h-full ">
+          <Globe />
           <span className="sr-only">Switch language</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => changeLocale('en')}>
-          English
+      <DropdownMenuContent className="rounded-none">
+        <DropdownMenuItem
+          className="rounded-none"
+          onClick={() => changeLocale('ru')}
+        >
+          {t('ru')}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => changeLocale('uk')}>
-          Українська
+        <DropdownMenuItem
+          className="rounded-none"
+          onClick={() => changeLocale('uk')}
+        >
+          {t('uk')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

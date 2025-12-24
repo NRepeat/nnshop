@@ -1,3 +1,4 @@
+import { StyreneAWeb } from '@/shared/utils/custom-fonts';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
@@ -34,10 +35,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  console.log('RootLayout', StyreneAWeb);
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased  `}
+        className={`${geistSans.variable} ${geistMono.variable} ${StyreneAWeb.variable} antialiased`}
       >
         <Providers>{children}</Providers>
       </body>

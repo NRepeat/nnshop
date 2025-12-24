@@ -39,9 +39,10 @@ const PageContent = async ({
   'use cache';
   // cacheLife({ stale: 60, expire: 60 });
   const page = await getPage({ locale, gender });
-  if (!page) {
+  if (page) {
     return null;
   }
+
   return (
     <PageBuilder
       content={page.content as any}
