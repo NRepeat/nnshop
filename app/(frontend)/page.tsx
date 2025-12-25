@@ -9,6 +9,7 @@ import { MainCollectionGrid } from '@entities/home/ui/main-collection-grid';
 import { ProductCarousel } from '@entities/home/ui/product-carousel';
 import { Topic } from '@entities/home/ui/topic';
 import { StoriesCarousel } from '@entities/home/ui/stories-carousel';
+import { SplitCollection } from '@entities/home/ui/split-collection';
 
 export async function generateStaticParams() {
   return locales.map((locale) => ({
@@ -49,7 +50,7 @@ const PageContent = async ({
           <HeroBanner />
           <MainCollectionGrid />
           <ProductCarousel />
-          <MainCollectionGrid />
+          <SplitCollection />
           <Topic />
           <StoriesCarousel />
         </div>

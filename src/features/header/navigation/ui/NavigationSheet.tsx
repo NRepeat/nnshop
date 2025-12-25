@@ -13,7 +13,7 @@ import { Maybe } from '@shared/lib/shopify/types/storefront.types';
 import { Menu } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LanguageSwitcherSession } from '@features/header/language-switcher/ui/LanguageSwitcherSession';
+
 import { LanguageSwitcher } from '@features/header/language-switcher/ui/LanguageSwitcher';
 
 const NavigationSheet = ({

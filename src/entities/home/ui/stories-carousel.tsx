@@ -31,7 +31,7 @@ export const StoriesCarousel = () => {
       </div>
       <CardCarousel
         items={itemsComponent}
-        className="basis-1/2 pl-0 w-[200px]"
+        className="basis-1/2 pl-0 w-[200px] md:basis-1/6"
         loop
       />
     </div>

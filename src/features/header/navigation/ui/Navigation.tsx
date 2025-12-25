@@ -57,7 +57,7 @@ const Navigation = async ({
             >
               <NavigationMenuTrigger
                 variant={'ghost'}
-                className="rounded-none  cursor-pointer w-full text-nowrap text-xs font-300 font-sans h-full px-5  "
+                className="rounded-none  cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full px-5 py-1 "
               >
                 {subItem.title}
               </NavigationMenuTrigger>
@@ -75,7 +75,7 @@ const Navigation = async ({
                         >
                           <Link
                             href={subItem.url}
-                            className="text-100 text-[11px] font-sans "
+                            className=" text-bane font-300 font-sans "
                           >
                             {subItem.title}
                           </Link>
