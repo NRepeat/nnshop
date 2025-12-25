@@ -13,14 +13,11 @@ import { Menu } from 'lucide-react';
 
 const NavigationSheet = ({
   meinMenu,
-  gender,
   title,
 }: {
   meinMenu: {
-    id: Maybe<string> | undefined;
-    title: string;
-    url: string;
-    items: {
+    label: string;
+    menu: {
       id: Maybe<string> | undefined;
       title: string;
       url: string;
@@ -28,10 +25,14 @@ const NavigationSheet = ({
         id: Maybe<string> | undefined;
         title: string;
         url: string;
+        items: {
+          id: Maybe<string> | undefined;
+          title: string;
+          url: string;
+        }[];
       }[];
     }[];
-  }[][];
-  gender: string;
+  }[];
   title: string;
 }) => {
   const [open, setOpen] = useState(false);
@@ -45,11 +46,7 @@ const NavigationSheet = ({
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>
         </SheetHeader>
-        <InternalMenu
-          meinMenu={meinMenu}
-          currentGender={gender}
-          onClose={() => setOpen(false)}
-        />
+        <InternalMenu meinMenu={meinMenu} onClose={() => setOpen(false)} />
       </SheetContent>
     </Sheet>
   );
