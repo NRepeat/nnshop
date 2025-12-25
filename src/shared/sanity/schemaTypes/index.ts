@@ -26,6 +26,8 @@ import { localizedBlockContent } from './localizedBlockContentType';
 import { sliderBlock } from './blokcs/slider';
 import { similarProducts } from './blokcs/similarProducts';
 import { contentPageBlock } from './blokcs/contentPageBlock';
+import { mainCollectionGrid } from './blokcs/mainCollectionGrid';
+import { topicType } from './blokcs/topicType';
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -55,5 +57,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     splitImageType,
     similarProducts,
     contentPageBlock,
+    mainCollectionGrid,
+    topicType,
   ],
 };
