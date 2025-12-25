@@ -11,7 +11,13 @@ import { Globe } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 import { setLocale } from '../api/set-locale';
 
-export function LanguageSwitcher({ className }: { className?: string }) {
+export function LanguageSwitcher({
+  className,
+  align,
+}: {
+  className?: string;
+  align?: 'center' | 'start' | 'end' | undefined;
+}) {
   const t = useTranslations('Header.locale');
   const changeLocale = async (newLocale: string) => {
     await setLocale(newLocale);
@@ -25,7 +31,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           <span className="sr-only">Switch language</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="rounded-none">
+      <DropdownMenuContent className="rounded-none" align={align}>
         <DropdownMenuItem
           className="rounded-none"
           onClick={() => changeLocale('ru')}
