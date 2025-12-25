@@ -8,6 +8,7 @@ import {
 } from '@features/header/navigation/ui/Navigation';
 import { PersistLinkNavigation } from '@features/header/navigation/ui/PersistLinkNavigation';
 import NavigationSheet from '@features/header/navigation/ui/Sheet';
+import { SearchSession } from '@features/header/search/ui/search-session';
 import Logo from '@shared/assets/Logo';
 import { Button } from '@shared/ui/button';
 import { Heart, Menu, Search, ShoppingCart, User2 } from 'lucide-react';
@@ -48,9 +49,15 @@ export const Header = async () => {
               </Link>
             </div>
             <div className="col-span-1 flex justify-end gap-1">
-              <Button variant="ghost" size="icon" className="h-full">
-                <Search />
-              </Button>
+              <Suspense
+                fallback={
+                  <Button variant="ghost" size="icon" className="h-full">
+                    <Search className="w-5 h-5" />
+                  </Button>
+                }
+              >
+                <SearchSession />
+              </Suspense>
               <Suspense
                 fallback={
                   <Button variant="ghost" size="icon" className="h-full ">

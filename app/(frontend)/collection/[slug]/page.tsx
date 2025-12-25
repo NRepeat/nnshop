@@ -1,7 +1,5 @@
-import { getCollectionSlugs } from '@entities/collection/api/getCollection';
 import { Suspense } from 'react';
 import Loading from '@features/collection/ui/GridCollectionLoading';
-import { CollectionSession } from '@features/collection/ui/CollectionSession';
 import { CollectionGrid } from '@features/collection/ui/CollectionGrid';
 import { getLocale } from 'next-intl/server';
 
