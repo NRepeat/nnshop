@@ -18,7 +18,7 @@ export default async function LocaleLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
+    <div className="">
       <Header />
       {children}
       <Suspense fallback={<div>Loading...</div>}>

@@ -73,7 +73,6 @@ function NavigationMenuTrigger({
   return (
     <NavigationMenuPrimitive.Trigger
       data-slot="navigation-menu-trigger"
-      // className={cn(navigationMenuTriggerStyle(), 'group', className)}
       className={cn(
         navigationMenuTriggerStyle(),
         buttonVariants({ variant, size: 'default', className }),
@@ -113,20 +112,22 @@ function NavigationMenuViewport({
   ...props
 }: React.ComponentProps<typeof NavigationMenuPrimitive.Viewport>) {
   return (
-    <div
-      className={cn(
-        'absolute top-full left-0 isolate z-50 flex justify-center min-w-screen data-[state=open]:bg-foreground/40 data-[state=open]:h-screen',
-      )}
-    >
-      <NavigationMenuPrimitive.Viewport
-        data-slot="navigation-menu-viewport"
+    <>
+      <div
         className={cn(
-          'rounded-none  origin-top-center text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] min-w-full overflow-hidden    md:w-[var(--radix-navigation-menu-viewport-width)] bg-background ',
-          className,
+          'absolute top-full left-0 isolate z-50 flex justify-center min-w-screen ',
         )}
-        {...props}
-      />
-    </div>
+      >
+        <NavigationMenuPrimitive.Viewport
+          data-slot="navigation-menu-viewport"
+          className={cn(
+            'rounded-none  origin-top-center text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-100 data-[state=open]:zoom-in-95 relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] min-w-full overflow-hidden    md:w-[var(--radix-navigation-menu-viewport-width)] bg-background ',
+            className,
+          )}
+          {...props}
+        />
+      </div>
+    </>
   );
 }
 

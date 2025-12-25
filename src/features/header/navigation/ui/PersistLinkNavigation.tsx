@@ -16,7 +16,7 @@ export const PersistLinkNavigation = () => {
       {links.map((link) => (
         <NavigationMenuItem key={link.slug} className={`flex p-0`}>
           <Button
-            className="rounded-none  cursor-pointer w-full text-nowrap text-xs font-300 font-sans h-full px-5 py-1.5"
+            className="rounded-none  cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full px-5 py-1.5"
             variant={'ghost'}
             onClick={() => cookieFenderSet(link.slug)}
           >

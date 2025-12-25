@@ -9,7 +9,6 @@ import {
 import { InternalMenu } from './InternalMenu';
 import { useState } from 'react';
 import { Maybe } from '@shared/lib/shopify/types/storefront.types';
-import { Button } from '@shared/ui/button';
 import { Menu } from 'lucide-react';
 
 const NavigationSheet = ({

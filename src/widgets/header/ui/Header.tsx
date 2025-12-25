@@ -1,9 +1,11 @@
 import { AnnouncementBar } from '@entities/announcement-bar/announcement-bar';
 import { AccountButton } from '@features/header/account/ui/AccoutnButton';
 import CartSheet from '@features/header/cart/ui/Sheet';
-import { LanguageSwitcher } from '@features/header/language-switcher/ui/LanguageSwitcher';
 import { LanguageSwitcherSession } from '@features/header/language-switcher/ui/LanguageSwitcherSession';
-import { CurrentNavigationSession } from '@features/header/navigation/ui/Navigation';
+import {
+  CurrentNavigationSession,
+  CurrentNavigationSessionSkilet,
+} from '@features/header/navigation/ui/Navigation';
 import { PersistLinkNavigation } from '@features/header/navigation/ui/PersistLinkNavigation';
 import NavigationSheet from '@features/header/navigation/ui/Sheet';
 import Logo from '@shared/assets/Logo';
@@ -16,7 +18,7 @@ export const Header = async () => {
   return (
     <>
       <AnnouncementBar />
-      <header className="sticky top-0  z-20  bg-background">
+      <header className="sticky top-0  z-30  bg-background ">
         <div className="container ">
           <div className="grid grid-cols-3 md:grid-cols-2  pt-5">
             <div className="col-span-1 hidden justify-start gap-4 md:flex">
@@ -83,9 +85,9 @@ export const Header = async () => {
             </div>
           </div>
         </div>
-        <div className="w-full py-1">
-          <div className="w-full flex flex-1  py-2">
-            <Suspense fallback={<div>Loading...</div>}>
+        <div className="w-full ">
+          <div className="w-full flex flex-1  py-3">
+            <Suspense fallback={<CurrentNavigationSessionSkilet />}>
               <CurrentNavigationSession />
             </Suspense>
           </div>
