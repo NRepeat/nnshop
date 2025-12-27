@@ -19,7 +19,7 @@ function NavigationMenu({
       data-slot="navigation-menu"
       data-viewport={viewport}
       className={cn(
-        'group/navigation-menu relative flex max-w-max flex-1 items-center justify-center',
+        'group/navigation-menu relative flex  flex-1 items-center justify-center',
         className,
       )}
       {...props}
@@ -76,7 +76,7 @@ function NavigationMenuTrigger({
       className={cn(
         navigationMenuTriggerStyle(),
         buttonVariants({ variant, size: 'default', className }),
-        'group pl-0',
+        'group ',
         className,
       )}
       {...props}
@@ -115,7 +115,7 @@ function NavigationMenuViewport({
     <>
       <div
         className={cn(
-          'absolute top-full left-0 isolate z-50 flex justify-center min-w-screen ',
+          'absolute top-[30px]  left-0 isolate z-50 flex justify-center min-w-[calc(100vw-15px)] ',
         )}
       >
         <NavigationMenuPrimitive.Viewport

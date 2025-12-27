@@ -53,16 +53,16 @@ const Navigation = async ({
           {item.items.map((subItem) => (
             <NavigationMenuItem
               key={subItem.url + subItem.title + gender}
-              className="hover:underline group"
+              className="hover:underline group first:ml-[55px]"
             >
               <NavigationMenuTrigger
                 variant={'ghost'}
-                className="rounded-none  cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full px-5 py-1 "
+                className="rounded-none  cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full has-[>svg]:px-5 py-1.5 "
               >
                 {subItem.title}
               </NavigationMenuTrigger>
-              <NavigationMenuContent className="min-w-full  flex  justify-between pr-7">
-                <div className="flex w-full h-fit ">
+              <NavigationMenuContent className="min-w-full  flex  justify-between pr-7 ">
+                <div className="flex w-full h-fit pt-4">
                   <ul className="grid gap-2 md:w-lg lg:w-lg md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr]">
                     {subItem.items.map((subItem) => (
                       <li
@@ -115,6 +115,6 @@ const Navigation = async ({
       );
     }
   });
-  return <NavigationClient>{menu}</NavigationClient>;
+  return <NavigationClient className=" pt-2">{menu}</NavigationClient>;
 };
 export default Navigation;

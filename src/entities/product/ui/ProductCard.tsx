@@ -38,7 +38,7 @@ export const ProductCard = ({
   return (
     <Card
       className={clsx(
-        'h-full shadow-none backdrop-blur-sm bg-transparent border border-background  rounded-none cursor-pointer  py-1  hover:border-muted hover:shadow-md group',
+        'h-full shadow-none backdrop-blur-sm bg-transparent border border-background  rounded-none cursor-pointer  py-1 hover:shadow-md group pb-4',
         className,
       )}
     >
@@ -52,7 +52,7 @@ export const ProductCard = ({
                     <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full re">
                       <Image
                         key={index}
-                        className=" w-full max-h-[350px] h-[350px] object-contain"
+                        className=" w-full max-h-[350px] h-[350px]  lg:max-h-[600px] lg:h-[600px] object-contain"
                         src={image.url}
                         alt={image.altText || ''}
                         width={image.width || 300}

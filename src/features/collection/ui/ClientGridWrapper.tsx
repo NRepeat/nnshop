@@ -39,7 +39,7 @@ export const ClientGridWrapper = ({
     <div className="flex h-full">
       <div className="flex flex-col items-end">
         <div className="flex w-full justify-between md:justify-end">
-          <div className="block md:hidden">
+          <div className="block">
             <FilterSheet filters={filters} />
           </div>
         </div>

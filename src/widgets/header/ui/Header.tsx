@@ -92,13 +92,9 @@ export const Header = async () => {
             </div>
           </div>
         </div>
-        <div className="w-full ">
-          <div className="w-full flex flex-1  py-3">
-            <Suspense fallback={<CurrentNavigationSessionSkilet />}>
-              <CurrentNavigationSession />
-            </Suspense>
-          </div>
-        </div>
+        <Suspense fallback={<CurrentNavigationSessionSkilet />}>
+          <CurrentNavigationSession />
+        </Suspense>
       </header>
     </>
   );

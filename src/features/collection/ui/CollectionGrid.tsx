@@ -55,7 +55,7 @@ export const CollectionGrid = async ({
     { label: 'Розмір', value: 'size' },
   ];
   return (
-    <div className="flex flex-col gap-8 pt-4">
+    <div className="flex flex-col gap-8 mt-8">
       <Breadcrumb className="">
         <BreadcrumbList>
           <BreadcrumbItem>
