@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  PageInfo,
-  Product,
-  ProductFilter,
-} from '@shared/lib/shopify/types/storefront.types';
+import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
 import { Button } from '@shared/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useState, useTransition } from 'react';
@@ -28,24 +24,23 @@ export default function LoadMore({
   const { ref, inView } = useInView();
   const searchParams = useSearchParams();
 
+  useEffect(() => {
+    setPageInfo(initialPageInfo);
+  }, [initialPageInfo]);
+
   const handleLoadMore = useCallback(() => {
     if (!pageInfo.hasNextPage || isPending) return;
 
     startTransition(async () => {
-      const filtersFromUrl = searchParams.get('filters');
-      let filters: ProductFilter[] = [];
-      if (filtersFromUrl) {
-        try {
-          filters = JSON.parse(filtersFromUrl);
-        } catch {
-          filters = [];
-        }
-      }
+      const params: { [key: string]: string } = {};
+      searchParams.forEach((value, key) => {
+        params[key] = value;
+      });
       const result = await getCollectionProducts({
         info: pageInfo,
         locale,
         slug: handle,
-        filters,
+        searchParams: params,
       });
 
       if (result) {
@@ -62,7 +57,7 @@ export default function LoadMore({
     if (inView && !isPending && pageInfo?.hasNextPage) {
       handleLoadMore();
     }
-  }, [inView]);
+  }, [inView, isPending, pageInfo, handleLoadMore]);
 
   return (
     <div className="mt-10 flex flex-col items-center gap-6 p-4 min-h-[100px]">

@@ -7,6 +7,7 @@ import {
   GetCollectionsHandlesQuery,
   GetCollectionsHandlesQueryVariables,
   GetCollectionFiltersQueryVariables,
+  ProductCollectionSortKeys,
 } from '@shared/lib/shopify/types/storefront.generated';
 import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
 
@@ -19,6 +20,8 @@ const GetCollectionWithProducts = `
     $after: String
     $last: Int
     $before: String
+    $sortKey: ProductCollectionSortKeys
+    $reverse: Boolean
   ) {
     collection(handle: $handle) {
       id
@@ -34,6 +37,8 @@ const GetCollectionWithProducts = `
         first: $first
         last: $last
         filters: $filters
+        sortKey: $sortKey
+        reverse: $reverse
         after: $after
         before: $before
       ) {
@@ -229,7 +234,7 @@ export const getCollection = async ({
 
     if (filterDefinitions) {
       for (const [key, value] of Object.entries(searchParams)) {
-        if (key === 'minPrice' || key === 'maxPrice') {
+        if (key === 'minPrice' || key === 'maxPrice' || key === 'sort') {
           continue;
         }
 
@@ -263,6 +268,32 @@ export const getCollection = async ({
       filters.push(priceFilter);
     }
   }
+
+  let sortKey: ProductCollectionSortKeys = 'RELEVANCE';
+  let reverse: boolean = false;
+
+  const sort = searchParams?.sort as string | undefined;
+
+  switch (sort) {
+    case 'price-asc':
+      sortKey = 'PRICE';
+      reverse = false;
+      break;
+    case 'price-desc':
+      sortKey = 'PRICE';
+      reverse = true;
+      break;
+    case 'created-desc':
+      sortKey = 'CREATED';
+      reverse = true;
+      break;
+    case 'trending':
+    default:
+      sortKey = 'RELEVANCE'; // Assuming RELEVANCE for trending
+      reverse = false;
+      break;
+  }
+
   const collection = await storefrontClient.request<
     GetCollectionQuery,
     {
@@ -272,10 +303,21 @@ export const getCollection = async ({
       after?: string;
       last?: number;
       before?: string;
+      sortKey?: ProductCollectionSortKeys;
+      reverse?: boolean;
     }
   >({
     query: GetCollectionWithProducts,
-    variables: { handle, filters, first, after, last, before },
+    variables: {
+      handle,
+      filters,
+      first,
+      after,
+      last,
+      before,
+      sortKey,
+      reverse,
+    },
     language: locale.toUpperCase() as StorefrontLanguageCode,
   });
   return collection as GetCollectionQuery;

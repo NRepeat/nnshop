@@ -11,10 +11,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@shared/ui/carousel';
-import { Button } from '@shared/ui/button';
 import { useRouter } from 'next/navigation';
 import { Heart } from 'lucide-react';
-// import { revalidatePath } from 'next/cache';
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@shared/ui/button';
 
 type ProductCardProps = {
   product: Product;
@@ -39,6 +39,7 @@ export const ProductCard = ({
     .filter(Boolean)
     .splice(0, 5);
   const nav = useRouter();
+  const isNew = product.tags.includes('новий') || product.tags.includes('New');
 
   return (
     <Card
@@ -52,6 +53,9 @@ export const ProductCard = ({
           {withCarousel ? (
             <Carousel className="relative" opts={{ align: 'center' }}>
               <div className="group relative">
+                {isNew && (
+                  <Badge className="absolute top-2 left-2 z-10">Новий</Badge>
+                )}
                 <CarouselContent>
                   {productImages.map((image, index) => (
                     <CarouselItem key={index} className=" relative">
@@ -107,6 +111,9 @@ export const ProductCard = ({
             </Carousel>
           ) : (
             <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full group">
+              {isNew && (
+                <Badge className="absolute top-2 left-2 z-10">Новий</Badge>
+              )}
               <Image
                 className=" w-full max-h-[350px] h-[350px]"
                 src={productImages[0].url}

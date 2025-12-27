@@ -10,17 +10,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@shared/ui/breadcrumb';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/ui/select';
 import { FilterSheet } from './FilterSheet';
 import { ActiveFiltersCarousel } from './ActiveFiltersCarousel';
+import { SortSelect } from './SortSelect'; // Import SortSelect
 export const CollectionGrid = async ({
   slug,
   locale,
@@ -48,6 +40,8 @@ export const CollectionGrid = async ({
   }
   const pageInfo = collectionData.collection?.products.pageInfo;
   const products = collection.products.edges.map((edge) => edge.node);
+  const currentSort = searchParams.sort as string | undefined; // Get current sort from searchParams
+
   return (
     <div className="flex flex-col gap-8 mt-8">
       <Breadcrumb className="">
@@ -73,28 +67,7 @@ export const CollectionGrid = async ({
           <ActiveFiltersCarousel filters={collection.products.filters} />
         </div>
         <div className="flex h-full items-end flex-row gap-2 justify-end ">
-          <Select>
-            <SelectTrigger className="w-[160px]  md:w-[210px] rounded-none">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent className="rounded-none">
-              <SelectGroup>
-                <SelectLabel>Sort by</SelectLabel>
-                <SelectItem className="rounded-none" value="trending">
-                  Trending
-                </SelectItem>
-                <SelectItem className="rounded-none" value="price-asc">
-                  Price: Low to High
-                </SelectItem>
-                <SelectItem className="rounded-none" value="price-desc">
-                  Price: High to Low
-                </SelectItem>
-                <SelectItem className="rounded-none" value="created-desc">
-                  Newest
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <SortSelect defaultValue={currentSort} />
           <FilterSheet filters={collection.products.filters} />
         </div>
       </div>
@@ -102,7 +75,6 @@ export const CollectionGrid = async ({
         <ClientGridWrapper
           initialPageInfo={pageInfo as PageInfo}
           initialProducts={products as Product[]}
-          filters={collection.products.filters}
         />
       </div>
     </div>

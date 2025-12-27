@@ -1,31 +1,25 @@
 'use cache';
 
-import {
-  getCollection,
-  getCollectionSlugs,
-} from '@entities/collection/api/getCollection';
-import {
-  PageInfo,
-  ProductFilter,
-} from '@shared/lib/shopify/types/storefront.types';
+import { getCollection } from '@entities/collection/api/getCollection';
+import { PageInfo } from '@shared/lib/shopify/types/storefront.types';
 
 export async function getCollectionProducts({
   info,
   slug,
   locale,
-  filters,
+  searchParams,
 }: {
   info?: PageInfo;
   slug: string;
   locale: string;
-  filters?: ProductFilter[];
+  searchParams?: { [key: string]: string | string[] | undefined };
 }) {
   const collectionData = await getCollection({
     handle: slug,
     first: 20,
     locale: locale,
     after: info?.endCursor || undefined,
-    filters: filters,
+    searchParams: searchParams,
   });
   if (!collectionData) {
     throw new Error('Collection not found');

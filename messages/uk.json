@@ -304,6 +304,13 @@
       "clear": "Очистити",
       "show": "Показати",
       "hide": "Сховати"
+    },
+    "sort": {
+      "sortBy": "Сортувати за",
+      "trending": "Популярні",
+      "priceLowToHigh": "Ціна: від низької до високої",
+      "priceHighToLow": "Ціна: від високої до низької",
+      "newest": "Нові"
     }
   },
   "CheckoutPage": {
