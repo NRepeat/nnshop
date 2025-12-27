@@ -14,12 +14,15 @@ export function generateStaticParams() {
 
 export default async function LocaleLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode;
+  modal: React.ReactNode;
 }>) {
   return (
     <div className="">
       <Header />
+      {modal}
       {children}
       <Suspense fallback={<div>Loading...</div>}>
         <SanityLive />

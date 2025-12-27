@@ -76,12 +76,11 @@ const ProductSession = async ({ params }: Props) => {
   }
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <>test</>
-      {/*<ProductSessionView
+      <ProductSessionView
         variant={variant}
         handle={p.slug[0]}
         session={session}
-      />*/}
+      />
     </Suspense>
   );
 };
