@@ -50,9 +50,9 @@ export function CollectionFilters({ filters }: Props) {
       filterId,
       filterValue,
     );
-    // startTransition(() => {
-    //   router.replace(newUrl, { scroll: false });
-    // });
+    startTransition(() => {
+      router.replace(newUrl, { scroll: false });
+    });
   };
 
   const handlePriceChange = async (min: string, max: string) => {

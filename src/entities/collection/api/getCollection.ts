@@ -226,9 +226,6 @@ export const getCollection = async ({
   before?: string;
   locale: string;
 }) => {
-  'use cache';
-  cacheTag('collection');
-
   const filters: ProductFilter[] = [];
   if (searchParams) {
     const filterDefinitions = await getCollectionFilters({ handle, locale });
@@ -243,7 +240,9 @@ export const getCollection = async ({
           f.id.endsWith(`.${key}`),
         );
         if (definition) {
-          const values = Array.isArray(value) ? value : [value];
+          const values = Array.isArray(value)
+            ? value
+            : (value as string).split(',');
           values.forEach((v) => {
             const filterValue = definition.values.find(
               (def) => def.label === v,
@@ -267,7 +266,6 @@ export const getCollection = async ({
       filters.push(priceFilter);
     }
   }
-
   const collection = await storefrontClient.request<
     GetCollectionQuery,
     {

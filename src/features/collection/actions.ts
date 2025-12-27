@@ -1,9 +1,6 @@
 'use server';
 
 import { FilterValue } from '@shared/lib/shopify/types/storefront.types';
-import { revalidatePath } from 'next/cache';
-import { revalidateTag } from 'next/cache';
-import { redirect } from 'next/navigation';
 
 const getFilterParamName = (filterId: string) => {
   if (filterId.startsWith('filter.p.vendor')) {
@@ -49,8 +46,7 @@ export async function createFilterUrl(
   } else {
     newSearchParams.delete(filterParamName);
   }
-  revalidateTag('collection', { expire: 0 });
-  return redirect(`${pathname}?${newSearchParams.toString()}`);
+  return `${pathname}?${newSearchParams.toString()}`;
 }
 
 export async function createPriceUrl(
