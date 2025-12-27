@@ -10,6 +10,17 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@shared/ui/breadcrumb';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/ui/select';
+import { Button } from '@shared/ui/button';
+import { Carousel, CarouselContent, CarouselItem } from '@shared/ui/carousel';
 export const CollectionGrid = async ({
   slug,
   locale,
@@ -34,9 +45,18 @@ export const CollectionGrid = async ({
   }
   const pageInfo = collectionData.collection?.products.pageInfo;
   const products = collection.products.edges.map((edge) => edge.node);
+  const filters = [
+    { label: 'Ціна', value: 'price' },
+    { label: 'Колір', value: 'color' },
+    { label: 'Розмір', value: 'size' },
+    { label: 'Розмір', value: 'size' },
+    { label: 'Розмір', value: 'size' },
+    { label: 'Розмір', value: 'size' },
+    { label: 'Розмір', value: 'size' },
+  ];
   return (
     <div className="flex flex-col gap-8 pt-4">
-      <Breadcrumb className="px-3.5">
+      <Breadcrumb className="">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href={`/${locale}`}>Головна</BreadcrumbLink>
@@ -53,7 +73,58 @@ export const CollectionGrid = async ({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="flex justify-center  gap-8 px-0.5 md:px-3.5 pt-4 h-full">
+      <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row   justify-between lg:items-end gap-6">
+        <div className="flex flex-col gap-3.5 w-full">
+          <h2 className="text-2xl font-bold">{collection?.title}</h2>
+          <Carousel>
+            <CarouselContent className="pl-2 md:max-w-full lg:max-w-full">
+              {filters.map((filter) => (
+                <CarouselItem
+                  key={filter.value}
+                  className="flex flex-col items-center justify-center gap-1 rounded-full border border-muted-foreground px-4 py-1 basis-1/4 md:basis-1/6 ml-2"
+                >
+                  <label className="text-sm font-medium">{filter.label}</label>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+        </div>
+        <div className="flex h-full items-end flex-row gap-2 justify-end ">
+          <Select>
+            <SelectTrigger className="w-[160px]  md:w-[210px] rounded-none">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent className="rounded-none">
+              <SelectGroup>
+                <SelectLabel>Sort by</SelectLabel>
+                <SelectItem className="rounded-none" value="trending">
+                  Trending
+                </SelectItem>
+                <SelectItem className="rounded-none" value="price-asc">
+                  Price: Low to High
+                </SelectItem>
+                <SelectItem className="rounded-none" value="price-desc">
+                  Price: High to Low
+                </SelectItem>
+                <SelectItem className="rounded-none" value="created-desc">
+                  Newest
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Button
+            variant="link"
+            className="   flex flex-row items-center justify-center "
+          >
+            <p>
+              <span className="whitespace-nowrap transform mb-2">
+                {'Фільтри'}
+              </span>
+            </p>
+          </Button>
+        </div>
+      </div>
+      <div className="flex justify-center  gap-8   h-full">
         <ClientGridWrapper
           filters={collection.products.filters}
           initialPageInfo={pageInfo as PageInfo}

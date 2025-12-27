@@ -9,17 +9,7 @@ import {
 } from '@shared/lib/shopify/types/storefront.types';
 import { useParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
-import { FilterSide } from './FilterSide';
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/ui/select';
 import { FilterSheet } from './FilterSheet';
 
 export const ClientGridWrapper = ({
@@ -47,36 +37,13 @@ export const ClientGridWrapper = ({
   const params = useParams();
   return (
     <div className="flex h-full">
-      <FilterSide filters={filters} />
       <div className="flex flex-col items-end">
         <div className="flex w-full justify-between md:justify-end">
           <div className="block md:hidden">
             <FilterSheet filters={filters} />
           </div>
-          <Select>
-            <SelectTrigger className="w-[180px] rounded-none">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent className="rounded-none">
-              <SelectGroup>
-                <SelectLabel>Sort by</SelectLabel>
-                <SelectItem className="rounded-none" value="trending">
-                  Trending
-                </SelectItem>
-                <SelectItem className="rounded-none" value="price-asc">
-                  Price: Low to High
-                </SelectItem>
-                <SelectItem className="rounded-none" value="price-desc">
-                  Price: High to Low
-                </SelectItem>
-                <SelectItem className="rounded-none" value="created-desc">
-                  Newest
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
         </div>
-        <div className="flex flex-col w-full md:max-w-[calc(100%-19px)] justify-end pt-2 md:pt-0 h-full">
+        <div className="flex flex-col w-full  pt-2 md:pt-0 h-full">
           <ClientGrid products={products as Product[]} />
           <div className="w-full items-center">
             <LoadMore

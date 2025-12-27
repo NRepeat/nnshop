@@ -12,11 +12,6 @@ const container = {
   },
 };
 
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 },
-};
-
 export const ClientGrid = ({ products }: { products: Product[] }) => {
   return (
     <motion.div
@@ -24,16 +19,10 @@ export const ClientGrid = ({ products }: { products: Product[] }) => {
       variants={container}
       initial="hidden"
       animate="show"
-      layout
     >
       <AnimatePresence>
         {products.map((product) => (
-          <motion.div
-            key={product.id}
-            variants={item}
-            layout
-            className="col-span-1"
-          >
+          <motion.div key={product.id} className="col-span-1">
             <ProductCard product={product} className=" px-0" withCarousel />
           </motion.div>
         ))}
