@@ -21,19 +21,23 @@ import {
 } from '@/shared/ui/select';
 import { Button } from '@shared/ui/button';
 import { Carousel, CarouselContent, CarouselItem } from '@shared/ui/carousel';
+import { cacheTag } from 'next/cache';
 export const CollectionGrid = async ({
   slug,
   locale,
   gender,
+  searchParams,
 }: {
   slug: string;
   locale: string;
   gender?: string;
+  searchParams: { [key: string]: string | string[] | undefined };
 }) => {
   const collectionData = await getCollection({
     handle: slug,
     first: 20,
     locale: locale,
+    searchParams: searchParams,
   });
   if (!collectionData) {
     return notFound();

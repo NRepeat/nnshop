@@ -3,12 +3,17 @@ import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import {
   GetCollectionQuery,
+  GetCollectionFiltersQuery,
   GetCollectionsHandlesQuery,
   GetCollectionsHandlesQueryVariables,
+  GetCollectionFiltersQueryVariables,
 } from '@shared/lib/shopify/types/storefront.generated';
 import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
+import { revalidatePath } from 'next/cache';
+import { revalidateTag } from 'next/cache';
+import { cacheTag } from 'next/cache';
 
-const query = `
+const GetCollectionWithProducts = `
   #graphql
   query GetCollection(
     $handle: String!
@@ -127,6 +132,27 @@ const query = `
   }
 `;
 
+const GetCollectionFilters = `
+#graphql
+query GetCollectionFilters($handle: String!) {
+    collection(handle: $handle) {
+        products(first: 1){
+            filters {
+                id
+                label
+                type
+                values {
+                    id
+                    label
+                    count
+                    input
+                }
+            }
+        }
+    }
+}
+`;
+
 const GET_COLLECTION_SLUGS = `
   #graphql
   query GetCollectionsHandles{
@@ -164,9 +190,28 @@ export const getCollectionSlugs = async () => {
     throw new Error("Can't fetch slugs");
   }
 };
+
+export const getCollectionFilters = async ({
+  handle,
+  locale,
+}: {
+  handle: string;
+  locale: string;
+}) => {
+  const collection = await storefrontClient.request<
+    GetCollectionFiltersQuery,
+    GetCollectionFiltersQueryVariables
+  >({
+    query: GetCollectionFilters,
+    variables: { handle },
+    language: locale.toUpperCase() as StorefrontLanguageCode,
+  });
+  return collection.collection?.products.filters;
+};
+
 export const getCollection = async ({
   handle,
-  filters,
+  searchParams,
   first,
   after,
   last,
@@ -174,13 +219,55 @@ export const getCollection = async ({
   locale,
 }: {
   handle: string;
-  filters?: ProductFilter[];
+  searchParams?: { [key: string]: string | string[] | undefined };
   first?: number;
   after?: string;
   last?: number;
   before?: string;
   locale: string;
 }) => {
+  'use cache';
+  cacheTag('collection');
+
+  const filters: ProductFilter[] = [];
+  if (searchParams) {
+    const filterDefinitions = await getCollectionFilters({ handle, locale });
+
+    if (filterDefinitions) {
+      for (const [key, value] of Object.entries(searchParams)) {
+        if (key === 'minPrice' || key === 'maxPrice') {
+          continue;
+        }
+
+        const definition = filterDefinitions.find((f) =>
+          f.id.endsWith(`.${key}`),
+        );
+        if (definition) {
+          const values = Array.isArray(value) ? value : [value];
+          values.forEach((v) => {
+            const filterValue = definition.values.find(
+              (def) => def.label === v,
+            );
+            if (filterValue) {
+              filters.push(JSON.parse(filterValue.input));
+            }
+          });
+        }
+      }
+    }
+
+    if (searchParams.minPrice || searchParams.maxPrice) {
+      const priceFilter: ProductFilter = { price: {} };
+      if (searchParams.minPrice) {
+        priceFilter.price!.min = parseFloat(searchParams.minPrice as string);
+      }
+      if (searchParams.maxPrice) {
+        priceFilter.price!.max = parseFloat(searchParams.maxPrice as string);
+      }
+      filters.push(priceFilter);
+    }
+  }
+
   const collection = await storefrontClient.request<
     GetCollectionQuery,
     {
@@ -192,7 +279,7 @@ export const getCollection = async ({
       before?: string;
     }
   >({
-    query,
+    query: GetCollectionWithProducts,
     variables: { handle, filters, first, after, last, before },
     language: locale.toUpperCase() as StorefrontLanguageCode,
   });

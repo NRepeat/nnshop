@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ClientGrid } from './ClientGrid';
 import LoadMore from './LoadMore';
 import {
@@ -24,6 +24,14 @@ export const ClientGridWrapper = ({
   const locale = useLocale();
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [pageInfo, setPageInfo] = useState(initialPageInfo);
+
+  useEffect(() => {
+    setProducts(initialProducts);
+  }, [initialProducts]);
+
+  useEffect(() => {
+    setPageInfo(initialPageInfo);
+  }, [initialPageInfo]);
 
   const handleDataLoaded = (newProducts: Product[], newPageInfo: any) => {
     setProducts((prev) => {

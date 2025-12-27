@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from '@shared/ui/accordion';
 import { Button } from '@shared/ui/button';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   Filter,
@@ -14,23 +14,14 @@ import {
 } from '@shared/lib/shopify/types/storefront.types';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColorFilter } from './ColorFilter';
+import { createFilterUrl, createPriceUrl } from '../actions';
 
 type Props = {
   filters: Filter[];
 };
 
 type ActiveFiltersState = {
-  [key: string]: string[] | string; // For list filters like vendor, metafields, minPrice, maxPrice
-};
-
-const getFilterParamName = (filterId: string) => {
-  if (filterId.startsWith('filter.p.vendor')) {
-    return 'vendor';
-  }
-  if (filterId.startsWith('filter.p.m.custom')) {
-    return filterId.split('.').pop() || '';
-  }
-  return '';
+  [key: string]: string[] | string;
 };
 
 export function CollectionFilters({ filters }: Props) {
@@ -38,6 +29,7 @@ export function CollectionFilters({ filters }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [activeFilters, setActiveFilters] = useState<ActiveFiltersState>({});
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     const newActiveFilters: ActiveFiltersState = {};
@@ -47,60 +39,34 @@ export function CollectionFilters({ filters }: Props) {
     setActiveFilters(newActiveFilters);
   }, [searchParams]);
 
-  const handleFilterChange = useCallback(
-    (filterId: string, filterValue: FilterValue) => {
-      const filterParamName = getFilterParamName(filterId);
-      if (!filterParamName) return;
+  const handleFilterChange = async (
+    filterId: string,
+    filterValue: FilterValue,
+  ) => {
+    const currentSearchParams = searchParams.toString();
+    const newUrl = await createFilterUrl(
+      currentSearchParams,
+      pathname,
+      filterId,
+      filterValue,
+    );
+    // startTransition(() => {
+    //   router.replace(newUrl, { scroll: false });
+    // });
+  };
 
-      const valueToPutInUrl = filterValue.label;
-
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-      const currentParam = newSearchParams.get(filterParamName);
-      let newValues: string[] = [];
-
-      if (currentParam) {
-        newValues = currentParam.split(',');
-      }
-
-      const existingIndex = newValues.indexOf(valueToPutInUrl);
-
-      if (existingIndex > -1) {
-        newValues.splice(existingIndex, 1);
-      } else {
-        newValues.push(valueToPutInUrl);
-      }
-
-      if (newValues.length > 0) {
-        newSearchParams.set(filterParamName, newValues.join(','));
-      } else {
-        newSearchParams.delete(filterParamName);
-      }
-      router.replace(`${pathname}?${newSearchParams.toString()}`, {
-        scroll: false,
-      });
-    },
-    [pathname, router, searchParams],
-  );
-
-  const handlePriceChange = useCallback(
-    (min: string, max: string) => {
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-      if (min) {
-        newSearchParams.set('minPrice', min);
-      } else {
-        newSearchParams.delete('minPrice');
-      }
-      if (max) {
-        newSearchParams.set('maxPrice', max);
-      } else {
-        newSearchParams.delete('maxPrice');
-      }
-      router.replace(`${pathname}?${newSearchParams.toString()}`, {
-        scroll: false,
-      });
-    },
-    [pathname, router, searchParams],
-  );
+  const handlePriceChange = async (min: string, max: string) => {
+    const currentSearchParams = searchParams.toString();
+    const newUrl = await createPriceUrl(
+      currentSearchParams,
+      pathname,
+      min,
+      max,
+    );
+    startTransition(() => {
+      router.replace(newUrl, { scroll: false });
+    });
+  };
 
   const sortedFilters = filters;
 
@@ -112,7 +78,9 @@ export function CollectionFilters({ filters }: Props) {
         defaultValue={filters.map((filter) => filter.id)}
       >
         {sortedFilters.map((filter) => {
-          const filterParamName = getFilterParamName(filter.id);
+          const filterParamName = filter.id.startsWith('filter.p.vendor')
+            ? 'vendor'
+            : filter.id.split('.').pop() || '';
           return (
             <AccordionItem key={filter.id} value={filter.id}>
               <AccordionTrigger className="font-medium cursor-pointer w-full">

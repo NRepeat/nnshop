@@ -305,6 +305,27 @@ export type GetCollectionQuery = {
   >;
 };
 
+export type GetCollectionFiltersQueryVariables = StorefrontTypes.Exact<{
+  handle: StorefrontTypes.Scalars['String']['input'];
+}>;
+
+export type GetCollectionFiltersQuery = {
+  collection?: StorefrontTypes.Maybe<{
+    products: {
+      filters: Array<
+        Pick<StorefrontTypes.Filter, 'id' | 'label' | 'type'> & {
+          values: Array<
+            Pick<
+              StorefrontTypes.FilterValue,
+              'id' | 'label' | 'count' | 'input'
+            >
+          >;
+        }
+      >;
+    };
+  }>;
+};
+
 export type GetCollectionsHandlesQueryVariables = StorefrontTypes.Exact<{
   [key: string]: never;
 }>;
@@ -446,6 +467,10 @@ interface GeneratedQueryTypes {
   '\n  #graphql\n  query GetCollection(\n    $handle: String!\n    $filters: [ProductFilter!]\n    $first: Int\n    $after: String\n    $last: Int\n    $before: String\n  ) {\n    collection(handle: $handle) {\n      id\n      title\n      handle\n      description\n      image {\n        url\n        altText\n      }\n\n      products(\n        first: $first\n        last: $last\n        filters: $filters\n        after: $after\n        before: $before\n      ) {\n        pageInfo {\n          hasNextPage\n          hasPreviousPage\n          endCursor\n          startCursor\n        }\n        edges {\n          node {\n            id\n            title\n            handle\n            availableForSale\n            productType\n            vendor\n            totalInventory\n            tags\n            variants(first: 250) {\n              edges {\n                node {\n                  id\n                  title\n                  availableForSale\n                  quantityAvailable\n                  price {\n                    amount\n                    currencyCode\n                  }\n                  compareAtPrice {\n                    amount\n                    currencyCode\n                  }\n                  selectedOptions {\n                    name\n                    value\n                  }\n\n                }\n              }\n            }\n            options {\n              name\n              optionValues {\n                name\n              }\n            }\n            priceRange {\n              minVariantPrice {\n                amount\n                currencyCode\n              }\n              maxVariantPrice {\n                amount\n                currencyCode\n              }\n            }\n            featuredImage {\n              url\n              altText\n              width\n              height\n            }\n            media(first:20){\n                    edges{\n                      node{\n\n                            previewImage{\n                              url\n                              width\n                              height\n                              altText\n                          }\n                      }\n                    }\n                  }\n          }\n        }\n        filters {\n          id\n          label\n          type\n          values {\n            id\n            label\n            count\n            input\n          }\n        }\n      }\n    }\n  }\n': {
     return: GetCollectionQuery;
     variables: GetCollectionQueryVariables;
+  };
+  '\n#graphql\nquery GetCollectionFilters($handle: String!) {\n    collection(handle: $handle) {\n        products(first: 1){\n            filters {\n                id\n                label\n                type\n                values {\n                    id\n                    label\n                    count\n                    input\n                }\n            }\n        }\n    }\n}\n': {
+    return: GetCollectionFiltersQuery;
+    variables: GetCollectionFiltersQueryVariables;
   };
   '\n  #graphql\n  query GetCollectionsHandles{\n    collections(first:250) {\n    \tedges{\n        node{\n          handle\n        }\n      }\n    }\n  }\n  ': {
     return: GetCollectionsHandlesQuery;

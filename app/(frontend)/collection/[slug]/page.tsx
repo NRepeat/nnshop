@@ -1,33 +1,30 @@
-import { Suspense } from 'react';
-import Loading from '@features/collection/ui/GridCollectionLoading';
 import { CollectionGrid } from '@features/collection/ui/CollectionGrid';
 import { getLocale } from 'next-intl/server';
 
+export type SearchParams = { [key: string]: string | string[] | undefined };
+
 export type Props = {
   params: Promise<{ slug: string; locale: string }>;
-  // searchParams: Promise<{
-  //   filters?: string;
-  //   after?: string;
-  //   before?: string;
-  // }>;
+  searchParams: Promise<SearchParams>;
 };
 
-// export async function generateStaticParams() {
-//   const slugs = await getCollectionSlugs();
-//   return slugs.map((slug) => ({
-//     slug,
-//   }));
-// }
-
-export default async function CollectionPage({ params }: Props) {
-  const { slug } = await params;
+export default async function CollectionPage({ params, searchParams }: Props) {
+  const { slug, locale: paramLocale } = await params;
+  const awaitedSearchParams = await searchParams;
   const locale = await getLocale();
+  const effectiveLocale = paramLocale || locale;
+
   return (
     <div className="container ">
-      <Suspense fallback={<Loading />}>
-        {/*<CollectionSession params={params} />*/}
-        <CollectionGrid slug={slug} locale={locale} gender={'man'} />
-      </Suspense>
+      <CollectionGrid
+        slug={slug}
+        locale={effectiveLocale}
+        gender={'man'}
+        searchParams={awaitedSearchParams}
+      />
+      {/*<Suspense fallback={<Loading />}>
+
+      </Suspense>*/}
     </div>
   );
 }
