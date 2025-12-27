@@ -9,9 +9,6 @@ import {
   GetCollectionFiltersQueryVariables,
 } from '@shared/lib/shopify/types/storefront.generated';
 import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
-import { revalidatePath } from 'next/cache';
-import { revalidateTag } from 'next/cache';
-import { cacheTag } from 'next/cache';
 
 const GetCollectionWithProducts = `
   #graphql

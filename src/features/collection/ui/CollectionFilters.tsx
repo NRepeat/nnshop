@@ -16,6 +16,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColorFilter } from './ColorFilter';
 import { createFilterUrl, createPriceUrl } from '../actions';
 import { Spinner } from '@/shared/ui/Spinner';
+import { cn } from '@shared/lib/utils';
 
 type Props = {
   filters: Filter[];
@@ -116,6 +117,7 @@ export function CollectionFilters({ filters }: Props) {
                           activeFilters[filterParamName] as string[]
                         )?.includes(value.label);
                         const isChanging = changingFilter === value.label;
+                        const isDisabled = isPending || value.count === 0;
                         return (
                           <li key={value.label} className="cursor-pointer">
                             <label className="flex items-center space-x-2  cursor-pointer">
@@ -129,10 +131,15 @@ export function CollectionFilters({ filters }: Props) {
                                   onChange={() =>
                                     handleFilterChange(filter.id, value)
                                   }
-                                  disabled={isPending}
+                                  disabled={isDisabled}
                                 />
                               )}
-                              <span>
+                              <span
+                                className={cn({
+                                  'text-muted-foreground line-through':
+                                    value.count === 0,
+                                })}
+                              >
                                 {value.label} ({value.count})
                               </span>
                             </label>

@@ -19,10 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui/select';
-import { Button } from '@shared/ui/button';
-import { Carousel, CarouselContent, CarouselItem } from '@shared/ui/carousel';
-import { cacheTag } from 'next/cache';
 import { FilterSheet } from './FilterSheet';
+import { ActiveFiltersCarousel } from './ActiveFiltersCarousel';
 export const CollectionGrid = async ({
   slug,
   locale,
@@ -50,15 +48,6 @@ export const CollectionGrid = async ({
   }
   const pageInfo = collectionData.collection?.products.pageInfo;
   const products = collection.products.edges.map((edge) => edge.node);
-  const filters = [
-    { label: 'Ціна', value: 'price' },
-    { label: 'Колір', value: 'color' },
-    { label: 'Розмір', value: 'size' },
-    { label: 'Розмір', value: 'size' },
-    { label: 'Розмір', value: 'size' },
-    { label: 'Розмір', value: 'size' },
-    { label: 'Розмір', value: 'size' },
-  ];
   return (
     <div className="flex flex-col gap-8 mt-8">
       <Breadcrumb className="">
@@ -81,18 +70,7 @@ export const CollectionGrid = async ({
       <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row   justify-between lg:items-end gap-6">
         <div className="flex flex-col gap-3.5 w-full">
           <h2 className="text-2xl font-bold">{collection?.title}</h2>
-          <Carousel>
-            <CarouselContent className="pl-2 md:max-w-full lg:max-w-full">
-              {filters.map((filter) => (
-                <CarouselItem
-                  key={filter.value}
-                  className="flex flex-col items-center justify-center gap-1 rounded-full border border-muted-foreground px-4 py-1 basis-1/4 md:basis-1/6 ml-2"
-                >
-                  <label className="text-sm font-medium">{filter.label}</label>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
+          <ActiveFiltersCarousel filters={collection.products.filters} />
         </div>
         <div className="flex h-full items-end flex-row gap-2 justify-end ">
           <Select>
@@ -117,15 +95,14 @@ export const CollectionGrid = async ({
               </SelectGroup>
             </SelectContent>
           </Select>
-          <div className="flex w-full justify-between md:justify-end">
-            <FilterSheet filters={collection.products.filters} />
-          </div>
+          <FilterSheet filters={collection.products.filters} />
         </div>
       </div>
       <div className="flex justify-center  gap-8   h-full">
         <ClientGridWrapper
           initialPageInfo={pageInfo as PageInfo}
           initialProducts={products as Product[]}
+          filters={collection.products.filters}
         />
       </div>
     </div>

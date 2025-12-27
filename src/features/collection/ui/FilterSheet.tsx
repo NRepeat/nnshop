@@ -10,7 +10,6 @@ import {
 import { Button } from '@shared/ui/button';
 import { CollectionFilters } from './CollectionFilters';
 import { useTranslations } from 'next-intl';
-import { SlidersHorizontal } from 'lucide-react';
 import { Filter } from '@shared/lib/shopify/types/storefront.types';
 
 type Props = {

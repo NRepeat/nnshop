@@ -66,10 +66,13 @@ export const ColorFilter = ({
             activeFilters[colorFilterParamName] as string[]
           )?.includes(value.label);
           const isChanging = changingFilter === value.label;
+          const isDisabled = isPending || value.count === 0;
           return (
             <label
               key={value.label}
-              className="flex items-center space-x-2 cursor-pointer"
+              className={cn('flex items-center space-x-2 cursor-pointer', {
+                'text-muted-foreground line-through': value.count === 0,
+              })}
             >
               {isPending && isChanging ? (
                 <Spinner />
@@ -79,12 +82,16 @@ export const ColorFilter = ({
                   className="rounded"
                   checked={!!isChecked}
                   onChange={() => onFilterChange(value)}
-                  disabled={isPending}
+                  disabled={isDisabled}
                 />
               )}
               <span
                 className={cn(
-                  'w-6 h-6 rounded-full border border-gray-300',
+                  'w-6 h-6 rounded-full border',
+                  {
+                    'border-gray-300': !isDisabled,
+                    'border-muted': isDisabled,
+                  },
                   colorMap[value.label] || 'bg-gray-200',
                 )}
               ></span>
