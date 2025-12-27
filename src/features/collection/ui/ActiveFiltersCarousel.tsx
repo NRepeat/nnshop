@@ -9,6 +9,7 @@ import {
   Filter,
   FilterValue,
 } from '@shared/lib/shopify/types/storefront.types';
+import { Button } from '@shared/ui/button';
 
 export function ActiveFiltersCarousel({ filters }: { filters: Filter[] }) {
   const searchParams = useSearchParams();
@@ -70,12 +71,14 @@ export function ActiveFiltersCarousel({ filters }: { filters: Filter[] }) {
             className="flex items-center justify-center gap-1 rounded-full border border-muted-foreground px-4 py-1 basis-auto ml-2"
           >
             <span className="text-sm font-medium">{filter.value}</span>
-            <button
+            <Button
+              variant={'link'}
               onClick={() => removeFilter(filter.filterId, filter.filterValue)}
               disabled={isPending}
+              className="bg-background hover:bg-background"
             >
               <X className="h-4 w-4" />
-            </button>
+            </Button>
           </CarouselItem>
         ))}
       </CarouselContent>

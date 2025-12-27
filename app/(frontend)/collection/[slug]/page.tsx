@@ -22,9 +22,6 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         gender={'man'}
         searchParams={awaitedSearchParams}
       />
-      {/*<Suspense fallback={<Loading />}>
-
-      </Suspense>*/}
     </div>
   );
 }

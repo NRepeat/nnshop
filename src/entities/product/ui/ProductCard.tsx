@@ -39,8 +39,8 @@ export const ProductCard = ({
     .filter(Boolean)
     .splice(0, 5);
   const nav = useRouter();
-  const isNew = product.tags.includes('новий') || product.tags.includes('New');
-
+  const isNew = product.tags.includes('новий') || product.tags.includes('new');
+  console.log(isNew);
   return (
     <Card
       className={clsx(
