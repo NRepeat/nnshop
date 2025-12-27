@@ -67,7 +67,7 @@ const Description = async ({
 
         <Separator className="my-6" />
 
-        <div className="space-y-2">
+        {/*<div className="space-y-2">
           <div className="flex items-center gap-2">
             <h3 className="font-semibold">{t('productCondition')}</h3>
 
@@ -81,9 +81,9 @@ const Description = async ({
           </div>
 
           <ConditionScale />
-        </div>
+        </div>*/}
 
-        <Separator className="my-6" />
+        {/*<Separator className="my-6" />
 
         <div className="space-y-2">
           <div className="flex items-center gap-2">
@@ -95,7 +95,7 @@ const Description = async ({
           <p className="text-sm text-muted-foreground mt-2">
             {t('authenticityDetails')}
           </p>
-        </div>
+        </div>*/}
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { QuickView } from '@/widgets/product-view/ui/QuickView';
 import { auth } from '@features/auth/lib/auth';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { Session, User } from 'better-auth';
+
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
@@ -14,8 +15,11 @@ type Props = {
 };
 
 export default async function ProductQuickViewPage({ params }: Props) {
+  const p = await params;
+  const response = await getProduct({ handle: p.slug[0] });
+  const product = response?.product;
   return (
-    <QuickView>
+    <QuickView open={Boolean(product)}>
       <Suspense fallback={<div className="h-full w-full">Loading...</div>}>
         <ProductSession params={params} />
       </Suspense>
@@ -32,7 +36,6 @@ const ProductSessionView = async ({
   handle: string;
   session: { session: Session; user: User };
 }) => {
-  'use cache';
   try {
     const response = await getProduct({ handle });
     const product = response?.product;

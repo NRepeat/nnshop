@@ -11,6 +11,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@shared/ui/carousel';
+import { Button } from '@shared/ui/button';
+import { useRouter } from 'next/navigation';
+// import { revalidatePath } from 'next/cache';
 
 type ProductCardProps = {
   product: Product;
@@ -34,6 +37,7 @@ export const ProductCard = ({
   ]
     .filter(Boolean)
     .splice(0, 5);
+  const nav = useRouter();
 
   return (
     <Card
@@ -74,16 +78,19 @@ export const ProductCard = ({
                   className="group-hover:flex hidden bg-transparent top-1/2 left-0 absolute"
                 />
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 hidden group-hover:block">
-                  <Link
-                    href={`/products/${product.handle}`}
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+
+                      nav.push(`/product/${product.handle}`, {});
+                    }}
                     className="bg-primary text-secondary px-4 py-2 rounded-full"
                   >
                     Quick View
-                  </Link>
+                  </Button>
                 </div>
               </div>
-
-              {/*<CardDots />*/}
             </Carousel>
           ) : (
             <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full group">

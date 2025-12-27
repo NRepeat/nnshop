@@ -170,7 +170,9 @@ function CarouselPrevious({
   ...props
 }: React.ComponentProps<typeof Button>) {
   const { scrollPrev, canScrollPrev } = useCarousel();
-  const handleNextClick = (e) => {
+  const handleNextClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
     e.stopPropagation();
     e.preventDefault();
     scrollPrev();
@@ -204,7 +206,9 @@ function CarouselNext({
   ...props
 }: React.ComponentProps<typeof Button>) {
   const { scrollNext, canScrollNext } = useCarousel();
-  const handleNextClick = (e) => {
+  const handleNextClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
     e.stopPropagation();
     e.preventDefault();
     scrollNext();

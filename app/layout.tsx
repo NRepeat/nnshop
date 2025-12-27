@@ -33,10 +33,10 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
   modal,
-}: Readonly<{
+}: {
   children: React.ReactNode;
   modal: React.ReactNode;
-}>) {
+}) {
   console.log('RootLayout', StyreneAWeb);
   return (
     <html lang="en" suppressHydrationWarning>
