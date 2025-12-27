@@ -1,15 +1,16 @@
 'use client';
 
 import { cn } from '@/shared/lib/utils';
-import {
-  FilterValue,
-  ProductFilter,
-} from '@shared/lib/shopify/types/storefront.types';
+import { FilterValue } from '@shared/lib/shopify/types/storefront.types';
+
+type ActiveFiltersState = {
+  [key: string]: string[] | string;
+};
 
 type ColorFilterProps = {
   values: FilterValue[];
-  activeFilters: ProductFilter[];
-  onFilterChange: (filterInput: string, type: string) => void;
+  activeFilters: ActiveFiltersState;
+  onFilterChange: (value: FilterValue) => void;
 };
 
 const colorMap: { [key: string]: string } = {
@@ -37,39 +38,51 @@ const colorMap: { [key: string]: string } = {
   Чорний: 'bg-[#000000]',
 };
 
+const getFilterParamName = (filterId: string) => {
+  if (filterId.startsWith('filter.p.m.custom')) {
+    return filterId.split('.').pop() || '';
+  }
+  return '';
+};
+
 export const ColorFilter = ({
   values,
   activeFilters,
   onFilterChange,
 }: ColorFilterProps) => {
+  const colorFilterParamName = getFilterParamName('filter.p.m.custom.color');
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-wrap gap-4">
       {[...values]
         .sort((a, b) => a.label.localeCompare(b.label))
-        .map((value) => (
-          <label
-            key={value.label}
-            className="flex items-center space-x-2 cursor-pointer"
-          >
-            <input
-              type="checkbox"
-              className="rounded"
-              checked={activeFilters.some(
-                (f) => JSON.stringify(f) === value.input,
-              )}
-              onChange={() => onFilterChange(value.input as string, 'LIST')}
-            />
-            <span
-              className={cn(
-                'w-6 h-6 rounded-full border border-gray-300',
-                colorMap[value.label] || 'bg-gray-200',
-              )}
-            ></span>
-            <span>
-              {value.label} ({value.count})
-            </span>
-          </label>
-        ))}
+        .map((value) => {
+          const isChecked = (
+            activeFilters[colorFilterParamName] as string[]
+          )?.includes(value.label);
+          return (
+            <label
+              key={value.label}
+              className="flex items-center space-x-2 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                className="rounded"
+                checked={!!isChecked}
+                onChange={() => onFilterChange(value)}
+              />
+              <span
+                className={cn(
+                  'w-6 h-6 rounded-full border border-gray-300',
+                  colorMap[value.label] || 'bg-gray-200',
+                )}
+              ></span>
+              <span>
+                {value.label} ({value.count})
+              </span>
+            </label>
+          );
+        })}
     </div>
   );
 };

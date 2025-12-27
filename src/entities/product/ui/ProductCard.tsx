@@ -13,7 +13,7 @@ import {
 } from '@shared/ui/carousel';
 import { Button } from '@shared/ui/button';
 import { useRouter } from 'next/navigation';
-import { Heart, Plus } from 'lucide-react';
+import { Heart } from 'lucide-react';
 // import { revalidatePath } from 'next/cache';
 
 type ProductCardProps = {

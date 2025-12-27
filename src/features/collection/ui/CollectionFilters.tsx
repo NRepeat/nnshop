@@ -6,11 +6,11 @@ import {
   AccordionTrigger,
 } from '@shared/ui/accordion';
 import { Button } from '@shared/ui/button';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   Filter,
-  ProductFilter,
+  FilterValue,
 } from '@shared/lib/shopify/types/storefront.types';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColorFilter } from './ColorFilter';
@@ -19,75 +19,88 @@ type Props = {
   filters: Filter[];
 };
 
+type ActiveFiltersState = {
+  [key: string]: string[] | string; // For list filters like vendor, metafields, minPrice, maxPrice
+};
+
+const getFilterParamName = (filterId: string) => {
+  if (filterId.startsWith('filter.p.vendor')) {
+    return 'vendor';
+  }
+  if (filterId.startsWith('filter.p.m.custom')) {
+    return filterId.split('.').pop() || '';
+  }
+  return '';
+};
+
 export function CollectionFilters({ filters }: Props) {
-  const t = useTranslations('CollectionPage.filters');
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [activeFilters, setActiveFilters] = useState<ProductFilter[]>([]);
+  const [activeFilters, setActiveFilters] = useState<ActiveFiltersState>({});
 
   useEffect(() => {
-    const filtersFromUrl = searchParams.get('filters');
-    if (filtersFromUrl) {
-      try {
-        setActiveFilters(JSON.parse(filtersFromUrl));
-      } catch {
-        setActiveFilters([]);
-      }
-    } else {
-      setActiveFilters([]);
-    }
+    const newActiveFilters: ActiveFiltersState = {};
+    searchParams.forEach((value, key) => {
+      newActiveFilters[key] = value.includes(',') ? value.split(',') : [value];
+    });
+    setActiveFilters(newActiveFilters);
   }, [searchParams]);
 
-  const handleFilterChange = (filterInput: string, type: string) => {
-    let newFilters = [...activeFilters];
-    const filter = JSON.parse(filterInput);
+  const handleFilterChange = useCallback(
+    (filterId: string, filterValue: FilterValue) => {
+      const filterParamName = getFilterParamName(filterId);
+      if (!filterParamName) return;
 
-    if (type === 'LIST') {
-      const existingFilterIndex = newFilters.findIndex(
-        (f) => JSON.stringify(f) === filterInput,
-      );
+      const valueToPutInUrl = filterValue.label;
 
-      if (existingFilterIndex > -1) {
-        newFilters.splice(existingFilterIndex, 1);
-      } else {
-        newFilters.push(filter);
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      const currentParam = newSearchParams.get(filterParamName);
+      let newValues: string[] = [];
+
+      if (currentParam) {
+        newValues = currentParam.split(',');
       }
-    }
 
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    if (newFilters.length > 0) {
-      newSearchParams.set('filters', JSON.stringify(newFilters));
-    } else {
-      newSearchParams.delete('filters');
-    }
-    router.replace(`${pathname}?${newSearchParams.toString()}`, {
-      scroll: false,
-    });
-  };
+      const existingIndex = newValues.indexOf(valueToPutInUrl);
 
-  const handlePriceChange = (min: string, max: string) => {
-    let newFilters = activeFilters.filter((f) => !f.price);
-    if (min || max) {
-      const priceFilter: ProductFilter = {
-        price: {
-          min: min ? parseFloat(min) : undefined,
-          max: max ? parseFloat(max) : undefined,
-        },
-      };
-      newFilters.push(priceFilter);
-    }
+      if (existingIndex > -1) {
+        newValues.splice(existingIndex, 1);
+      } else {
+        newValues.push(valueToPutInUrl);
+      }
 
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    if (newFilters.length > 0) {
-      newSearchParams.set('filters', JSON.stringify(newFilters));
-    } else {
-      newSearchParams.delete('filters');
-    }
-    router.replace(`${pathname}?${newSearchParams.toString()}`, {
-      scroll: false,
-    });
-  };
+      if (newValues.length > 0) {
+        newSearchParams.set(filterParamName, newValues.join(','));
+      } else {
+        newSearchParams.delete(filterParamName);
+      }
+      router.replace(`${pathname}?${newSearchParams.toString()}`, {
+        scroll: false,
+      });
+    },
+    [pathname, router, searchParams],
+  );
+
+  const handlePriceChange = useCallback(
+    (min: string, max: string) => {
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      if (min) {
+        newSearchParams.set('minPrice', min);
+      } else {
+        newSearchParams.delete('minPrice');
+      }
+      if (max) {
+        newSearchParams.set('maxPrice', max);
+      } else {
+        newSearchParams.delete('maxPrice');
+      }
+      router.replace(`${pathname}?${newSearchParams.toString()}`, {
+        scroll: false,
+      });
+    },
+    [pathname, router, searchParams],
+  );
 
   const sortedFilters = filters;
 
@@ -96,57 +109,63 @@ export function CollectionFilters({ filters }: Props) {
       <Accordion
         type="multiple"
         className="pr-1 w-full  max-h-[calc(100vh-130px)] custom-scroll"
+        defaultValue={filters.map((filter) => filter.id)}
       >
-        {sortedFilters.map((filter) => (
-          <AccordionItem key={filter.id} value={filter.id}>
-            <AccordionTrigger className="font-medium cursor-pointer w-full">
-              {filter.label}
-            </AccordionTrigger>
-            <AccordionContent>
-              {filter.id === 'filter.p.m.custom.color' ? (
-                <ColorFilter
-                  values={filter.values}
-                  activeFilters={activeFilters}
-                  onFilterChange={handleFilterChange}
-                />
-              ) : filter.type === 'LIST' ? (
-                <ul className="space-y-2">
-                  {[...filter.values]
-                    .sort((a, b) => a.label.localeCompare(b.label))
-                    .map((value) => (
-                      <li key={value.label} className="cursor-pointer">
-                        <label className="flex items-center space-x-2  cursor-pointer">
-                          <input
-                            type="checkbox"
-                            className="rounded"
-                            checked={activeFilters.some(
-                              (f) => JSON.stringify(f) === value.input,
-                            )}
-                            onChange={() =>
-                              handleFilterChange(
-                                value.input as string,
-                                filter.type,
-                              )
-                            }
-                          />
-                          <span>
-                            {value.label} ({value.count})
-                          </span>
-                        </label>
-                      </li>
-                    ))}
-                </ul>
-              ) : filter.type === 'PRICE_RANGE' ? (
-                <PriceRangeFilter
-                  filter={filter}
-                  onPriceChange={handlePriceChange}
-                />
-              ) : (
-                filter.type
-              )}
-            </AccordionContent>
-          </AccordionItem>
-        ))}
+        {sortedFilters.map((filter) => {
+          const filterParamName = getFilterParamName(filter.id);
+          return (
+            <AccordionItem key={filter.id} value={filter.id}>
+              <AccordionTrigger className="font-medium cursor-pointer w-full">
+                {filter.label}
+              </AccordionTrigger>
+              <AccordionContent>
+                {filter.id === 'filter.p.m.custom.color' ? (
+                  <ColorFilter
+                    values={filter.values}
+                    activeFilters={activeFilters}
+                    onFilterChange={(value) =>
+                      handleFilterChange(filter.id, value)
+                    }
+                  />
+                ) : filter.type === 'LIST' ? (
+                  <ul className="space-y-2">
+                    {[...filter.values]
+                      .sort((a, b) => a.label.localeCompare(b.label))
+                      .map((value) => {
+                        const isChecked = (
+                          activeFilters[filterParamName] as string[]
+                        )?.includes(value.label);
+                        return (
+                          <li key={value.label} className="cursor-pointer">
+                            <label className="flex items-center space-x-2  cursor-pointer">
+                              <input
+                                type="checkbox"
+                                className="rounded"
+                                checked={!!isChecked}
+                                onChange={() =>
+                                  handleFilterChange(filter.id, value)
+                                }
+                              />
+                              <span>
+                                {value.label} ({value.count})
+                              </span>
+                            </label>
+                          </li>
+                        );
+                      })}
+                  </ul>
+                ) : filter.type === 'PRICE_RANGE' ? (
+                  <PriceRangeFilter
+                    filter={filter}
+                    onPriceChange={handlePriceChange}
+                  />
+                ) : (
+                  filter.type
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
       </Accordion>
     </div>
   );
@@ -167,21 +186,9 @@ function PriceRangeFilter({
   const [appliedMax, setAppliedMax] = useState('');
 
   useEffect(() => {
-    const filtersFromUrl = searchParams.get('filters');
-    let minFromUrl = '';
-    let maxFromUrl = '';
-    if (filtersFromUrl) {
-      try {
-        const parsed = JSON.parse(filtersFromUrl) as ProductFilter[];
-        const priceFilter = parsed.find((f) => f.price);
-        if (priceFilter?.price) {
-          minFromUrl = priceFilter.price.min?.toString() || '';
-          maxFromUrl = priceFilter.price.max?.toString() || '';
-        }
-      } catch {
-        /* ignore */
-      }
-    }
+    const minFromUrl = searchParams.get('minPrice') || '';
+    const maxFromUrl = searchParams.get('maxPrice') || '';
+
     setAppliedMin(minFromUrl);
     setAppliedMax(maxFromUrl);
     setMin(minFromUrl);
@@ -201,7 +208,7 @@ function PriceRangeFilter({
 
   return (
     <div className="flex flex-col space-y-2">
-      <div className="flex items-center space-x-2 px-1 pt-1">
+      <div className="flex items-center space-x-2 px-0.5 pt-1">
         <input
           type="number"
           placeholder={t('min')}
