@@ -20,7 +20,7 @@ export const NavigationClient = ({
     >
       <div
         className={cn(
-          'fixed inset-0  top-38  min-h-screen  transition-all duration-500 ease-in-out',
+          'fixed inset-0  top-[160px]  min-h-screen  transition-all duration-500 ease-in-out',
           'bg-foreground/40 backdrop-blur-[2px]',
           isOpen
             ? 'opacity-100 pointer-events-auto visible animate-in fade-in'

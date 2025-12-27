@@ -49,7 +49,7 @@ const Navigation = async ({
   const menu = meinMenu.map((item, index) => {
     if (item.items.length > 0) {
       return (
-        <ul className=" gap-4  bg-transparent flex container" key={index}>
+        <ul className="bg-transparent flex container " key={index}>
           {item.items.map((subItem) => (
             <NavigationMenuItem
               key={subItem.url + subItem.title + gender}
@@ -57,42 +57,43 @@ const Navigation = async ({
             >
               <NavigationMenuTrigger
                 variant={'ghost'}
-                className="rounded-none  cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full has-[>svg]:px-5 py-1.5 "
+                className="rounded-none  cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full has-[>svg]:px-5 pt-2 pb-3 "
               >
                 {subItem.title}
               </NavigationMenuTrigger>
-              <NavigationMenuContent className="min-w-full  flex  justify-between pr-7 ">
-                <div className="flex w-full h-fit pt-4">
-                  <ul className="grid gap-2 md:w-lg lg:w-lg md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr]">
-                    {subItem.items.map((subItem) => (
-                      <li
-                        key={subItem.title + gender}
-                        className="w-full row-span-3 ml-2 "
-                      >
-                        <Button
-                          variant={'ghost'}
-                          className="w-full rounded-none  justify-start bg-transparent hover:underline "
+              <NavigationMenuContent className="max-w-screen  flex  justify-between pr-7  overflow-hidden">
+                <div className="flex w-full  pt-7  min-w-[calc(100vw)] h-[350px] mx-auto">
+                  <div className="container w-full flex justify-between">
+                    <ul className="grid h-fit gap-2 md:w-lg lg:w-3xl md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr] ">
+                      {subItem.items.map((subItem) => (
+                        <li
+                          key={subItem.title + gender}
+                          className="w-full row-span-3 ml-2 "
                         >
-                          <Link
-                            href={subItem.url}
-                            className=" text-bane font-300 font-sans "
+                          <Button
+                            variant={'ghost'}
+                            className="w-full rounded-none  justify-start bg-transparent hover:underline "
                           >
-                            {subItem.title}
-                          </Link>
-                        </Button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="w-[400px] h-[300px]">
-                  <Image
-                    src="/auth_image.jpeg"
-                    alt={subItem.title}
-                    width={200}
-                    height={200}
-                    className="w-full h-full object-cover"
-                  />
+                            <Link
+                              href={subItem.url}
+                              className=" text-base font-300 font-sans "
+                            >
+                              {subItem.title}
+                            </Link>
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="w-[300px] h-[300px] ">
+                      <Image
+                        src="/auth_image.jpeg"
+                        alt={subItem.title}
+                        width={200}
+                        height={200}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
                 </div>
               </NavigationMenuContent>
             </NavigationMenuItem>

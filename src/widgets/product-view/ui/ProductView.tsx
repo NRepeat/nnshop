@@ -15,6 +15,7 @@ export async function ProductView({
   sanityDocumentId,
   sanityDocumentType,
   session,
+  isQuickView = false,
 }: {
   product: Product;
   selectedVariant: ProductVariant | undefined;
@@ -23,6 +24,7 @@ export async function ProductView({
   sanityDocumentId: string;
   sanityDocumentType: string;
   session: { session: Session; user: User };
+  isQuickView?: boolean;
 }) {
   if (!product) throw new Error('Product not found');
   const images =
@@ -35,7 +37,9 @@ export async function ProductView({
   return (
     <div className="container mx-auto py-12 space-y-12">
       {selectedVariant && (
-        <div className="grid grid-cols-1 md:grid-cols-8 gap-12 h-full md:h-screen">
+        <div
+          className={`grid grid-cols-1 md:grid-cols-8 gap-12 h-full ${!isQuickView && 'md:h-screen'}`}
+        >
           <Suspense fallback={<div>Loading...</div>}>
             <Gallery
               images={images}
@@ -47,11 +51,13 @@ export async function ProductView({
           <Description product={product} selectedVariant={selectedVariant} />
         </div>
       )}
-      <PageBuilder
-        content={content}
-        documentId={sanityDocumentId}
-        documentType={sanityDocumentType}
-      />
+      {!isQuickView && (
+        <PageBuilder
+          content={content}
+          documentId={sanityDocumentId}
+          documentType={sanityDocumentType}
+        />
+      )}
     </div>
   );
 }

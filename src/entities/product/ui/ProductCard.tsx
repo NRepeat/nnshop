@@ -46,37 +46,47 @@ export const ProductCard = ({
         <Link href={`/products/${product.handle}`}>
           {withCarousel ? (
             <Carousel className="relative" opts={{ align: 'center' }}>
-              <CarouselContent>
-                {productImages.map((image, index) => (
-                  <CarouselItem key={index} className=" relative">
-                    <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full re">
-                      <Image
-                        key={index}
-                        className=" w-full max-h-[350px] h-[350px]  lg:max-h-[600px] lg:h-[600px] object-contain"
-                        src={image.url}
-                        alt={image.altText || ''}
-                        width={image.width || 300}
-                        loading="lazy"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        height={image.height || 300}
-                      />
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselNext
-                variant={'link'}
-                className="group-hover:flex hidden bg-transparent top-1/2 right-0 absolute"
-              />
-              <CarouselPrevious
-                variant={'link'}
-                className="group-hover:flex hidden bg-transparent top-1/2 left-0 absolute"
-              />
+              <div className="group relative">
+                <CarouselContent>
+                  {productImages.map((image, index) => (
+                    <CarouselItem key={index} className=" relative">
+                      <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full re">
+                        <Image
+                          key={index}
+                          className=" w-full max-h-[350px] h-[350px]  lg:max-h-[600px] lg:h-[600px] object-contain"
+                          src={image.url}
+                          alt={image.altText || ''}
+                          width={image.width || 300}
+                          loading="lazy"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          height={image.height || 300}
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselNext
+                  variant={'link'}
+                  className="group-hover:flex hidden bg-transparent top-1/2 right-0 absolute"
+                />
+                <CarouselPrevious
+                  variant={'link'}
+                  className="group-hover:flex hidden bg-transparent top-1/2 left-0 absolute"
+                />
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 hidden group-hover:block">
+                  <Link
+                    href={`/products/${product.handle}`}
+                    className="bg-primary text-secondary px-4 py-2 rounded-full"
+                  >
+                    Quick View
+                  </Link>
+                </div>
+              </div>
 
               {/*<CardDots />*/}
             </Carousel>
           ) : (
-            <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full">
+            <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full group">
               <Image
                 className=" w-full max-h-[350px] h-[350px]"
                 src={productImages[0].url}
@@ -84,6 +94,14 @@ export const ProductCard = ({
                 width={productImages[0].width || 300}
                 height={productImages[0].height || 300}
               />
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 hidden group-hover:block">
+                <Link
+                  href={`/products/${product.handle}`}
+                  className="bg-primary text-secondary px-4 py-2 rounded-full"
+                >
+                  Quick View
+                </Link>
+              </div>
             </div>
           )}
         </Link>

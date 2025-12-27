@@ -35,6 +35,9 @@ export const ClientGridWrapper = ({
     setPageInfo(newPageInfo);
   };
   const params = useParams();
+  const handle = Array.isArray(params.slug)
+    ? params.slug.join('/')
+    : (params.slug as string);
   return (
     <div className="flex h-full">
       <div className="flex flex-col items-end">
@@ -50,7 +53,7 @@ export const ClientGridWrapper = ({
               initialPageInfo={pageInfo}
               onDataLoadedAction={handleDataLoaded}
               locale={locale}
-              handle={params.slug as string}
+              handle={handle}
             />
           </div>
         </div>
