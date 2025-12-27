@@ -13,6 +13,7 @@ import {
 } from '@shared/ui/carousel';
 import { Button } from '@shared/ui/button';
 import { useRouter } from 'next/navigation';
+import { Heart, Plus } from 'lucide-react';
 // import { revalidatePath } from 'next/cache';
 
 type ProductCardProps = {
@@ -42,7 +43,7 @@ export const ProductCard = ({
   return (
     <Card
       className={clsx(
-        'h-full shadow-none backdrop-blur-sm bg-transparent border border-background  rounded-none cursor-pointer  py-1 hover:shadow-md group pb-4',
+        'h-full shadow-none backdrop-blur-sm bg-transparent border border-background  rounded-none cursor-pointer  py-1  group pb-4',
         className,
       )}
     >
@@ -71,21 +72,33 @@ export const ProductCard = ({
                 </CarouselContent>
                 <CarouselNext
                   variant={'link'}
-                  className="group-hover:flex hidden bg-transparent top-1/2 right-0 absolute"
+                  className="group-hover:flex hidden bg-transparent top-1/2 right-5 absolute"
                 />
                 <CarouselPrevious
                   variant={'link'}
-                  className="group-hover:flex hidden bg-transparent top-1/2 left-0 absolute"
+                  className="group-hover:flex hidden bg-transparent top-1/2 left-5 absolute"
                 />
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 hidden group-hover:block">
+                <div className="absolute top-0  right-5  hidden group-hover:block">
                   <Button
+                    size={'icon'}
+                    variant={'link'}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                    }}
+                  >
+                    <Heart />
+                  </Button>
+                </div>
+                <div className="absolute bottom-0  right-5  hidden group-hover:block">
+                  <Button
+                    variant={'default'}
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
 
                       nav.push(`/product/${product.handle}`, {});
                     }}
-                    className="bg-primary text-secondary px-4 py-2 rounded-full"
                   >
                     Quick View
                   </Button>

@@ -28,11 +28,13 @@ export function FilterSheet({ filters }: Props) {
           {t('showFilters')}
         </Button>
       </SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>{t('filters.title')}</SheetTitle>
+      <SheetContent className="gap-5">
+        <SheetHeader className="w-full  flex justify-center items-center py-5 border-b border-b-muted">
+          <SheetTitle className="text-base font-400">
+            {t('filters.title')}
+          </SheetTitle>
         </SheetHeader>
-        <div className="overflow-auto px-4">
+        <div className="overflow-auto px-5 overflow-y-scroll">
           <CollectionFilters filters={filters} />
         </div>
       </SheetContent>

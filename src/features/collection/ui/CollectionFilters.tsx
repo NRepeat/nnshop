@@ -13,6 +13,7 @@ import {
   ProductFilter,
 } from '@shared/lib/shopify/types/storefront.types';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { ColorFilter } from './ColorFilter';
 
 type Props = {
   filters: Filter[];
@@ -89,12 +90,12 @@ export function CollectionFilters({ filters }: Props) {
   };
 
   const sortedFilters = filters;
+
   return (
-    <div className="w-full md:w-[260px] ">
-      <h3 className="text-xl font-semibold mb-4">{t('title')}</h3>
+    <div className="w-full  ">
       <Accordion
         type="multiple"
-        className="pr-1 w-full overflow-y-scroll max-h-[calc(100vh-130px)] custom-scroll"
+        className="pr-1 w-full  max-h-[calc(100vh-130px)] custom-scroll"
       >
         {sortedFilters.map((filter) => (
           <AccordionItem key={filter.id} value={filter.id}>
@@ -102,7 +103,13 @@ export function CollectionFilters({ filters }: Props) {
               {filter.label}
             </AccordionTrigger>
             <AccordionContent>
-              {filter.type === 'LIST' && (
+              {filter.id === 'filter.p.m.custom.color' ? (
+                <ColorFilter
+                  values={filter.values}
+                  activeFilters={activeFilters}
+                  onFilterChange={handleFilterChange}
+                />
+              ) : filter.type === 'LIST' ? (
                 <ul className="space-y-2">
                   {[...filter.values]
                     .sort((a, b) => a.label.localeCompare(b.label))
@@ -129,12 +136,13 @@ export function CollectionFilters({ filters }: Props) {
                       </li>
                     ))}
                 </ul>
-              )}
-              {filter.type === 'PRICE_RANGE' && (
+              ) : filter.type === 'PRICE_RANGE' ? (
                 <PriceRangeFilter
                   filter={filter}
                   onPriceChange={handlePriceChange}
                 />
+              ) : (
+                filter.type
               )}
             </AccordionContent>
           </AccordionItem>

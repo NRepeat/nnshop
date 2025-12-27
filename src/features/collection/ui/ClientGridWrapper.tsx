@@ -42,9 +42,7 @@ export const ClientGridWrapper = ({
     <div className="flex h-full">
       <div className="flex flex-col items-end">
         <div className="flex w-full justify-between md:justify-end">
-          <div className="block">
-            <FilterSheet filters={filters} />
-          </div>
+          <FilterSheet filters={filters} />
         </div>
         <div className="flex flex-col w-full  pt-2 md:pt-0 h-full">
           <ClientGrid products={products as Product[]} />
