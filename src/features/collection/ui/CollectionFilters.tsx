@@ -15,6 +15,7 @@ import {
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ColorFilter } from './ColorFilter';
 import { createFilterUrl, createPriceUrl } from '../actions';
+import { Spinner } from '@/shared/ui/Spinner';
 
 type Props = {
   filters: Filter[];
@@ -30,6 +31,7 @@ export function CollectionFilters({ filters }: Props) {
   const searchParams = useSearchParams();
   const [activeFilters, setActiveFilters] = useState<ActiveFiltersState>({});
   const [isPending, startTransition] = useTransition();
+  const [changingFilter, setChangingFilter] = useState<string | null>(null);
 
   useEffect(() => {
     const newActiveFilters: ActiveFiltersState = {};
@@ -39,10 +41,17 @@ export function CollectionFilters({ filters }: Props) {
     setActiveFilters(newActiveFilters);
   }, [searchParams]);
 
+  useEffect(() => {
+    if (!isPending) {
+      setChangingFilter(null);
+    }
+  }, [isPending]);
+
   const handleFilterChange = async (
     filterId: string,
     filterValue: FilterValue,
   ) => {
+    setChangingFilter(filterValue.label);
     const currentSearchParams = searchParams.toString();
     const newUrl = await createFilterUrl(
       currentSearchParams,
@@ -56,6 +65,7 @@ export function CollectionFilters({ filters }: Props) {
   };
 
   const handlePriceChange = async (min: string, max: string) => {
+    setChangingFilter('price');
     const currentSearchParams = searchParams.toString();
     const newUrl = await createPriceUrl(
       currentSearchParams,
@@ -71,7 +81,7 @@ export function CollectionFilters({ filters }: Props) {
   const sortedFilters = filters;
 
   return (
-    <div className="w-full  ">
+    <div className="w-full relative">
       <Accordion
         type="multiple"
         className="pr-1 w-full  max-h-[calc(100vh-130px)] custom-scroll"
@@ -94,6 +104,8 @@ export function CollectionFilters({ filters }: Props) {
                     onFilterChange={(value) =>
                       handleFilterChange(filter.id, value)
                     }
+                    isPending={isPending}
+                    changingFilter={changingFilter}
                   />
                 ) : filter.type === 'LIST' ? (
                   <ul className="space-y-2">
@@ -103,17 +115,23 @@ export function CollectionFilters({ filters }: Props) {
                         const isChecked = (
                           activeFilters[filterParamName] as string[]
                         )?.includes(value.label);
+                        const isChanging = changingFilter === value.label;
                         return (
                           <li key={value.label} className="cursor-pointer">
                             <label className="flex items-center space-x-2  cursor-pointer">
-                              <input
-                                type="checkbox"
-                                className="rounded"
-                                checked={!!isChecked}
-                                onChange={() =>
-                                  handleFilterChange(filter.id, value)
-                                }
-                              />
+                              {isPending && isChanging ? (
+                                <Spinner />
+                              ) : (
+                                <input
+                                  type="checkbox"
+                                  className="rounded"
+                                  checked={!!isChecked}
+                                  onChange={() =>
+                                    handleFilterChange(filter.id, value)
+                                  }
+                                  disabled={isPending}
+                                />
+                              )}
                               <span>
                                 {value.label} ({value.count})
                               </span>
@@ -126,6 +144,8 @@ export function CollectionFilters({ filters }: Props) {
                   <PriceRangeFilter
                     filter={filter}
                     onPriceChange={handlePriceChange}
+                    isPending={isPending}
+                    changingFilter={changingFilter}
                   />
                 ) : (
                   filter.type
@@ -141,9 +161,13 @@ export function CollectionFilters({ filters }: Props) {
 
 function PriceRangeFilter({
   onPriceChange,
+  isPending,
+  changingFilter,
 }: {
   filter: Filter;
   onPriceChange: (min: string, max: string) => void;
+  isPending: boolean;
+  changingFilter: string | null;
 }) {
   const t = useTranslations('CollectionPage.filters');
   const searchParams = useSearchParams();
@@ -173,45 +197,49 @@ function PriceRangeFilter({
 
   const isApplied = min === appliedMin && max === appliedMax;
   const hasFilterInUrl = !!(appliedMin || appliedMax);
+  const isChanging = changingFilter === 'price';
 
   return (
     <div className="flex flex-col space-y-2">
-      <div className="flex items-center space-x-2 px-0.5 pt-1">
-        <input
-          type="number"
-          placeholder={t('min')}
-          value={min}
-          onChange={(e) => setMin(e.target.value)}
-          className="w-full border-gray-300 rounded-none shadow-sm p-2"
-        />
-        <span>-</span>
-        <input
-          type="number"
-          placeholder={t('max')}
-          value={max}
-          onChange={(e) => setMax(e.target.value)}
-          className="w-full border-gray-300 rounded-none shadow-sm p-2"
-        />
-      </div>
-      <div className="flex items-center space-x-2">
-        {isApplied && hasFilterInUrl ? (
-          <Button
-            variant="secondary"
-            onClick={clearPriceFilter}
-            className="w-full"
-          >
-            {t('clear')}
-          </Button>
-        ) : (
-          <Button
-            onClick={applyPriceFilter}
-            disabled={isApplied}
-            className="w-full"
-          >
-            {t('apply')}
-          </Button>
-        )}
-      </div>
+      <fieldset disabled={isPending}>
+        <div className="flex items-center space-x-2 px-0.5 pt-1">
+          <input
+            type="number"
+            placeholder={t('min')}
+            value={min}
+            onChange={(e) => setMin(e.target.value)}
+            className="w-full border-gray-300 rounded-none shadow-sm p-2"
+          />
+          <span>-</span>
+          <input
+            type="number"
+            placeholder={t('max')}
+            value={max}
+            onChange={(e) => setMax(e.target.value)}
+            className="w-full border-gray-300 rounded-none shadow-sm p-2"
+          />
+        </div>
+        <div className="flex items-center space-x-2">
+          {isApplied && hasFilterInUrl ? (
+            <Button
+              variant="secondary"
+              onClick={clearPriceFilter}
+              className="w-full"
+              disabled={isPending}
+            >
+              {isPending && isChanging ? <Spinner /> : t('clear')}
+            </Button>
+          ) : (
+            <Button
+              onClick={applyPriceFilter}
+              disabled={isApplied || isPending}
+              className="w-full"
+            >
+              {isPending && isChanging ? <Spinner /> : t('apply')}
+            </Button>
+          )}
+        </div>
+      </fieldset>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { cn } from '@/shared/lib/utils';
 import { FilterValue } from '@shared/lib/shopify/types/storefront.types';
+import { Spinner } from '@/shared/ui/Spinner';
 
 type ActiveFiltersState = {
   [key: string]: string[] | string;
@@ -11,6 +12,8 @@ type ColorFilterProps = {
   values: FilterValue[];
   activeFilters: ActiveFiltersState;
   onFilterChange: (value: FilterValue) => void;
+  isPending: boolean;
+  changingFilter: string | null;
 };
 
 const colorMap: { [key: string]: string } = {
@@ -49,6 +52,8 @@ export const ColorFilter = ({
   values,
   activeFilters,
   onFilterChange,
+  isPending,
+  changingFilter,
 }: ColorFilterProps) => {
   const colorFilterParamName = getFilterParamName('filter.p.m.custom.color');
 
@@ -60,17 +65,23 @@ export const ColorFilter = ({
           const isChecked = (
             activeFilters[colorFilterParamName] as string[]
           )?.includes(value.label);
+          const isChanging = changingFilter === value.label;
           return (
             <label
               key={value.label}
               className="flex items-center space-x-2 cursor-pointer"
             >
-              <input
-                type="checkbox"
-                className="rounded"
-                checked={!!isChecked}
-                onChange={() => onFilterChange(value)}
-              />
+              {isPending && isChanging ? (
+                <Spinner />
+              ) : (
+                <input
+                  type="checkbox"
+                  className="rounded"
+                  checked={!!isChecked}
+                  onChange={() => onFilterChange(value)}
+                  disabled={isPending}
+                />
+              )}
               <span
                 className={cn(
                   'w-6 h-6 rounded-full border border-gray-300',

@@ -23,9 +23,15 @@ export function FilterSheet({ filters }: Props) {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" className="w-full shadow-none border">
-          <SlidersHorizontal className="mr-2 h-4 w-4" />
-          {t('showFilters')}
+        <Button
+          variant="link"
+          className="   flex flex-row items-center justify-center "
+        >
+          <p>
+            <span className="whitespace-nowrap transform mb-2">
+              {t('showFilters')}
+            </span>
+          </p>
         </Button>
       </SheetTrigger>
       <SheetContent className="gap-5">

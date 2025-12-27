@@ -22,6 +22,7 @@ import {
 import { Button } from '@shared/ui/button';
 import { Carousel, CarouselContent, CarouselItem } from '@shared/ui/carousel';
 import { cacheTag } from 'next/cache';
+import { FilterSheet } from './FilterSheet';
 export const CollectionGrid = async ({
   slug,
   locale,
@@ -116,21 +117,13 @@ export const CollectionGrid = async ({
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Button
-            variant="link"
-            className="   flex flex-row items-center justify-center "
-          >
-            <p>
-              <span className="whitespace-nowrap transform mb-2">
-                {'Фільтри'}
-              </span>
-            </p>
-          </Button>
+          <div className="flex w-full justify-between md:justify-end">
+            <FilterSheet filters={collection.products.filters} />
+          </div>
         </div>
       </div>
       <div className="flex justify-center  gap-8   h-full">
         <ClientGridWrapper
-          filters={collection.products.filters}
           initialPageInfo={pageInfo as PageInfo}
           initialProducts={products as Product[]}
         />

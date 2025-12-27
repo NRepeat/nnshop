@@ -2,24 +2,16 @@
 import { useState, useEffect } from 'react';
 import { ClientGrid } from './ClientGrid';
 import LoadMore from './LoadMore';
-import {
-  Filter,
-  PageInfo,
-  Product,
-} from '@shared/lib/shopify/types/storefront.types';
+import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
 import { useParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
-
-import { FilterSheet } from './FilterSheet';
 
 export const ClientGridWrapper = ({
   initialPageInfo,
   initialProducts,
-  filters,
 }: {
   initialProducts: Product[];
   initialPageInfo: PageInfo;
-  filters: Filter[];
 }) => {
   const locale = useLocale();
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -49,9 +41,6 @@ export const ClientGridWrapper = ({
   return (
     <div className="flex h-full">
       <div className="flex flex-col items-end">
-        <div className="flex w-full justify-between md:justify-end">
-          <FilterSheet filters={filters} />
-        </div>
         <div className="flex flex-col w-full  pt-2 md:pt-0 h-full">
           <ClientGrid products={products as Product[]} />
           <div className="w-full items-center">
