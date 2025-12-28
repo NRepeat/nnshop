@@ -23,30 +23,41 @@ type Props = {
 };
 
 type ActiveFiltersState = {
-  [key: string]: string[] | string;
-};
+  key: string;
+  value: string;
+  filterId: string;
+  filterValue: FilterValue;
+}[];
 
 export function CollectionFilters({ filters }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [activeFilters, setActiveFilters] = useState<ActiveFiltersState>({});
   const [isPending, startTransition] = useTransition();
   const [changingFilter, setChangingFilter] = useState<string | null>(null);
 
-  useEffect(() => {
-    const newActiveFilters: ActiveFiltersState = {};
-    searchParams.forEach((value, key) => {
-      newActiveFilters[key] = value.includes(',') ? value.split(',') : [value];
-    });
-    setActiveFilters(newActiveFilters);
-  }, [searchParams]);
-
-  useEffect(() => {
-    if (!isPending) {
-      setChangingFilter(null);
+  const activeFilters: ActiveFiltersState = [];
+  searchParams.forEach((value, key) => {
+    if (key !== 'minPrice' && key !== 'maxPrice') {
+      const values = value.split(',');
+      const filterDefinition = filters.find((f) => f.id.endsWith(`.${key}`));
+      if (filterDefinition) {
+        values.forEach((v) => {
+          const filterValue = filterDefinition.values.find(
+            (fv) => fv.label === v,
+          );
+          if (filterValue) {
+            activeFilters.push({
+              key: key,
+              value: v,
+              filterId: filterDefinition.id,
+              filterValue: filterValue,
+            });
+          }
+        });
+      }
     }
-  }, [isPending]);
+  });
 
   const handleFilterChange = async (
     filterId: string,
@@ -89,9 +100,6 @@ export function CollectionFilters({ filters }: Props) {
         defaultValue={filters.map((filter) => filter.id)}
       >
         {sortedFilters.map((filter) => {
-          const filterParamName = filter.id.startsWith('filter.p.vendor')
-            ? 'vendor'
-            : filter.id.split('.').pop() || '';
           return (
             <AccordionItem key={filter.id} value={filter.id}>
               <AccordionTrigger className="font-medium cursor-pointer w-full">
@@ -113,9 +121,11 @@ export function CollectionFilters({ filters }: Props) {
                     {[...filter.values]
                       .sort((a, b) => a.label.localeCompare(b.label))
                       .map((value) => {
-                        const isChecked = (
-                          activeFilters[filterParamName] as string[]
-                        )?.includes(value.label);
+                        const isChecked = activeFilters.some(
+                          (af) =>
+                            af.filterId === filter.id &&
+                            af.value === value.label,
+                        );
                         const isChanging = changingFilter === value.label;
                         const isDisabled = isPending || value.count === 0;
                         return (

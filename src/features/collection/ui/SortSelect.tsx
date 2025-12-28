@@ -26,10 +26,10 @@ export function SortSelect({ defaultValue }: SortSelectProps) {
 
   const [currentSort, setCurrentSort] = useState(defaultValue || 'trending');
 
-  useEffect(() => {
-    const sortFromUrl = searchParams.get('sort') || 'trending';
-    setCurrentSort(sortFromUrl);
-  }, [searchParams]);
+  // useEffect(() => {
+  //   const sortFromUrl = searchParams.get('sort') || 'trending';
+  //   setCurrentSort(sortFromUrl);
+  // }, [searchParams]);
 
   const handleSortChange = (value: string) => {
     setCurrentSort(value);

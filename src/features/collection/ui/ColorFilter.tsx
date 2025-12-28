@@ -5,8 +5,11 @@ import { FilterValue } from '@shared/lib/shopify/types/storefront.types';
 import { Spinner } from '@/shared/ui/Spinner';
 
 type ActiveFiltersState = {
-  [key: string]: string[] | string;
-};
+  key: string;
+  value: string;
+  filterId: string;
+  filterValue: FilterValue;
+}[];
 
 type ColorFilterProps = {
   values: FilterValue[];
@@ -41,13 +44,6 @@ const colorMap: { [key: string]: string } = {
   Чорний: 'bg-[#000000]',
 };
 
-const getFilterParamName = (filterId: string) => {
-  if (filterId.startsWith('filter.p.m.custom')) {
-    return filterId.split('.').pop() || '';
-  }
-  return '';
-};
-
 export const ColorFilter = ({
   values,
   activeFilters,
@@ -55,16 +51,14 @@ export const ColorFilter = ({
   isPending,
   changingFilter,
 }: ColorFilterProps) => {
-  const colorFilterParamName = getFilterParamName('filter.p.m.custom.color');
-
   return (
     <div className="flex flex-wrap gap-4">
       {[...values]
         .sort((a, b) => a.label.localeCompare(b.label))
         .map((value) => {
-          const isChecked = (
-            activeFilters[colorFilterParamName] as string[]
-          )?.includes(value.label);
+          const isChecked = activeFilters.some(
+            (af) => af.key === 'color' && af.value === value.label,
+          );
           const isChanging = changingFilter === value.label;
           const isDisabled = isPending || value.count === 0;
           return (

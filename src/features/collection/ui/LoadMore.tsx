@@ -24,9 +24,9 @@ export default function LoadMore({
   const { ref, inView } = useInView();
   const searchParams = useSearchParams();
 
-  useEffect(() => {
-    setPageInfo(initialPageInfo);
-  }, [initialPageInfo]);
+  // useEffect(() => {
+  //   setPageInfo(initialPageInfo);
+  // }, [initialPageInfo]);
 
   const handleLoadMore = useCallback(() => {
     if (!pageInfo.hasNextPage || isPending) return;

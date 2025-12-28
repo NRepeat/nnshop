@@ -7,7 +7,6 @@ import {
   GetCollectionsHandlesQuery,
   GetCollectionsHandlesQueryVariables,
   GetCollectionFiltersQueryVariables,
-  ProductCollectionSortKeys,
 } from '@shared/lib/shopify/types/storefront.generated';
 import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
 
@@ -228,6 +227,7 @@ export const getCollection = async ({
   before?: string;
   locale: string;
 }) => {
+  'use cache';
   const filters: ProductFilter[] = [];
   if (searchParams) {
     const filterDefinitions = await getCollectionFilters({ handle, locale });
@@ -269,7 +269,7 @@ export const getCollection = async ({
     }
   }
 
-  let sortKey: ProductCollectionSortKeys = 'RELEVANCE';
+  let sortKey = 'RELEVANCE';
   let reverse: boolean = false;
 
   const sort = searchParams?.sort as string | undefined;
@@ -289,7 +289,7 @@ export const getCollection = async ({
       break;
     case 'trending':
     default:
-      sortKey = 'RELEVANCE'; // Assuming RELEVANCE for trending
+      sortKey = 'RELEVANCE';
       reverse = false;
       break;
   }
@@ -303,7 +303,7 @@ export const getCollection = async ({
       after?: string;
       last?: number;
       before?: string;
-      sortKey?: ProductCollectionSortKeys;
+      sortKey?: string;
       reverse?: boolean;
     }
   >({
@@ -320,5 +320,6 @@ export const getCollection = async ({
     },
     language: locale.toUpperCase() as StorefrontLanguageCode,
   });
+  console.log(collection);
   return collection as GetCollectionQuery;
 };

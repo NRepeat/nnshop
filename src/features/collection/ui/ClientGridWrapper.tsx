@@ -16,7 +16,6 @@ export const ClientGridWrapper = ({
   const locale = useLocale();
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [pageInfo, setPageInfo] = useState(initialPageInfo);
-  console.log(products);
   useEffect(() => {
     setProducts(initialProducts);
   }, [initialProducts]);
