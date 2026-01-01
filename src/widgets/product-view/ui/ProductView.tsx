@@ -18,7 +18,7 @@ import {
 import { ProductCarousel } from '@entities/product/ui/ProductCarousel';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ProductCard } from '@entities/product/ui/ProductCard';
+import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
 
 export async function ProductView({
   product,
@@ -154,7 +154,7 @@ export async function ProductView({
         <h2 className="text-2xl font-medium text-center mb-8">Style With</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {relatedProducts.slice(0, 3).map((p) => (
-            <ProductCard product={p} key={p.id} />
+            <ProductCardSPP product={p} key={p.id} />
           ))}
         </div>
       </div>
@@ -164,7 +164,7 @@ export async function ProductView({
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {relatedProducts.slice(3, 6).map((p) => (
-            <ProductCard product={p} key={p.id} />
+            <ProductCardSPP product={p} key={p.id} />
           ))}
         </div>
       </div>
