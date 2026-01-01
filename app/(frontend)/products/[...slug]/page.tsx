@@ -1,5 +1,6 @@
 import { getProduct } from '@/entities/product/api/getProduct';
 import { getProductPage } from '@/entities/product/api/getProductPage';
+import { getProducts } from '@/entities/product/api/getProducts';
 import { ProductView } from '@/widgets/product-view';
 import { auth } from '@features/auth/lib/auth';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
@@ -37,6 +38,8 @@ const ProductSessionView = async ({
       return notFound();
     }
 
+    const relatedProducts = await getProducts({ first: 6 });
+
     const sanityProduct = await getProductPage();
     const selectedVariant = variant
       ? product.variants.edges.find(
@@ -53,6 +56,7 @@ const ProductSessionView = async ({
         //@ts-ignore
         sanityDocumentId={sanityProduct?._id}
         sanityDocumentType="page"
+        relatedProducts={relatedProducts.products.edges.map((e) => e.node)}
       />
     );
   } catch {

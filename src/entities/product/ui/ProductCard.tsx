@@ -29,17 +29,19 @@ export const ProductCard = ({
   withCarousel = false,
 }: ProductCardProps) => {
   const productImages = [
-    ...product?.media.edges.map((variant) => ({
-      url: variant.node.previewImage?.url || '',
-      altText: variant.node.previewImage?.altText || '',
-      width: variant.node.previewImage?.width || 300,
-      height: variant.node.previewImage?.height || 300,
+    ...product?.images.edges.map((variant) => ({
+      url: variant.node?.url || '',
+      altText: variant.node?.altText || '',
+      width: variant.node?.width || 300,
+      height: variant.node?.height || 300,
     })),
   ]
     .filter(Boolean)
     .splice(0, 5);
   const nav = useRouter();
-  const isNew = product.tags.includes('новий') || product.tags.includes('new');
+  console.log(product);
+
+  const isNew = false;
   return (
     <Card
       className={clsx(

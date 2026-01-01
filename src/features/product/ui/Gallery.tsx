@@ -1,7 +1,7 @@
 'use client';
 import type {
   ProductVariant,
-  Image as ShoipidyImage,
+  Image as ShoipifyImage,
 } from '@shared/lib/shopify/types/storefront.types';
 import { Button } from '@shared/ui/button';
 import {
@@ -11,10 +11,11 @@ import {
   CarouselItem,
 } from '@shared/ui/carousel';
 import { Bookmark } from 'lucide-react';
-import Image from 'next/image';
+
 import * as React from 'react';
 import { toggleFavoriteProduct } from '../api/toggle-favorite';
 import { BookmarkFilledIcon } from '@sanity/icons';
+import Image from 'next/image';
 
 const Gallery = ({
   images,
@@ -22,9 +23,7 @@ const Gallery = ({
   isFavorite,
   productId,
 }: {
-  images: {
-    node: Pick<ShoipidyImage, 'url' | 'altText' | 'width' | 'height'>;
-  }[];
+  images: ShoipifyImage[];
   selectedVariant: ProductVariant;
   productId: string;
   isFavorite?: boolean;
@@ -41,8 +40,7 @@ const Gallery = ({
   const selectedVariantImageIndex = React.useMemo(() => {
     return images.findIndex(
       (image) =>
-        image.node.url.split('?')[0] ===
-        selectedVariant?.image?.url.split('?')[0],
+        image.url.split('?')[0] === selectedVariant?.image?.url.split('?')[0],
     );
   }, [selectedVariant]);
 
@@ -60,21 +58,21 @@ const Gallery = ({
     }
   };
   return (
-    <div className="md:col-span-4">
+    <div className="md:col-span-1">
       <div className="relative">
         <Carousel setApi={setMainApi}>
           <CarouselContent>
-            {images.map((image: any, index: number) => (
+            {images.map((image, index: number) => (
               <CarouselItem key={index}>
-                <div className="aspect-[1] relative flex items-center justify-center overflow-hidden max-h-[calc(100vh-16rem)]">
-                  <Image
-                    src={image.node.url}
-                    alt={image.node.altText || ''}
-                    width={image.node.width}
-                    height={image.node.height}
-                    className="h-auto w-auto max-h-full max-w-full"
-                  />
-                </div>
+                {/*<div className="aspect-[1] relative flex items-center justify-center overflow-hidden max-h-[calc(100vh-16rem)]">*/}
+                <Image
+                  src={image.url}
+                  alt={image.altText || ''}
+                  width={image.width || '400'}
+                  height={image.height || '400'}
+                  className="h-auto w-auto max-h-full max-w-full"
+                />
+                {/*</div>*/}
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -102,7 +100,7 @@ const Gallery = ({
           className="mt-4"
         >
           <CarouselContent className="pl-4">
-            {images.map((image: any, index: number) => (
+            {images.map((image, index: number) => (
               <CarouselItem
                 key={index}
                 onClick={() => onThumbClick(index)}
@@ -117,8 +115,8 @@ const Gallery = ({
                   }
                 >
                   <Image
-                    src={image.node.url}
-                    alt={image.node.altText || ''}
+                    src={image.url}
+                    alt={image.altText || ''}
                     fill
                     className="object-cover"
                   />
