@@ -1,22 +1,17 @@
 'use client';
 
-import { cn } from '@/shared/lib/utils';
-import { FilterValue } from '@shared/lib/shopify/types/storefront.types';
+import { useQueryState, parseAsArrayOf, parseAsString } from 'nuqs';
+import { useTransition, useState } from 'react';
+import {
+  Filter,
+  FilterValue,
+} from '@shared/lib/shopify/types/storefront.types';
+import { cn } from '@shared/lib/utils';
+import { Checkbox } from '@shared/ui/checkbox';
 import { Spinner } from '@/shared/ui/Spinner';
 
-type ActiveFiltersState = {
-  key: string;
-  value: string;
-  filterId: string;
-  filterValue: FilterValue;
-}[];
-
-type ColorFilterProps = {
-  values: FilterValue[];
-  activeFilters: ActiveFiltersState;
-  onFilterChange: (value: FilterValue) => void;
-  isPending: boolean;
-  changingFilter: string | null;
+type Props = {
+  filter: Filter;
 };
 
 const colorMap: { [key: string]: string } = {
@@ -44,23 +39,35 @@ const colorMap: { [key: string]: string } = {
   Чорний: 'bg-[#000000]',
 };
 
-export const ColorFilter = ({
-  values,
-  activeFilters,
-  onFilterChange,
-  isPending,
-  changingFilter,
-}: ColorFilterProps) => {
+export function NuqsColorFilter({ filter }: Props) {
+  const [isPending, startTransition] = useTransition();
+  const [changingFilter, setChangingFilter] = useState<string | null>(null);
+  const filterKey = filter.id.split('.').pop() || filter.id;
+
+  const [selectedValues, setSelectedValues] = useQueryState(
+    filterKey,
+    parseAsArrayOf(parseAsString)
+      .withDefault([])
+      .withOptions({ shallow: false, history: 'replace' }),
+  );
+
+  const handleFilterChange = (value: FilterValue) => {
+    setChangingFilter(value.label);
+    startTransition(() => {
+      const newSelection = selectedValues.includes(value.label)
+        ? selectedValues.filter((item) => item !== value.label)
+        : [...selectedValues, value.label];
+      setSelectedValues(newSelection.length > 0 ? newSelection : null);
+    });
+  };
+
   return (
     <div className="flex flex-wrap gap-4">
-      {[...values]
+      {[...filter.values]
         .sort((a, b) => a.label.localeCompare(b.label))
         .map((value) => {
-          const isChecked = activeFilters.some(
-            (af) => af.key === 'color' && af.value === value.label,
-          );
+          const isChecked = selectedValues.includes(value.label);
           const isChanging = changingFilter === value.label;
-          const isDisabled = isPending || value.count === 0;
           return (
             <label
               key={value.label}
@@ -71,20 +78,17 @@ export const ColorFilter = ({
               {isPending && isChanging ? (
                 <Spinner />
               ) : (
-                <input
-                  type="checkbox"
-                  className="rounded"
-                  checked={!!isChecked}
-                  onChange={() => onFilterChange(value)}
-                  disabled={isDisabled}
+                <Checkbox
+                  checked={isChecked}
+                  onCheckedChange={() => handleFilterChange(value)}
                 />
               )}
               <span
                 className={cn(
                   'w-6 h-6 rounded-full border',
                   {
-                    'border-gray-300': !isDisabled,
-                    'border-muted': isDisabled,
+                    'border-gray-300': value.count > 0,
+                    'border-muted': value.count === 0,
                   },
                   colorMap[value.label] || 'bg-gray-200',
                 )}
@@ -97,4 +101,4 @@ export const ColorFilter = ({
         })}
     </div>
   );
-};
+}
