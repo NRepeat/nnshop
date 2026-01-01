@@ -7,18 +7,15 @@ import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { Session, User } from 'better-auth';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { Suspense } from 'react';
 
 type Props = {
   params: Promise<{ slug: string[] }>;
 };
 
+// export defau
+
 export default async function ProductPage({ params }: Props) {
-  return (
-    <>
-      <ProductSession params={params} />
-    </>
-  );
+  return <ProductSession params={params} />;
 }
 const ProductSessionView = async ({
   variant,
@@ -56,6 +53,7 @@ const ProductSessionView = async ({
         //@ts-ignore
         sanityDocumentId={sanityProduct?._id}
         sanityDocumentType="page"
+        //@ts-ignore
         relatedProducts={relatedProducts.products.edges.map((e) => e.node)}
       />
     );
@@ -73,12 +71,10 @@ const ProductSession = async ({ params }: Props) => {
     return notFound();
   }
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ProductSessionView
-        variant={variant}
-        handle={p.slug[0]}
-        session={session}
-      />
-    </Suspense>
+    <ProductSessionView
+      variant={variant}
+      handle={p.slug[0]}
+      session={session}
+    />
   );
 };

@@ -1,5 +1,7 @@
 import { CollectionGrid } from '@features/collection/ui/CollectionGrid';
+import { CollectionGridSkeleton } from '@features/collection/ui/CollectionGridSkeleton';
 import { getLocale } from 'next-intl/server';
+import { Suspense } from 'react';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -16,12 +18,14 @@ export default async function CollectionPage({ params, searchParams }: Props) {
 
   return (
     <div className="container ">
-      <CollectionGrid
-        slug={slug}
-        locale={effectiveLocale}
-        gender={'man'}
-        searchParams={awaitedSearchParams}
-      />
+      <Suspense fallback={<CollectionGridSkeleton />}>
+        <CollectionGrid
+          slug={slug}
+          locale={effectiveLocale}
+          gender={'man'}
+          searchParams={awaitedSearchParams}
+        />
+      </Suspense>
     </div>
   );
 }

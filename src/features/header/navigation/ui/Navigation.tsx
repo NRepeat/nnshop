@@ -28,13 +28,17 @@ export const CurrentNavigationSessionSkilet = () => {
     return (
       <NavigationMenuItem
         key={item.title}
-        className={` ${index === meinMenu.length - 1 ? 'block' : 'block'}`}
+        className={`first:ml-[55px] ${index === meinMenu.length - 1 ? 'block' : 'block'}`}
       >
         <Skeleton className="w-[100px] h-[28px]" />
       </NavigationMenuItem>
     );
   });
-  return <NavigationClient className="px-7">{menu}</NavigationClient>;
+  return (
+    <NavigationClient className="bg-transparent flex container justify-start">
+      {menu}
+    </NavigationClient>
+  );
 };
 
 const Navigation = async ({
