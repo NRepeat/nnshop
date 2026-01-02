@@ -1,5 +1,13 @@
 import { storefrontClient } from '@shared/lib/shopify/client';
-import { PredictiveSearchQuery } from '@shared/lib/shopify/types/storefront.generated';
+import {
+  PredictiveSearchQuery,
+  PredictiveSearchQueryVariables,
+} from '@shared/lib/shopify/types/storefront.generated';
+import {
+  PredictiveSearchLimitScope,
+  SearchableField,
+} from '@shared/lib/shopify/types/storefront.types';
+
 import { NextRequest, NextResponse } from 'next/server';
 
 const PREDICTIVE_SEARCH_QUERY = `#graphql
@@ -8,16 +16,19 @@ const PREDICTIVE_SEARCH_QUERY = `#graphql
     $limitScope: PredictiveSearchLimitScope!
     $query: String!
     $searchableFields: [SearchableField!]
+    $types: [PredictiveSearchType!]
   ) {
     predictiveSearch(
       limit: $limit
       limitScope: $limitScope
       query: $query
       searchableFields: $searchableFields
+      types: $types
     ) {
       products {
         id
         title
+        handle
         featuredImage {
           url
         }
@@ -44,17 +55,22 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const response = await storefrontClient.request<PredictiveSearchQuery>(
-      PREDICTIVE_SEARCH_QUERY,
-      {
-        variables: {
-          limit: 10,
-          limitScope: 'PRODUCT',
-          query,
-          searchableFields: ['TITLE'],
-        },
+    const response = await storefrontClient.request<
+      PredictiveSearchQuery,
+      PredictiveSearchQueryVariables
+    >({
+      query: PREDICTIVE_SEARCH_QUERY,
+      variables: {
+        limit: 10,
+        limitScope: 'ALL' as PredictiveSearchLimitScope,
+        query,
+        searchableFields: [
+          'TITLE',
+          'VARIANTS_TITLE',
+          'VARIANTS_SKU',
+        ] as SearchableField[],
       },
-    );
+    });
     return NextResponse.json(response.predictiveSearch);
   } catch (error) {
     console.error('Error fetching predictive search results:', error);

@@ -48,14 +48,7 @@ const Gallery = ({
     }
   };
   return (
-    <PhotoSwipeGallery
-      items={images.map((image) => ({
-        src: image.url,
-        width: image.width,
-        height: image.height,
-        alt: image.altText || '',
-      }))}
-    >
+    <PhotoSwipeGallery>
       <div className="md:col-span-1">
         <div className="relative">
           <Carousel setApi={setMainApi}>

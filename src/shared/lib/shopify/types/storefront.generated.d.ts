@@ -3,6 +3,38 @@
 /* eslint-disable */
 import type * as StorefrontTypes from './storefront.types';
 
+export type PredictiveSearchQueryVariables = StorefrontTypes.Exact<{
+  limit: StorefrontTypes.Scalars['Int']['input'];
+  limitScope: StorefrontTypes.PredictiveSearchLimitScope;
+  query: StorefrontTypes.Scalars['String']['input'];
+  searchableFields?: StorefrontTypes.InputMaybe<
+    Array<StorefrontTypes.SearchableField> | StorefrontTypes.SearchableField
+  >;
+  types?: StorefrontTypes.InputMaybe<
+    | Array<StorefrontTypes.PredictiveSearchType>
+    | StorefrontTypes.PredictiveSearchType
+  >;
+}>;
+
+export type PredictiveSearchQuery = {
+  predictiveSearch?: StorefrontTypes.Maybe<{
+    products: Array<
+      Pick<StorefrontTypes.Product, 'id' | 'title' | 'handle'> & {
+        featuredImage?: StorefrontTypes.Maybe<
+          Pick<StorefrontTypes.Image, 'url'>
+        >;
+        variants: {
+          edges: Array<{
+            node: {
+              price: Pick<StorefrontTypes.MoneyV2, 'amount' | 'currencyCode'>;
+            };
+          }>;
+        };
+      }
+    >;
+  }>;
+};
+
 export type CartBuyerIdentityUpdateMutationVariables = StorefrontTypes.Exact<{
   cartId: StorefrontTypes.Scalars['ID']['input'];
   buyerIdentity: StorefrontTypes.CartBuyerIdentityInput;
@@ -532,6 +564,10 @@ export type GetSubMenuQuery = {
 };
 
 interface GeneratedQueryTypes {
+  '#graphql\n  query predictiveSearch(\n    $limit: Int!\n    $limitScope: PredictiveSearchLimitScope!\n    $query: String!\n    $searchableFields: [SearchableField!]\n    $types: [PredictiveSearchType!]\n  ) {\n    predictiveSearch(\n      limit: $limit\n      limitScope: $limitScope\n      query: $query\n      searchableFields: $searchableFields\n      types: $types\n    ) {\n      products {\n        id\n        title\n        handle\n        featuredImage {\n          url\n        }\n        variants(first: 1) {\n          edges {\n            node {\n              price {\n                amount\n                currencyCode\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n': {
+    return: PredictiveSearchQuery;
+    variables: PredictiveSearchQueryVariables;
+  };
   '\n  #graphql\n  query cart($id: ID!) {\n    cart(id: $id) {\n      id\n      checkoutUrl\n      totalQuantity\n      note\n      createdAt\n      updatedAt\n      cost {\n        totalAmount {\n          amount\n          currencyCode\n        }\n        subtotalAmount {\n          amount\n          currencyCode\n        }\n        totalTaxAmount {\n          amount\n          currencyCode\n        }\n      }\n      lines(first: 100) {\n        edges {\n          node {\n            id\n            quantity\n            merchandise {\n              ... on ProductVariant {\n                id\n                title\n                image {\n                  url\n                  altText\n                  width\n                  height\n                }\n                product {\n                  id\n                  title\n                  handle\n                }\n                selectedOptions {\n                  name\n                  value\n                }\n              }\n            }\n            cost {\n              totalAmount {\n                amount\n                currencyCode\n              }\n              amountPerQuantity {\n                amount\n                currencyCode\n              }\n            }\n            attributes {\n              key\n              value\n            }\n          }\n        }\n      }\n      attributes {\n        key\n        value\n      }\n      discountCodes {\n        code\n        applicable\n      }\n      delivery {\n        addresses {\n            id\n            selected\n            address {\n            ... on CartDeliveryAddress {\n            address1\n            address2\n            city\n            countryCode\n            firstName\n            lastName\n            phone\n            zip\n            }\n\n            }\n        }\n      }\n\n      buyerIdentity {\n        email\n        phone\n        countryCode\n        customer {\n          id\n          email\n          firstName\n          lastName\n          displayName\n        }\n\n      }\n    }\n  }\n': {
     return: CartQuery;
     variables: CartQueryVariables;

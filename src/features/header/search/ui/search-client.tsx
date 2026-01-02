@@ -4,13 +4,22 @@ import { Search, X, PlusIcon } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { Link } from '@shared/i18n/navigation';
-const LeftImage = `https://qipmjw4uaan1zz27.public.blob.vercel-storage.com/assests/home/image/home-banner/hero-banner-left.png`;
+import { useDebounce } from 'use-debounce';
+import { PredictiveSearchQuery } from '@shared/lib/shopify/types/storefront.generated';
+import Link from 'next/link';
+
+type PredictiveSearchResult = NonNullable<
+  PredictiveSearchQuery['predictiveSearch']
+>;
+type Product = PredictiveSearchResult['products'][0];
+
 export const SearchClient = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
-
-  const [results, setResults] = useState<any[]>([]);
+  const [debouncedQuery] = useDebounce(query, 500);
+  const [results, setResults] = useState<PredictiveSearchResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  console.log(results);
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -21,23 +30,29 @@ export const SearchClient = () => {
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
+
   useEffect(() => {
-    if (query.length > 1) {
-      setResults([
-        { id: 1, title: 'Silk Wide-Leg Pant', price: '$248', image: LeftImage },
-        { id: 2, title: 'Silk Paperbag Pant', price: '$268', image: LeftImage },
-        { id: 3, title: 'Ponte Legging Pant', price: '$148', image: LeftImage },
-        {
-          id: 4,
-          title: 'Organic Pima Classic Pant',
-          price: '$58',
-          image: LeftImage,
+    if (debouncedQuery.length > 1) {
+      setLoading(true);
+      fetch('/api/predictive-search', {
+        method: 'POST',
+        body: JSON.stringify({ query: debouncedQuery }),
+        headers: {
+          'Content-Type': 'application/json',
         },
-      ]);
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setResults(data);
+          setLoading(false);
+        })
+        .catch(() => {
+          setLoading(false);
+        });
     } else {
-      setResults([]);
+      setResults(null);
     }
-  }, [query]);
+  }, [debouncedQuery]);
 
   return (
     <>
@@ -89,34 +104,39 @@ export const SearchClient = () => {
                 </div>
 
                 {/* Results Section */}
-                {results.length > 0 && (
+                {loading && <div className="py-8">Loading...</div>}
+                {!loading && results && results.products.length > 0 && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="py-8"
                   >
                     <div className="flex justify-between items-center mb-6 text-sm text-gray-500">
-                      <span>{results.length} results</span>
+                      <span>{results.products.length} results</span>
                       <Link href="/search" className="underline">
                         View all
                       </Link>
                     </div>
 
                     {/* Product Grid - matching your screenshot */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 overflow-y-auto max-h-[calc(100vh-200px)]">
-                      {results.map((product) => (
-                        <div
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 overflow-y-auto max-h-[calc(100vh-200px)] pb-8">
+                      {results.products?.map((product) => (
+                        <Link
+                          href={`/products/${product.handle}`}
                           key={product.id}
+                          scroll
                           className="group flex flex-col gap-2"
                         >
                           <div className="relative aspect-[3/4] bg-gray-50 overflow-hidden">
                             {/* Placeholder for images from your screenshot */}
-                            <Image
-                              src={product.image}
-                              alt={product.title}
-                              fill
-                              className="object-cover"
-                            />
+                            {product.featuredImage?.url && (
+                              <Image
+                                src={product.featuredImage.url}
+                                alt={product.title}
+                                fill
+                                className="object-cover"
+                              />
+                            )}
                             <Button
                               variant="ghost"
                               size="icon"
@@ -129,11 +149,9 @@ export const SearchClient = () => {
                             <h3 className="text-sm font-medium">
                               {product.title}
                             </h3>
-                            <p className="text-sm text-gray-600">
-                              {product.price}
-                            </p>
+                            <p className="text-sm text-gray-600">{`${product.variants.edges[0]?.node.price.amount} ${product.variants.edges[0]?.node.price.currencyCode}`}</p>
                           </div>
-                        </div>
+                        </Link>
                       ))}
                     </div>
                   </motion.div>
