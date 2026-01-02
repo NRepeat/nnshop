@@ -62,12 +62,14 @@ export async function POST(req: NextRequest) {
       query: PREDICTIVE_SEARCH_QUERY,
       variables: {
         limit: 10,
-        limitScope: 'ALL' as PredictiveSearchLimitScope,
+        limitScope: 'EACH' as PredictiveSearchLimitScope,
         query,
         searchableFields: [
           'TITLE',
           'VARIANTS_TITLE',
           'VARIANTS_SKU',
+          'VENDOR',
+          'PRODUCT_TYPE',
         ] as SearchableField[],
       },
     });

@@ -1,17 +1,25 @@
 'use client';
 import { Button } from '@shared/ui/button';
-import { Search, X, PlusIcon } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Search, X, PlusIcon, SearchIcon } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useDebounce } from 'use-debounce';
 import { PredictiveSearchQuery } from '@shared/lib/shopify/types/storefront.generated';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@shared/ui/empty';
+import { Skeleton } from '@shared/ui/skeleton';
 
 type PredictiveSearchResult = NonNullable<
   PredictiveSearchQuery['predictiveSearch']
 >;
-type Product = PredictiveSearchResult['products'][0];
 
 export const SearchClient = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,14 +27,36 @@ export const SearchClient = () => {
   const [debouncedQuery] = useDebounce(query, 500);
   const [results, setResults] = useState<PredictiveSearchResult | null>(null);
   const [loading, setLoading] = useState(false);
-  console.log(results);
+  const router = useRouter();
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleSearch = () => {
+    if (query) {
+      router.push(`/search?q=${query}`);
+      setIsOpen(false);
+    }
+  };
+
   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
     if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
       document.body.style.overflow = 'hidden';
     } else {
+      document.removeEventListener('mousedown', handleClickOutside);
       document.body.style.overflow = 'unset';
     }
+
     return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
@@ -78,10 +108,11 @@ export const SearchClient = () => {
 
             {/* Main Search Container */}
             <motion.div
+              ref={searchContainerRef}
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -20, opacity: 0 }}
-              className="fixed inset-0 top-[60px] h-fit min-h-[50vh] z-[101] bg-white overflow-y-auto"
+              className="fixed inset-0 top-[0px] h-fit min-h-[50vh] z-[101] bg-white overflow-y-auto"
             >
               {/* Header with Input */}
               <div className="container mx-auto px-4">
@@ -91,6 +122,11 @@ export const SearchClient = () => {
                     autoFocus
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSearch();
+                      }
+                    }}
                     placeholder="Search..."
                     className="flex-1 bg-transparent border-none outline-none text-xl"
                   />
@@ -101,19 +137,38 @@ export const SearchClient = () => {
                   >
                     <X className="w-6 h-6" />
                   </Button>
+                  <Button onClick={handleSearch}>Search</Button>
                 </div>
 
                 {/* Results Section */}
-                {loading && <div className="py-8">Loading...</div>}
-                {!loading && results && results.products.length > 0 && (
+                {loading && (
+                  <div className="py-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                      {Array.from({ length: 8 }).map((_, i) => (
+                        <div key={i} className="flex flex-col gap-2">
+                          <Skeleton className="relative aspect-[3/4]" />
+                          <div className="flex flex-col gap-2 mt-2">
+                            <Skeleton className="h-4 w-4/5" />
+                            <Skeleton className="h-4 w-2/5" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {!loading && results && results.products?.length > 0 && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="py-8"
                   >
                     <div className="flex justify-between items-center mb-6 text-sm text-gray-500">
-                      <span>{results.products.length} results</span>
-                      <Link href="/search" className="underline">
+                      <span>{results.products?.length} results</span>
+                      <Link
+                        href="/search"
+                        className="underline"
+                        onClick={() => setIsOpen(false)}
+                      >
                         View all
                       </Link>
                     </div>
@@ -126,15 +181,15 @@ export const SearchClient = () => {
                           key={product.id}
                           scroll
                           className="group flex flex-col gap-2"
+                          onClick={() => setIsOpen(false)}
                         >
-                          <div className="relative aspect-[3/4] bg-gray-50 overflow-hidden">
-                            {/* Placeholder for images from your screenshot */}
+                          <div className="relative aspect-[3/4] bg-background overflow-hidden">
                             {product.featuredImage?.url && (
                               <Image
                                 src={product.featuredImage.url}
                                 alt={product.title}
                                 fill
-                                className="object-cover"
+                                className="object-contain"
                               />
                             )}
                             <Button
@@ -156,6 +211,23 @@ export const SearchClient = () => {
                     </div>
                   </motion.div>
                 )}
+
+                {!loading &&
+                  results &&
+                  debouncedQuery &&
+                  results.products?.length === 0 && (
+                    <Empty>
+                      <EmptyHeader>
+                        <EmptyMedia variant="icon">
+                          <SearchIcon />
+                        </EmptyMedia>
+                        <EmptyTitle>No results found</EmptyTitle>
+                        <EmptyDescription>
+                          Try searching for something else.
+                        </EmptyDescription>
+                      </EmptyHeader>
+                    </Empty>
+                  )}
               </div>
             </motion.div>
           </>

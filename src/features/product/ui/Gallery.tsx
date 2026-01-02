@@ -59,8 +59,8 @@ const Gallery = ({
                     id={index}
                     original={image.url}
                     thumbnail={image.url}
-                    width={image.width}
-                    height={image.height}
+                    width={image.width ?? 0}
+                    height={image.height ?? 0}
                   >
                     {({ ref, open }) => (
                       <div className="flex shrink justify-center" ref={ref}>

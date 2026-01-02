@@ -14,16 +14,16 @@ type Props = {
   params: Promise<{ slug: string[] }>;
 };
 
-export async function generateStaticParams() {
-  const handles = [];
-  for (const locale of locales) {
-    const allProductsHandlers = await getAllProductHandles(locale);
-    handles.push(...allProductsHandlers);
-  }
-  return handles.map((handle) => ({
-    slug: [handle],
-  }));
-}
+// export async function generateStaticParams() {
+//   const handles = [];
+//   for (const locale of locales) {
+//     const allProductsHandlers = await getAllProductHandles(locale);
+//     handles.push(...allProductsHandlers);
+//   }
+//   return handles.map((handle) => ({
+//     slug: [handle],
+//   }));
+// }
 
 export default async function ProductPage({ params }: Props) {
   return <ProductSession params={params} />;
