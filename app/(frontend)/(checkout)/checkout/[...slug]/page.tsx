@@ -1,5 +1,6 @@
 import CheckoutView from '@widgets/checkout/ui/view';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 
 type Props = {
   params: Promise<{ slug: string[] }>;
@@ -22,5 +23,9 @@ export default async function Page(props: Props) {
   } else if (slug.length >= 1) {
     orderId = slug[1];
   }
-  return <CheckoutView orderId={orderId} slug={slug[0]} />;
+  return (
+    <Suspense>
+      <CheckoutView orderId={orderId} slug={slug[0]} />;
+    </Suspense>
+  );
 }

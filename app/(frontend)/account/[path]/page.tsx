@@ -12,6 +12,7 @@ export default async function AccountPage({
 }: {
   params: Promise<{ path: string }>;
 }) {
+  return <></>;
   const { path } = await params;
   const t = await getTranslations('Settings.pages');
   const tBetterAuth = await getTranslations('BetterAuthUI');

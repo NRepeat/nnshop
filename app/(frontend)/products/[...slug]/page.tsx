@@ -1,8 +1,11 @@
 import { getProduct } from '@/entities/product/api/getProduct';
 import { getProductPage } from '@/entities/product/api/getProductPage';
-import { getProducts } from '@/entities/product/api/getProducts';
 import { ProductView } from '@/widgets/product-view';
+import { getAllProductHandles } from '@entities/product/api/getAllProductsHandlers';
+// import { getAllProductHandles } from '@entities/product/api/getAllProductsHandlers';
+import { getProducts } from '@entities/product/api/getProducts';
 import { auth } from '@features/auth/lib/auth';
+import { locales } from '@shared/i18n/routing';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { Session, User } from 'better-auth';
 import { headers } from 'next/headers';
@@ -12,7 +15,16 @@ type Props = {
   params: Promise<{ slug: string[] }>;
 };
 
-// export defau
+export async function generateStaticParams() {
+  const handles = [];
+  for (const locale of locales) {
+    const allProductsHandlers = await getAllProductHandles(locale);
+    handles.push(...allProductsHandlers);
+  }
+  return handles.map((handle) => ({
+    slug: [handle],
+  }));
+}
 
 export default async function ProductPage({ params }: Props) {
   return <ProductSession params={params} />;

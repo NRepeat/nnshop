@@ -1,12 +1,9 @@
 import Gallery from '@features/product/ui/Gallery';
-import { Product } from '@shared/types/product/types';
-import { PageBuilder } from '@widgets/page-builder';
 import {
   ProductVariant,
   Product as ShopifyProduct,
 } from '@shared/lib/shopify/types/storefront.types';
 import { PAGE_QUERYResult } from '@shared/sanity/types';
-import { Suspense } from 'react';
 import { Session, User } from 'better-auth';
 import { Button } from '@shared/ui/button';
 import {
@@ -15,19 +12,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@shared/ui/accordion';
-import { ProductCarousel } from '@entities/product/ui/ProductCarousel';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
 
 export async function ProductView({
   product,
   selectedVariant,
-  content,
-  sanityDocumentId,
-  sanityDocumentType,
-  session,
-  isQuickView = false,
   relatedProducts,
 }: {
   product: ShopifyProduct;
@@ -56,6 +46,7 @@ export async function ProductView({
           images={images}
           productId={product.id}
           isFavorite={false}
+          //@ts-ignore
           selectedVariant={selectedVariant}
         />
         <div className="flex flex-col">

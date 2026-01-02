@@ -37,7 +37,6 @@ export default function RootLayout({
   children: React.ReactNode;
   modal: React.ReactNode;
 }) {
-  console.log('RootLayout', StyreneAWeb);
   return (
     <html lang="en" suppressHydrationWarning>
       <body

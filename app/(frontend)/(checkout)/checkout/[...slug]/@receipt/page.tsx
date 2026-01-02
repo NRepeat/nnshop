@@ -15,6 +15,7 @@ export default async function Receipt({
 }: {
   params: Promise<{ slug: string[] }>;
 }) {
+  return <></>;
   const t = await getTranslations('ReceiptPage');
   try {
     const { slug } = await params;

@@ -15,10 +15,12 @@ export const NavigationClient = ({
 
   return (
     <NavigationMenu
+      skipDelayDuration={100}
+      delayDuration={100}
       className="hidden md:block"
       onValueChange={(value) => setOpen(!!value)}
     >
-      <div
+      {/*<div
         className={cn(
           'fixed inset-0  top-[160px]  min-h-screen  transition-all duration-500 ease-in-out',
           'bg-foreground/40 backdrop-blur-[2px]',
@@ -26,8 +28,8 @@ export const NavigationClient = ({
             ? 'opacity-100 pointer-events-auto visible animate-in fade-in'
             : 'opacity-0 pointer-events-none invisible animate-out fade-out delay-150',
         )}
-      />
-      <NavigationMenuList className={cn(className)}>
+      />*/}
+      <NavigationMenuList className={cn(className, 'overflow-hidden')}>
         {children}
       </NavigationMenuList>
     </NavigationMenu>

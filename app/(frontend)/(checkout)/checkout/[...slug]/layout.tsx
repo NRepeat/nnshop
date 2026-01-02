@@ -12,24 +12,24 @@ export default async function Layout({
   receipt: React.ReactNode;
   params: Promise<{ slug: string[] }>;
 }) {
-  const { slug } = await params;
-  try {
-    const session = auth.api.getSession({ headers: await headers() });
-    if (!session) {
-      throw new Error('Unauthorized');
-    }
-    const cart = await getCart();
-    if (!cart) {
-      throw new Error('Cart not found');
-    }
-  } catch (error) {
-    console.error(error);
-    redirect('/');
-  }
+  // const { slug } = await params;
+  // try {
+  //   const session = auth.api.getSession({ headers: await headers() });
+  //   if (!session) {
+  //     throw new Error('Unauthorized');
+  //   }
+  //   const cart = await getCart();
+  //   if (!cart) {
+  //     throw new Error('Cart not found');
+  //   }
+  // } catch (error) {
+  //   console.error(error);
+  //   redirect('/');
+  // }
 
   return (
     <>
-      <CheckoutHeader slug={slug} />
+      {/*<CheckoutHeader slug={slug} />*/}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 mb-10">
         {children}
         {receipt}
