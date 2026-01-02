@@ -15,6 +15,7 @@ import {
 import Link from 'next/link';
 import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
 import { cn } from '@shared/lib/utils';
+import ProductComments from '@features/product-comments/ui/ProductComments';
 
 export const colorMap: { [key: string]: string } = {
   Бежевий: 'bg-[#F5F5DC]',
@@ -39,6 +40,93 @@ export const colorMap: { [key: string]: string } = {
   Хакі: 'bg-[#F0E68C]',
   Червоний: 'bg-[#FF0000]',
   Чорний: 'bg-[#000000]',
+};
+
+const ProductDetails = () => {
+  return (
+    <div className="border-[#ddd] border-y border-solid content-stretch flex gap-[72px] items-start px-[115px] py-[67px] w-full">
+      <div className="basis-0 content-stretch flex flex-col gap-[26px] grow items-start min-h-px min-w-px relative shrink-0">
+        <p className="font-['Styrene_A_Web:Light',sans-serif] leading-[20px] not-italic relative shrink-0 text-[13px] text-black tracking-[0.7px] uppercase w-full">
+          DESIGN
+        </p>
+        <div className="content-stretch flex flex-col font-['Styrene_A_Web:Regular',sans-serif] gap-[18px] items-start not-italic relative shrink-0 text-black w-full">
+          <p className="leading-[24px] relative shrink-0 text-[18px] w-full">{`Airy & Warm`}</p>
+          <p className="leading-[20px] relative shrink-0 text-[13px] w-full">
+            Our Alpaca Wool Crewneck Sweater features a bold cable knit design,
+            a comfortable crew neck, and functional side slits, perfect for
+            layering with your go-to pants.
+          </p>
+        </div>
+      </div>
+      <div className="basis-0 content-stretch flex flex-col gap-[26px] grow items-start min-h-px min-w-px relative shrink-0">
+        <p className="font-['Styrene_A_Web:Light',sans-serif] leading-[20px] not-italic relative shrink-0 text-[13px] text-black tracking-[0.7px] uppercase w-full">
+          QUALITY
+        </p>
+        <div className="content-stretch flex flex-col font-['Styrene_A_Web:Regular',sans-serif] gap-[18px] items-start not-italic relative shrink-0 text-black w-full">
+          <p className="leading-[24px] relative shrink-0 text-[18px] w-full">
+            Made in Italy
+          </p>
+          <p className="leading-[20px] relative shrink-0 text-[13px] w-full">
+            Fashioned by an Italian mill dedicated to renewable fibers,
+            following sustainable environmental and social standards established
+            by Consorzio Promozione Filati (CPF).
+          </p>
+        </div>
+      </div>
+      <div className="basis-0 content-stretch flex flex-col gap-[26px] grow items-start min-h-px min-w-px relative shrink-0">
+        <p className="font-['Styrene_A_Web:Light',sans-serif] leading-[20px] not-italic relative shrink-0 text-[13px] text-black tracking-[0.7px] uppercase w-full">
+          SUSTAINABILITY
+        </p>
+        <div className="content-stretch flex flex-col font-['Styrene_A_Web:Regular',sans-serif] gap-[18px] items-start not-italic relative shrink-0 text-black w-full">
+          <p className="leading-[24px] relative shrink-0 text-[18px] w-full">
+            Sustainable Baby Alpaca
+          </p>
+          <p className="leading-[20px] relative shrink-0 text-[13px] w-full">
+            Made using highest quality Baby Alpaca from Peru (certified mulesing
+            free) and blended with a regenerated polyamide crafted for Cuyana.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ElegantEase = () => {
+  const imgImage =
+    'http://localhost:3845/assets/3273dd356ee24e8d6046a3d53e72f5b4bffef30d.png';
+  const imgImage1 =
+    'http://localhost:3845/assets/e35105eb5d505cdd4960368b76fe346424d9cf62.png';
+
+  return (
+    <div className="content-stretch flex flex-col gap-[48px] items-center relative w-full">
+      <div className="content-stretch flex flex-col font-['Styrene_A_Web:Regular',sans-serif] gap-[16px] items-center not-italic px-0 py-[20px] relative shrink-0 text-black text-center w-full">
+        <p className="leading-[32px] relative shrink-0 text-[24px] w-full">
+          Elegant Ease
+        </p>
+        <p className="leading-[22px] relative shrink-0 text-[16px] w-full">
+          Inspiration for Your Essential Wardrobe
+        </p>
+      </div>
+      <div className="content-stretch flex gap-[20px] items-start relative shrink-0 w-full">
+        <div className="basis-0 grow h-[652px] min-h-px min-w-px relative shrink-0">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <img
+              alt=""
+              className="absolute h-[158.76%] left-[-4.08%] max-w-none top-[-57.06%] w-[162.24%]"
+              src={imgImage}
+            />
+          </div>
+        </div>
+        <div className="basis-0 grow h-[652px] min-h-px min-w-px relative shrink-0">
+          <img
+            alt=""
+            className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full"
+            src={imgImage1}
+          />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export async function ProductView({
@@ -168,20 +256,16 @@ export async function ProductView({
           </Accordion>
         </div>
       </div>
-      <div>
-        <h2 className="text-2xl font-medium text-center mb-8">Style With</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <ProductDetails />
+      <ElegantEase />
+      <ProductComments />
+
+      <div className="content-stretch flex flex-col gap-[70px] items-center px-0 py-[74px] relative w-full">
+        <p className="font-['Styrene_A_Web:Regular',sans-serif] leading-[26px] not-italic relative shrink-0 text-[20px] text-black text-center w-full">
+          Style With
+        </p>
+        <div className="content-stretch flex gap-[20px] items-start px-[153px] py-0 relative shrink-0 w-full">
           {relatedProducts.slice(0, 3).map((p) => (
-            <ProductCardSPP product={p} key={p.id} />
-          ))}
-        </div>
-      </div>
-      <div>
-        <h2 className="text-2xl font-medium text-center mb-8">
-          Recently Viewed
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {relatedProducts.slice(3, 6).map((p) => (
             <ProductCardSPP product={p} key={p.id} />
           ))}
         </div>
