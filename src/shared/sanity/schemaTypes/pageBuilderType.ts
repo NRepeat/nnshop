@@ -13,6 +13,9 @@ export const pageBuilderType = defineType({
     defineArrayMember({ type: 'contentPageBlock' }),
     defineArrayMember({ type: 'collectionsCarousel' }),
     defineArrayMember({ type: 'sliderBlock' }),
+    defineArrayMember({ type: 'productDetails' }),
+    defineArrayMember({ type: 'elegantEase' }),
+    defineArrayMember({ type: 'productComments' }),
   ],
   options: {
     insertMenu: {

@@ -8,9 +8,9 @@ import { Session, User } from 'better-auth';
 import Link from 'next/link';
 import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
 import { cn } from '@shared/lib/utils';
-import ProductComments from '@features/product-comments/ui/ProductComments';
 import { Plus } from '@shared/ui/PlusIcon';
 import { AddToCartButton } from '@entities/product/ui/AddToCartButton';
+import ProductComments from '@entities/product/ui/ProductComments';
 
 export const colorMap: { [key: string]: string } = {
   Бежевий: 'bg-[#F5F5DC]',

@@ -1,87 +1,32 @@
-import { PortableText } from 'next-sanity'; // New import
-import { components as portableTextComponents } from '@/shared/sanity/components/portableText'; // New import
-import { PAGE_QUERYResult } from '@/shared/sanity/types';
-import { ProductCarousel, SimilarProducts } from '@entities/product';
-import { CollectionsCarousel } from '@entities/collection';
-import { HeroSwiper } from '@entities/slider';
-import { Hero } from '@/entities/hero';
-import { Features } from '@/entities/feature';
-import { SplitImage } from '@/entities/split-image';
-import { FAQs } from '@/entities/faq';
-import { createDataAttribute } from 'next-sanity';
-import { createDataAttributeConfig } from '../lib/createDataAttributeConfig';
+import { PAGE_QUERYResult } from '@shared/sanity/types';
+import { ProductDetails } from '@entities/product/ui/ProductDetails';
+import { ElegantEase } from '@entities/product/ui/ElegantEase';
+import { ProductComments } from '@entities/product/ui/ProductComments';
 
-type PageBuilderProps = {
-  content: NonNullable<PAGE_QUERYResult>['content'];
-  documentId: string;
-  documentType: string;
-  language?: string;
+const blockComponents = {
+  productDetails: (props: any) => <ProductDetails {...props} />,
+  elegantEase: (props: any) => <ElegantEase {...props} />,
+  productComments: (props: any) => <ProductComments {...props} />,
+  // other blocks...
 };
 
-export function PageBuilder({
-  content,
-  documentId,
-  documentType,
-  language,
-}: PageBuilderProps) {
-  const blockComponents = {
-    hero: Hero,
-    features: Features,
-    splitImage: SplitImage,
-    faqs: FAQs,
-    productCarousel: ProductCarousel,
-    similarProducts: SimilarProducts,
-    collectionsCarousel: CollectionsCarousel,
-    sliderBlock: HeroSwiper,
-  };
+type Props = {
+  content: PAGE_QUERYResult['content'];
+};
 
+export const PageBuilder = ({ content }: Props) => {
+  if (!content) {
+    return null;
+  }
   return (
-    <main className="w-full flex justify-center flex-col space-y-6 pt-4">
-      {content?.map((block, index) => {
-        const dataAttribute = createDataAttribute({
-          ...createDataAttributeConfig,
-          id: documentId,
-          type: documentType,
-          path: ['content'],
-        }).toString();
-        if (block._type === 'contentPageBlock') {
-          const localizedBody = (block.body as any)?.[language || 'en'];
-          if (!localizedBody) {
-            return null;
-          }
-          return (
-            <div key={block._key} data-sanity={dataAttribute}>
-              <PortableText
-                value={localizedBody}
-                components={portableTextComponents}
-              />
-            </div>
-          );
-        }
-
-        const Component =
-          blockComponents[block._type as keyof typeof blockComponents];
-
+    <>
+      {content.map((block) => {
+        const Component = blockComponents[block._type];
         if (!Component) {
-          return null;
+          return <div key={block._key}>Unknown block type: {block._type}</div>;
         }
-
-        return (
-          <div key={block._key} data-sanity={dataAttribute}>
-            <Component
-              {...block}
-              /*@ts-expect-error sanity*/
-              documentId={documentId}
-              /*@ts-expect-error sanity*/
-              documentType={documentType}
-              /*@ts-expect-error sanity*/
-              blockIndex={index}
-              /*@ts-expect-error sanity*/
-              language={language}
-            />
-          </div>
-        );
+        return <Component key={block._key} {...block} />;
       })}
-    </main>
+    </>
   );
-}
+};
