@@ -14,7 +14,7 @@ type Props = {
   filter: Filter;
 };
 
-const colorMap: { [key: string]: string } = {
+export const colorMap: { [key: string]: string } = {
   Бежевий: 'bg-[#F5F5DC]',
   Блакитний: 'bg-[#87CEEB]',
   Бордовий: 'bg-[#800000]',
@@ -27,7 +27,7 @@ const colorMap: { [key: string]: string } = {
   "М'ятний": 'bg-[#98FF98]',
   Мультиколор: 'bg-gradient-to-r from-red-500 to-blue-500',
   Помаранчевий: 'bg-[#FFA500]',
-  Пітон: 'bg-gray-500', // Placeholder
+  Пітон: 'bg-gray-500',
   Рожевий: 'bg-[#FFC0CB]',
   Рудий: 'bg-[#D2691E]',
   Синій: 'bg-[#0000FF]',

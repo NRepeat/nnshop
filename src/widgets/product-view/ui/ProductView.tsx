@@ -14,6 +14,32 @@ import {
 } from '@shared/ui/accordion';
 import Link from 'next/link';
 import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
+import { cn } from '@shared/lib/utils';
+
+export const colorMap: { [key: string]: string } = {
+  Бежевий: 'bg-[#F5F5DC]',
+  Блакитний: 'bg-[#87CEEB]',
+  Бордовий: 'bg-[#800000]',
+  Бронзовий: 'bg-[#CD7F32]',
+  Білий: 'bg-[#FFFFFF]',
+  Жовтий: 'bg-[#FFFF00]',
+  Зелений: 'bg-[#008000]',
+  Золото: 'bg-[#FFD700]',
+  Коричневий: 'bg-[#A52A2A]',
+  "М'ятний": 'bg-[#98FF98]',
+  Мультиколор: 'bg-gradient-to-r from-red-500 to-blue-500',
+  Помаранчевий: 'bg-[#FFA500]',
+  Пітон: 'bg-gray-500',
+  Рожевий: 'bg-[#FFC0CB]',
+  Рудий: 'bg-[#D2691E]',
+  Синій: 'bg-[#0000FF]',
+  Срібло: 'bg-[#C0C0C0]',
+  Сірий: 'bg-[#808080]',
+  Фіолетовий: 'bg-[#8A2BE2]',
+  Хакі: 'bg-[#F0E68C]',
+  Червоний: 'bg-[#FF0000]',
+  Чорний: 'bg-[#000000]',
+};
 
 export async function ProductView({
   product,
@@ -33,12 +59,11 @@ export async function ProductView({
   if (!product) throw new Error('Product not found');
   const images = product.images.edges.map((edge) => edge.node).filter(Boolean);
   const colorOptions = product.options.find(
-    (option) => option.name.toLowerCase() === 'color',
-  )?.optionValues;
+    (option) => option.name.toLowerCase() === 'Колір'.toLowerCase(),
+  )?.values;
   const sizeOptions = product.options.find(
     (option) => option.name.toLowerCase() === 'Розмір'.toLowerCase(),
   )?.values;
-
   return (
     <div className="container mx-auto py-12 space-y-24">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -54,7 +79,7 @@ export async function ProductView({
             <div>
               <h2 className="text-2xl font-medium">{product.title}</h2>
               <p className="text-xl mt-2">
-                {product.priceRange.maxVariantPrice.amount}{' '}
+                {Number(product.priceRange.maxVariantPrice.amount).toFixed(0)}{' '}
                 {product.priceRange.maxVariantPrice.currencyCode}
               </p>
             </div>
@@ -77,14 +102,16 @@ export async function ProductView({
               <div className="flex gap-2 mt-1">
                 {colorOptions.map((color) => (
                   <Button
-                    key={color.id}
+                    key={color}
                     variant="outline"
                     size="icon"
                     className="rounded-full w-8 h-8"
                   >
                     <div
-                      className="w-6 h-6 rounded-full border"
-                      style={{ backgroundColor: color.name.toLowerCase() }}
+                      className={cn(
+                        'w-6 h-6 rounded-full border',
+                        colorMap[color],
+                      )}
                     />
                   </Button>
                 ))}
