@@ -17,10 +17,7 @@ export const QuickView = ({
   };
   return (
     <Dialog open={open} onOpenChange={handleOpen}>
-      <DialogTitle>
-        {/*<div>{product.title}</div>*/}
-        123
-      </DialogTitle>
+      <DialogTitle>{/*<div>{product.title}</div>*/}</DialogTitle>
       <DialogContent className="max-w-3xl lg:max-w-5xl w-full max-h-[90vh] overflow-y-auto">
         {children}
       </DialogContent>

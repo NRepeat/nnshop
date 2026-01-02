@@ -1,4 +1,7 @@
 'use client';
+import 'photoswipe/dist/photoswipe.css';
+
+import { Gallery as PhotoSwipeGallery, Item } from 'react-photoswipe-gallery';
 import type {
   ProductVariant,
   Image as ShoipifyImage,
@@ -19,7 +22,6 @@ import Image from 'next/image';
 
 const Gallery = ({
   images,
-  selectedVariant,
   isFavorite,
   productId,
 }: {
@@ -37,19 +39,7 @@ const Gallery = ({
     },
     [mainApi],
   );
-  const selectedVariantImageIndex = React.useMemo(() => {
-    return images.findIndex(
-      (image) =>
-        image.url.split('?')[0] === selectedVariant?.image?.url.split('?')[0],
-    );
-  }, [selectedVariant]);
 
-  React.useEffect(() => {
-    if (mainApi) {
-      mainApi?.scrollTo(selectedVariantImageIndex, false);
-    }
-    setSelectedIndex(selectedVariantImageIndex);
-  }, [mainApi, selectedVariantImageIndex, selectedVariant]);
   const handleFavoriteToggle = async (id: string) => {
     try {
       await toggleFavoriteProduct(id);
@@ -58,75 +48,95 @@ const Gallery = ({
     }
   };
   return (
-    <div className="md:col-span-1">
-      <div className="relative">
-        <Carousel setApi={setMainApi}>
-          <CarouselContent>
-            {images.map((image, index: number) => (
-              <CarouselItem key={index}>
-                {/*<div className="aspect-[1] relative flex items-center justify-center overflow-hidden max-h-[calc(100vh-16rem)]">*/}
-                <Image
-                  src={image.url}
-                  alt={image.altText || ''}
-                  width={image.width || '400'}
-                  height={image.height || '400'}
-                  className="h-auto w-auto max-h-full max-w-full"
-                />
-                {/*</div>*/}
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
-        <div className="absolute top-4 right-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={async () => {
-              await handleFavoriteToggle(productId);
-            }}
-            className="rounded-full bg-white/50 backdrop-blur-sm"
-          >
-            {isFavorite ? (
-              <BookmarkFilledIcon className="min-h-6 min-w-8" />
-            ) : (
-              <Bookmark className="h-6 w-6" />
-            )}
-          </Button>
+    <PhotoSwipeGallery
+      items={images.map((image) => ({
+        src: image.url,
+        width: image.width,
+        height: image.height,
+        alt: image.altText || '',
+      }))}
+    >
+      <div className="md:col-span-1">
+        <div className="relative">
+          <Carousel setApi={setMainApi}>
+            <CarouselContent>
+              {images.map((image, index: number) => (
+                <CarouselItem key={index} className="">
+                  <Item
+                    id={index}
+                    original={image.url}
+                    thumbnail={image.url}
+                    width={image.width}
+                    height={image.height}
+                  >
+                    {({ ref, open }) => (
+                      <div className="flex shrink justify-center" ref={ref}>
+                        <Image
+                          src={image.url}
+                          alt={image.altText || ''}
+                          width={image.width || '400'}
+                          height={image.height || '400'}
+                          className="h-auto w-auto max-h-[55vh] max-w-full"
+                          onClick={open}
+                        />
+                      </div>
+                    )}
+                  </Item>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+          <div className="absolute top-4 right-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={async () => {
+                await handleFavoriteToggle(productId);
+              }}
+              className="rounded-full bg-white/50 backdrop-blur-sm"
+            >
+              {isFavorite ? (
+                <BookmarkFilledIcon className="min-h-6 min-w-8" />
+              ) : (
+                <Bookmark className="h-6 w-6" />
+              )}
+            </Button>
+          </div>
         </div>
-      </div>
-      {images.length > 1 && (
-        <Carousel
-          opts={{ containScroll: 'keepSnaps', dragFree: true }}
-          className="mt-4"
-        >
-          <CarouselContent className="pl-4">
-            {images.map((image, index: number) => (
-              <CarouselItem
-                key={index}
-                onClick={() => onThumbClick(index)}
-                className="basis-1/4 cursor-pointer"
-              >
-                <div
-                  className={
-                    'aspect-square relative border rounded-none overflow-hidden ' +
-                    (index === selectedIndex
-                      ? 'border-primary'
-                      : 'border-transparent opacity-50')
-                  }
+        {images.length > 1 && (
+          <Carousel
+            opts={{ containScroll: 'keepSnaps', dragFree: true }}
+            className="mt-4"
+          >
+            <CarouselContent className="pl-4">
+              {images.map((image, index: number) => (
+                <CarouselItem
+                  key={index}
+                  onClick={() => onThumbClick(index)}
+                  className="basis-1/4 cursor-pointer"
                 >
-                  <Image
-                    src={image.url}
-                    alt={image.altText || ''}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
-      )}
-    </div>
+                  <div
+                    className={
+                      'aspect-square relative border rounded-none overflow-hidden ' +
+                      (index === selectedIndex
+                        ? 'border-primary'
+                        : 'border-transparent opacity-50')
+                    }
+                  >
+                    <Image
+                      src={image.url}
+                      alt={image.altText || ''}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+        )}
+      </div>
+    </PhotoSwipeGallery>
   );
 };
 

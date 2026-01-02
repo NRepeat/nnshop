@@ -2,7 +2,6 @@ import { getProduct } from '@/entities/product/api/getProduct';
 import { getProductPage } from '@/entities/product/api/getProductPage';
 import { ProductView } from '@/widgets/product-view';
 import { getAllProductHandles } from '@entities/product/api/getAllProductsHandlers';
-// import { getAllProductHandles } from '@entities/product/api/getAllProductsHandlers';
 import { getProducts } from '@entities/product/api/getProducts';
 import { auth } from '@features/auth/lib/auth';
 import { locales } from '@shared/i18n/routing';
