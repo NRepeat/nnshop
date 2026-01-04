@@ -26,7 +26,6 @@ const Gallery = ({
   productId,
 }: {
   images: ShoipifyImage[];
-  selectedVariant: ProductVariant;
   productId: string;
   isFavorite?: boolean;
 }) => {

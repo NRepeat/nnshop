@@ -1,11 +1,10 @@
-'use server';
-
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { getLocale } from 'next-intl/server';
+import { PRODUCT_METAFIELDS_FRAGMENT } from './getProduct';
 
-const GET_PRODUCTS_BY_IDS = `
+export const GET_PRODUCTS_BY_IDS = `
   query getProductsByIds($query: String!, $first: Int!, $after: String) {
     products(first: $first, query: $query, after: $after) {
       edges {
@@ -15,6 +14,7 @@ const GET_PRODUCTS_BY_IDS = `
           handle
           title
           vendor
+           ...ProductMetafields
           options(first: 10) {
             id
             name
@@ -54,6 +54,7 @@ const GET_PRODUCTS_BY_IDS = `
       }
     }
   }
+   ${PRODUCT_METAFIELDS_FRAGMENT}
 `;
 
 interface PaginatedProductsResponse {

@@ -382,6 +382,14 @@ export type GetCollectionsQuery = {
   };
 };
 
+export type GetMetaobjectQueryQueryVariables = StorefrontTypes.Exact<{
+  [key: string]: never;
+}>;
+
+export type GetMetaobjectQueryQuery = {
+  metaobject?: StorefrontTypes.Maybe<Pick<StorefrontTypes.Metaobject, 'id'>>;
+};
+
 export type GetProductByHandleQueryVariables = StorefrontTypes.Exact<{
   handle: StorefrontTypes.Scalars['String']['input'];
   variant?: StorefrontTypes.InputMaybe<StorefrontTypes.Scalars['ID']['input']>;
@@ -412,6 +420,11 @@ export type GetProductByHandleQuery = {
       options: Array<
         Pick<StorefrontTypes.ProductOption, 'id' | 'name' | 'values'>
       >;
+      metafields: Array<
+        StorefrontTypes.Maybe<
+          Pick<StorefrontTypes.Metafield, 'id' | 'key' | 'value'>
+        >
+      >;
       variants: {
         edges: Array<{
           node: Pick<
@@ -424,6 +437,11 @@ export type GetProductByHandleQuery = {
             >;
             selectedOptions: Array<
               Pick<StorefrontTypes.SelectedOption, 'name' | 'value'>
+            >;
+            metafields: Array<
+              StorefrontTypes.Maybe<
+                Pick<StorefrontTypes.Metafield, 'id' | 'key' | 'value'>
+              >
             >;
             image?: StorefrontTypes.Maybe<
               Pick<
@@ -600,7 +618,11 @@ interface GeneratedQueryTypes {
     return: GetCollectionsQuery;
     variables: GetCollectionsQueryVariables;
   };
-  '#graphql\n  query getProductByHandle($handle: String!, $variant: ID) {\n    product(handle: $handle, id: $variant) {\n      id\n      title\n      handle\n      description\n      descriptionHtml\n      vendor\n      productType\n      priceRange {\n        maxVariantPrice {\n          amount\n          currencyCode\n        }\n        minVariantPrice {\n          amount\n          currencyCode\n        }\n      }\n      options(first: 10) {\n        id\n        name\n        values\n      }\n      variants(first: 50) {\n        edges {\n          node {\n            id\n            title\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n            selectedOptions {\n              name\n              value\n            }\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n      }\n      images(first: 10) {\n        edges {\n          node {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n      featuredImage {\n        url\n        altText\n        width\n        height\n      }\n    }\n  }\n': {
+  '\n  #graphql\n  query GetMetaobjectQuery{\n    metaobject(id:"gid://shopify/Metaobject/129047363746"){\n    id\n  }\n  }\n  ': {
+    return: GetMetaobjectQueryQuery;
+    variables: GetMetaobjectQueryQueryVariables;
+  };
+  '#graphql\n  query getProductByHandle($handle: String!, $variant: ID) {\n    product(handle: $handle, id: $variant) {\n      id\n      title\n      handle\n      description\n      descriptionHtml\n      vendor\n      productType\n      priceRange {\n        maxVariantPrice {\n          amount\n          currencyCode\n        }\n        minVariantPrice {\n          amount\n          currencyCode\n        }\n      }\n      options(first: 250) {\n        id\n        name\n        values\n      }\n      metafields(\n\n        identifiers: [\n          {key: "recommended_products", namespace: "custom"},\n          {key: "attributes", namespace: "custom"},\n          {key: "znizka", namespace: "custom"},\n          {key: "color", namespace: "custom"},\n          {key: "kolektsiya", namespace: "custom"},\n          {key: "bound-products", namespace: "custom"},\n          {key: "styl", namespace: "custom"},\n          {key: "krayina", namespace: "custom"},\n          {key: "pidoshva", namespace: "custom"},\n          {key: "posadka", namespace: "custom"},\n          {key: "osoblyvosti", namespace: "custom"},\n          {key: "tip", namespace: "custom"},\n          {key: "kategorija", namespace: "custom"},\n          {key: "vysota-pidoshvy", namespace: "custom,"}\n          {key: "zastibka", namespace: "custom"},\n          {key: "kabluk", namespace: "custom"},\n          {key: "napovnjuvach", namespace: "custom"},\n          {key: "sostav", namespace: "custom"},\n          {key: "material", namespace: "custom"},\n          {key: "rozmir", namespace: "custom"},\n          {key: "sezon", namespace: "custom"},\n          {key: "pidkladka", namespace: "custom"},\n          {key: "gender", namespace: "custom"}\n\n        ]\n      ) {\n        id\n        key\n        value\n      }\n      variants(first: 250) {\n        edges {\n          node {\n            id\n            title\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n            selectedOptions {\n              name\n              value\n            }\n            metafields(identifiers: {key: "at_the_fitting", namespace: "custom"}) {\n                     id\n                     key\n                     value\n                   }\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n      }\n      images(first: 250) {\n        edges {\n          node {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n      featuredImage {\n        url\n        altText\n        width\n        height\n      }\n    }\n  }\n': {
     return: GetProductByHandleQuery;
     variables: GetProductByHandleQueryVariables;
   };

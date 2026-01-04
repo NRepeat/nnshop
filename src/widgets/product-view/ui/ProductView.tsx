@@ -57,12 +57,10 @@ function CaretDown({ className }: { className?: string }) {
 
 const ProductInfo = ({
   product,
-  selectedVariant,
   colorOptions,
   sizeOptions,
 }: {
   product: ShopifyProduct;
-  selectedVariant: ProductVariant | undefined;
   colorOptions: string[] | undefined;
   sizeOptions: string[] | undefined;
 }) => (
@@ -87,9 +85,9 @@ const ProductInfo = ({
         <p className="font-['Styrene_A_Web:Medium',sans-serif] relative shrink-0 text-nowrap">
           Product Color:
         </p>
-        <p className="font-['Styrene_A_Web:Regular',sans-serif] relative shrink-0 w-[66px]">
+        {/*<p className="font-['Styrene_A_Web:Regular',sans-serif] relative shrink-0 w-[66px]">
           {selectedVariant?.title.split(' / ')[1]}
-        </p>
+        </p>*/}
       </div>
       <p className="font-['Styrene_A_Web:Regular',sans-serif] leading-[20px] not-italic relative shrink-0 text-[#565656] text-[13px] w-full">
         Color
@@ -256,17 +254,9 @@ const ElegantEase = () => {
 
 export async function ProductView({
   product,
-  selectedVariant,
   relatedProducts,
 }: {
   product: ShopifyProduct;
-  selectedVariant: ProductVariant | undefined;
-  //@ts-ignore
-  content: PAGE_QUERYResult['content'];
-  sanityDocumentId: string;
-  sanityDocumentType: string;
-  session: { session: Session; user: User };
-  isQuickView?: boolean;
   relatedProducts: ShopifyProduct[];
 }) {
   if (!product) throw new Error('Product not found');
@@ -280,16 +270,9 @@ export async function ProductView({
   return (
     <div className="container mx-auto py-12 space-y-24">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <Gallery
-          images={images}
-          productId={product.id}
-          isFavorite={false}
-          //@ts-ignore
-          selectedVariant={selectedVariant}
-        />
+        <Gallery images={images} productId={product.id} isFavorite={false} />
         <ProductInfo
           product={product}
-          selectedVariant={selectedVariant}
           colorOptions={colorOptions}
           sizeOptions={sizeOptions}
         />
