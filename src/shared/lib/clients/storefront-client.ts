@@ -100,7 +100,6 @@ export class StorefrontClient implements ShopifyClient {
   }): Promise<T> {
     try {
       let modifiedQuery = query;
-
       if (language) {
         modifiedQuery = this.addLanguageContext(query, language);
       }

@@ -49,19 +49,20 @@ function Carousel({
   setApi,
   className,
   children,
-  autoplay,
+  plugins,
+
   ...props
 }: React.ComponentProps<'div'> &
   CarouselProps & { autoplay?: { active: boolean; dellay: number } }) {
-  const plagins = autoplay
-    ? [Autoplay({ delay: autoplay.dellay, active: autoplay.active })]
-    : [];
+  // const plagins = autoplay
+  //   ? [Autoplay({ delay: autoplay.dellay, active: autoplay.active }),...props.plugins]
+  //   : [];
   const [carouselRef, api] = useEmblaCarousel(
     {
       ...opts,
       axis: orientation === 'horizontal' ? 'x' : 'y',
     },
-    plagins,
+    plugins,
   );
   const [canScrollPrev, setCanScrollPrev] = React.useState(false);
   const [canScrollNext, setCanScrollNext] = React.useState(false);

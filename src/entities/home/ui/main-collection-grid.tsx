@@ -1,43 +1,53 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { HOME_PAGEResult } from '@shared/sanity/types';
+import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';
+import { getLocale } from 'next-intl/server';
 
-const LeftImage = `${process.env.BLOB_BASE_URL}/assests/home/image/home-banner/hero-banner-left.png`;
+type MainCollectionGridProps = Extract<
+  NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
+  { _type: 'mainCollectionGrid' }
+>;
 
-type Collection = {
-  label: string;
-  slug: string;
-  image: string;
-};
+export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
+  const { collections, title } = props;
 
-const collections: Collection[] = [
-  { label: 'Collection 1', slug: '1', image: LeftImage },
-  { label: 'Collection 2', slug: '2', image: LeftImage },
-  { label: 'Collection 3', slug: '3', image: LeftImage },
-];
+  if (!collections) return null;
 
-export const MainCollectionGrid = () => {
+  const resolvedCollections = await Promise.all(
+    collections.map(async (collection) => {
+      const id = collection._ref.split('-')[1];
+      const pathData = await resolveShopifyLink('collection', id, false);
+      console.log(pathData, id);
+      return {
+        ...collection,
+        ...pathData,
+        href: pathData?.handle ? `/collections/${pathData.handle}` : '#',
+      };
+    }),
+  );
   return (
-    <div className="main-collection-grid flex flex-col container ">
-      <div className=" gap-12 flex flex-col py-8">
-        <p className="pl-4 font-400 text-xl">
-          Elevate your lifestyle with a more intelligent, superior wardrobe.
-          <br className="hidden md:block" /> Our range is crafted sustainably
-          with longevity in mind.
-        </p>
+    <div className="main-collection-grid flex flex-col container">
+      <div className="gap-12 flex flex-col py-8">
+        {title && <p className="pl-4 font-400 text-xl">{title}</p>}
+
         <div className="flex flex-col gap-5 md:grid md:grid-cols-3">
-          {collections.map((collection) => (
-            <Link href={collection.slug} key={collection.slug}>
-              <div className="flex flex-col  relative">
-                <h3 className="text-white text-xl  font-sans font-400 absolute bottom-5 left-5">
-                  {collection.label}
+          {resolvedCollections.map((col) => (
+            <Link href={col.href} key={col._key}>
+              <div className="flex flex-col relative group ">
+                {col.image && col.image.url && (
+                  <Image
+                    src={col.image.url}
+                    alt={col.title}
+                    className="object-cover w-full h-[400px] max-h-[598px]"
+                    width={375}
+                    height={598}
+                  />
+                )}
+                <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-black opacity-50"></div>
+                <h3 className="absolute bottom-5 left-5 text-background text-2xl  font-sans font-400 ">
+                  {col.title}
                 </h3>
-                <Image
-                  src={collection.image}
-                  alt={collection.label}
-                  className="object-cover w-full max-h-[598px]"
-                  width={375}
-                  height={598}
-                />
               </div>
             </Link>
           ))}

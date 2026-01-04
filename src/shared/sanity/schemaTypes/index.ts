@@ -31,9 +31,13 @@ import { contentPageBlock } from './blocks/contentPageBlock';
 import { mainCollectionGrid } from './blocks/mainCollectionGrid';
 import { topicType } from './blocks/topicType';
 import { productDetailsType } from './blocks/productDetailsType';
+import { heroSlider, heroSlide } from './blocks/hero-slider';
+
+const blocks = [heroSlider, heroSlide, mainCollectionGrid];
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
+    ...blocks,
     ...shopifySchemaTypes,
     localizedText,
     localizedBlockContent,
@@ -60,7 +64,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     splitImageType,
     similarProducts,
     contentPageBlock,
-    mainCollectionGrid,
     topicType,
     productDetailsType,
     elegantEaseType,

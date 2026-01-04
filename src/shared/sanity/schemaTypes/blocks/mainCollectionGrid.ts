@@ -8,7 +8,7 @@ export const mainCollectionGrid = defineType({
     {
       name: 'title',
       title: 'Title',
-      type: 'localizedString',
+      type: 'text',
     },
     {
       name: 'collections',
@@ -23,7 +23,7 @@ export const mainCollectionGrid = defineType({
     },
     prepare({ title }) {
       return {
-        title: title.en,
+        title: title,
         subtitle: 'Main Collection Grid',
       };
     },
