@@ -13,6 +13,47 @@
  */
 
 // Source: schema.json
+export type MainCollectionGrid = {
+  _type: 'mainCollectionGrid';
+  title?: string;
+  collections?: Array<{
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: 'collection';
+  }>;
+};
+
+export type HeroSlider = {
+  _type: 'heroSlider';
+  title?: string;
+  description?: string;
+  slides?: Array<
+    {
+      _key: string;
+    } & HeroSlide
+  >;
+};
+
+export type HeroSlide = {
+  _type: 'heroSlide';
+  description?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: 'image';
+  };
+  link?: LinkExternal;
+};
+
 export type ProductComments = {
   _type: 'productComments';
   title?: string;
@@ -45,12 +86,6 @@ export type ContentPageBlock = {
   body?: LocalizedBlockContent;
 };
 
-export type LocalizedBlockContent = {
-  _type: 'localizedBlockContent';
-  en?: BlockContent;
-  uk?: BlockContent;
-};
-
 export type SimilarProducts = {
   _type: 'similarProducts';
   title?: LocalizedString;
@@ -60,12 +95,6 @@ export type SimilarProducts = {
     _weak?: boolean;
     [internalGroqTypeReferenceTo]?: 'collection';
   };
-};
-
-export type LocalizedString = {
-  _type: 'localizedString';
-  en?: string;
-  uk?: string;
 };
 
 export type SplitImage = {
@@ -94,26 +123,27 @@ export type SplitImage = {
   };
 };
 
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop';
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-};
-
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot';
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
-};
-
 export type Hero = {
   _type: 'hero';
   title?: string;
-  text?: string;
+  text?: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: 'span';
+      _key: string;
+    }>;
+    style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote';
+    listItem?: 'bullet' | 'number';
+    markDefs?: Array<{
+      href?: string;
+      _type: 'link';
+      _key: string;
+    }>;
+    level?: number;
+    _type: 'block';
+    _key: string;
+  }>;
   image?: {
     asset?: {
       _ref: string;
@@ -220,6 +250,42 @@ export type PageBuilder = Array<
   | ({
       _key: string;
     } & MainCollectionGrid)
+  | ({
+      _key: string;
+    } & Hero)
+  | ({
+      _key: string;
+    } & SplitImage)
+  | ({
+      _key: string;
+    } & Features)
+  | ({
+      _key: string;
+    } & Faqs)
+  | ({
+      _key: string;
+    } & ProductCarousel)
+  | ({
+      _key: string;
+    } & SimilarProducts)
+  | ({
+      _key: string;
+    } & ContentPageBlock)
+  | ({
+      _key: string;
+    } & CollectionsCarousel)
+  | ({
+      _key: string;
+    } & SliderBlock)
+  | ({
+      _key: string;
+    } & ProductDetails)
+  | ({
+      _key: string;
+    } & ElegantEase)
+  | ({
+      _key: string;
+    } & ProductComments)
 >;
 
 export type Seo = {
@@ -294,6 +360,12 @@ export type Social = {
   _type: 'social';
   linkedIn?: string;
   x?: string;
+};
+
+export type LocalizedString = {
+  _type: 'localizedString';
+  en?: string;
+  uk?: string;
 };
 
 export type Locale = {
@@ -395,6 +467,12 @@ export type SliderBlock = {
     _type: 'slide';
     _key: string;
   }>;
+};
+
+export type LocalizedBlockContent = {
+  _type: 'localizedBlockContent';
+  en?: BlockContent;
+  uk?: BlockContent;
 };
 
 export type LocalizedText = {
@@ -736,6 +814,22 @@ export type ModuleGrid = {
   >;
 };
 
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop';
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot';
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
+};
+
 export type ModuleCollection = {
   _type: 'module.collection';
   collection?: {
@@ -999,46 +1093,6 @@ export type AnnotationLinkExternal = {
 export type AnnotationLinkEmail = {
   _type: 'annotationLinkEmail';
   email?: string;
-};
-
-export type MainCollectionGrid = {
-  _type: 'mainCollectionGrid';
-  title?: string;
-  collections?: Array<{
-    _ref: string;
-    _type: 'reference';
-    _weak?: boolean;
-    _key: string;
-    [internalGroqTypeReferenceTo]?: 'collection';
-  }>;
-};
-
-export type HeroSlide = {
-  _type: 'heroSlide';
-  image?: {
-    asset?: {
-      _ref: string;
-      _type: 'reference';
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: 'image';
-  };
-  title?: string;
-  description?: string;
-  link?: LinkExternal;
-};
-
-export type HeroSlider = {
-  _type: 'heroSlider';
-  slides?: Array<
-    {
-      _key: string;
-    } & HeroSlide
-  >;
 };
 
 export type RgbaColor = {
@@ -1436,17 +1490,16 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
+  | MainCollectionGrid
+  | HeroSlider
+  | HeroSlide
   | ProductComments
   | ElegantEase
   | ProductDetails
   | Topic
   | ContentPageBlock
-  | LocalizedBlockContent
   | SimilarProducts
-  | LocalizedString
   | SplitImage
-  | SanityImageCrop
-  | SanityImageHotspot
   | Hero
   | Features
   | Faqs
@@ -1459,11 +1512,13 @@ export type AllSanitySchemaTypes =
   | Slug
   | Redirect
   | Social
+  | LocalizedString
   | Locale
   | SimpleBlockContent
   | ProductCarousel
   | CollectionsCarousel
   | SliderBlock
+  | LocalizedBlockContent
   | LocalizedText
   | Body
   | SeoShopify
@@ -1492,6 +1547,8 @@ export type AllSanitySchemaTypes =
   | ModuleImages
   | ModuleImage
   | ModuleGrid
+  | SanityImageCrop
+  | SanityImageHotspot
   | ModuleCollection
   | AccordionGroup
   | AccordionBody
@@ -1513,9 +1570,6 @@ export type AllSanitySchemaTypes =
   | Collection
   | AnnotationLinkExternal
   | AnnotationLinkEmail
-  | MainCollectionGrid
-  | HeroSlide
-  | HeroSlider
   | RgbaColor
   | HsvaColor
   | HslaColor
@@ -2032,7 +2086,385 @@ export type PAGE_QUERYResult = {
   content: Array<
     | {
         _key: string;
+        _type: 'collectionsCarousel';
+        title?: LocalizedString;
+        collections: Array<{
+          _id: string;
+          title: null;
+          store: {
+            imageUrl: string | null;
+            isDeleted: boolean | null;
+            slug: {
+              current: string | null;
+            } | null;
+            title: string | null;
+          } | null;
+        }> | null;
+        enable_action?: boolean;
+        action_text?: LocalizedString;
+        action_link?: string;
+      }
+    | {
+        _key: string;
+        _type: 'contentPageBlock';
+        body: {
+          en: Array<
+            | {
+                children?: Array<{
+                  marks?: Array<string>;
+                  text?: string;
+                  _type: 'span';
+                  _key: string;
+                }>;
+                style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'normal';
+                listItem?: 'bullet';
+                markDefs: Array<{
+                  href: string | null;
+                  _type: 'link';
+                  _key: string;
+                }> | null;
+                level?: number;
+                _type: 'block';
+                _key: string;
+              }
+            | {
+                _key: string;
+                _type: 'collectionsCarousel';
+                title?: LocalizedString;
+                collections?: Array<{
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  _key: string;
+                  [internalGroqTypeReferenceTo]?: 'collection';
+                }>;
+                enable_action?: boolean;
+                action_text?: LocalizedString;
+                action_link?: string;
+                markDefs: null;
+              }
+            | {
+                _key: string;
+                _type: 'hero';
+                title?: string;
+                text?: Array<{
+                  children?: Array<{
+                    marks?: Array<string>;
+                    text?: string;
+                    _type: 'span';
+                    _key: string;
+                  }>;
+                  style?:
+                    | 'blockquote'
+                    | 'h1'
+                    | 'h2'
+                    | 'h3'
+                    | 'h4'
+                    | 'h5'
+                    | 'h6'
+                    | 'normal';
+                  listItem?: 'bullet' | 'number';
+                  markDefs?: Array<{
+                    href?: string;
+                    _type: 'link';
+                    _key: string;
+                  }>;
+                  level?: number;
+                  _type: 'block';
+                  _key: string;
+                }>;
+                image?: {
+                  asset?: {
+                    _ref: string;
+                    _type: 'reference';
+                    _weak?: boolean;
+                    [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+                  };
+                  media?: unknown;
+                  hotspot?: SanityImageHotspot;
+                  crop?: SanityImageCrop;
+                  _type: 'image';
+                };
+                buttonText?: string;
+                buttonLink?: string;
+                markDefs: null;
+              }
+            | {
+                asset?: {
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+                };
+                media?: unknown;
+                hotspot?: SanityImageHotspot;
+                crop?: SanityImageCrop;
+                alt?: string;
+                _type: 'image';
+                _key: string;
+                markDefs: null;
+              }
+            | {
+                _key: string;
+                _type: 'mainCollectionGrid';
+                title?: string;
+                collections?: Array<{
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  _key: string;
+                  [internalGroqTypeReferenceTo]?: 'collection';
+                }>;
+                markDefs: null;
+              }
+            | {
+                _key: string;
+                _type: 'productCarousel';
+                title?: LocalizedString;
+                products?: Array<{
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  _key: string;
+                  [internalGroqTypeReferenceTo]?: 'product';
+                }>;
+                collection?: {
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  [internalGroqTypeReferenceTo]?: 'collection';
+                };
+                enableAction?: boolean;
+                actionName?: LocalizedString;
+                actionLink?: LocalizedString;
+                markDefs: null;
+              }
+            | {
+                _key: string;
+                _type: 'topic';
+                title?: string;
+                text?: string;
+                markDefs: null;
+              }
+          > | null;
+          uk: Array<
+            | {
+                children?: Array<{
+                  marks?: Array<string>;
+                  text?: string;
+                  _type: 'span';
+                  _key: string;
+                }>;
+                style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'normal';
+                listItem?: 'bullet';
+                markDefs: Array<{
+                  href: string | null;
+                  _type: 'link';
+                  _key: string;
+                }> | null;
+                level?: number;
+                _type: 'block';
+                _key: string;
+              }
+            | {
+                _key: string;
+                _type: 'collectionsCarousel';
+                title?: LocalizedString;
+                collections?: Array<{
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  _key: string;
+                  [internalGroqTypeReferenceTo]?: 'collection';
+                }>;
+                enable_action?: boolean;
+                action_text?: LocalizedString;
+                action_link?: string;
+                markDefs: null;
+              }
+            | {
+                _key: string;
+                _type: 'hero';
+                title?: string;
+                text?: Array<{
+                  children?: Array<{
+                    marks?: Array<string>;
+                    text?: string;
+                    _type: 'span';
+                    _key: string;
+                  }>;
+                  style?:
+                    | 'blockquote'
+                    | 'h1'
+                    | 'h2'
+                    | 'h3'
+                    | 'h4'
+                    | 'h5'
+                    | 'h6'
+                    | 'normal';
+                  listItem?: 'bullet' | 'number';
+                  markDefs?: Array<{
+                    href?: string;
+                    _type: 'link';
+                    _key: string;
+                  }>;
+                  level?: number;
+                  _type: 'block';
+                  _key: string;
+                }>;
+                image?: {
+                  asset?: {
+                    _ref: string;
+                    _type: 'reference';
+                    _weak?: boolean;
+                    [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+                  };
+                  media?: unknown;
+                  hotspot?: SanityImageHotspot;
+                  crop?: SanityImageCrop;
+                  _type: 'image';
+                };
+                buttonText?: string;
+                buttonLink?: string;
+                markDefs: null;
+              }
+            | {
+                asset?: {
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+                };
+                media?: unknown;
+                hotspot?: SanityImageHotspot;
+                crop?: SanityImageCrop;
+                alt?: string;
+                _type: 'image';
+                _key: string;
+                markDefs: null;
+              }
+            | {
+                _key: string;
+                _type: 'mainCollectionGrid';
+                title?: string;
+                collections?: Array<{
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  _key: string;
+                  [internalGroqTypeReferenceTo]?: 'collection';
+                }>;
+                markDefs: null;
+              }
+            | {
+                _key: string;
+                _type: 'productCarousel';
+                title?: LocalizedString;
+                products?: Array<{
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  _key: string;
+                  [internalGroqTypeReferenceTo]?: 'product';
+                }>;
+                collection?: {
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  [internalGroqTypeReferenceTo]?: 'collection';
+                };
+                enableAction?: boolean;
+                actionName?: LocalizedString;
+                actionLink?: LocalizedString;
+                markDefs: null;
+              }
+            | {
+                _key: string;
+                _type: 'topic';
+                title?: string;
+                text?: string;
+                markDefs: null;
+              }
+          > | null;
+        } | null;
+      }
+    | {
+        _key: string;
+        _type: 'elegantEase';
+        title?: string;
+      }
+    | {
+        _key: string;
+        _type: 'faqs';
+        title?: string;
+        faqs: Array<{
+          _id: string;
+          title: string | null;
+          body: BlockContent | null;
+          text: string;
+        }> | null;
+      }
+    | {
+        _key: string;
+        _type: 'features';
+        title?: string;
+        features?: Array<{
+          title?: string;
+          text?: string;
+          _type: 'feature';
+          _key: string;
+        }>;
+      }
+    | {
+        _key: string;
+        _type: 'hero';
+        title?: string;
+        text?: Array<{
+          children?: Array<{
+            marks?: Array<string>;
+            text?: string;
+            _type: 'span';
+            _key: string;
+          }>;
+          style?:
+            | 'blockquote'
+            | 'h1'
+            | 'h2'
+            | 'h3'
+            | 'h4'
+            | 'h5'
+            | 'h6'
+            | 'normal';
+          listItem?: 'bullet' | 'number';
+          markDefs?: Array<{
+            href?: string;
+            _type: 'link';
+            _key: string;
+          }>;
+          level?: number;
+          _type: 'block';
+          _key: string;
+        }>;
+        image?: {
+          asset?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+          };
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: 'image';
+        };
+        buttonText?: string;
+        buttonLink?: string;
+      }
+    | {
+        _key: string;
         _type: 'heroSlider';
+        title?: string;
+        description?: string;
         slides?: Array<
           {
             _key: string;
@@ -2050,6 +2482,166 @@ export type PAGE_QUERYResult = {
           _key: string;
           [internalGroqTypeReferenceTo]?: 'collection';
         }>;
+      }
+    | {
+        _key: string;
+        _type: 'productCarousel';
+        title?: LocalizedString;
+        products: Array<{
+          _id: string;
+          store: {
+            title: string | null;
+            isDeleted: boolean | null;
+            previewImageUrl: string | null;
+            priceRange: {
+              maxVariantPrice: number | null;
+              minVariantPrice: number | null;
+            } | null;
+            productType: string | null;
+          } | null;
+        }> | null;
+        collection: {
+          _id: string;
+          title: null;
+          store: {
+            imageUrl: string | null;
+            isDeleted: boolean | null;
+            slug: {
+              current: string | null;
+            } | null;
+            title: string | null;
+          } | null;
+        } | null;
+        enableAction?: boolean;
+        actionName?: LocalizedString;
+        actionLink?: LocalizedString;
+      }
+    | {
+        _key: string;
+        _type: 'productComments';
+        title?: string;
+      }
+    | {
+        _key: string;
+        _type: 'productDetails';
+        details?: Array<{
+          title?: string;
+          heading?: string;
+          text?: string;
+          _type: 'detail';
+          _key: string;
+        }>;
+      }
+    | {
+        _key: string;
+        _type: 'similarProducts';
+        title?: LocalizedString;
+        collection: {
+          _id: string;
+          title: null;
+          store: {
+            imageUrl: string | null;
+            isDeleted: boolean | null;
+            slug: {
+              current: string | null;
+            } | null;
+            title: string | null;
+          } | null;
+        } | null;
+      }
+    | {
+        _key: string;
+        _type: 'sliderBlock';
+        slides: Array<{
+          title?: LocalizedString;
+          backgroundImage: {
+            asset: {
+              _id: string;
+              url: string | null;
+              metadata: {
+                dimensions: SanityImageDimensions | null;
+              } | null;
+            } | null;
+          } | null;
+          link: Array<
+            | {
+                _key: string;
+                _type: 'linkExternal';
+                title?: string;
+                url?: string;
+                newWindow?: boolean;
+                reference: null;
+              }
+            | {
+                _key: string;
+                _type: 'linkInternal';
+                title?: string;
+                reference:
+                  | {
+                      _id: string;
+                      _type: 'collection';
+                      title: null;
+                      slug: string | null;
+                    }
+                  | {
+                      _id: string;
+                      _type: 'page';
+                      title: string | null;
+                      slug: null;
+                    }
+                  | null;
+              }
+          > | null;
+          _type: 'slide';
+          _key: string;
+        }> | null;
+      }
+    | {
+        _key: string;
+        _type: 'splitImage';
+        orientation?: 'imageLeft' | 'imageRight';
+        title?: LocalizedString;
+        link: Array<
+          | {
+              _key: string;
+              _type: 'linkExternal';
+              title?: string;
+              url?: string;
+              newWindow?: boolean;
+              reference: null;
+            }
+          | {
+              _key: string;
+              _type: 'linkInternal';
+              title?: string;
+              reference:
+                | {
+                    _id: string;
+                    _type: 'collection';
+                    title: null;
+                    slug: string | null;
+                  }
+                | {
+                    _id: string;
+                    _type: 'page';
+                    title: string | null;
+                    slug: null;
+                  }
+                | null;
+            }
+        > | null;
+        image?: {
+          asset?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+          };
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: 'image';
+        };
       }
   > | null;
   seo: {
@@ -2084,7 +2676,102 @@ export type HOME_PAGEResult = {
   content: Array<
     | {
         _key: string;
+        _type: 'collectionsCarousel';
+        title?: LocalizedString;
+        collections?: Array<{
+          _ref: string;
+          _type: 'reference';
+          _weak?: boolean;
+          _key: string;
+          [internalGroqTypeReferenceTo]?: 'collection';
+        }>;
+        enable_action?: boolean;
+        action_text?: LocalizedString;
+        action_link?: string;
+      }
+    | {
+        _key: string;
+        _type: 'contentPageBlock';
+        body?: LocalizedBlockContent;
+      }
+    | {
+        _key: string;
+        _type: 'elegantEase';
+        title?: string;
+      }
+    | {
+        _key: string;
+        _type: 'faqs';
+        title?: string;
+        faqs?: Array<{
+          _ref: string;
+          _type: 'reference';
+          _weak?: boolean;
+          _key: string;
+          [internalGroqTypeReferenceTo]?: 'faq';
+        }>;
+      }
+    | {
+        _key: string;
+        _type: 'features';
+        title?: string;
+        features?: Array<{
+          title?: string;
+          text?: string;
+          _type: 'feature';
+          _key: string;
+        }>;
+      }
+    | {
+        _key: string;
+        _type: 'hero';
+        title?: string;
+        text?: Array<{
+          children?: Array<{
+            marks?: Array<string>;
+            text?: string;
+            _type: 'span';
+            _key: string;
+          }>;
+          style?:
+            | 'blockquote'
+            | 'h1'
+            | 'h2'
+            | 'h3'
+            | 'h4'
+            | 'h5'
+            | 'h6'
+            | 'normal';
+          listItem?: 'bullet' | 'number';
+          markDefs?: Array<{
+            href?: string;
+            _type: 'link';
+            _key: string;
+          }>;
+          level?: number;
+          _type: 'block';
+          _key: string;
+        }>;
+        image?: {
+          asset?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+          };
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: 'image';
+        };
+        buttonText?: string;
+        buttonLink?: string;
+      }
+    | {
+        _key: string;
         _type: 'heroSlider';
+        title?: string;
+        description?: string;
         slides?: Array<
           {
             _key: string;
@@ -2102,6 +2789,109 @@ export type HOME_PAGEResult = {
           _key: string;
           [internalGroqTypeReferenceTo]?: 'collection';
         }>;
+      }
+    | {
+        _key: string;
+        _type: 'productCarousel';
+        title?: LocalizedString;
+        products?: Array<{
+          _ref: string;
+          _type: 'reference';
+          _weak?: boolean;
+          _key: string;
+          [internalGroqTypeReferenceTo]?: 'product';
+        }>;
+        collection?: {
+          _ref: string;
+          _type: 'reference';
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: 'collection';
+        };
+        enableAction?: boolean;
+        actionName?: LocalizedString;
+        actionLink?: LocalizedString;
+      }
+    | {
+        _key: string;
+        _type: 'productComments';
+        title?: string;
+      }
+    | {
+        _key: string;
+        _type: 'productDetails';
+        details?: Array<{
+          title?: string;
+          heading?: string;
+          text?: string;
+          _type: 'detail';
+          _key: string;
+        }>;
+      }
+    | {
+        _key: string;
+        _type: 'similarProducts';
+        title?: LocalizedString;
+        collection?: {
+          _ref: string;
+          _type: 'reference';
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: 'collection';
+        };
+      }
+    | {
+        _key: string;
+        _type: 'sliderBlock';
+        slides?: Array<{
+          title?: LocalizedString;
+          backgroundImage?: {
+            asset?: {
+              _ref: string;
+              _type: 'reference';
+              _weak?: boolean;
+              [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+            };
+            media?: unknown;
+            hotspot?: SanityImageHotspot;
+            crop?: SanityImageCrop;
+            _type: 'image';
+          };
+          link?: Array<
+            | ({
+                _key: string;
+              } & LinkExternal)
+            | ({
+                _key: string;
+              } & LinkInternal)
+          >;
+          _type: 'slide';
+          _key: string;
+        }>;
+      }
+    | {
+        _key: string;
+        _type: 'splitImage';
+        orientation?: 'imageLeft' | 'imageRight';
+        title?: LocalizedString;
+        link?: Array<
+          | ({
+              _key: string;
+            } & LinkExternal)
+          | ({
+              _key: string;
+            } & LinkInternal)
+        >;
+        image?: {
+          asset?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+          };
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: 'image';
+        };
       }
   > | null;
   seo: {
@@ -2155,7 +2945,112 @@ export type HOME_PAGE_QUERYResult =
         content: Array<
           | {
               _key: string;
+              _type: 'collectionsCarousel';
+              title?: LocalizedString;
+              collections: Array<{
+                _id: string;
+                title: null;
+                store: {
+                  imageUrl: string | null;
+                  isDeleted: boolean | null;
+                  slug: {
+                    current: string | null;
+                  } | null;
+                  title: string | null;
+                } | null;
+              }> | null;
+              enable_action?: boolean;
+              action_text?: LocalizedString;
+              action_link?: string;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'contentPageBlock';
+              body?: LocalizedBlockContent;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'elegantEase';
+              title?: string;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'faqs';
+              title?: string;
+              faqs: Array<{
+                _id: string;
+                title: string | null;
+                body: BlockContent | null;
+                text: string;
+              }> | null;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'features';
+              title?: string;
+              features?: Array<{
+                title?: string;
+                text?: string;
+                _type: 'feature';
+                _key: string;
+              }>;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'hero';
+              title?: string;
+              text?: Array<{
+                children?: Array<{
+                  marks?: Array<string>;
+                  text?: string;
+                  _type: 'span';
+                  _key: string;
+                }>;
+                style?:
+                  | 'blockquote'
+                  | 'h1'
+                  | 'h2'
+                  | 'h3'
+                  | 'h4'
+                  | 'h5'
+                  | 'h6'
+                  | 'normal';
+                listItem?: 'bullet' | 'number';
+                markDefs?: Array<{
+                  href?: string;
+                  _type: 'link';
+                  _key: string;
+                }>;
+                level?: number;
+                _type: 'block';
+                _key: string;
+              }>;
+              image?: {
+                asset?: {
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+                };
+                media?: unknown;
+                hotspot?: SanityImageHotspot;
+                crop?: SanityImageCrop;
+                _type: 'image';
+              };
+              buttonText?: string;
+              buttonLink?: string;
+              _id: null;
+            }
+          | {
+              _key: string;
               _type: 'heroSlider';
+              title?: string;
+              description?: string;
               slides?: Array<
                 {
                   _key: string;
@@ -2174,6 +3069,166 @@ export type HOME_PAGE_QUERYResult =
                 _key: string;
                 [internalGroqTypeReferenceTo]?: 'collection';
               }>;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'productCarousel';
+              title?: LocalizedString;
+              products: Array<{
+                _id: string;
+                store: {
+                  title: string | null;
+                  isDeleted: boolean | null;
+                  previewImageUrl: string | null;
+                  priceRange: {
+                    maxVariantPrice: number | null;
+                    minVariantPrice: number | null;
+                  } | null;
+                  productType: string | null;
+                } | null;
+              }> | null;
+              collection: {
+                _id: string;
+                title: null;
+                store: {
+                  imageUrl: string | null;
+                  isDeleted: boolean | null;
+                  slug: {
+                    current: string | null;
+                  } | null;
+                  title: string | null;
+                } | null;
+              } | null;
+              enableAction?: boolean;
+              actionName?: LocalizedString;
+              actionLink?: LocalizedString;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'productComments';
+              title?: string;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'productDetails';
+              details?: Array<{
+                title?: string;
+                heading?: string;
+                text?: string;
+                _type: 'detail';
+                _key: string;
+              }>;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'similarProducts';
+              title?: LocalizedString;
+              collection?: {
+                _ref: string;
+                _type: 'reference';
+                _weak?: boolean;
+                [internalGroqTypeReferenceTo]?: 'collection';
+              };
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'sliderBlock';
+              slides: Array<{
+                title?: LocalizedString;
+                backgroundImage: {
+                  asset: {
+                    _id: string;
+                    url: string | null;
+                    metadata: {
+                      dimensions: SanityImageDimensions | null;
+                    } | null;
+                  } | null;
+                } | null;
+                link: Array<
+                  | {
+                      _key: string;
+                      _type: 'linkExternal';
+                      title?: string;
+                      url?: string;
+                      newWindow?: boolean;
+                      reference: null;
+                    }
+                  | {
+                      _key: string;
+                      _type: 'linkInternal';
+                      title?: string;
+                      reference:
+                        | {
+                            _id: string;
+                            _type: 'collection';
+                            title: null;
+                            slug: string | null;
+                          }
+                        | {
+                            _id: string;
+                            _type: 'page';
+                            title: string | null;
+                            slug: null;
+                          }
+                        | null;
+                    }
+                > | null;
+                _type: 'slide';
+                _key: string;
+              }> | null;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'splitImage';
+              orientation?: 'imageLeft' | 'imageRight';
+              title?: LocalizedString;
+              link: Array<
+                | {
+                    _key: string;
+                    _type: 'linkExternal';
+                    title?: string;
+                    url?: string;
+                    newWindow?: boolean;
+                    reference: null;
+                  }
+                | {
+                    _key: string;
+                    _type: 'linkInternal';
+                    title?: string;
+                    reference:
+                      | {
+                          _id: string;
+                          _type: 'collection';
+                          title: null;
+                          slug: string | null;
+                        }
+                      | {
+                          _id: string;
+                          _type: 'page';
+                          title: string | null;
+                          slug: null;
+                        }
+                      | null;
+                  }
+              > | null;
+              image?: {
+                asset?: {
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+                };
+                media?: unknown;
+                hotspot?: SanityImageHotspot;
+                crop?: SanityImageCrop;
+                _type: 'image';
+              };
               _id: null;
             }
         > | null;
@@ -2191,7 +3246,112 @@ export type HOME_PAGE_QUERYResult =
         content: Array<
           | {
               _key: string;
+              _type: 'collectionsCarousel';
+              title?: LocalizedString;
+              collections: Array<{
+                _id: string;
+                title: null;
+                store: {
+                  imageUrl: string | null;
+                  isDeleted: boolean | null;
+                  slug: {
+                    current: string | null;
+                  } | null;
+                  title: string | null;
+                } | null;
+              }> | null;
+              enable_action?: boolean;
+              action_text?: LocalizedString;
+              action_link?: string;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'contentPageBlock';
+              body?: LocalizedBlockContent;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'elegantEase';
+              title?: string;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'faqs';
+              title?: string;
+              faqs: Array<{
+                _id: string;
+                title: string | null;
+                body: BlockContent | null;
+                text: string;
+              }> | null;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'features';
+              title?: string;
+              features?: Array<{
+                title?: string;
+                text?: string;
+                _type: 'feature';
+                _key: string;
+              }>;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'hero';
+              title?: string;
+              text?: Array<{
+                children?: Array<{
+                  marks?: Array<string>;
+                  text?: string;
+                  _type: 'span';
+                  _key: string;
+                }>;
+                style?:
+                  | 'blockquote'
+                  | 'h1'
+                  | 'h2'
+                  | 'h3'
+                  | 'h4'
+                  | 'h5'
+                  | 'h6'
+                  | 'normal';
+                listItem?: 'bullet' | 'number';
+                markDefs?: Array<{
+                  href?: string;
+                  _type: 'link';
+                  _key: string;
+                }>;
+                level?: number;
+                _type: 'block';
+                _key: string;
+              }>;
+              image?: {
+                asset?: {
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+                };
+                media?: unknown;
+                hotspot?: SanityImageHotspot;
+                crop?: SanityImageCrop;
+                _type: 'image';
+              };
+              buttonText?: string;
+              buttonLink?: string;
+              _id: null;
+            }
+          | {
+              _key: string;
               _type: 'heroSlider';
+              title?: string;
+              description?: string;
               slides?: Array<
                 {
                   _key: string;
@@ -2210,6 +3370,166 @@ export type HOME_PAGE_QUERYResult =
                 _key: string;
                 [internalGroqTypeReferenceTo]?: 'collection';
               }>;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'productCarousel';
+              title?: LocalizedString;
+              products: Array<{
+                _id: string;
+                store: {
+                  title: string | null;
+                  isDeleted: boolean | null;
+                  previewImageUrl: string | null;
+                  priceRange: {
+                    maxVariantPrice: number | null;
+                    minVariantPrice: number | null;
+                  } | null;
+                  productType: string | null;
+                } | null;
+              }> | null;
+              collection: {
+                _id: string;
+                title: null;
+                store: {
+                  imageUrl: string | null;
+                  isDeleted: boolean | null;
+                  slug: {
+                    current: string | null;
+                  } | null;
+                  title: string | null;
+                } | null;
+              } | null;
+              enableAction?: boolean;
+              actionName?: LocalizedString;
+              actionLink?: LocalizedString;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'productComments';
+              title?: string;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'productDetails';
+              details?: Array<{
+                title?: string;
+                heading?: string;
+                text?: string;
+                _type: 'detail';
+                _key: string;
+              }>;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'similarProducts';
+              title?: LocalizedString;
+              collection?: {
+                _ref: string;
+                _type: 'reference';
+                _weak?: boolean;
+                [internalGroqTypeReferenceTo]?: 'collection';
+              };
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'sliderBlock';
+              slides: Array<{
+                title?: LocalizedString;
+                backgroundImage: {
+                  asset: {
+                    _id: string;
+                    url: string | null;
+                    metadata: {
+                      dimensions: SanityImageDimensions | null;
+                    } | null;
+                  } | null;
+                } | null;
+                link: Array<
+                  | {
+                      _key: string;
+                      _type: 'linkExternal';
+                      title?: string;
+                      url?: string;
+                      newWindow?: boolean;
+                      reference: null;
+                    }
+                  | {
+                      _key: string;
+                      _type: 'linkInternal';
+                      title?: string;
+                      reference:
+                        | {
+                            _id: string;
+                            _type: 'collection';
+                            title: null;
+                            slug: string | null;
+                          }
+                        | {
+                            _id: string;
+                            _type: 'page';
+                            title: string | null;
+                            slug: null;
+                          }
+                        | null;
+                    }
+                > | null;
+                _type: 'slide';
+                _key: string;
+              }> | null;
+              _id: null;
+            }
+          | {
+              _key: string;
+              _type: 'splitImage';
+              orientation?: 'imageLeft' | 'imageRight';
+              title?: LocalizedString;
+              link: Array<
+                | {
+                    _key: string;
+                    _type: 'linkExternal';
+                    title?: string;
+                    url?: string;
+                    newWindow?: boolean;
+                    reference: null;
+                  }
+                | {
+                    _key: string;
+                    _type: 'linkInternal';
+                    title?: string;
+                    reference:
+                      | {
+                          _id: string;
+                          _type: 'collection';
+                          title: null;
+                          slug: string | null;
+                        }
+                      | {
+                          _id: string;
+                          _type: 'page';
+                          title: string | null;
+                          slug: null;
+                        }
+                      | null;
+                  }
+              > | null;
+              image?: {
+                asset?: {
+                  _ref: string;
+                  _type: 'reference';
+                  _weak?: boolean;
+                  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+                };
+                media?: unknown;
+                hotspot?: SanityImageHotspot;
+                crop?: SanityImageCrop;
+                _type: 'image';
+              };
               _id: null;
             }
         > | null;
@@ -2272,7 +3592,7 @@ declare module '@sanity/client' {
     '*[_type == "post" && defined(slug.current) && (language == "en" || !defined(language))] | order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_EN_FALLBACK_QUERYResult;
     '*[_type == "post" && slug.current == $slug && (language == "en" || !defined(language))][0]{\n  _id,\n  title,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  },\n  relatedPosts[]{\n    _key,\n    ...@->{_id, title, slug, language}\n  },\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n}': POST_WITH_FALLBACK_QUERYResult;
     '*[_type == "page" && slug.current == $slug][0]{\n  ...,\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n  content[]{\n    ...,\n    _type == "contentPageBlock" => {\n      body {\n        en[]{\n          ...,\n          markDefs[]{\n            ...,\n            _type == "link" => {\n              ...,\n              "href": @.href,\n            }\n          }\n        },\n        uk[]{\n          ...,\n          markDefs[]{\n            ...,\n            _type == "link" => {\n              ...,\n              "href": @.href,\n            }\n          }\n        }\n      }\n    },\n    _type == "similarProducts" => {\n      collection -> {\n        _id,\n        title,\n        store{\n         imageUrl,\n         isDeleted,\n         slug{\n         current\n         },\n         title\n        }\n      }\n    },\n    _type == "sliderBlock" => {\n      slides[]{\n         ...,\n        _key,\n        link[]{\n         ...,\n         reference->{\n           _id,\n           _type,\n           title,\n           "slug": select(\n             _type == "product" => store.slug.current,\n             _type == "collection" => store.slug.current,\n             _type == "page" => slug.current\n           )\n         }\n       },\n        backgroundImage{\n          asset->{\n            _id,\n            url,\n            metadata{dimensions}\n          }\n        }\n      }\n    },\n    _type == "productCarousel" => {\n      products[]->{\n        _id,\n        store{\n          title,\n          isDeleted,\n          previewImageUrl,\n          priceRange{\n          maxVariantPrice,\n          minVariantPrice\n          },\n          productType\n        }\n      },\n      collection -> {\n        _id,\n        title,\n        store{\n         imageUrl,\n         isDeleted,\n         slug{\n         current\n         },\n         title\n        }\n      }\n    },\n    _type == "collectionsCarousel" => {\n      collections[]->{\n        _id,\n        title,\n        store{\n         imageUrl,\n         isDeleted,\n         slug{\n         current\n         },\n         title\n        }\n      }\n    },\n    _type == "splitImage" => {\n      ...,\n      link[]{\n        ...,\n        reference->{\n          _id,\n          _type,\n          title,\n          "slug": select(\n            _type == "product" => store.slug.current,\n            _type == "collection" => store.slug.current,\n            _type == "page" => slug.current\n          )\n        }\n      }\n    },\n    _type == "faqs" => {\n      ...,\n      faqs[]->{\n        _id,\n        title,\n        body,\n        "text": pt::text(body)\n      }\n    }\n  }\n}': PAGE_QUERYResult;
-    '*[_type == "page" && slug == $slug  && language == $language][0]{\n    ...,\n    "_translations": *[_type == "translation.metadata" && references(^._id)].translations[].value->{\n      title,\n      slug,\n      language\n    },\n    "seo": {\n    "title": coalesce(seo.title, title, ""),\n      "description": coalesce(seo.description,  ""),\n      "image": seo.image,\n      "noIndex": seo.noIndex == true\n     },\n    content[]{\n      ...,\n    }\n  }': HOME_PAGEResult;
+    '*[_type == "page" && slug == $slug  && language == $language][0]{\n    ...,\n    "_translations": *[_type == "translation.metadata" && references(^._id)].translations[].value->{\n      title,\n      slug,\n      language\n    },\n    "seo": {\n    "title": coalesce(seo.title, title, ""),\n      "description": coalesce(seo.description,  ""),\n      "image": seo.image,\n      "noIndex": seo.noIndex == true\n     },\n    content[]{\n      ...,\n\n    }\n  }': HOME_PAGEResult;
     '*[_id == "siteSettings" ][0]{\n    homePageMan->{\n      ...,\n      content[]{\n        ...,\n        _id,\n        _type == "sliderBlock" => {\n          slides[]{\n             ...,\n            _key,\n            link[]{\n             ...,\n             reference->{\n               _id,\n               _type,\n               title,\n               "slug": select(\n                 _type == "product" => store.slug.current,\n                 _type == "collection" => store.slug.current,\n                 _type == "page" => slug.current\n               )\n             }\n           },\n            backgroundImage{\n              asset->{\n                _id,\n                url,\n                metadata{dimensions}\n              }\n            }\n          }\n        },\n        _type == "productCarousel" => {\n          products[]->{\n            _id,\n            store{\n              title,\n              isDeleted,\n              previewImageUrl,\n              priceRange{\n              maxVariantPrice,\n              minVariantPrice\n              },\n              productType\n            }\n          },\n          collection -> {\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "collectionsCarousel" => {\n          collections[]->{\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "splitImage" => {\n          ...,\n          link[]{\n            ...,\n            reference->{\n              _id,\n              _type,\n              title,\n              "slug": select(\n                _type == "product" => store.slug.current,\n                _type == "collection" => store.slug.current,\n                _type == "page" => slug.current\n              )\n            }\n          }\n        },\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        }\n      }\n    },\n    homePageWoman->{\n      ...,\n      content[]{\n        ...,\n        _id,\n        _type == "sliderBlock" => {\n          slides[]{\n             ...,\n            _key,\n            link[]{\n             ...,\n             reference->{\n               _id,\n               _type,\n               title,\n               "slug": select(\n                 _type == "product" => store.slug.current,\n                 _type == "collection" => store.slug.current,\n                 _type == "page" => slug.current\n               )\n             }\n           },\n            backgroundImage{\n              asset->{\n                _id,\n                url,\n                metadata{dimensions}\n              }\n            }\n          }\n        },\n        _type == "productCarousel" => {\n          products[]->{\n            _id,\n            store{\n              title,\n              isDeleted,\n              previewImageUrl,\n              priceRange{\n              maxVariantPrice,\n              minVariantPrice\n              },\n              productType\n            }\n          },\n          collection -> {\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "collectionsCarousel" => {\n          collections[]->{\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "splitImage" => {\n          ...,\n          link[]{\n            ...,\n            reference->{\n              _id,\n              _type,\n              title,\n              "slug": select(\n                _type == "product" => store.slug.current,\n                _type == "collection" => store.slug.current,\n                _type == "page" => slug.current\n              )\n            }\n          }\n        },\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        }\n      }\n    }\n  }': HOME_PAGE_QUERYResult;
     '\n  *[_type == "redirect" && isEnabled == true] {\n      source,\n      destination,\n      permanent\n  }\n': REDIRECTS_QUERYResult;
     '\n  *[_id == $id][0]{\n    title,\n    "image": mainImage.asset->{\n      url,\n      metadata {\n        palette\n      }\n    }\n  }\n': OG_IMAGE_QUERYResult;

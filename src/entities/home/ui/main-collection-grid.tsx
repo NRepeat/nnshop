@@ -14,10 +14,11 @@ export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
 
   if (!collections) return null;
 
+  const locale = await getLocale();
   const resolvedCollections = await Promise.all(
     collections.map(async (collection) => {
       const id = collection._ref.split('-')[1];
-      const pathData = await resolveShopifyLink('collection', id, false);
+      const pathData = await resolveShopifyLink('collection', id, locale);
       console.log(pathData, id);
       return {
         ...collection,
@@ -38,7 +39,7 @@ export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
                 {col.image && col.image.url && (
                   <Image
                     src={col.image.url}
-                    alt={col.title}
+                    alt={col.title ?? ''}
                     className="object-cover w-full h-[400px] max-h-[598px]"
                     width={375}
                     height={598}

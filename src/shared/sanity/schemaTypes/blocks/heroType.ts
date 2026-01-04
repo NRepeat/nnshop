@@ -11,7 +11,8 @@ export const heroType = defineType({
     }),
     defineField({
       name: 'text',
-      type: 'string',
+      type: 'array',
+      of: [{ type: 'block' }],
     }),
     defineField({
       name: 'image',

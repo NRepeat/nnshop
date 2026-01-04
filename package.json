@@ -76,7 +76,6 @@
     "react-intersection-observer": "^10.0.0",
     "react-photoswipe-gallery": "^4.0.0",
     "sanity": "^4.10.3",
-    "sanity-plugin-bulk-actions-table": "^1.0.4",
     "sanity-plugin-hotspot-array": "^3.0.1",
     "sanity-plugin-internationalized-array": "^3.2.0",
     "schema-dts": "^1.1.5",

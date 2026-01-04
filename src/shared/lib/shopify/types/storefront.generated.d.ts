@@ -563,6 +563,18 @@ export type GetSubMenuQuery = {
   >;
 };
 
+export type ResolveLinkQueryVariables = StorefrontTypes.Exact<{
+  id: StorefrontTypes.Scalars['ID']['input'];
+}>;
+
+export type ResolveLinkQuery = {
+  collection?: StorefrontTypes.Maybe<
+    Pick<StorefrontTypes.Collection, 'handle' | 'title'> & {
+      image?: StorefrontTypes.Maybe<Pick<StorefrontTypes.Image, 'url'>>;
+    }
+  >;
+};
+
 interface GeneratedQueryTypes {
   '#graphql\n  query predictiveSearch(\n    $limit: Int!\n    $limitScope: PredictiveSearchLimitScope!\n    $query: String!\n    $searchableFields: [SearchableField!]\n    $types: [PredictiveSearchType!]\n  ) {\n    predictiveSearch(\n      limit: $limit\n      limitScope: $limitScope\n      query: $query\n      searchableFields: $searchableFields\n      types: $types\n    ) {\n      products {\n        id\n        title\n        handle\n        featuredImage {\n          url\n        }\n        variants(first: 1) {\n          edges {\n            node {\n              price {\n                amount\n                currencyCode\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n': {
     return: PredictiveSearchQuery;
@@ -603,6 +615,10 @@ interface GeneratedQueryTypes {
   '#graphql\n  query GetSubMenu ($handle: String!) {\n    menu(handle: $handle) {\n      handle\n      items {\n        title\n        url\n        resourceId\n      }\n    }\n  }\n': {
     return: GetSubMenuQuery;
     variables: GetSubMenuQueryVariables;
+  };
+  '#graphql\n      query ResolveLink($id: ID!) @inContext(language: RU) { collection(id: $id) { handle ,title,image{url} } }': {
+    return: ResolveLinkQuery;
+    variables: ResolveLinkQueryVariables;
   };
 }
 

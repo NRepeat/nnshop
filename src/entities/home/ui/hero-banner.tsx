@@ -43,10 +43,8 @@ export const HeroBanner = (props: HeroSliderProps) => {
                     />
                   )}
                   <div className="absolute bottom-16 left-[32px] w-fit flex flex-col gap-5">
-                    {slide.title && (
+                    {slide.description && (
                       <p className="text-white text-xl  font-sans font-400 md:text-3xl">
-                        {slide.title}
-                        <br />
                         {slide.description}
                       </p>
                     )}
