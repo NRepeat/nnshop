@@ -21,7 +21,7 @@ export const Header = async () => {
       <AnnouncementBar />
       <header className="sticky top-0  z-30  bg-background ">
         <div className="container ">
-          <div className="grid grid-cols-3 md:grid-cols-2  pt-5">
+          <div className="grid grid-cols-3 md:grid-cols-2  pt-5 pb-2">
             <div className="col-span-1 hidden justify-start gap-4 md:flex">
               <Link className="flex h-fit" href="/">
                 <Logo className="w-10 h-10" />
