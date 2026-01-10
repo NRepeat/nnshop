@@ -1,6 +1,10 @@
 import { auth } from '@features/auth/lib/auth';
+import { routing } from '@shared/i18n/routing';
+import createMiddleware from 'next-intl/middleware';
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+
+const handleI18nRouting = createMiddleware(routing);
 
 export async function proxy(request: NextRequest) {
   const session = await auth.api.getSession({
@@ -15,7 +19,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  return handleI18nRouting(request);
 }
 
 export const config = {

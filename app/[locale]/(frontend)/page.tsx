@@ -1,6 +1,5 @@
 import { Locale, locales } from '@/shared/i18n/routing';
 import { getHomePage } from '@features/home/api/get-home-page';
-import { getLocale } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import { Suspense } from 'react';
 import Loading from './(checkout)/checkout/[...slug]/loading';
@@ -12,6 +11,7 @@ import { StoriesCarousel } from '@entities/home/ui/stories-carousel';
 import { SplitCollection } from '@entities/home/ui/split-collection';
 import { HOME_PAGEResult } from '@shared/sanity/types';
 import { notFound } from 'next/navigation';
+import { cacheLife } from 'next/dist/server/use-cache/cache-life';
 
 export async function generateStaticParams() {
   return locales.map((locale) => ({
@@ -42,7 +42,7 @@ const PageContent = async ({
   gender: string;
 }) => {
   'use cache';
-  // cacheLife({ stale: 60, expire: 60 });
+  cacheLife('default');
   const page = await getHomePage({ locale, gender });
   console.log(page);
   type HeroPageProps = { content: NonNullable<HOME_PAGEResult>['content'] };

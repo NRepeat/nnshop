@@ -15,7 +15,7 @@ import { Heart, Menu, Search, ShoppingCart, User2 } from 'lucide-react';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
-export const Header = async () => {
+export const Header = async ({ locale }: { locale: string }) => {
   return (
     <>
       <AnnouncementBar />
@@ -87,7 +87,7 @@ export const Header = async () => {
                   </Button>
                 }
               >
-                <CartSheet />
+                <CartSheet locale={locale} />
               </Suspense>
             </div>
           </div>

@@ -11,8 +11,11 @@ import { ArrowUpRightIcon } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 
-export async function EmptyState() {
-  const t = await getTranslations('Header.cart.drawer.empty_state');
+export async function EmptyState({ locale }: { locale: string }) {
+  const t = await getTranslations({
+    locale,
+    namespace: 'Header.cart.drawer.empty_state',
+  });
   return (
     <SheetContent>
       <SheetHeader className="sticky top-0">

@@ -5,7 +5,7 @@ import { ShoppingCart } from 'lucide-react';
 import { getCart } from '@entities/cart/api/get';
 import { Badge } from '@shared/ui/badge';
 
-const CartSheet = async () => {
+const CartSheet = async ({ locale }: { locale: string }) => {
   const cart = await getCart();
   const cartId = cart?.cart?.id;
   const items = cart?.cart?.lines.edges.map((item) => ({
@@ -48,6 +48,7 @@ const CartSheet = async () => {
         )}
       </SheetTrigger>
       <CartWithEmptyState
+        locale={locale}
         products={mockProducts}
         estimateTotal={estimateTotal}
         currencySymbol={currencySymbol}
@@ -64,14 +65,16 @@ const CartWithEmptyState = ({
   estimateTotal = 0,
   currencySymbol,
   cartId,
+  locale,
 }: {
   products: any;
   currencySymbol: string;
   estimateTotal: number | undefined;
   cartId: string | undefined;
+  locale: string;
 }) => {
   if (!cartId) {
-    return <EmptyState />;
+    return <EmptyState locale={locale} />;
   } else {
     return (
       <Content
