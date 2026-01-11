@@ -1,11 +1,22 @@
 import createImageUrlBuilder from '@sanity/image-url';
 import { SanityImageSource } from '@sanity/image-url/lib/types/types';
-
 import { dataset, projectId } from '../env';
 
-// https://www.sanity.io/docs/image-url
 const builder = createImageUrlBuilder({ projectId, dataset });
 
-export const urlFor = (source: SanityImageSource) => {
-  return builder.image(source);
+export const urlFor = (
+  source: SanityImageSource,
+  width?: number,
+  height?: number,
+) => {
+  let result = builder.image(source).auto('format');
+
+  if (width && height) {
+    return result.width(width).height(height).fit('crop');
+  }
+
+  if (width) result = result.width(width);
+  if (height) result = result.height(height);
+
+  return result;
 };

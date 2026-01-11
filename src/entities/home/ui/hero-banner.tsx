@@ -1,12 +1,12 @@
 'use client';
+
 import Image from 'next/image';
+import Link from 'next/link';
+import Autoplay from 'embla-carousel-autoplay';
 import { Button } from '@shared/ui/button';
-import { HOME_PAGEResult } from '@shared/sanity/types';
 import { Carousel, CarouselContent, CarouselItem } from '@shared/ui/carousel';
 import { urlFor } from '@shared/sanity/lib/image';
-import Autoplay from 'embla-carousel-autoplay';
-import Link from 'next/link';
-// import AutoScroll from 'embla-carousel-auto-scroll';
+import { HOME_PAGEResult } from '@shared/sanity/types';
 
 type HeroSliderProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
@@ -16,47 +16,68 @@ type HeroSliderProps = Extract<
 export const HeroBanner = (props: HeroSliderProps) => {
   const { slides } = props;
 
+  if (!slides || slides.length === 0) return null;
+
   return (
-    <div className="hero-banner relative">
+    <div className="hero-banner relative w-full overflow-hidden">
       <Carousel
         opts={{ loop: true, active: true }}
         plugins={[
           Autoplay({
-            active: true,
-            playOnInit: true,
             delay: 8000,
+            stopOnInteraction: false,
           }),
         ]}
       >
-        <CarouselContent>
-          {slides?.map((slide, index) => (
-            <CarouselItem key={index}>
-              <Link href={slide && slide.link?.url ? slide.link?.url : '/'}>
-                <div className="flex justify-center items-center">
-                  {slide.image?.asset && (
-                    <Image
-                      src={urlFor(slide.image?.asset).url()}
-                      alt=""
-                      className=" object-cover w-full max-h-[598px] md:max-h-[70vh]"
-                      width={375}
-                      height={598}
-                    />
+        <CarouselContent className="ml-0">
+          {slides.map((slide, index) => (
+            <CarouselItem key={index} className="pl-0 relative w-full ">
+              <Link
+                href={slide?.link?.url ?? '/'}
+                className="group relative block w-full h-full"
+              >
+                {slide.image?.asset && (
+                  <>
+                    <div className="md:hidden block relative w-full h-full">
+                      <Image
+                        src={urlFor(slide.image.asset, 600, 900).url()}
+                        alt={slide.description || 'Banner mobile'}
+                        fill
+                        priority={index === 0}
+                        className="object-cover"
+                      />
+                    </div>
+
+                    <div className="hidden md:block relative w-full h-full">
+                      <Image
+                        src={urlFor(slide.image.asset).url()}
+                        alt={slide.description || 'Banner desktop'}
+                        width={1920}
+                        height={1080}
+                        priority={index === 0}
+                        className="object-cover max-h-[50vh]"
+                      />
+                    </div>
+                  </>
+                )}
+
+                <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors" />
+
+                <div className="absolute bottom-12 left-6 md:bottom-20 md:left-16 z-10 max-w-[80%] flex flex-col gap-6">
+                  {slide.description && (
+                    <h2 className="text-white text-3xl md:text-5xl lg:text-6xl font-medium tracking-tight drop-shadow-lg">
+                      {slide.description}
+                    </h2>
                   )}
-                  <div className="absolute bottom-16 left-[32px] w-fit flex flex-col gap-5">
-                    {slide.description && (
-                      <p className="text-white text-xl  font-sans font-400 md:text-3xl">
-                        {slide.description}
-                      </p>
-                    )}
-                    {slide.link && (
-                      <Button
-                        className="w-[120px] md:w-[220px]"
-                        variant={'secondary'}
-                      >
-                        Shop now
-                      </Button>
-                    )}
-                  </div>
+
+                  {slide.link && (
+                    <Button
+                      variant="secondary"
+                      className="w-fit min-w-[160px] h-12 md:h-14 text-sm md:text-base uppercase tracking-widest transition-transform group-hover:scale-105"
+                    >
+                      Shop now
+                    </Button>
+                  )}
                 </div>
               </Link>
             </CarouselItem>

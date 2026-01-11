@@ -12,7 +12,6 @@ export const PageContent = async ({
   gender: string;
 }) => {
   const page = await getHomePage({ locale, gender });
-  console.log('PageContent', page);
   if (!page) {
     return notFound();
   }

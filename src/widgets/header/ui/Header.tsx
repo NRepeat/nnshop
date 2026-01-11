@@ -33,7 +33,7 @@ export const Header = async ({
           {...headerData?.infoBar}
         />
       )}
-      <header className="sticky top-0  z-30  bg-background  h-20 md:h-fit flex items-center">
+      <header className="sticky top-0  z-30  bg-background  h-20 md:h-fit flex flex-col items-center">
         {headerData?.header && (
           <HeaderContent locale={locale} {...headerData?.header} />
         )}
