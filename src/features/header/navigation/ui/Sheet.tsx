@@ -3,7 +3,7 @@ import { getMainMenu } from '../api/getMainMenu';
 import { getLocale } from 'next-intl/server';
 import NavigationSheet from './NavigationSheet';
 
-const Sheet = async () => {
+const MenuSheet = async () => {
   const locale = await getLocale();
 
   const t = await getTranslations({
@@ -24,4 +24,4 @@ const Sheet = async () => {
   return <NavigationSheet meinMenu={meinMenu} title={t('title')} />;
 };
 
-export default Sheet;
+export default MenuSheet;

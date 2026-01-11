@@ -115,7 +115,7 @@ function NavigationMenuViewport({
     <>
       <div
         className={cn(
-          'absolute top-[35px] w-full  left-[-50px] isolate z-50  min-w-[calc(100vw+18px)]  overflow-hidden ',
+          'absolute top-[35px] w-full  left-[-51px] isolate z-50  min-w-[calc(100vw-18px)]  overflow-hidden ',
         )}
       >
         <NavigationMenuPrimitive.Viewport

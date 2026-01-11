@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 import { LanguageSwitcher } from '@features/header/language-switcher/ui/LanguageSwitcher';
+import { Button } from '@shared/ui/button';
 
 const NavigationSheet = ({
   meinMenu,
@@ -49,8 +50,13 @@ const NavigationSheet = ({
   };
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger className="cursor-pointer h-full  justify-center items-center hover:underline hover:text-accent-foreground  rounded-none relative size-9 hover:bg-muted flex lg:hidden">
-        <Menu className="max-w-5 max-h-5" />
+      <SheetTrigger
+        className="cursor-pointer   justify-center items-center "
+        asChild
+      >
+        <Button variant="ghost" size="icon" className="rounded-none">
+          <Menu className="" />
+        </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-full">
         <SheetHeader className="pt-6 px-4">

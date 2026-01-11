@@ -31,33 +31,34 @@ export function LanguageSwitcher({
     router.replace(pathname, { locale: newLocale });
   };
   const parseLocale = {
-    ru: 'RUS',
-    uk: 'UKR',
+    ru: 'РУС',
+    uk: 'УКР',
   };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className={className}>
-        <Button variant="default" className="h-full underline">
+        <Button
+          variant="default"
+          className="h-full underline border-b-2 border-foreground hover:border-b-2 hover:border-b-[#e31e24]"
+        >
           {parseLocale[selectedLocale as keyof typeof parseLocale]}
-          <Globe />
+          {/*<Globe />*/}
           <span className="sr-only">Switch language</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="rounded-none gap-2" align={align}>
         <DropdownMenuItem
-          className={cn(
-            'rounded-none',
-            {"bg-gray-200":selectedLocale === "ru"},
-          )}
+          className={cn('rounded-none', {
+            'bg-gray-200': selectedLocale === 'ru',
+          })}
           onClick={() => changeLocale('ru')}
         >
           {t('ru')}
         </DropdownMenuItem>
         <DropdownMenuItem
-          className={cn(
-            'rounded-none',
-            {"bg-gray-200":selectedLocale === "uk"},
-          )}
+          className={cn('rounded-none', {
+            'bg-gray-200': selectedLocale === 'uk',
+          })}
           onClick={() => changeLocale('uk')}
         >
           {t('uk')}

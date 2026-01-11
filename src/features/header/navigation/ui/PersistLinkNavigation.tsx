@@ -32,7 +32,7 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
 
   const links = resolveLinks ? await Promise.all(resolveLinks) : [];
   return (
-    <div className=" justify-start hidden md:flex w-full items-center">
+    <>
       {links &&
         links.map((link) => (
           <NavigationMenuItem key={link.slug} className={`flex p-0`}>
@@ -46,6 +46,6 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
             </Link>
           </NavigationMenuItem>
         ))}
-    </div>
+    </>
   );
 };

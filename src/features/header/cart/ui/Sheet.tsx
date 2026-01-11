@@ -4,6 +4,7 @@ import Content from './Content';
 import { ShoppingCart } from 'lucide-react';
 import { getCart } from '@entities/cart/api/get';
 import { Badge } from '@shared/ui/badge';
+import { Button } from '@shared/ui/button';
 
 const CartSheet = async ({ locale }: { locale: string }) => {
   const cart = await getCart();
@@ -39,13 +40,18 @@ const CartSheet = async ({ locale }: { locale: string }) => {
   );
   return (
     <Sheet>
-      <SheetTrigger className="cursor-pointer  flex justify-center items-center hover:underline hover:text-accent-foreground  rounded-none relative size-9 hover:bg-muted">
-        <ShoppingCart className="h-4 w-4" />
-        {mockProducts && mockProducts.length > 0 && (
-          <Badge className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums top-0 right-0 absolute">
-            {totalQuantity}
-          </Badge>
-        )}
+      <SheetTrigger
+        className="cursor-pointer  flex justify-center items-center hover:underline hover:text-accent-foreground  rounded-none relative size-9 "
+        asChild
+      >
+        <Button variant="ghost" size="icon" className="rounded-none">
+          <ShoppingCart className="h-4 w-4" />
+          {mockProducts && mockProducts.length > 0 && (
+            <Badge className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums top-0 right-0 absolute">
+              {totalQuantity}
+            </Badge>
+          )}
+        </Button>
       </SheetTrigger>
       <CartWithEmptyState
         locale={locale}

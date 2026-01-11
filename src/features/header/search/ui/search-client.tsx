@@ -21,7 +21,7 @@ type PredictiveSearchResult = NonNullable<
   PredictiveSearchQuery['predictiveSearch']
 >;
 
-export const SearchClient = () => {
+export const SearchClient = ({ className }: { className?: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [debouncedQuery] = useDebounce(query, 500);
@@ -87,7 +87,7 @@ export const SearchClient = () => {
   return (
     <>
       <Button
-        className=""
+        className={className}
         variant="ghost"
         size="icon"
         onClick={() => setIsOpen((prev) => !prev)}

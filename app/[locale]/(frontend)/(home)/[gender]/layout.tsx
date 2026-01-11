@@ -35,7 +35,6 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider>
       <Header locale={locale} gender={gender} />
-
       {modal}
       {children}
       {(await draftMode()).isEnabled && (

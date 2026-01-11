@@ -9,11 +9,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@shared/ui/dropdown-menu';
-import { User, User2 } from 'lucide-react';
+import { User2 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { Button } from '@shared/ui/button';
 import { cn } from '@shared/lib/utils';
+
+const AccountButtonContent = ({ className }: { className: string }) => {
+  return (
+    <Link href={'/auth/sign-in'} className="rounded-none">
+      <Button variant="ghost" size="icon" className={cn(className)}>
+        <User2 />
+      </Button>
+    </Link>
+  );
+};
 
 export const AccountButton = async ({
   className,
@@ -27,22 +37,10 @@ export const AccountButton = async ({
 
   const session = await auth.api.getSession({ headers: headersList });
   if (!session) {
-    return (
-      <Button variant="ghost" size="icon" className={cn(className)}>
-        <Link href={'/auth/sign-in'} className="rounded-none">
-          <User2 />
-        </Link>
-      </Button>
-    );
+    return <AccountButtonContent className={cn(className)} />;
   }
   if (session && session.user?.isAnonymous) {
-    return (
-      <Button variant="ghost" size="icon" className={cn(className)}>
-        <Link href={'/auth/sign-in'} className="rounded-none">
-          <User2 />
-        </Link>
-      </Button>
-    );
+    return <AccountButtonContent className={cn(className)} />;
   }
   return (
     <div className="flex items-center ">

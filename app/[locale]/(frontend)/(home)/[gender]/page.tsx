@@ -15,8 +15,5 @@ export default async function Page({
   params: Promise<{ locale: Locale; gender: string }>;
 }) {
   const { locale, gender } = await params;
-  console.log('params', locale, gender);
-  return (
-      <PageContent locale={locale} gender={gender} />
-  );
+  return <PageContent locale={locale} gender={gender} />;
 }
