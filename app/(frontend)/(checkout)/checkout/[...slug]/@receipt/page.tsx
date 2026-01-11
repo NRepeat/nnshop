@@ -13,10 +13,11 @@ import { redirect } from 'next/navigation';
 export default async function Receipt({
   params,
 }: {
-  params: Promise<{ slug: string[] }>;
+  params: Promise<{ slug: string[]; locale: string }>;
 }) {
   return <></>;
-  const t = await getTranslations('ReceiptPage');
+  const { slug, locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'ReceiptPage' });
   try {
     const { slug } = await params;
     let druftOrderId = slug.length >= 2 ? slug[2] : slug[1];
@@ -32,12 +33,12 @@ export default async function Receipt({
             </CardTitle>
           </CardHeader>
           <CardContent className=" text-center px-2 space-y-4">
-            <Products druftOrderId={druftOrderId} />
+            <Products druftOrderId={druftOrderId} locale={locale} />
             <Separator />
             <div className="flex flex-col items-center justify-center space-y-2 ">
-              <ContactInfoSection />
-              <DeliveryInfoSection />
-              <PaymentInfoSection />
+              <ContactInfoSection locale={locale} />
+              <DeliveryInfoSection locale={locale} />
+              <PaymentInfoSection locale={locale} />
             </div>
           </CardContent>
         </Card>

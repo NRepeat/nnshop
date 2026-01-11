@@ -1,4 +1,4 @@
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { type NextRequest, NextResponse } from 'next/server';
 import { parseBody } from 'next-sanity/webhook';
 
@@ -6,24 +6,31 @@ import { revalidateSecret } from '@/shared/sanity/env';
 
 export async function POST(req: NextRequest) {
   try {
+    console.log('start', req);
+
     const { body, isValidSignature } = await parseBody<{
-      _type: string;
+      type: string;
       slug?: string;
     }>(req, revalidateSecret);
-
     if (!isValidSignature) {
       const message = 'Invalid signature';
       return new Response(message, { status: 401 });
     }
 
-    if (!body?._type) {
+    if (!body) {
       const message = 'Bad Request';
       return new Response(message, { status: 400 });
     }
-
-    revalidateTag(body._type, 'max');
+    console.log(body, '---------------', isValidSignature);
     if (body.slug) {
-      revalidateTag(body.slug, 'max');
+      revalidateTag(body.slug, 'default');
+      // revalidatePath('/');
+    } else if (body.type) {
+      // revalidatePath('/');
+      revalidateTag(body.type, 'default');
+    } else if (body.slug && body.type) {
+      revalidateTag(body.slug, 'default');
+      revalidateTag(body.type, 'default');
     }
 
     return NextResponse.json({

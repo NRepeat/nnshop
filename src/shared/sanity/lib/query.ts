@@ -420,7 +420,14 @@ export const HOME_PAGE =
      },
     content[]{
       ...,
-
+      _type == "mainCollectionGrid" => {
+           ...,
+           "collections": collections[]->{
+             title,
+             "handle": store.slug.current,
+             "id": store.id
+           }
+           }
     }
   }`);
 export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
@@ -655,4 +662,46 @@ export const SITEMAP_QUERY = defineQuery(`
     _updatedAt,
     language
 }
+`);
+
+export const HEADER_QUERY = defineQuery(`
+  *[_type == 'siteSettings'][0]{
+    infoBar {
+      ...,
+      telephone,
+      "text":text[$locale],
+      link {
+        ...,
+        "collectionData": reference-> {
+          title,
+          "handle": store.slug.current,
+          "pageHandle": slug,
+          "id": store.id
+        }
+      }
+    },
+    header {
+      ...,
+      categoryLinks[]{
+        _key,
+        "title": title[$locale],
+        "collectionData": reference-> {
+          title,
+          "slug": store.slug.current,
+          "pageHandle": slug,
+          "id": store.id
+        }
+      },
+      mainCategory[]{
+        _key,
+        "title": title[$locale],
+        "collectionData": reference-> {
+          title,
+          "slug": store.slug.current,
+          "pageHandle": slug,
+          "id": store.id
+        }
+      }
+    }
+  }
 `);

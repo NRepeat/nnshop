@@ -32,8 +32,14 @@ const steps = {
   },
 };
 
-export const Steps = async ({ slug }: { slug: string }) => {
-  const t = await getTranslations('CheckoutSteps');
+export const Steps = async ({
+  slug,
+  locale,
+}: {
+  slug: string;
+  locale: string;
+}) => {
+  const t = await getTranslations({ locale, namespace: 'CheckoutSteps' });
   const disablePaymentButton = (slug: string) => {
     const isPaymentStep = slug === 'payment';
     return isPaymentStep;

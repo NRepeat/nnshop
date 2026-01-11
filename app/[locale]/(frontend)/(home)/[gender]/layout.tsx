@@ -1,18 +1,21 @@
 import { VisualEditing } from 'next-sanity/visual-editing';
-import { routing } from '@/shared/i18n/routing';
+import { genders, locales, routing } from '@/shared/i18n/routing';
 import { Header } from '@widgets/header/ui/Header';
 import { SanityLive } from '@shared/sanity/lib/live';
 import { DisableDraftMode } from '@shared/sanity/components/live/DisableDraftMode';
 import { draftMode } from 'next/headers';
 import { Footer } from '@widgets/footer/ui/Footer';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Suspense } from 'react';
-import { hasLocale } from 'next-intl';
+import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
+export async function generateStaticParams() {
+  for (const gender of genders) {
+    for (const locale of locales) {
+      return [{ locale: locale, gender: gender }];
+    }
+  }
 }
 
 export default async function LocaleLayout({
@@ -21,30 +24,30 @@ export default async function LocaleLayout({
   params,
 }: Readonly<{
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: string; gender: string }>;
   modal: React.ReactNode;
 }>) {
-  const { locale } = await params;
+  const { locale, gender } = await params;
   if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
   setRequestLocale(locale);
   return (
-    <div className="">
-      <Header locale={locale} />
+    <NextIntlClientProvider>
+      <Header locale={locale} gender={gender} />
+
       {modal}
       {children}
-      <Suspense fallback={<div>Loading...</div>}>
-        <SanityLive />
-      </Suspense>
       {(await draftMode()).isEnabled && (
         <>
           <DisableDraftMode />
           <VisualEditing />
         </>
       )}
-      <Footer />
-      <SpeedInsights />
-    </div>
+      <Footer locale={locale} />
+      <Suspense fallback={<div>Loading...</div>}>
+        <SanityLive />
+      </Suspense>
+    </NextIntlClientProvider>
   );
 }

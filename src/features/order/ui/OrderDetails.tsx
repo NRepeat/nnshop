@@ -15,8 +15,11 @@ type OrderDetailsProps = {
   order: Order;
 };
 
-export const OrderDetails = async ({ order }: OrderDetailsProps) => {
-  const t = await getTranslations('OrderPage.details');
+export const OrderDetails = async ({
+  order,
+  locale,
+}: OrderDetailsProps & { locale: string }) => {
+  const t = await getTranslations({ locale, namespace: 'OrderPage.details' });
 
   return (
     <Card className="shadow-sm rounded-none mt-4">

@@ -9,10 +9,10 @@ export function generateStaticParams() {
 export default async function AuthPage({
   params,
 }: {
-  params: Promise<{ authView: string }>;
+  params: Promise<{ authView: string; locale: string }>;
 }) {
-  const { authView } = await params;
-  const tBetterAuth = await getTranslations('BetterAuthUI');
+  const { authView, locale } = await params;
+  const tBetterAuth = await getTranslations({ locale, namespace: 'BetterAuthUI' });
 
   return (
     <main className="container flex grow flex-col items-center justify-center self-center  mt-2.5 py-6 md:py-10 mb-10 h-screen">

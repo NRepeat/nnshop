@@ -9,14 +9,11 @@ export default defineField({
   type: 'object',
   icon: LinkIcon,
   fields: [
-    // Title
     {
       title: 'Title',
       name: 'title',
-      type: 'string',
-      validation: (Rule) => Rule.required(),
+      type: 'localizedString',
     },
-    // Reference
     {
       name: 'reference',
       type: 'reference',
@@ -35,6 +32,7 @@ export default defineField({
       title: 'title',
     },
     prepare(selection) {
+      console.log(selection);
       const {
         reference,
         referenceProductPriceRange,
@@ -59,7 +57,7 @@ export default defineField({
       return {
         // media: image,
         subtitle: subtitle.join(' '),
-        title,
+        title:title.uk,
       };
     },
   },

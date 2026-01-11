@@ -28,7 +28,7 @@ export const CurrentNavigationSessionSkilet = () => {
     return (
       <NavigationMenuItem
         key={item.title}
-        className={`first:ml-[55px] ${index === meinMenu.length - 1 ? 'block' : 'block'}`}
+        className={` ${index === meinMenu.length - 1 ? 'block' : 'block'}`}
       >
         <Skeleton className="w-[100px] h-[28px]" />
       </NavigationMenuItem>
@@ -53,20 +53,20 @@ const Navigation = async ({
   const menu = meinMenu.map((item, index) => {
     if (item.items.length > 0) {
       return (
-        <ul className="bg-transparent flex container " key={index}>
+        <ul className="bg-transparent flex w-full justify-center" key={index}>
           {item.items.map((subItem) => (
             <NavigationMenuItem
               key={subItem.url + subItem.title + gender}
-              className="hover:underline group first:ml-[55px]"
+              className="hover:underline group"
             >
               <NavigationMenuTrigger
                 variant={'ghost'}
-                className="rounded-none  cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full has-[>svg]:px-5 pt-2 pb-3 "
+                className="rounded-none  cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full has-[>svg]:px-5  px-5 py-2"
               >
                 {subItem.title}
               </NavigationMenuTrigger>
-              <NavigationMenuContent className="max-w-screen  flex  justify-between pr-7  overflow-hidden">
-                <div className="flex w-full  pt-7  min-w-[calc(100vw-60px)] h-[350px] mx-auto">
+              <NavigationMenuContent className="  flex  justify-between ">
+                <div className="flex w-full  pt-7  min-w-[calc(100vw)] h-[350px] ">
                   <div className="container w-full flex justify-between">
                     <ul className="grid h-fit gap-2 md:w-lg lg:w-3xl md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr] ">
                       {subItem.items.map((subItem) => (
@@ -120,6 +120,6 @@ const Navigation = async ({
       );
     }
   });
-  return <NavigationClient className=" pt-2">{menu}</NavigationClient>;
+  return <NavigationClient className=" pt-2 w-full">{menu}</NavigationClient>;
 };
 export default Navigation;

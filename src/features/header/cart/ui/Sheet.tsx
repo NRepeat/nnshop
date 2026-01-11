@@ -39,7 +39,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
   );
   return (
     <Sheet>
-      <SheetTrigger className="cursor-pointer h-full flex justify-center items-center hover:underline hover:text-accent-foreground  rounded-none relative size-9 hover:bg-muted">
+      <SheetTrigger className="cursor-pointer  flex justify-center items-center hover:underline hover:text-accent-foreground  rounded-none relative size-9 hover:bg-muted">
         <ShoppingCart className="h-4 w-4" />
         {mockProducts && mockProducts.length > 0 && (
           <Badge className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums top-0 right-0 absolute">
@@ -82,6 +82,7 @@ const CartWithEmptyState = ({
         estimateTotal={estimateTotal}
         currencySymbol={currencySymbol}
         cartId={cartId}
+        locale={locale}
       />
     );
   }

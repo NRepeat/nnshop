@@ -167,3 +167,7 @@ body {
 .custom-scroll::-webkit-scrollbar-thumb:hover {
   background-color: oklch(0.556 0 0);
 }
+
+.navigation-menu-wrapper > div {
+  width: 100%;
+}

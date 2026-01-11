@@ -65,7 +65,7 @@
     "lucide-react": "^0.546.0",
     "negotiator": "^0.6.4",
     "next": "16.1.0",
-    "next-intl": "^4.3.12",
+    "next-intl": "^4.7.0",
     "next-sanity": "^11.5.5",
     "nuqs": "^2.8.6",
     "pg": "^8.16.3",

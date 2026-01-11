@@ -10,12 +10,14 @@ import { ProductOptions } from './ProductOptions';
 const Description = async ({
   product,
   selectedVariant,
+  locale,
 }: {
   product: Product;
   selectedVariant: ProductVariant;
+  locale: string;
 }) => {
   if (!product) return notFound();
-  const t = await getTranslations('ProductPage');
+  const t = await getTranslations({ locale, namespace: 'ProductPage' });
   const price = product.priceRange?.maxVariantPrice;
   const isDiscounted = false;
   const compareAtPrice = product.priceRange?.maxVariantPrice;

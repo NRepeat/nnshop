@@ -4,8 +4,12 @@ import { getLocale } from 'next-intl/server';
 import NavigationSheet from './NavigationSheet';
 
 const Sheet = async () => {
-  const t = await getTranslations('Header.nav.drawer');
   const locale = await getLocale();
+
+  const t = await getTranslations({
+    locale,
+    namespace: 'Header.nav.drawer',
+  });
   const controller = new AbortController();
   const signal = controller.signal;
   const meinMenuRequest = await Promise.all([

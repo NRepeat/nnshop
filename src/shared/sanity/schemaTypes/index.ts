@@ -32,11 +32,15 @@ import { mainCollectionGrid } from './blocks/mainCollectionGrid';
 import { topicType } from './blocks/topicType';
 import { productDetailsType } from './blocks/productDetailsType';
 import { heroSlide, heroSlider } from './blocks/heroSlider';
+import { infoBar } from './blocks/info-bar';
+import { headerType } from './headerType';
 
 // const blocks = [heroSlider, heroSlide, mainCollectionGrid];
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
+    infoBar,
+    headerType,
     ...shopifySchemaTypes,
     localizedText,
     localizedBlockContent,

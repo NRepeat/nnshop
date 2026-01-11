@@ -8,7 +8,6 @@ type RouteProps = {
 };
 
 export const getHomePage = async (params: RouteProps['params']) => {
-  'use cache';
   const { locale, gender } = params;
   const pagesSlug = {
     man: 'man-home',
@@ -19,16 +18,12 @@ export const getHomePage = async (params: RouteProps['params']) => {
     query: HOME_PAGE,
     params: {
       language: sanityLocale,
-      slug: pagesSlug[gender as keyof typeof pagesSlug],
+      slug: params.gender,
     },
+    tags: [params.gender, 'page'],
     revalidate: 60,
   });
-  console.log(
-    'sanityLocale',
-    page,
-    sanityLocale,
-    pagesSlug[gender as keyof typeof pagesSlug],
-  );
+  console.log('sanityLocale', page, sanityLocale, params.gender);
 
   // if (!page) throw new Error('Page not found');
 

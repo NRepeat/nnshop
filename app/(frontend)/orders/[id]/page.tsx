@@ -7,11 +7,11 @@ import { OrderDetails } from '@features/order/ui/OrderDetails';
 export default async function OrderPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string; locale: string }>;
 }) {
-  const { id } = await params;
-  const tHeader = await getTranslations('Header.nav');
-  const tOrderPage = await getTranslations('OrderPage');
+  const { id, locale } = await params;
+  const tHeader = await getTranslations({ locale, namespace: 'Header.nav' });
+  const tOrderPage = await getTranslations({ locale, namespace: 'OrderPage' });
 
   const orderId = `gid://shopify/Order/${id}`;
 
@@ -34,7 +34,7 @@ export default async function OrderPage({
   return (
     <div className="container mx-auto py-10 mt-2 md:mt-10">
       <Breadcrumbs items={breadcrumbItems} />
-      <OrderDetails order={order} />
+      <OrderDetails order={order} locale={locale} />
     </div>
   );
 }

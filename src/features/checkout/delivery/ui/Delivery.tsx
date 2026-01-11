@@ -4,14 +4,14 @@ import { getDeliveryInfo } from '../api/getDeliveryInfo';
 import ContainerHeader from '@entities/checkout/ui/ContainerHeader';
 import { getTranslations } from 'next-intl/server';
 
-export default async function Delivery() {
+export default async function Delivery({ locale }: { locale: string }) {
   let existingDeliveryInfo = null;
   try {
     existingDeliveryInfo = await getDeliveryInfo();
   } catch (error) {
     console.error('Error fetching delivery info:', error);
   }
-  const t = await getTranslations('CheckoutPage');
+  const t = await getTranslations({ locale, namespace: 'CheckoutPage' });
 
   return (
     <div className="col-span-4 lg:col-span-6 lg:h-fit lg:row-start-2 justify-self-stretch">

@@ -10,10 +10,12 @@ import { getTranslations } from 'next-intl/server';
 
 export default async function Payment({
   draftOrderId,
+  locale,
 }: {
   draftOrderId: string;
+  locale: string;
 }) {
-  const t = await getTranslations('CheckoutPage');
+  const t = await getTranslations({ locale, namespace: 'CheckoutPage' });
   const liqpayPublicKey = process.env.LIQPAY_PUBLIC_KEY;
   const liqpayPrivateKey = process.env.LIQPAY_PRIVATE_KEY;
 

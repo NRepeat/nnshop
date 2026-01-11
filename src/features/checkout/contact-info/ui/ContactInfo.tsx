@@ -3,8 +3,8 @@ import ContactInfoForm from './ContactInfoForm';
 import { getTranslations } from 'next-intl/server';
 import getUser from '@entities/user/api/getUser';
 
-export default async function ContactInfo() {
-  const t = await getTranslations('CheckoutPage');
+export default async function ContactInfo({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: 'CheckoutPage' });
   const contactInfo = await getContactInfo();
   const user = await getUser();
   return (

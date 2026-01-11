@@ -11,10 +11,15 @@ import Link from 'next/link';
 
 export async function OrderEmptyState({
   type,
+  locale,
 }: {
   type: 'notLoggedIn' | 'emptyState';
+  locale: string;
 }) {
-  const t = await getTranslations(`OrderPage.${type}`);
+  const t = await getTranslations({
+    locale,
+    namespace: `OrderPage.${type}`,
+  });
   return (
     <Empty>
       <EmptyHeader>

@@ -5,9 +5,9 @@ import DeliveryInfo from '@shared/assets/DeliveryInfo';
 import { PlaceHolder } from './PlaceHolder';
 import { getTranslations } from 'next-intl/server';
 
-export default async function DeliveryInfoSection() {
+export default async function DeliveryInfoSection({ locale }: { locale: string }) {
   const deliveryInfo = await getDeliveryInfo();
-  const t = await getTranslations('ReceiptPage');
+  const t = await getTranslations({ locale, namespace: 'ReceiptPage' });
   return (
     <>
       {deliveryInfo ? (

@@ -7,19 +7,18 @@ import { getLocale } from 'next-intl/server';
 type MainCollectionGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'mainCollectionGrid' }
->;
+> & { locale: string };
 
 export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
-  const { collections, title } = props;
+  const { collections, title, locale } = props;
 
   if (!collections) return null;
 
-  const locale = await getLocale();
   const resolvedCollections = await Promise.all(
     collections.map(async (collection) => {
-      const id = collection._ref.split('-')[1];
+      const id = collection.id;
+      if (!id) return null;
       const pathData = await resolveShopifyLink('collection', id, locale);
-      console.log(pathData, id);
       return {
         ...collection,
         ...pathData,

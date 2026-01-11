@@ -19,7 +19,7 @@ function NavigationMenu({
       data-slot="navigation-menu"
       data-viewport={viewport}
       className={cn(
-        'group/navigation-menu relative flex  flex-1 items-center justify-center',
+        'group/navigation-menu relative flex w-full flex-1 items-center ',
         className,
       )}
       {...props}
@@ -38,7 +38,7 @@ function NavigationMenuList({
     <NavigationMenuPrimitive.List
       data-slot="navigation-menu-list"
       className={cn(
-        'group flex flex-1 list-none items-center justify-center gap-1',
+        'group flex flex-1 w-full list-none items-center justify-center gap-1',
         className,
       )}
       {...props}
@@ -115,13 +115,13 @@ function NavigationMenuViewport({
     <>
       <div
         className={cn(
-          'absolute top-[35px]  left-0 isolate z-50 flex justify-center  overflow-hidden ',
+          'absolute top-[35px] w-full  left-[-50px] isolate z-50  min-w-[calc(100vw+18px)]  overflow-hidden ',
         )}
       >
         <NavigationMenuPrimitive.Viewport
           data-slot="navigation-menu-viewport"
           className={cn(
-            'rounded-none  origin-top-center text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-100 data-[state=open]:zoom-in-95 relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)]  overflow-hidden    md:w-[var(--radix-navigation-menu-viewport-width)] bg-background ',
+            'rounded-none  origin-top-left text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-100 data-[state=open]:zoom-in-95 relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)]  overflow-hidden    md:w-[var(--radix-navigation-menu-viewport-width)] bg-background ',
             className,
           )}
           {...props}

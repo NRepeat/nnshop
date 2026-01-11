@@ -16,6 +16,7 @@ const Content = async ({
   estimateTotal,
   currencySymbol,
   cartId,
+  locale,
 }: {
   mockProducts: {
     id: string;
@@ -30,8 +31,12 @@ const Content = async ({
   cartId: string;
   estimateTotal: number;
   currencySymbol: string;
+  locale: string;
 }) => {
-  const t = await getTranslations('Header.cart.drawer');
+  const t = await getTranslations({
+    locale,
+    namespace: 'Header.cart.drawer',
+  });
   return (
     <SheetContent className="w-full md:min-w-[450px] font-light ">
       <div className="h-full overflow-hidden flex flex-col">

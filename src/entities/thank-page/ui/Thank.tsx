@@ -12,8 +12,14 @@ import { getTranslations } from 'next-intl/server';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
 
-export const Thank = async ({ orderId }: { orderId: string }) => {
-  const t = await getTranslations('ThankYouPage');
+export const Thank = async ({
+  orderId,
+  locale,
+}: {
+  orderId: string;
+  locale: string;
+}) => {
+  const t = await getTranslations({ locale, namespace: 'ThankYouPage' });
 
   const session = auth.api.getSession({ headers: await headers() });
   if (!session) {

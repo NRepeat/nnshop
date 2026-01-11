@@ -11,12 +11,12 @@ const queries = {
 
 export const resolveShopifyLink = async (
   sybPath: keyof typeof queries,
-  path: string,
+  id: number,
   locale: string,
 ) => {
   const res = (await storefrontClient.request({
     query: queries[sybPath].query,
-    variables: { id: queries[sybPath].variables.id + path },
+    variables: { id: queries[sybPath].variables.id + id },
     language: locale.toUpperCase() as StorefrontLanguageCode,
   })) as ResolveLinkQuery;
 

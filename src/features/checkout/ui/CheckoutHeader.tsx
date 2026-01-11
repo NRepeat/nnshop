@@ -4,7 +4,13 @@ import Logo from '@shared/assets/Logo';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
-export default async function CheckoutHeader({ slug }: { slug: string[] }) {
+export default async function CheckoutHeader({
+  slug,
+  locale,
+}: {
+  slug: string[];
+  locale: string;
+}) {
   if (!slug || slug.length === 0) return redirect('/');
   const currentStep = slug[0];
   return (
@@ -19,7 +25,7 @@ export default async function CheckoutHeader({ slug }: { slug: string[] }) {
           <LanguageSwitcher />
         </div>
       </div>
-      <Steps slug={currentStep} />
+      <Steps slug={currentStep} locale={locale} />
     </header>
   );
 }

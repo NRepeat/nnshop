@@ -8,8 +8,10 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 import { Globe } from 'lucide-react';
-import { useTranslations } from 'use-intl';
-import { setLocale } from '../api/set-locale';
+import { useLocale, useTranslations } from 'use-intl';
+import { usePathname, useRouter } from '@shared/i18n/navigation';
+import { useState } from 'react';
+import { cn } from '@shared/lib/utils';
 
 export function LanguageSwitcher({
   className,
@@ -19,27 +21,43 @@ export function LanguageSwitcher({
   align?: 'center' | 'start' | 'end' | undefined;
 }) {
   const t = useTranslations('Header.locale');
-  const changeLocale = async (newLocale: string) => {
-    await setLocale(newLocale);
-  };
+  const locale = useLocale();
+  const pathname = usePathname();
+  const [selectedLocale, setSelectedLocale] = useState<string>(locale);
 
+  const router = useRouter();
+  const changeLocale = (newLocale: string) => {
+    setSelectedLocale(newLocale);
+    router.replace(pathname, { locale: newLocale });
+  };
+  const parseLocale = {
+    ru: 'RUS',
+    uk: 'UKR',
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className={className}>
-        <Button variant="ghost" size="icon" className="h-full ">
+        <Button variant="default" className="h-full underline">
+          {parseLocale[selectedLocale as keyof typeof parseLocale]}
           <Globe />
           <span className="sr-only">Switch language</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="rounded-none" align={align}>
+      <DropdownMenuContent className="rounded-none gap-2" align={align}>
         <DropdownMenuItem
-          className="rounded-none"
+          className={cn(
+            'rounded-none',
+            {"bg-gray-200":selectedLocale === "ru"},
+          )}
           onClick={() => changeLocale('ru')}
         >
           {t('ru')}
         </DropdownMenuItem>
         <DropdownMenuItem
-          className="rounded-none"
+          className={cn(
+            'rounded-none',
+            {"bg-gray-200":selectedLocale === "uk"},
+          )}
           onClick={() => changeLocale('uk')}
         >
           {t('uk')}

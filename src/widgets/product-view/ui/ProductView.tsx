@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import Gallery from '@features/product/ui/Gallery';
 import {
   ProductVariant,
@@ -55,18 +56,22 @@ function CaretDown({ className }: { className?: string }) {
   );
 }
 
-const ProductInfo = ({
+const ProductInfo = async ({
   product,
   colorOptions,
   sizeOptions,
+  locale,
 }: {
   product: ShopifyProduct;
   colorOptions: string[] | undefined;
   sizeOptions: string[] | undefined;
-}) => (
+  locale: string;
+}) => {
+  const t = await getTranslations({ locale, namespace: 'ProductPage' });
+  return (
   <div className="content-stretch flex flex-col gap-[30px] items-start px-[50px] py-0 relative w-full">
     <p className="font-['Styrene_A_Web:Regular',sans-serif] leading-[20px] not-italic relative shrink-0 text-[#979797] text-[13px] w-full">
-      Shop / Clothing
+      {t('shopClothing')}
     </p>
     <div className="content-stretch flex flex-col font-['Styrene_A_Web:Regular',sans-serif] gap-[8px] items-start not-italic relative shrink-0 text-black w-full">
       <p className="leading-[24px] relative shrink-0 text-[18px] w-full">
@@ -83,14 +88,14 @@ const ProductInfo = ({
     <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
       <div className="content-stretch flex gap-[2px] items-start leading-[20px] not-italic relative shrink-0 text-[13px] text-black w-full">
         <p className="font-['Styrene_A_Web:Medium',sans-serif] relative shrink-0 text-nowrap">
-          Product Color:
+          {t('productColor')}
         </p>
         {/*<p className="font-['Styrene_A_Web:Regular',sans-serif] relative shrink-0 w-[66px]">
           {selectedVariant?.title.split(' / ')[1]}
         </p>*/}
       </div>
       <p className="font-['Styrene_A_Web:Regular',sans-serif] leading-[20px] not-italic relative shrink-0 text-[#565656] text-[13px] w-full">
-        Color
+        {t('color')}
       </p>
       <div className="content-stretch flex gap-[20px] items-center relative shrink-0 w-full">
         {colorOptions &&
@@ -114,10 +119,10 @@ const ProductInfo = ({
     <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
       <div className="content-stretch flex items-start justify-between leading-[20px] not-italic relative shrink-0 text-[13px] text-black text-nowrap w-full">
         <p className="font-['Styrene_A_Web:Medium',sans-serif] relative shrink-0">
-          Product Size:
+          {t('productSize')}
         </p>
         <p className="[text-decoration-skip-ink:none] [text-underline-position:from-font] decoration-solid font-['Styrene_A_Web:Regular',sans-serif] relative shrink-0 text-right underline">
-          Size Chart
+          {t('sizeChart')}
         </p>
       </div>
       <div className="content-stretch flex gap-[20px] items-center relative shrink-0 w-full">
@@ -143,70 +148,65 @@ const ProductInfo = ({
     <div className="content-stretch flex flex-col gap-px items-start relative shrink-0 w-full">
       <div className="border-[#ddd] border-[0px_0px_1px] border-solid content-stretch flex gap-[10px] items-center px-0 py-[13px] relative shrink-0 w-full">
         <p className="basis-0 font-['Styrene_A_Web:Regular',sans-serif] grow leading-[20px] min-h-px min-w-px not-italic relative shrink-0 text-[13px] text-black">
-          Check In-Store Availability
+          {t('checkInStoreAvailability')}
         </p>
         <CaretDown className="overflow-clip relative shrink-0 size-[20px]" />
       </div>
       <div className="border-[#ddd] border-[0px_0px_1px] border-solid content-stretch flex gap-[10px] items-center px-0 py-[13px] relative shrink-0 w-full">
         <p className="basis-0 font-['Styrene_A_Web:Regular',sans-serif] grow leading-[20px] min-h-px min-w-px not-italic relative shrink-0 text-[13px] text-black">
-          Fit Details
+          {t('fitDetails')}
         </p>
         <CaretDown className="overflow-clip relative shrink-0 size-[20px]" />
       </div>
       <div className="border-[#ddd] border-[0px_0px_1px] border-solid content-stretch flex gap-[10px] items-center px-0 py-[13px] relative shrink-0 w-full">
-        <p className="basis-0 font-['Styrene_A_Web:Regular',sans-serif] grow leading-[20px] min-h-px min-w-px not-italic relative shrink-0 text-[13px] text-black">{`Fabrication & Care`}</p>
+        <p className="basis-0 font-['Styrene_A_Web:Regular',sans-serif] grow leading-[20px] min-h-px min-w-px not-italic relative shrink-0 text-[13px] text-black">{t('fabricationAndCare')}</p>
         <CaretDown className="overflow-clip relative shrink-0 size-[20px]" />
       </div>
       <div className="border-[#ddd] border-[0px_0px_1px] border-solid content-stretch flex gap-[10px] items-center px-0 py-[13px] relative shrink-0 w-full">
-        <p className="basis-0 font-['Styrene_A_Web:Regular',sans-serif] grow leading-[20px] min-h-px min-w-px not-italic relative shrink-0 text-[13px] text-black">{`Shipping & Returns`}</p>
+        <p className="basis-0 font-['Styrene_A_Web:Regular',sans-serif] grow leading-[20px] min-h-px min-w-px not-italic relative shrink-0 text-[13px] text-black">{t('shippingAndReturns')}</p>
         <CaretDown className="overflow-clip relative shrink-0 size-[20px]" />
       </div>
     </div>
   </div>
-);
-
-const ProductDetails = () => {
+    );
+const ProductDetails = async ({ locale }: { locale: string }) => {
+  const t = await getTranslations({ locale, namespace: 'ProductPage' });
   return (
     <div className="border-[#ddd] border-y border-solid content-stretch flex gap-[72px] items-start px-[115px] py-[67px] w-full">
       <div className="basis-0 content-stretch flex flex-col gap-[26px] grow items-start min-h-px min-w-px relative shrink-0">
         <p className="font-['Styrene_A_Web:Light',sans-serif] leading-[20px] not-italic relative shrink-0 text-[13px] text-black tracking-[0.7px] uppercase w-full">
-          DESIGN
+          {t('design')}
         </p>
         <div className="content-stretch flex flex-col font-['Styrene_A_Web:Regular',sans-serif] gap-[18px] items-start not-italic relative shrink-0 text-black w-full">
-          <p className="leading-[24px] relative shrink-0 text-[18px] w-full">{`Airy & Warm`}</p>
+          <p className="leading-[24px] relative shrink-0 text-[18px] w-full">{t('airyAndWarm')}</p>
           <p className="leading-[20px] relative shrink-0 text-[13px] w-full">
-            Our Alpaca Wool Crewneck Sweater features a bold cable knit design,
-            a comfortable crew neck, and functional side slits, perfect for
-            layering with your go-to pants.
+            {t('airyAndWarmDescription')}
           </p>
         </div>
       </div>
       <div className="basis-0 content-stretch flex flex-col gap-[26px] grow items-start min-h-px min-w-px relative shrink-0">
         <p className="font-['Styrene_A_Web:Light',sans-serif] leading-[20px] not-italic relative shrink-0 text-[13px] text-black tracking-[0.7px] uppercase w-full">
-          QUALITY
+          {t('quality')}
         </p>
         <div className="content-stretch flex flex-col font-['Styrene_A_Web:Regular',sans-serif] gap-[18px] items-start not-italic relative shrink-0 text-black w-full">
           <p className="leading-[24px] relative shrink-0 text-[18px] w-full">
-            Made in Italy
+            {t('madeInItaly')}
           </p>
           <p className="leading-[20px] relative shrink-0 text-[13px] w-full">
-            Fashioned by an Italian mill dedicated to renewable fibers,
-            following sustainable environmental and social standards established
-            by Consorzio Promozione Filati (CPF).
+            {t('madeInItalyDescription')}
           </p>
         </div>
       </div>
       <div className="basis-0 content-stretch flex flex-col gap-[26px] grow items-start min-h-px min-w-px relative shrink-0">
         <p className="font-['Styrene_A_Web:Light',sans-serif] leading-[20px] not-italic relative shrink-0 text-[13px] text-black tracking-[0.7px] uppercase w-full">
-          SUSTAINABILITY
+          {t('sustainability')}
         </p>
         <div className="content-stretch flex flex-col font-['Styrene_A_Web:Regular',sans-serif] gap-[18px] items-start not-italic relative shrink-0 text-black w-full">
           <p className="leading-[24px] relative shrink-0 text-[18px] w-full">
-            Sustainable Baby Alpaca
+            {t('sustainableBabyAlpaca')}
           </p>
           <p className="leading-[20px] relative shrink-0 text-[13px] w-full">
-            Made using highest quality Baby Alpaca from Peru (certified mulesing
-            free) and blended with a regenerated polyamide crafted for Cuyana.
+            {t('sustainableBabyAlpacaDescription')}
           </p>
         </div>
       </div>
@@ -214,7 +214,8 @@ const ProductDetails = () => {
   );
 };
 
-const ElegantEase = () => {
+const ElegantEase = async ({ locale }: { locale: string }) => {
+  const t = await getTranslations({ locale, namespace: 'ProductPage' });
   const imgImage =
     'http://localhost:3845/assets/3273dd356ee24e8d6046a3d53e72f5b4bffef30d.png';
   const imgImage1 =
@@ -224,10 +225,10 @@ const ElegantEase = () => {
     <div className="content-stretch flex flex-col gap-[48px] items-center relative w-full">
       <div className="content-stretch flex flex-col font-['Styrene_A_Web:Regular',sans-serif] gap-[16px] items-center not-italic px-0 py-[20px] relative shrink-0 text-black text-center w-full">
         <p className="leading-[32px] relative shrink-0 text-[24px] w-full">
-          Elegant Ease
+          {t('elegantEase')}
         </p>
         <p className="leading-[22px] relative shrink-0 text-[16px] w-full">
-          Inspiration for Your Essential Wardrobe
+          {t('elegantEaseDescription')}
         </p>
       </div>
       <div className="content-stretch flex gap-[20px] items-start relative shrink-0 w-full">
@@ -255,9 +256,11 @@ const ElegantEase = () => {
 export async function ProductView({
   product,
   relatedProducts,
+  locale,
 }: {
   product: ShopifyProduct;
   relatedProducts: ShopifyProduct[];
+  locale: string;
 }) {
   if (!product) throw new Error('Product not found');
   const images = product.images.edges.map((edge) => edge.node).filter(Boolean);
@@ -275,13 +278,14 @@ export async function ProductView({
           product={product}
           colorOptions={colorOptions}
           sizeOptions={sizeOptions}
+          locale={locale}
         />
       </div>
-      <ProductDetails />
-      <ElegantEase />
+      <ProductDetails locale={locale} />
+      <ElegantEase locale={locale} />
       <div className="content-stretch flex flex-col gap-[70px] items-center px-0 py-[74px] relative w-full">
         <p className="font-['Styrene_A_Web:Regular',sans-serif] leading-[26px] not-italic relative shrink-0 text-[20px] text-black text-center w-full">
-          Style With
+          {t('styleWith')}
         </p>
         <div className="content-stretch flex gap-[20px] items-start px-[153px] py-0 relative shrink-0 w-full">
           {relatedProducts.slice(0, 3).map((p) => (

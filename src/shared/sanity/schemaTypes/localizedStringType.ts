@@ -6,8 +6,8 @@ export const localizedString = defineType({
   type: 'object',
   fields: [
     {
-      name: 'en',
-      title: 'English',
+      name: 'ru',
+      title: 'Ru',
       type: 'string',
     },
     {

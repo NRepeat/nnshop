@@ -87,7 +87,7 @@ export const SearchClient = () => {
   return (
     <>
       <Button
-        className="h-full"
+        className=""
         variant="ghost"
         size="icon"
         onClick={() => setIsOpen((prev) => !prev)}

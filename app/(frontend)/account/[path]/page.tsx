@@ -10,12 +10,12 @@ export function generateStaticParams() {
 export default async function AccountPage({
   params,
 }: {
-  params: Promise<{ path: string }>;
+  params: Promise<{ path: string; locale: string }>;
 }) {
   return <></>;
-  const { path } = await params;
-  const t = await getTranslations('Settings.pages');
-  const tBetterAuth = await getTranslations('BetterAuthUI');
+  const { path, locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Settings.pages' });
+  const tBetterAuth = await getTranslations({ locale, namespace: 'BetterAuthUI' });
   const { title, description } = getPageInfo(path, t);
 
   return (

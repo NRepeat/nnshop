@@ -6,8 +6,14 @@ import Image from 'next/image';
 import { getOrder } from '@entities/order/api/getOrder';
 import { prisma } from '@shared/lib/prisma';
 
-export const Products = async ({ druftOrderId }: { druftOrderId?: string }) => {
-  const t = await getTranslations('ReceiptPage');
+export const Products = async ({
+  druftOrderId,
+  locale,
+}: {
+  druftOrderId?: string;
+  locale: string;
+}) => {
+  const t = await getTranslations({ locale, namespace: 'ReceiptPage' });
   let lines, cost: any;
   if (druftOrderId) {
     const draftOrder = await prisma.order.findUnique({

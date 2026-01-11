@@ -3,12 +3,12 @@ import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 
 type Props = {
-  params: Promise<{ slug: string[] }>;
+  params: Promise<{ slug: string[]; locale: string }>;
 };
 
 export default async function Page(props: Props) {
   const params = await props.params;
-  const { slug } = params;
+  const { slug, locale } = params;
   if (!slug || slug.length === 0) {
     return redirect('/');
   }
@@ -25,7 +25,7 @@ export default async function Page(props: Props) {
   }
   return (
     <Suspense>
-      <CheckoutView orderId={orderId} slug={slug[0]} />;
+      <CheckoutView orderId={orderId} slug={slug[0]} locale={locale} />;
     </Suspense>
   );
 }

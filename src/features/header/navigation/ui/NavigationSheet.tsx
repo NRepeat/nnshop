@@ -49,11 +49,11 @@ const NavigationSheet = ({
   };
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger className="cursor-pointer h-full  justify-center items-center hover:underline hover:text-accent-foreground  rounded-none relative size-9 hover:bg-muted flex md:hidden">
+      <SheetTrigger className="cursor-pointer h-full  justify-center items-center hover:underline hover:text-accent-foreground  rounded-none relative size-9 hover:bg-muted flex lg:hidden">
         <Menu className="max-w-5 max-h-5" />
       </SheetTrigger>
       <SheetContent side="left" className="w-full">
-        <SheetHeader className="border-b border-muted ">
+        <SheetHeader className="pt-6 px-4">
           <SheetTitle className="font-sans">{title}</SheetTitle>
         </SheetHeader>
         <InternalMenu meinMenu={meinMenu} onClose={onClose} />

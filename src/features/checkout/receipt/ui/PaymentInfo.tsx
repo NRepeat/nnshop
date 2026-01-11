@@ -5,10 +5,10 @@ import { PlaceHolder } from './PlaceHolder';
 import PaymentInfo from '@shared/assets/PaymentInfo';
 import { getTranslations } from 'next-intl/server';
 
-export default async function PaymentInfoSection() {
+export default async function PaymentInfoSection({ locale }: { locale: string }) {
   const paymentInfo = await getPaymentInfo();
-  const t = await getTranslations('PaymentForm');
-  const tr = await getTranslations('ReceiptPage');
+  const t = await getTranslations({ locale, namespace: 'PaymentForm' });
+  const tr = await getTranslations({ locale, namespace: 'ReceiptPage' });
   return (
     <>
       {paymentInfo ? (

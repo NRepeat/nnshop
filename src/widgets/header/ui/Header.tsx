@@ -2,99 +2,60 @@ import { AnnouncementBar } from '@entities/announcement-bar/announcement-bar';
 import { AccountButton } from '@features/header/account/ui/AccoutnButton';
 import CartSheet from '@features/header/cart/ui/Sheet';
 import { LanguageSwitcherSession } from '@features/header/language-switcher/ui/LanguageSwitcherSession';
-import {
+import Navigation, {
   CurrentNavigationSession,
   CurrentNavigationSessionSkilet,
 } from '@features/header/navigation/ui/Navigation';
 import { PersistLinkNavigation } from '@features/header/navigation/ui/PersistLinkNavigation';
 import NavigationSheet from '@features/header/navigation/ui/Sheet';
 import { SearchSession } from '@features/header/search/ui/search-session';
+import { HeaderContent } from '@features/header/ui/HeaderContent';
 import Logo from '@shared/assets/Logo';
+import { sanityFetch } from '@shared/sanity/lib/client';
+import { HEADER_QUERY } from '@shared/sanity/lib/query';
+import { HEADER_QUERYResult } from '@shared/sanity/types';
 import { Button } from '@shared/ui/button';
-import { Heart, Menu, Search, ShoppingCart, User2 } from 'lucide-react';
+import { Heart, Menu, Search, Send, ShoppingCart, User2 } from 'lucide-react';
+import { getLocale } from 'next-intl/server';
+import { defineQuery } from 'next-sanity';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
-export const Header = async ({ locale }: { locale: string }) => {
+export type HeaderBarProps = Extract<
+  NonNullable<HEADER_QUERYResult>['header'],
+  { _type: 'header' }
+> & { locale: string };
+
+export const Header = async ({
+  locale,
+  gender,
+}: {
+  locale: string;
+  gender: string;
+}) => {
+  const headerData = await sanityFetch({
+    query: HEADER_QUERY,
+    revalidate: 10,
+    params: { locale },
+    tags: ['siteSettings'],
+  });
   return (
     <>
-      <AnnouncementBar />
-      <header className="sticky top-0  z-30  bg-background ">
-        <div className="container ">
-          <div className="grid grid-cols-3 md:grid-cols-2  pt-5 pb-2">
-            <div className="col-span-1 hidden justify-start gap-4 md:flex">
-              <Link className="flex h-fit" href="/">
-                <Logo className="w-10 h-10" />
-              </Link>
-              <div className="w-fit flex gap-0.5">
-                <PersistLinkNavigation />
-              </div>
-            </div>
-            <Suspense
-              fallback={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-full  flex md:hidden"
-                >
-                  <Menu className="min-w-5 min-h-5" />
-                </Button>
-              }
-            >
-              <NavigationSheet />
-            </Suspense>
-            <div className="col-span-1 flex justify-center gap-1 md:hidden">
-              <Link className="flex h-fit" href="/">
-                <Logo className="w-10 h-10" />
-              </Link>
-            </div>
-            <div className="col-span-1 flex justify-end gap-1">
-              <Suspense
-                fallback={
-                  <Button variant="ghost" size="icon" className="h-full">
-                    <Search className="w-5 h-5" />
-                  </Button>
-                }
-              >
-                <SearchSession />
-              </Suspense>
-              <Suspense
-                fallback={
-                  <Button variant="ghost" size="icon" className="h-full ">
-                    <Heart />
-                  </Button>
-                }
-              >
-                <Button variant="ghost" size="icon" className="h-full ">
-                  <Heart />
-                </Button>
-              </Suspense>
-
-              <LanguageSwitcherSession className="hidden md:flex" />
-              <Suspense
-                fallback={
-                  <Button variant="ghost" size="icon" className="h-full ">
-                    <User2 />
-                  </Button>
-                }
-              >
-                <AccountButton className="hidden md:flex h-full" />
-              </Suspense>
-              <Suspense
-                fallback={
-                  <Button variant="ghost" size="icon" className="h-full">
-                    <ShoppingCart className="h-4 w-4" />
-                  </Button>
-                }
-              >
-                <CartSheet locale={locale} />
-              </Suspense>
-            </div>
-          </div>
+      {headerData?.infoBar && headerData?.header && (
+        <AnnouncementBar
+          locale={locale}
+          icon={headerData?.header?.icon}
+          categories={{ locale, ...headerData?.header }}
+          {...headerData?.infoBar}
+        />
+      )}
+      <header className="sticky top-0  z-30  bg-background">
+        {headerData?.header && (
+          <HeaderContent locale={locale} {...headerData?.header} />
+        )}
+        <div className="hidden lg:block container">
+          <Navigation locale={locale} gender={gender} />
         </div>
-        <Suspense fallback={<CurrentNavigationSessionSkilet />}>
-          <CurrentNavigationSession />
-        </Suspense>
       </header>
     </>
   );

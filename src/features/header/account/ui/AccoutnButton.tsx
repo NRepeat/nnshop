@@ -15,9 +15,15 @@ import { headers } from 'next/headers';
 import { Button } from '@shared/ui/button';
 import { cn } from '@shared/lib/utils';
 
-export const AccountButton = async ({ className }: { className?: string }) => {
+export const AccountButton = async ({
+  className,
+  locale,
+}: {
+  className?: string;
+  locale: string;
+}) => {
   const headersList = await headers();
-  const t = await getTranslations('AccountButton');
+  const t = await getTranslations({ locale, namespace: 'AccountButton' });
 
   const session = await auth.api.getSession({ headers: headersList });
   if (!session) {

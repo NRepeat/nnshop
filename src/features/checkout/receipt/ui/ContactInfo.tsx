@@ -5,9 +5,9 @@ import ContactInfo from '@shared/assets/ContactInfo';
 import { PlaceHolder } from './PlaceHolder';
 import { getTranslations } from 'next-intl/server';
 
-export default async function ContactInfoSection() {
+export default async function ContactInfoSection({ locale }: { locale: string }) {
   const contactInfo = await getContactInfo();
-  const t = await getTranslations('ReceiptPage');
+  const t = await getTranslations({ locale, namespace: 'ReceiptPage' });
   return (
     <>
       {contactInfo ? (
