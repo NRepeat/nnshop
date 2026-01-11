@@ -38,26 +38,37 @@ export const HeroBanner = (props: HeroSliderProps) => {
               >
                 {slide.image?.asset && (
                   <>
-                    <div className="md:hidden block relative w-full h-full">
+                    {/*<div className="block md:hidden  relative w-full h-full">
                       <Image
-                        src={urlFor(slide.image.asset, 600, 900).url()}
+                        src={urlFor(slide.image.asset, 600, 700).url()}
                         alt={slide.description || 'Banner mobile'}
-                        fill
+                        width={600}
+                        height={900}
                         priority={index === 0}
-                        className="object-cover"
+                        className="object-cover max-h-[500px]"
                       />
                     </div>
 
                     <div className="hidden md:block relative w-full h-full">
                       <Image
-                        src={urlFor(slide.image.asset).url()}
+                        src={urlFor(slide.image.asset, 1320, 535).url()}
                         alt={slide.description || 'Banner desktop'}
-                        width={1920}
-                        height={1080}
+                        width={1320}
+                        height={535}
                         priority={index === 0}
-                        className="object-cover max-h-[50vh]"
+                        className="object-cover"
                       />
-                    </div>
+                    </div>*/}
+                    {/*<div className="hidden lg:block relative w-full h-full">*/}
+                    <Image
+                      src={urlFor(slide.image.asset, 2560, 1040).url()}
+                      alt={slide.description || 'Banner desktop'}
+                      width={2560}
+                      height={1040}
+                      priority={index === 0}
+                      className="object-cover h-[600px] md:h-[530px] lg:h-[560px]"
+                    />
+                    {/*</div>*/}
                   </>
                 )}
 

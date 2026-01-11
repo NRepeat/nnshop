@@ -9,7 +9,7 @@ export const urlFor = (
   width?: number,
   height?: number,
 ) => {
-  let result = builder.image(source).auto('format');
+  let result = builder.image(source);
 
   if (width && height) {
     return result.width(width).height(height).fit('crop');
