@@ -6237,6 +6237,14 @@
             "value": "brandGridBlock"
           }
         },
+        "title": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "localizedString"
+          },
+          "optional": true
+        },
         "barnds": {
           "type": "objectAttribute",
           "value": {
@@ -6294,6 +6302,14 @@
                   "value": {
                     "type": "inline",
                     "name": "sanity.imageCrop"
+                  },
+                  "optional": true
+                },
+                "handle": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "inline",
+                    "name": "slug"
                   },
                   "optional": true
                 },

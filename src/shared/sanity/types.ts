@@ -1111,6 +1111,7 @@ export type AnnotationLinkEmail = {
 
 export type BrandGridBlock = {
   _type: 'brandGridBlock';
+  title?: LocalizedString;
   barnds?: Array<{
     asset?: {
       _ref: string;
@@ -1121,6 +1122,7 @@ export type BrandGridBlock = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    handle?: Slug;
     _type: 'logo';
     _key: string;
   }>;
@@ -2121,6 +2123,7 @@ export type PAGE_QUERYResult = {
     | {
         _key: string;
         _type: 'brandGridBlock';
+        title?: LocalizedString;
         barnds?: Array<{
           asset?: {
             _ref: string;
@@ -2131,6 +2134,7 @@ export type PAGE_QUERYResult = {
           media?: unknown;
           hotspot?: SanityImageHotspot;
           crop?: SanityImageCrop;
+          handle?: Slug;
           _type: 'logo';
           _key: string;
         }>;
@@ -2671,6 +2675,7 @@ export type HOME_PAGEResult = {
     | {
         _key: string;
         _type: 'brandGridBlock';
+        title?: LocalizedString;
         barnds?: Array<{
           asset?: {
             _ref: string;
@@ -2681,6 +2686,7 @@ export type HOME_PAGEResult = {
           media?: unknown;
           hotspot?: SanityImageHotspot;
           crop?: SanityImageCrop;
+          handle?: Slug;
           _type: 'logo';
           _key: string;
         }>;

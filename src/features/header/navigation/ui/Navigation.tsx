@@ -48,7 +48,6 @@ const Navigation = async ({
   gender: string;
   locale: string;
 }) => {
-  'use cache';
   const meinMenu = await getMainMenu({ gender, locale });
   const menu = meinMenu.map((item, index) => {
     if (item.items.length > 0) {

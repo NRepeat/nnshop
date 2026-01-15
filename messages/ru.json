@@ -2,6 +2,9 @@
   "HomePage": {
     "title": "Ку"
   },
+  "NavigationSheet": {
+    "accoutn": "Акаунт"
+  },
   "productCarousel": {
     "TITLE": "Продукты",
     "DESCRIPTION": "Просмотр и фильтрация продуктов",

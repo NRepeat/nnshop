@@ -16,6 +16,7 @@ import Link from 'next/link';
 
 import { LanguageSwitcher } from '@features/header/language-switcher/ui/LanguageSwitcher';
 import { Button } from '@shared/ui/button';
+import { useTranslations } from 'next-intl';
 
 const NavigationSheet = ({
   meinMenu,
@@ -42,7 +43,7 @@ const NavigationSheet = ({
   title: string;
 }) => {
   const navigate = useRouter();
-
+  const t = useTranslations('NavigationSheet');
   const [open, setOpen] = useState(false);
   const onClose = (link: string) => {
     setOpen(false);
@@ -68,7 +69,7 @@ const NavigationSheet = ({
             href={'/account'}
             className="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 pl-4 py-2.5 text-sm font-normal hover:underline"
           >
-            Акаунт
+            {t('accoutn')}
           </Link>
 
           <LanguageSwitcher align="end" />
