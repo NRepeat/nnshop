@@ -8,11 +8,7 @@ type RouteProps = {
 };
 
 export const getHomePage = async (params: RouteProps['params']) => {
-  const { locale, gender } = params;
-  const pagesSlug = {
-    man: 'man-home',
-    woman: 'woman-home',
-  };
+  const { locale } = params;
   const sanityLocale = await normalizeLocaleForSanity(locale);
   const page = await sanityFetch({
     query: HOME_PAGE,

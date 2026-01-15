@@ -1,6 +1,5 @@
 import { HeroBanner, MainCollectionGrid } from '@entities/home/ui';
 import { HOME_PAGEResult } from '@shared/sanity/types';
-import { notFound } from 'next/navigation';
 type HeroPageProps = {
   content: NonNullable<HOME_PAGEResult>['content'];
   locale: string;

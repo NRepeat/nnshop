@@ -8,7 +8,7 @@ export const mainCollectionGrid = defineType({
     {
       name: 'title',
       title: 'Title',
-      type: 'text',
+      type: 'localizedText',
     },
     {
       name: 'collections',

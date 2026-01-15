@@ -422,6 +422,7 @@ export const HOME_PAGE =
       ...,
       _type == "mainCollectionGrid" => {
            ...,
+           "title":title[$language],
            "collections": collections[]->{
              title,
              "handle": store.slug.current,
