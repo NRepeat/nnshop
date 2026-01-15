@@ -253,6 +253,9 @@ export type PageBuilder = Array<
     } & Hero)
   | ({
       _key: string;
+    } & BrandGridBlock)
+  | ({
+      _key: string;
     } & SplitImage)
   | ({
       _key: string;
@@ -1106,6 +1109,23 @@ export type AnnotationLinkEmail = {
   email?: string;
 };
 
+export type BrandGridBlock = {
+  _type: 'brandGridBlock';
+  barnds?: Array<{
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: 'logo';
+    _key: string;
+  }>;
+};
+
 export type RgbaColor = {
   _type: 'rgbaColor';
   r?: number;
@@ -1583,6 +1603,7 @@ export type AllSanitySchemaTypes =
   | Collection
   | AnnotationLinkExternal
   | AnnotationLinkEmail
+  | BrandGridBlock
   | RgbaColor
   | HsvaColor
   | HslaColor
@@ -2097,6 +2118,23 @@ export type PAGE_QUERYResult = {
   slug?: string;
   language?: string;
   content: Array<
+    | {
+        _key: string;
+        _type: 'brandGridBlock';
+        barnds?: Array<{
+          asset?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+          };
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: 'logo';
+          _key: string;
+        }>;
+      }
     | {
         _key: string;
         _type: 'collectionsCarousel';
@@ -2630,6 +2668,23 @@ export type HOME_PAGEResult = {
   slug?: string;
   language?: string;
   content: Array<
+    | {
+        _key: string;
+        _type: 'brandGridBlock';
+        barnds?: Array<{
+          asset?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+          };
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          _type: 'logo';
+          _key: string;
+        }>;
+      }
     | {
         _key: string;
         _type: 'collectionsCarousel';

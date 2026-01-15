@@ -7,6 +7,8 @@ export const pageBuilderType = defineType({
     defineArrayMember({ type: 'heroSlider' }),
     defineArrayMember({ type: 'mainCollectionGrid' }),
     defineArrayMember({ type: 'hero' }),
+    defineArrayMember({ type: 'brandGridBlock' }),
+
     defineArrayMember({ type: 'splitImage' }),
     defineArrayMember({ type: 'features' }),
     defineArrayMember({ type: 'faqs' }),

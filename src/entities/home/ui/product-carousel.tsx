@@ -27,13 +27,13 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
       <Link href={product.handle} className="h-full" key={index}>
         <div className="flex flex-col gap-3 group relative overflow-hidden h-full">
           <div className="flex justify-start w-full">
-            <div className="relative aspect-[3/4] w-full md:max-w-[80%] lg:max-w-[70%] overflow-hidden bg-gray-100">
+            <div className="relative aspect-[1/1] w-full md:max-w-[90%] lg:max-w-95%] ">
               <Image
                 src={product.media.edges[0].node.previewImage?.url}
                 alt={product.title}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 30vw, 20vw"
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                className="object-cover w-full transition-transform duration-300 group-hover:scale-105"
               />
             </div>
           </div>

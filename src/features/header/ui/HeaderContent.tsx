@@ -44,6 +44,9 @@ export const HeaderContent = async (props: HeaderContentProps) => {
         </Link>
         <HeaderOptions locale={locale} />
       </div>
+      <div className=" justify-center w-full items-center  flex md:hidden flex-row">
+        {mainCategory && <PersistLinkNavigation {...props} />}
+      </div>
     </div>
   );
 };

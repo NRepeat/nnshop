@@ -66,7 +66,7 @@ const Navigation = async ({
                 {subItem.title}
               </NavigationMenuTrigger>
               <NavigationMenuContent className="  flex  justify-between ">
-                <div className="flex w-full  pt-7  min-w-[calc(100vw)] h-[350px] ">
+                <div className="flex w-full  pt-7   h-[350px] ">
                   <div className="container w-full flex justify-between">
                     <ul className="grid h-fit gap-2 md:w-lg lg:w-3xl md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr] ">
                       {subItem.items.map((subItem) => (

@@ -38,7 +38,7 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
           <NavigationMenuItem key={link.slug} className={`flex p-0`}>
             <Link href={`/${link.slug}`}>
               <Button
-                className="rounded-none w-full  cursor-pointer  text-nowrap text-base font-300 font-sans h-full px-5 py-2"
+                className="rounded-none w-full  cursor-pointer  text-nowrap md:text-base font-300 font-sans h-full px-6 text-lg md:px-5 md:py-2"
                 variant={'ghost'}
               >
                 {link.name as any as string}

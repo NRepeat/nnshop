@@ -39,17 +39,17 @@ export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
             <>
               {col && (
                 <Link href={col?.href} key={col?.id}>
-                  <div className="flex flex-col relative group w-[370px] md:w-full ">
+                  <div className="flex flex-col relative group w-[370px] md:w-full group">
                     {col?.image && col?.image.url && (
                       <Image
                         src={col?.image.url}
                         alt={col?.title ?? ''}
-                        className="object-cover w-full   h-[375px] md:h-[450px] lg:h-[530px] max-h-[530px]"
+                        className="object-cover w-full transition-transform duration-700 ease-in-out   h-[375px] md:h-[450px] lg:h-[530px] max-h-[530px] group-hover:scale-105"
                         width={375}
                         height={598}
                       />
                     )}
-                    <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-black opacity-50"></div>
+                    <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-black opacity-20 group-hover:scale-105 transition-transform duration-700 ease-in-out "></div>
                     <h3 className="absolute bottom-5 left-5 text-background text-2xl  font-sans font-400 ">
                       {col.title}
                     </h3>

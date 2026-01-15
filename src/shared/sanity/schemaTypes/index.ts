@@ -34,11 +34,13 @@ import { productDetailsType } from './blocks/productDetailsType';
 import { heroSlide, heroSlider } from './blocks/heroSlider';
 import { infoBar } from './blocks/info-bar';
 import { headerType } from './headerType';
+import { brandGridBlock } from './blocks/brendGrid';
 
 // const blocks = [heroSlider, heroSlide, mainCollectionGrid];
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
+    brandGridBlock,
     infoBar,
     headerType,
     ...shopifySchemaTypes,

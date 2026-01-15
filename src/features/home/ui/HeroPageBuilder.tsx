@@ -4,6 +4,7 @@ import {
   MainCollectionGrid,
   ProductCarousel,
 } from '@entities/home/ui';
+import { BrandGrid } from '@entities/home/ui/BrendGrid/BrendGrid';
 import { SplitImage } from '@entities/split-image';
 import { HOME_PAGEResult } from '@shared/sanity/types';
 type HeroPageProps = {
@@ -33,6 +34,8 @@ export const HeroPageBuilder = ({ content, locale }: HeroPageProps) => {
             return <SplitImage key={block._key} locale={locale} {...block} />;
           case 'features':
             return <Features key={block._key} locale={locale} {...block} />;
+          case 'brandGridBlock':
+            return <BrandGrid key={block._key} locale={locale} {...block} />;
           default:
             return null;
         }
