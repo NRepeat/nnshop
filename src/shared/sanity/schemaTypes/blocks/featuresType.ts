@@ -4,10 +4,10 @@ export const featuresType = defineType({
   name: 'features',
   type: 'object',
   fields: [
-    defineField({
+    {
       name: 'title',
-      type: 'string',
-    }),
+      type: 'localizedString',
+    },
     defineField({
       name: 'features',
       type: 'array',
@@ -18,11 +18,11 @@ export const featuresType = defineType({
           fields: [
             defineField({
               name: 'title',
-              type: 'string',
+              type: 'localizedString',
             }),
             defineField({
               name: 'text',
-              type: 'string',
+              type: 'localizedText',
             }),
           ],
         }),

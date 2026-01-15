@@ -1,127 +1,80 @@
 import { CardCarousel } from '@entities/home/ui/cardCarousel';
 import Image from 'next/image';
 import { Link } from '@shared/i18n/navigation';
+import { HOME_PAGEResult } from '@shared/sanity/types';
+import { getCollection } from '@entities/collection/api/getCollection';
+import getSymbolFromCurrency from 'currency-symbol-map';
+type ProductCarouselGridProps = Extract<
+  NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
+  { _type: 'productCarousel' }
+> & { locale: string };
 
-const LeftImage = `https://qipmjw4uaan1zz27.public.blob.vercel-storage.com/assests/home/image/home-banner/hero-banner-left.png`;
-
-const products = [
-  {
-    node: {
-      title: 'Product 1',
-      featuredImage: {
-        url: LeftImage,
-        width: 400,
-        height: 400,
-      },
-      amount: 100,
-      currency: '$',
-    },
-  },
-  {
-    node: {
-      title: 'Product 2',
-      featuredImage: {
-        url: LeftImage,
-        width: 400,
-        height: 400,
-      },
-      amount: 100,
-      currency: '$',
-    },
-  },
-  {
-    node: {
-      title: 'Product 2',
-      featuredImage: {
-        url: LeftImage,
-        width: 400,
-        height: 400,
-      },
-      amount: 100,
-      currency: '$',
-    },
-  },
-  {
-    node: {
-      title: 'Product 2',
-      featuredImage: {
-        url: LeftImage,
-        width: 400,
-        height: 400,
-      },
-      amount: 100,
-      currency: '$',
-    },
-  },
-];
-
-export const ProductCarousel = () => {
-  const items = products.map((product, index) => {
+export const ProductCarousel = async (props: ProductCarouselGridProps) => {
+  const { collection, locale, title } = props;
+  const collectionHandle = collection?.handle;
+  if (!collectionHandle) return null;
+  const shopifyCollection = await getCollection({
+    handle: collectionHandle,
+    first: 12,
+    locale,
+  });
+  if (!shopifyCollection) return null;
+  const products = shopifyCollection.collection?.products.edges.map(
+    (edge) => edge.node,
+  );
+  const items = products?.map((product, index) => {
     return (
-      <Link href={product.node.title}>
-        <div
-          key={index}
-          className="flex flex-col gap-3 group relative overflow-hidden group"
-          // onMouseOver={() => setExpandedIndex(isExpanded ? null : index)}
-        >
-          <div className="flex-col flex relative overflow-hidden">
-            <Image
-              src={product.node.featuredImage?.url}
-              alt={product.node.title}
-              className="w-full h-full object-cover"
-              width={400}
-              height={400}
-            />
-
-            {/*<motion.div
-              initial={false}
-              animate={{
-                height: isExpanded ? '50%' : '48px',
-                backgroundColor: isExpanded
-                  ? 'rgba(255, 255, 255, 0.9)'
-                  : 'rgba(255, 255, 255, 0)',
-              }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="absolute bottom-0 left-0 right-0 flex flex-col  justify-center overflow-hidden backdrop-blur-sm items-end group-hover:opacity-100 opacity-0"
-            >
-              <Button
-                variant="link"
-                size="icon"
-                className="hover:bg-transparent"
-                onMouseDown={handleButtonClick}
-              >
-                <motion.div
-                  animate={{ rotate: isExpanded ? 45 : 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <PlusIcon className="min-w-6 min-h-6" />
-                </motion.div>
-              </Button>
-
-              <AnimatePresence>
-                {isExpanded && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    className="p-4 text-center"
-                  >
-                    <p className="font-bold">Quick Add to Cart</p>
-                    <Button className="mt-2 w-full">Add to Bag</Button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>*/}
+      <Link href={product.handle} className="h-full" key={index}>
+        <div className="flex flex-col gap-3 group relative overflow-hidden h-full">
+          <div className="flex justify-start w-full">
+            <div className="relative aspect-[3/4] w-full md:max-w-[80%] lg:max-w-[70%] overflow-hidden bg-gray-100">
+              <Image
+                src={product.media.edges[0].node.previewImage?.url}
+                alt={product.title}
+                fill
+                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 30vw, 20vw"
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+            </div>
           </div>
 
-          <div className="flex flex-col gap-0.5">
-            <p className="text-start font-sans text-base group-hover:underline">
-              {product.node.title}
+          <div className="flex flex-col flex-grow">
+            <p className="text-start font-sans text-base group-hover:underline line-clamp-2 min-h-[3rem] mb-1">
+              {product.title}
             </p>
-            <p className="font-400 text-xs">
-              {product.node.currency}
-              {product.node.amount}
-            </p>
+            <div className="mt-auto">
+              {product.metafield && product.metafield.key === 'znizka' ? (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="line-through text-gray-500 text-xs">
+                    {product.priceRange.maxVariantPrice.amount}{' '}
+                    {getSymbolFromCurrency(
+                      product.priceRange.maxVariantPrice.currencyCode,
+                    ) || product.priceRange.maxVariantPrice.currencyCode}
+                  </span>
+
+                  <span className="text-red-600 font-bold text-sm">
+                    {(
+                      product.priceRange.maxVariantPrice.amount *
+                      (1 - parseFloat(product.metafield.value) / 100)
+                    ).toFixed(2)}{' '}
+                    {getSymbolFromCurrency(
+                      product.priceRange.maxVariantPrice.currencyCode,
+                    ) || product.priceRange.maxVariantPrice.currencyCode}
+                  </span>
+
+                  <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
+                    -{product.metafield.value}%
+                  </span>
+                </div>
+              ) : (
+                <span className="font-bold text-sm">
+                  {product.priceRange.maxVariantPrice.amount}{' '}
+                  {getSymbolFromCurrency(
+                    product.priceRange.maxVariantPrice.currencyCode,
+                  ) || product.priceRange.maxVariantPrice.currencyCode}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </Link>
@@ -131,7 +84,7 @@ export const ProductCarousel = () => {
   return (
     <div className="product-carousel container">
       <div className="py-8 flex flex-col gap-12">
-        <p className="px-4 text-xl font-400">What to Wear Now</p>
+        <p className="px-4 text-xl font-400">{title as unknown as string}</p>
         <CardCarousel
           items={items}
           scrollable={false}

@@ -18,12 +18,18 @@ export const splitImageType = defineType({
       name: 'title',
       type: 'localizedString',
     }),
-    defineField({
-      name: 'link',
-      type: 'array',
-      of: [{ type: 'linkInternal' }, { type: 'linkExternal' }],
-      validation: (Rule) => Rule.max(1),
-    }),
+    {
+      name: 'collection',
+      title: 'Collection',
+      type: 'reference',
+      to: [{ type: 'collection' }],
+    },
+    // defineField({
+    //   name: 'link',
+    //   type: 'array',
+    //   of: [{ type: 'linkInternal' }, { type: 'linkExternal' }],
+    //   validation: (Rule) => Rule.max(1),
+    // }),
     defineField({
       name: 'image',
       type: 'image',

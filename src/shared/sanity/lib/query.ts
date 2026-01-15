@@ -428,9 +428,38 @@ export const HOME_PAGE =
              "handle": store.slug.current,
              "id": store.id
            }
-           }
+        },
+        _type == "productCarousel" => {
+             ...,
+             "title":title[$language],
+             "collection": collection->{
+               title,
+               "handle": store.slug.current,
+               "id": store.id
+             }
+          },
+          _type == "splitImage" => {
+               ...,
+               "title":title[$language],
+               "collection": collection->{
+                 title,
+                 "handle": store.slug.current,
+                 "id": store.id
+               }
+            },
+            _type == "features" => {
+              _key,
+              _type,
+              "features": features[] {
+                _key,
+                _type,
+                "title":title[$language],
+                "text":text[$language],
+              }
+            }
     }
   }`);
+
 export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
     homePageMan->{
       ...,

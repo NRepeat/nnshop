@@ -21,7 +21,5 @@ export const getHomePage = async (params: RouteProps['params']) => {
   });
   console.log('sanityLocale', page, sanityLocale, params.gender);
 
-  // if (!page) throw new Error('Page not found');
-
   return page;
 };

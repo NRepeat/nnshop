@@ -10,12 +10,12 @@ export const productCarousel = defineType({
       title: 'Title',
       type: 'localizedString',
     },
-    {
-      name: 'products',
-      title: 'Products',
-      type: 'array',
-      of: [{ type: 'reference', to: [{ type: 'product' }] }],
-    },
+    // {
+    //   name: 'products',
+    //   title: 'Products',
+    //   type: 'array',
+    //   of: [{ type: 'reference', to: [{ type: 'product' }] }],
+    // },
     {
       name: 'collection',
       title: 'Collection',
@@ -23,23 +23,23 @@ export const productCarousel = defineType({
       to: [{ type: 'collection' }],
     },
 
-    {
-      name: 'enableAction',
-      title: 'Enable Action',
-      type: 'boolean',
-    },
-    {
-      name: 'actionName',
-      title: 'Action Name',
-      type: 'localizedString',
-      hidden: ({ parent }) => !parent?.enableAction,
-    },
-    {
-      name: 'actionLink',
-      title: 'Action Link',
-      type: 'localizedString',
-      hidden: ({ parent }) => !parent?.enableAction,
-    },
+    // {
+    //   name: 'enableAction',
+    //   title: 'Enable Action',
+    //   type: 'boolean',
+    // },
+    // {
+    //   name: 'actionName',
+    //   title: 'Action Name',
+    //   type: 'localizedString',
+    //   hidden: ({ parent }) => !parent?.enableAction,
+    // },
+    // {
+    //   name: 'actionLink',
+    //   title: 'Action Link',
+    //   type: 'localizedString',
+    //   hidden: ({ parent }) => !parent?.enableAction,
+    // },
   ],
   preview: {
     select: {

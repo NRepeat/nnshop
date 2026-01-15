@@ -57,6 +57,11 @@ const GetCollectionWithProducts = `
             vendor
             totalInventory
             tags
+            metafield(namespace:"custom",key:"znizka"){
+                       value
+                       namespace
+                       key
+            }
             variants(first: 250) {
               edges {
                 node {
@@ -320,6 +325,5 @@ export const getCollection = async ({
     },
     language: locale.toUpperCase() as StorefrontLanguageCode,
   });
-  console.log(collection);
   return collection as GetCollectionQuery;
 };
