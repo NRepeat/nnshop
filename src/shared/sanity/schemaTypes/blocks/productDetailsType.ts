@@ -6,6 +6,11 @@ export const productDetailsType = defineType({
   type: 'object',
   fields: [
     defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'localizedString',
+    }),
+    defineField({
       name: 'details',
       title: 'Details',
       type: 'array',
@@ -31,4 +36,15 @@ export const productDetailsType = defineType({
       ],
     }),
   ],
+  preview: {
+    select: {
+      title: 'title',
+    },
+    prepare({ title }) {
+      return {
+        title: title?.en || title?.uk || title?.ru,
+        subtitle: 'Product Details',
+      };
+    },
+  },
 });

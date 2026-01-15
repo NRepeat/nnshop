@@ -41,7 +41,7 @@ export const collectionsCarousel = defineType({
     },
     prepare({ title }) {
       return {
-        title: title.en,
+        title: title?.en || title?.uk || title?.ru,
         subtitle: 'Collections Carousel',
       };
     },

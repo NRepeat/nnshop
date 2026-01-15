@@ -36,7 +36,7 @@ export const featuresType = defineType({
     },
     prepare({ title }) {
       return {
-        title,
+        title: title?.en || title?.uk || title?.ru,
         subtitle: 'Features',
       };
     },

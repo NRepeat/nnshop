@@ -44,7 +44,7 @@ export const sliderBlock = defineField({
     },
     prepare({ title, media }) {
       return {
-        title: title?.en,
+        title: title?.en || title?.uk || title?.ru,
         subtitle: 'Slider',
         media: media,
       };

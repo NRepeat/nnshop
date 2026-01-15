@@ -52,4 +52,15 @@ export const collectionsWithPreviews = defineType({
       },
     }),
   ],
+  preview: {
+    select: {
+      title: 'title',
+    },
+    prepare({ title }) {
+      return {
+        title: title?.en || title?.uk || title?.ru,
+        subtitle: 'Collections With Previews',
+      };
+    },
+  },
 });

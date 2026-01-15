@@ -18,13 +18,9 @@ export const mainCollectionGrid = defineType({
     },
   ],
   preview: {
-    select: {
-      title: 'title',
-    },
-    prepare({ title }) {
+    prepare() {
       return {
-        title: title,
-        subtitle: 'Main Collection Grid',
+        title: 'Main Collection Grid',
       };
     },
   },

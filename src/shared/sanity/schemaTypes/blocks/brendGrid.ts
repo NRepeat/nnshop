@@ -33,4 +33,15 @@ export const brandGridBlock = defineType({
       },
     }),
   ],
+  preview: {
+    select: {
+      title: 'title',
+    },
+    prepare({ title }) {
+      return {
+        title: title?.en || title?.uk || title?.ru,
+        subtitle: 'Brand Grid Block',
+      };
+    },
+  },
 });

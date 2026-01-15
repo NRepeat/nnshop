@@ -8,7 +8,18 @@ export const productCommentsType = defineType({
     {
       name: 'title',
       title: 'Title',
-      type: 'string',
+      type: 'localizedString',
     },
   ],
+  preview: {
+    select: {
+      title: 'title',
+    },
+    prepare({ title }) {
+      return {
+        title: title?.en || title?.uk || title?.ru,
+        subtitle: 'Product Comments',
+      };
+    },
+  },
 });
