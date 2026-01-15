@@ -28,7 +28,9 @@ export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
   return (
     <div className="main-collection-grid flex flex-col container">
       <div className="gap-12 flex flex-col py-8">
-        {title && <p className="pl-4 font-400 text-xl">{title}</p>}
+        {title && (
+          <p className="pl-4 font-400 text-xl pt-4 max-w-4xl">{title}</p>
+        )}
 
         <div className="flex flex-col gap-5 md:grid md:grid-cols-3 items-center">
           {resolvedCollections.map((col) => (
