@@ -31,7 +31,10 @@ export const HeroBanner = (props: HeroSliderProps) => {
       >
         <CarouselContent className="ml-0 ">
           {slides.map((slide, index) => (
-            <CarouselItem key={index} className="pl-0 relative w-full ">
+            <CarouselItem
+              key={index}
+              className="pl-0 relative w-full text-pretty font-light leading-tight tracking-tight text-left text-2xl md:text-4xl"
+            >
               <Link
                 href={slide?.link?.url ?? '/'}
                 className="group relative flex w-full h-full justify-center"
@@ -81,14 +84,14 @@ export const HeroBanner = (props: HeroSliderProps) => {
                     </h2>
                   )}
 
-                  {slide.link && (
+                  {/*{slide.link && (
                     <Button
                       variant="secondary"
                       className="w-fit min-w-[160px] h-12 md:h-14 text-sm md:text-base uppercase tracking-widest transition-transform group-hover:scale-105"
                     >
                       Shop now
                     </Button>
-                  )}
+                  )}*/}
                 </div>
               </Link>
             </CarouselItem>

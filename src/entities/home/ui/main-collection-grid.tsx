@@ -29,7 +29,7 @@ export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
     <div className="main-collection-grid flex flex-col container">
       <div className="gap-12 flex flex-col py-8">
         {title && (
-          <p className="pl-4 font-400 text-xl pt-4 max-w-4xl">
+          <p className="pl-4 l pt-4 max-w-4xl text-pretty font-light leading-tight tracking-tight text-left text-lg md:text-3xl">
             {title as any as string}
           </p>
         )}

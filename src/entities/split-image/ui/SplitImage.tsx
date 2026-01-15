@@ -64,27 +64,29 @@ export async function SplitImage(props: SplitGridProps) {
   );
 
   return (
-    <section className=" px-4 py-8 md:py-24 mt-6">
-      <div
-        className="flex flex-col gap-8 md:flex-row md:items-center data-[orientation='imageRight']:md:flex-row-reverse"
-        data-orientation={stegaClean(orientation) || 'imageLeft'}
-      >
-        <div className="relative aspect-[4/5] w-full overflow-hidden md:aspect-auto md:h-[600px] md:w-2/3">
-          {linkUrl && linkUrl.handle ? (
-            <Link href={linkUrl.handle} className="block h-full w-full">
-              {ImageComponent}
-            </Link>
-          ) : (
-            ImageComponent
-          )}
+    <section className="container  ">
+      <div className="py-8 md:py-8">
+        <div
+          className="flex flex-col gap-8 md:flex-row md:items-center data-[orientation='imageRight']:md:flex-row-reverse"
+          data-orientation={stegaClean(orientation) || 'imageLeft'}
+        >
+          <div className="relative aspect-[4/5] w-full overflow-hidden md:aspect-auto md:h-[600px] md:w-2/3">
+            {linkUrl && linkUrl.handle ? (
+              <Link href={linkUrl.handle} className="block h-full w-full">
+                {ImageComponent}
+              </Link>
+            ) : (
+              ImageComponent
+            )}
 
-          <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[2px] md:hidden">
-            <TextContent mobile />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[2px] md:hidden">
+              <TextContent mobile />
+            </div>
           </div>
-        </div>
 
-        <div className="hidden w-full md:flex md:w-1/3 md:pl-12 data-[orientation='imageRight']:md:pl-0 data-[orientation='imageRight']:md:pr-12">
-          <TextContent />
+          <div className="hidden w-full md:flex md:w-1/3 md:pl-12 data-[orientation='imageRight']:md:pl-0 data-[orientation='imageRight']:md:pr-12">
+            <TextContent />
+          </div>
         </div>
       </div>
     </section>
