@@ -499,5 +499,13 @@
   "FavoritesPage": {
     "title": "Избранное",
     "empty": "У вас еще нет избранных товаров."
+  },
+  "Search": {
+    "placeholder": "Поиск...",
+    "searchButton": "Поиск",
+    "results": "{count, plural, one {# результат} few {# результата} many {# результатов} other {# результата}}",
+    "viewAll": "Посмотреть все",
+    "noResults": "Ничего не найдено",
+    "tryAgain": "Попробуйте поискать что-нибудь еще."
   }
 }

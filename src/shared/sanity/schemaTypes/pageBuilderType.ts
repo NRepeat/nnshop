@@ -20,6 +20,7 @@ export const pageBuilderType = defineType({
     defineArrayMember({ type: 'productDetails' }),
     defineArrayMember({ type: 'elegantEase' }),
     defineArrayMember({ type: 'productComments' }),
+    defineArrayMember({ type: 'collectionsWithPreviews' }),
   ],
   options: {
     insertMenu: {

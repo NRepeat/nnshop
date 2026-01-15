@@ -35,11 +35,13 @@ import { heroSlide, heroSlider } from './blocks/heroSlider';
 import { infoBar } from './blocks/info-bar';
 import { headerType } from './headerType';
 import { brandGridBlock } from './blocks/brendGrid';
+import { collectionsWithPreviews } from './blocks/collection-with-images';
 
 // const blocks = [heroSlider, heroSlide, mainCollectionGrid];
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
+    collectionsWithPreviews,
     brandGridBlock,
     infoBar,
     headerType,

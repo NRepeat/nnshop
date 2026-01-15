@@ -524,5 +524,13 @@
   "FavoritesPage": {
     "title": "Favorites",
     "empty": "You have no favorite products yet."
+  },
+  "Search": {
+    "placeholder": "Search...",
+    "searchButton": "Search",
+    "results": "{count, plural, one {# result} other {# results} zero {# results}}",
+    "viewAll": "View all",
+    "noResults": "No results found",
+    "tryAgain": "Try searching for something else."
   }
 }

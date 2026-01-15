@@ -4,6 +4,7 @@ import { Search, X, PlusIcon, SearchIcon } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { useDebounce } from 'use-debounce';
 import { PredictiveSearchQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { useRouter } from 'next/navigation';
@@ -22,6 +23,7 @@ type PredictiveSearchResult = NonNullable<
 >;
 
 export const SearchClient = ({ className }: { className?: string }) => {
+  const t = useTranslations('Search');
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [debouncedQuery] = useDebounce(query, 500);
@@ -127,7 +129,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
                         handleSearch();
                       }
                     }}
-                    placeholder="Search..."
+                    placeholder={t('placeholder')}
                     className="flex-1 bg-transparent border-none outline-none text-xl"
                   />
                   <Button
@@ -137,7 +139,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
                   >
                     <X className="w-6 h-6" />
                   </Button>
-                  <Button onClick={handleSearch}>Search</Button>
+                  <Button onClick={handleSearch}>{t('searchButton')}</Button>
                 </div>
 
                 {/* Results Section */}
@@ -163,13 +165,17 @@ export const SearchClient = ({ className }: { className?: string }) => {
                     className="py-8"
                   >
                     <div className="flex justify-between items-center mb-6 text-sm text-gray-500">
-                      <span>{results.products?.length} results</span>
+                      <span>
+                        {t.rich('results', {
+                          count: results.products?.length,
+                        })}
+                      </span>
                       <Link
                         href="/search"
                         className="underline"
                         onClick={() => setIsOpen(false)}
                       >
-                        View all
+                        {t('viewAll')}
                       </Link>
                     </div>
 
@@ -221,10 +227,8 @@ export const SearchClient = ({ className }: { className?: string }) => {
                         <EmptyMedia variant="icon">
                           <SearchIcon />
                         </EmptyMedia>
-                        <EmptyTitle>No results found</EmptyTitle>
-                        <EmptyDescription>
-                          Try searching for something else.
-                        </EmptyDescription>
+                        <EmptyTitle>{t('noResults')}</EmptyTitle>
+                        <EmptyDescription>{t('tryAgain')}</EmptyDescription>
                       </EmptyHeader>
                     </Empty>
                   )}
