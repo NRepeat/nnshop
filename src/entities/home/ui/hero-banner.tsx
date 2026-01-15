@@ -19,7 +19,7 @@ export const HeroBanner = (props: HeroSliderProps) => {
   if (!slides || slides.length === 0) return null;
 
   return (
-    <div className="hero-banner relative w-full overflow-hidden">
+    <div className="hero-banner relative w-full overflow-hidden mx-auto 3xl:max-w-400">
       <Carousel
         opts={{ loop: true, active: true }}
         plugins={[
@@ -29,12 +29,12 @@ export const HeroBanner = (props: HeroSliderProps) => {
           }),
         ]}
       >
-        <CarouselContent className="ml-0">
+        <CarouselContent className="ml-0 ">
           {slides.map((slide, index) => (
             <CarouselItem key={index} className="pl-0 relative w-full ">
               <Link
                 href={slide?.link?.url ?? '/'}
-                className="group relative block w-full h-full"
+                className="group relative flex w-full h-full justify-center"
               >
                 {slide.image?.asset && (
                   <>

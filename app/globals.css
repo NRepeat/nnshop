@@ -132,7 +132,7 @@
 
 @media (min-width: 48rem) {
   .container {
-    max-width: 95%;
+    max-width: 100rem;
     padding: 0 5px;
   }
 }

@@ -30,17 +30,17 @@ export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
       <div className="gap-12 flex flex-col py-8">
         {title && <p className="pl-4 font-400 text-xl">{title}</p>}
 
-        <div className="flex flex-col gap-5 md:grid md:grid-cols-3">
+        <div className="flex flex-col gap-5 md:grid md:grid-cols-3 items-center">
           {resolvedCollections.map((col) => (
             <>
               {col && (
                 <Link href={col?.href} key={col?.id}>
-                  <div className="flex flex-col? relative group ">
+                  <div className="flex flex-col relative group w-[370px] md:w-full ">
                     {col?.image && col?.image.url && (
                       <Image
                         src={col?.image.url}
                         alt={col?.title ?? ''}
-                        className="object-cover w-full h-full md:h-[400px] max-h-[598px]"
+                        className="object-cover w-full   h-[375px] md:h-[450px] lg:h-[530px] max-h-[530px]"
                         width={375}
                         height={598}
                       />
