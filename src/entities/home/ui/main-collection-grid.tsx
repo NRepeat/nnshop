@@ -36,7 +36,7 @@ export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
 
         <div className="flex flex-col gap-5 md:grid md:grid-cols-3 items-center">
           {resolvedCollections.map((col) => (
-            <>
+            <div key={col?.id}>
               {col && (
                 <Link href={col?.href} key={col?.id}>
                   <div className="flex flex-col relative group w-[370px] md:w-full group">
@@ -56,7 +56,7 @@ export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
                   </div>
                 </Link>
               )}
-            </>
+            </div>
           ))}
         </div>
       </div>

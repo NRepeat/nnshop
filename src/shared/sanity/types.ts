@@ -56,16 +56,17 @@ export type HeroSlide = {
 
 export type ProductComments = {
   _type: 'productComments';
-  title?: string;
+  title?: LocalizedString;
 };
 
 export type ElegantEase = {
   _type: 'elegantEase';
-  title?: string;
+  title?: LocalizedString;
 };
 
 export type ProductDetails = {
   _type: 'productDetails';
+  title?: LocalizedString;
   details?: Array<{
     title?: string;
     heading?: string;
@@ -287,6 +288,9 @@ export type PageBuilder = Array<
   | ({
       _key: string;
     } & ProductComments)
+  | ({
+      _key: string;
+    } & CollectionsWithPreviews)
 >;
 
 export type Seo = {
@@ -1128,6 +1132,33 @@ export type BrandGridBlock = {
   }>;
 };
 
+export type CollectionsWithPreviews = {
+  _type: 'collectionsWithPreviews';
+  title?: LocalizedString;
+  collectionName?: string;
+  previews?: Array<{
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    handle?: Slug;
+    _type: 'preview';
+    _key: string;
+  }>;
+  collections?: Array<{
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: 'collection';
+  }>;
+};
+
 export type RgbaColor = {
   _type: 'rgbaColor';
   r?: number;
@@ -1606,6 +1637,7 @@ export type AllSanitySchemaTypes =
   | AnnotationLinkExternal
   | AnnotationLinkEmail
   | BrandGridBlock
+  | CollectionsWithPreviews
   | RgbaColor
   | HsvaColor
   | HslaColor
@@ -2161,6 +2193,33 @@ export type PAGE_QUERYResult = {
       }
     | {
         _key: string;
+        _type: 'collectionsWithPreviews';
+        title?: LocalizedString;
+        collectionName?: string;
+        previews?: Array<{
+          asset?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+          };
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          handle?: Slug;
+          _type: 'preview';
+          _key: string;
+        }>;
+        collections?: Array<{
+          _ref: string;
+          _type: 'reference';
+          _weak?: boolean;
+          _key: string;
+          [internalGroqTypeReferenceTo]?: 'collection';
+        }>;
+      }
+    | {
+        _key: string;
         _type: 'contentPageBlock';
         body: {
           en: Array<
@@ -2426,7 +2485,7 @@ export type PAGE_QUERYResult = {
     | {
         _key: string;
         _type: 'elegantEase';
-        title?: string;
+        title?: LocalizedString;
       }
     | {
         _key: string;
@@ -2539,11 +2598,12 @@ export type PAGE_QUERYResult = {
     | {
         _key: string;
         _type: 'productComments';
-        title?: string;
+        title?: LocalizedString;
       }
     | {
         _key: string;
         _type: 'productDetails';
+        title?: LocalizedString;
         details?: Array<{
           title?: string;
           heading?: string;
@@ -2661,7 +2721,7 @@ export type PAGE_QUERYResult = {
   };
 } | null;
 // Variable: HOME_PAGE
-// Query: *[_type == "page" && slug == $slug  && language == $language][0]{    ...,    "_translations": *[_type == "translation.metadata" && references(^._id)].translations[].value->{      title,      slug,      language    },    "seo": {    "title": coalesce(seo.title, title, ""),      "description": coalesce(seo.description,  ""),      "image": seo.image,      "noIndex": seo.noIndex == true     },    content[]{      ...,      _type == "mainCollectionGrid" => {           ...,           "title":title[$language],           "collections": collections[]->{             title,             "handle": store.slug.current,             "id": store.id           }        },        _type == "productCarousel" => {             ...,             "title":title[$language],             "collection": collection->{               title,               "handle": store.slug.current,               "id": store.id             }          },          _type == "splitImage" => {               ...,               "title":title[$language],               "collection": collection->{                 title,                 "handle": store.slug.current,                 "id": store.id               }            },            _type == "features" => {              _key,              _type,              "features": features[] {                _key,                _type,                "title":title[$language],                "text":text[$language],              }            }    }  }
+// Query: *[_type == "page" && slug == $slug  && language == $language][0]{    ...,    "_translations": *[_type == "translation.metadata" && references(^._id)].translations[].value->{      title,      slug,      language    },    "seo": {    "title": coalesce(seo.title, title, ""),      "description": coalesce(seo.description,  ""),      "image": seo.image,      "noIndex": seo.noIndex == true     },    content[]{      ...,      _type == "mainCollectionGrid" => {           ...,           "title":title[$language],           "collections": collections[]->{             title,             "handle": store.slug.current,             "id": store.id           }        },        _type == "productCarousel" => {             ...,             "title":title[$language],             "collection": collection->{               title,               "handle": store.slug.current,               "id": store.id             }          },          _type == "splitImage" => {               ...,               "title":title[$language],               "collection": collection->{                 title,                 "handle": store.slug.current,                 "id": store.id               }            },            _type == "features" => {              _key,              _type,              "features": features[] {                _key,                _type,                "title":title[$language],                "text":text[$language],              }            },            _type == "collectionsWithPreviews" => {              _key,              _type,              "title":title[$language],              "collections": collections[]->{                title,                "handle": store.slug.current,                "id": store.id              }            }    }  }
 export type HOME_PAGEResult = {
   _id: string;
   _type: 'page';
@@ -2708,13 +2768,42 @@ export type HOME_PAGEResult = {
       }
     | {
         _key: string;
+        _type: 'collectionsWithPreviews';
+        title: Array<{
+          _type: 'localizedString';
+          ru?: string;
+          uk?: string;
+        }> | null;
+        collectionName?: string;
+        previews?: Array<{
+          asset?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+          };
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          handle?: Slug;
+          _type: 'preview';
+          _key: string;
+        }>;
+        collections: Array<{
+          title: null;
+          handle: string | null;
+          id: number | null;
+        }> | null;
+      }
+    | {
+        _key: string;
         _type: 'contentPageBlock';
         body?: LocalizedBlockContent;
       }
     | {
         _key: string;
         _type: 'elegantEase';
-        title?: string;
+        title?: LocalizedString;
       }
     | {
         _key: string;
@@ -2834,11 +2923,12 @@ export type HOME_PAGEResult = {
     | {
         _key: string;
         _type: 'productComments';
-        title?: string;
+        title?: LocalizedString;
       }
     | {
         _key: string;
         _type: 'productDetails';
+        title?: LocalizedString;
         details?: Array<{
           title?: string;
           heading?: string;
@@ -3110,7 +3200,7 @@ declare module '@sanity/client' {
     '*[_type == "post" && defined(slug.current) && (language == "en" || !defined(language))] | order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_EN_FALLBACK_QUERYResult;
     '*[_type == "post" && slug.current == $slug && (language == "en" || !defined(language))][0]{\n  _id,\n  title,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  },\n  relatedPosts[]{\n    _key,\n    ...@->{_id, title, slug, language}\n  },\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n}': POST_WITH_FALLBACK_QUERYResult;
     '*[_type == "page" && slug.current == $slug][0]{\n  ...,\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n  content[]{\n    ...,\n    _type == "contentPageBlock" => {\n      body {\n        en[]{\n          ...,\n          markDefs[]{\n            ...,\n            _type == "link" => {\n              ...,\n              "href": @.href,\n            }\n          }\n        },\n        uk[]{\n          ...,\n          markDefs[]{\n            ...,\n            _type == "link" => {\n              ...,\n              "href": @.href,\n            }\n          }\n        }\n      }\n    },\n    _type == "similarProducts" => {\n      collection -> {\n        _id,\n        title,\n        store{\n         imageUrl,\n         isDeleted,\n         slug{\n         current\n         },\n         title\n        }\n      }\n    },\n    _type == "sliderBlock" => {\n      slides[]{\n         ...,\n        _key,\n        link[]{\n         ...,\n         reference->{\n           _id,\n           _type,\n           title,\n           "slug": select(\n             _type == "product" => store.slug.current,\n             _type == "collection" => store.slug.current,\n             _type == "page" => slug.current\n           )\n         }\n       },\n        backgroundImage{\n          asset->{\n            _id,\n            url,\n            metadata{dimensions}\n          }\n        }\n      }\n    },\n    _type == "productCarousel" => {\n      products[]->{\n        _id,\n        store{\n          title,\n          isDeleted,\n          previewImageUrl,\n          priceRange{\n          maxVariantPrice,\n          minVariantPrice\n          },\n          productType\n        }\n      },\n      collection -> {\n        _id,\n        title,\n        store{\n         imageUrl,\n         isDeleted,\n         slug{\n         current\n         },\n         title\n        }\n      }\n    },\n    _type == "collectionsCarousel" => {\n      collections[]->{\n        _id,\n        title,\n        store{\n         imageUrl,\n         isDeleted,\n         slug{\n         current\n         },\n         title\n        }\n      }\n    },\n    _type == "splitImage" => {\n      ...,\n      link[]{\n        ...,\n        reference->{\n          _id,\n          _type,\n          title,\n          "slug": select(\n            _type == "product" => store.slug.current,\n            _type == "collection" => store.slug.current,\n            _type == "page" => slug.current\n          )\n        }\n      }\n    },\n    _type == "faqs" => {\n      ...,\n      faqs[]->{\n        _id,\n        title,\n        body,\n        "text": pt::text(body)\n      }\n    }\n  }\n}': PAGE_QUERYResult;
-    '*[_type == "page" && slug == $slug  && language == $language][0]{\n    ...,\n    "_translations": *[_type == "translation.metadata" && references(^._id)].translations[].value->{\n      title,\n      slug,\n      language\n    },\n    "seo": {\n    "title": coalesce(seo.title, title, ""),\n      "description": coalesce(seo.description,  ""),\n      "image": seo.image,\n      "noIndex": seo.noIndex == true\n     },\n    content[]{\n      ...,\n      _type == "mainCollectionGrid" => {\n           ...,\n           "title":title[$language],\n           "collections": collections[]->{\n             title,\n             "handle": store.slug.current,\n             "id": store.id\n           }\n        },\n        _type == "productCarousel" => {\n             ...,\n             "title":title[$language],\n             "collection": collection->{\n               title,\n               "handle": store.slug.current,\n               "id": store.id\n             }\n          },\n          _type == "splitImage" => {\n               ...,\n               "title":title[$language],\n               "collection": collection->{\n                 title,\n                 "handle": store.slug.current,\n                 "id": store.id\n               }\n            },\n            _type == "features" => {\n              _key,\n              _type,\n              "features": features[] {\n                _key,\n                _type,\n                "title":title[$language],\n                "text":text[$language],\n              }\n            }\n    }\n  }': HOME_PAGEResult;
+    '*[_type == "page" && slug == $slug  && language == $language][0]{\n    ...,\n    "_translations": *[_type == "translation.metadata" && references(^._id)].translations[].value->{\n      title,\n      slug,\n      language\n    },\n    "seo": {\n    "title": coalesce(seo.title, title, ""),\n      "description": coalesce(seo.description,  ""),\n      "image": seo.image,\n      "noIndex": seo.noIndex == true\n     },\n    content[]{\n      ...,\n      _type == "mainCollectionGrid" => {\n           ...,\n           "title":title[$language],\n           "collections": collections[]->{\n             title,\n             "handle": store.slug.current,\n             "id": store.id\n           }\n        },\n        _type == "productCarousel" => {\n             ...,\n             "title":title[$language],\n             "collection": collection->{\n               title,\n               "handle": store.slug.current,\n               "id": store.id\n             }\n          },\n          _type == "splitImage" => {\n               ...,\n               "title":title[$language],\n               "collection": collection->{\n                 title,\n                 "handle": store.slug.current,\n                 "id": store.id\n               }\n            },\n            _type == "features" => {\n              _key,\n              _type,\n              "features": features[] {\n                _key,\n                _type,\n                "title":title[$language],\n                "text":text[$language],\n              }\n            },\n            _type == "collectionsWithPreviews" => {\n              _key,\n              _type,\n              "title":title[$language],\n              "collections": collections[]->{\n                title,\n                "handle": store.slug.current,\n                "id": store.id\n              }\n            }\n    }\n  }': HOME_PAGEResult;
     '*[_id == "siteSettings" ][0]{\n    homePageMan->{\n      ...,\n      content[]{\n        ...,\n        _id,\n        _type == "sliderBlock" => {\n          slides[]{\n             ...,\n            _key,\n            link[]{\n             ...,\n             reference->{\n               _id,\n               _type,\n               title,\n               "slug": select(\n                 _type == "product" => store.slug.current,\n                 _type == "collection" => store.slug.current,\n                 _type == "page" => slug.current\n               )\n             }\n           },\n            backgroundImage{\n              asset->{\n                _id,\n                url,\n                metadata{dimensions}\n              }\n            }\n          }\n        },\n        _type == "productCarousel" => {\n          products[]->{\n            _id,\n            store{\n              title,\n              isDeleted,\n              previewImageUrl,\n              priceRange{\n              maxVariantPrice,\n              minVariantPrice\n              },\n              productType\n            }\n          },\n          collection -> {\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "collectionsCarousel" => {\n          collections[]->{\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "splitImage" => {\n          ...,\n          link[]{\n            ...,\n            reference->{\n              _id,\n              _type,\n              title,\n              "slug": select(\n                _type == "product" => store.slug.current,\n                _type == "collection" => store.slug.current,\n                _type == "page" => slug.current\n              )\n            }\n          }\n        },\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        }\n      }\n    },\n    homePageWoman->{\n      ...,\n      content[]{\n        ...,\n        _id,\n        _type == "sliderBlock" => {\n          slides[]{\n             ...,\n            _key,\n            link[]{\n             ...,\n             reference->{\n               _id,\n               _type,\n               title,\n               "slug": select(\n                 _type == "product" => store.slug.current,\n                 _type == "collection" => store.slug.current,\n                 _type == "page" => slug.current\n               )\n             }\n           },\n            backgroundImage{\n              asset->{\n                _id,\n                url,\n                metadata{dimensions}\n              }\n            }\n          }\n        },\n        _type == "productCarousel" => {\n          products[]->{\n            _id,\n            store{\n              title,\n              isDeleted,\n              previewImageUrl,\n              priceRange{\n              maxVariantPrice,\n              minVariantPrice\n              },\n              productType\n            }\n          },\n          collection -> {\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "collectionsCarousel" => {\n          collections[]->{\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "splitImage" => {\n          ...,\n          link[]{\n            ...,\n            reference->{\n              _id,\n              _type,\n              title,\n              "slug": select(\n                _type == "product" => store.slug.current,\n                _type == "collection" => store.slug.current,\n                _type == "page" => slug.current\n              )\n            }\n          }\n        },\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        }\n      }\n    }\n  }': HOME_PAGE_QUERYResult;
     '\n  *[_type == "redirect" && isEnabled == true] {\n      source,\n      destination,\n      permanent\n  }\n': REDIRECTS_QUERYResult;
     '\n  *[_id == $id][0]{\n    title,\n    "image": mainImage.asset->{\n      url,\n      metadata {\n        palette\n      }\n    }\n  }\n': OG_IMAGE_QUERYResult;

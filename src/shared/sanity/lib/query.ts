@@ -456,6 +456,16 @@ export const HOME_PAGE =
                 "title":title[$language],
                 "text":text[$language],
               }
+            },
+            _type == "collectionsWithPreviews" => {
+              _key,
+              _type,
+              "title":title[$language],
+              "collections": collections[]->{
+                title,
+                "handle": store.slug.current,
+                "id": store.id
+              }
             }
     }
   }`);

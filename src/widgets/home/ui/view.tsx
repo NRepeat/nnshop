@@ -1,7 +1,6 @@
 import { getHomePage } from '@features/home/api/get-home-page';
 import { HeroPageBuilder } from '@features/home/ui/HeroPageBuilder';
 import { Locale } from '@shared/i18n/routing';
-import { cacheLife } from 'next/cache';
 import { notFound } from 'next/navigation';
 
 export const PageContent = async ({
@@ -24,5 +23,4 @@ export const PageContent = async ({
       <StoriesCarousel />*/}
     </div>
   );
-  // }
 };

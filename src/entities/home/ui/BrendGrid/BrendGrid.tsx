@@ -22,7 +22,7 @@ export function BrandGrid({
     <section className="container  ">
       <div className="px-4 mx-auto py-4 md:py-8">
         {
-          <h2 className="mb-16 text-center text-2xl font-medium text-slate-900 md:text-4xl">
+          <h2 className="mb-16 text-center  max-w-4xl text-pretty font-light text-lg md:text-3xl">
             {'Популярні бренди'}
           </h2>
         }
@@ -30,13 +30,11 @@ export function BrandGrid({
         <div className="hidden md:grid grid-cols-2 items-center justify-items-center gap-x-6 gap-y-10 md:grid-cols-5 md:gap-x-8 md:gap-y-8">
           {barnds.map((brand) => (
             <Link
-              href={`/brands/${brand._id}`}
+              key={brand._key}
+              href={`/brands/${brand.handle?.current}`}
               className="cursor-pointer basis-1/3"
             >
-              <div
-                key={brand._key}
-                className="group relative flex h-16 w-full max-w-[160px] items-center justify-center transition-all duration-300 hover:opacity-60"
-              >
+              <div className="group relative flex h-16 w-full max-w-[160px] items-center justify-center transition-all duration-300 hover:opacity-60">
                 {brand.asset ? (
                   <Image
                     src={urlFor(brand).width(300).url()}
@@ -50,7 +48,6 @@ export function BrandGrid({
             </Link>
           ))}
         </div>
-        {/* Группируем бренды по 2 для отображения в два ряда */}
         <Carousel
           className="block md:hidden"
           opts={{ loop: true }}
@@ -62,7 +59,10 @@ export function BrandGrid({
                 <CarouselItem key={i} className="pl-2 basis-1/2 sm:basis-1/3">
                   <div className="flex flex-col gap-y-8">
                     {barnds.slice(i * 2, i * 2 + 2).map((brand) => (
-                      <Link href={`/brands/${brand._id}`} key={brand._key}>
+                      <Link
+                        href={`/brands/${brand.handle?.current}`}
+                        key={brand._key}
+                      >
                         <div className="group relative flex h-16 w-full max-w-[160px] items-center justify-center transition-all duration-300 hover:opacity-60 mx-auto">
                           {brand.asset ? (
                             <Image

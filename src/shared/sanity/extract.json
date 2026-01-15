@@ -235,7 +235,8 @@
         "title": {
           "type": "objectAttribute",
           "value": {
-            "type": "string"
+            "type": "inline",
+            "name": "localizedString"
           },
           "optional": true
         }
@@ -258,7 +259,8 @@
         "title": {
           "type": "objectAttribute",
           "value": {
-            "type": "string"
+            "type": "inline",
+            "name": "localizedString"
           },
           "optional": true
         }
@@ -277,6 +279,14 @@
             "type": "string",
             "value": "productDetails"
           }
+        },
+        "title": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "localizedString"
+          },
+          "optional": true
         },
         "details": {
           "type": "objectAttribute",
@@ -1615,6 +1625,21 @@
             "rest": {
               "type": "inline",
               "name": "productComments"
+            }
+          },
+          {
+            "type": "object",
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "collectionsWithPreviews"
             }
           }
         ]
@@ -6321,6 +6346,172 @@
                   }
                 }
               },
+              "rest": {
+                "type": "object",
+                "attributes": {
+                  "_key": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "optional": true
+        }
+      }
+    }
+  },
+  {
+    "name": "collectionsWithPreviews",
+    "type": "type",
+    "value": {
+      "type": "object",
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "collectionsWithPreviews"
+          }
+        },
+        "title": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "localizedString"
+          },
+          "optional": true
+        },
+        "collectionName": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        },
+        "previews": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "array",
+            "of": {
+              "type": "object",
+              "attributes": {
+                "asset": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "object",
+                    "attributes": {
+                      "_ref": {
+                        "type": "objectAttribute",
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "_type": {
+                        "type": "objectAttribute",
+                        "value": {
+                          "type": "string",
+                          "value": "reference"
+                        }
+                      },
+                      "_weak": {
+                        "type": "objectAttribute",
+                        "value": {
+                          "type": "boolean"
+                        },
+                        "optional": true
+                      }
+                    },
+                    "dereferencesTo": "sanity.imageAsset"
+                  },
+                  "optional": true
+                },
+                "media": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "unknown"
+                  },
+                  "optional": true
+                },
+                "hotspot": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "inline",
+                    "name": "sanity.imageHotspot"
+                  },
+                  "optional": true
+                },
+                "crop": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "inline",
+                    "name": "sanity.imageCrop"
+                  },
+                  "optional": true
+                },
+                "handle": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "inline",
+                    "name": "slug"
+                  },
+                  "optional": true
+                },
+                "_type": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                    "value": "preview"
+                  }
+                }
+              },
+              "rest": {
+                "type": "object",
+                "attributes": {
+                  "_key": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "optional": true
+        },
+        "collections": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "array",
+            "of": {
+              "type": "object",
+              "attributes": {
+                "_ref": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "_type": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                    "value": "reference"
+                  }
+                },
+                "_weak": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "boolean"
+                  },
+                  "optional": true
+                }
+              },
+              "dereferencesTo": "collection",
               "rest": {
                 "type": "object",
                 "attributes": {
