@@ -66,7 +66,7 @@ export const HeroBanner = (props: HeroSliderProps) => {
                       width={2560}
                       height={1040}
                       priority={index === 0}
-                      className="object-cover h-[600px] md:h-[530px] lg:h-[560px]"
+                      className="object-cover h-[350px] md:h-[530px] lg:h-[560px]"
                     />
                     {/*</div>*/}
                   </>
