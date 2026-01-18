@@ -20,12 +20,30 @@ type Props = {
 export function CollectionFilters({ filters, initialFilters }: Props) {
   const sortedFilters = useMemo(() => {
     const getOrder = (label: string) => {
-      console.log('label', label);
       if (label === 'Цена' || label === 'Ціна' || label === 'Price') return 1;
       if (label === 'Размер' || label === 'Розмір') return 2;
       return Infinity;
     };
-    return [...filters].sort((a, b) => getOrder(a.label) - getOrder(b.label));
+
+    const filteredAndSorted = filters
+      .map((filter) => {
+        if (filter.type === 'PRICE_RANGE') {
+          return filter; // Price range filters don't have values with counts to filter
+        }
+        return {
+          ...filter,
+          values: filter.values.filter((value) => value.count > 0),
+        };
+      })
+      .filter((filter) => {
+        if (filter.type === 'PRICE_RANGE') {
+          return true; // Always keep price range filter
+        }
+        return filter.values.length > 0;
+      })
+      .sort((a, b) => getOrder(a.label) - getOrder(b.label));
+
+    return filteredAndSorted;
   }, [filters]);
 
   const initialFilterPrice = initialFilters?.find(
@@ -37,7 +55,7 @@ export function CollectionFilters({ filters, initialFilters }: Props) {
       <Accordion
         type="multiple"
         className="pr-1 w-full max-h-[calc(100vh-130px)] custom-scroll"
-        defaultValue={filters.map((filter) => filter.id)}
+        defaultValue={sortedFilters.map((filter) => filter.id)}
       >
         {sortedFilters.map((filter) => {
           return (

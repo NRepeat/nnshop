@@ -31,7 +31,7 @@ export function NuqsColorFilter({ filter }: Props) {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-x-2 gap-y-2.5 p-1">
+    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
       {[...filter.values]
         .sort((a, b) => a.label.localeCompare(b.label))
         .map((value) => {

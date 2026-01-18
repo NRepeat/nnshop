@@ -46,7 +46,7 @@ export function NuqsButtonFilter({ filter, showCount = true }: Props) {
               variant={isSelected ? 'default' : 'outline'}
               size="sm"
               onClick={() => handleFilterChange(value)}
-              disabled={value.count === 0}
+              disabled={false} // value.count will always be > 0 now
               className={cn('flex gap-x-2 w-full', {
                 'bg-black text-white': isSelected,
               })}

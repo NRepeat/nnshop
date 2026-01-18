@@ -59,14 +59,14 @@ export function NuqsListFilter({ filter }: Props) {
                     <Spinner />
                   ) : (
                     <Checkbox
-                      disabled={value.count === 0}
+                      disabled={false} // value.count will always be > 0 now
                       checked={isChecked}
                       onCheckedChange={() => handleFilterChange(value)}
                     />
                   )}
                   <span
                     className={cn({
-                      'text-muted-foreground line-through': value.count === 0,
+                      // 'text-muted-foreground line-through': value.count === 0, // No longer needed
                     })}
                   >
                     {value.label} ({value.count})
