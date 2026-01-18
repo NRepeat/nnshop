@@ -38,6 +38,8 @@ export const SyncedCarousels = ({
 }: SyncedCarouselsProps) => {
   const [api1, setApi1] = useState<CarouselApi>();
   const [api2, setApi2] = useState<CarouselApi>();
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
   console.log('previews', collectionsData);
   const onSelect = useCallback(
     (api: CarouselApi) => {
@@ -47,24 +49,37 @@ export const SyncedCarousels = ({
           api2.scrollTo(api1.selectedScrollSnap());
         } else {
           api1.scrollTo(api2.selectedScrollSnap());
+          setSelectedIndex(api2.selectedScrollSnap());
         }
       }
     },
     [api1, api2],
   );
 
+  const onInit = useCallback((api: CarouselApi) => {
+    if (!api) return;
+    setScrollSnaps(api.scrollSnapList());
+  }, []);
+
   useEffect(() => {
     if (api1) api1.on('select', onSelect);
-    if (api2) api2.on('select', onSelect);
+    if (api2) {
+      api2.on('select', onSelect);
+      api2.on('reInit', onSelect);
+      onInit(api2);
+    }
 
     return () => {
       if (api1) api1.off('select', onSelect);
-      if (api2) api2.off('select', onSelect);
+      if (api2) {
+        api2.off('select', onSelect);
+        api2.off('reInit', onSelect);
+      }
     };
-  }, [api1, api2, onSelect]);
+  }, [api1, api2, onSelect, onInit]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-20 w-full container ">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4  md:gap-20 w-full container ">
       <div className="py-8">
         <Carousel opts={{ loop: true }} setApi={setApi1}>
           <CarouselContent>
@@ -189,6 +204,17 @@ export const SyncedCarousels = ({
               </CarouselItem>
             ))}
           </CarouselContent>
+          <div className="flex justify-center gap-2 mt-4">
+            {scrollSnaps.map((_, index) => (
+              <button
+                key={index}
+                className={`w-2 h-2 rounded-full ${
+                  index === selectedIndex ? 'bg-gray-800' : 'bg-gray-300'
+                }`}
+                onClick={() => api2?.scrollTo(index)}
+              />
+            ))}
+          </div>
         </Carousel>
       </div>
     </div>
