@@ -12,7 +12,6 @@ import {
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useTransition, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { ChevronUpIcon, ChevronDownIcon } from 'lucide-react';
 
 type SortSelectProps = {
   defaultValue?: string;
@@ -49,16 +48,16 @@ export function SortSelect({ defaultValue }: SortSelectProps) {
       onValueChange={handleSortChange}
       disabled={isPending}
     >
-      <SelectTrigger className="w-[160px]  md:w-[160px] rounded-none">
+      <SelectTrigger className="w-[160px]  md:w-[160px] min-w-fit rounded-none">
         <div className="flex items-center gap-x-2">
           <SelectValue placeholder={t('sortBy')} />
-          {currentSort === 'price-asc' && <ChevronUpIcon className="size-4" />}
+          {/*{currentSort === 'price-asc' && <ChevronUpIcon className="size-4" />}
           {currentSort === 'price-desc' && (
             <ChevronDownIcon className="size-4" />
           )}
           {currentSort === 'created-desc' && (
             <ChevronDownIcon className="size-4" />
-          )}
+          )}*/}
         </div>
       </SelectTrigger>
       <SelectContent className="rounded-none">
