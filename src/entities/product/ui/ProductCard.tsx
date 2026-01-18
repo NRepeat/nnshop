@@ -54,43 +54,43 @@ export const ProductCard = ({
         <Link href={`/products/${product.handle}`}>
           {withCarousel ? (
             <Carousel className="relative" opts={{ align: 'center' }}>
-              <div className="group relative">
+              <div className="group relative aspect-square w-full overflow-hidden">
                 {isNew && (
                   <Badge className="absolute top-2 left-2 z-10">
                     {t('new')}
                   </Badge>
                 )}
-                <CarouselContent>
+                <CarouselContent className="[&>div]:-ml-0">
                   {productImages.map((image, index) => (
                     <CarouselItem key={index} className=" relative">
-                      <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full re">
+                      <div className="relative w-full h-full aspect-[1/1] flex justify-center items-center">
                         <Image
                           key={index}
-                          className=" w-full max-h-[250px] h-[350px] md:max-h-[450px]  lg:max-h-[550px] lg:h-[450px] object-contain"
+                          className="object-contain "
                           src={image.url}
                           alt={image.altText || ''}
-                          width={image.width || 300}
                           loading="lazy"
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          height={image.height || 300}
+                          fill
                         />
                       </div>
                     </CarouselItem>
                   ))}
                 </CarouselContent>
                 <CarouselNext
-                  variant={'link'}
-                  className="group-hover:flex hidden bg-transparent top-1/2 right-5 absolute"
+                  variant={'ghost'}
+                  size={'icon'}
+                  className="group-hover:flex flex bg-background/70 rounded-full top-1/2 right-2 absolute"
                 />
                 <CarouselPrevious
-                  variant={'link'}
-                  className="group-hover:flex hidden bg-transparent top-1/2 left-5 absolute"
+                  variant={'ghost'}
+                  className="group-hover:flex flex bg-background/70 rounded-full top-1/2 left-2 absolute"
                 />
-                <div className="absolute top-0  right-5  hidden group-hover:block">
+                <div className="absolute top-2  right-2  hidden group-hover:block">
                   <Button
                     size={'icon'}
-                    variant={'link'}
-                    className="hover:[&>svg]:stroke-[#e31e24]"
+                    variant={'ghost'}
+                    className="hover:[&>svg]:stroke-[#e31e24] bg-background/70 rounded-full"
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
@@ -99,15 +99,15 @@ export const ProductCard = ({
                     <Heart className="" />
                   </Button>
                 </div>
-                <div className=" bottom-0 min-h-10 pt-1 right-5  flex w-full justify-end">
+                <div className=" bottom-2  right-2  flex w-full justify-end absolute">
                   <Button
-                    variant={'outline'}
-                    className="group-hover:flex hidden"
+                    variant={'ghost'}
+                    className="group-hover:flex hidden bg-background/70 rounded-full"
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
 
-                      nav.push(`/product/${product.handle}`, {});
+                      nav.push(`/products/${product.handle}`, {});
                     }}
                   >
                     {t('quickView')}
@@ -116,24 +116,30 @@ export const ProductCard = ({
               </div>
             </Carousel>
           ) : (
-            <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full group">
+            <div className="group relative aspect-square w-full overflow-hidden">
               {isNew && (
                 <Badge className="absolute top-2 left-2 z-10">{t('new')}</Badge>
               )}
-              <Image
-                className=" w-full max-h-[350px] h-[350px]"
-                src={productImages[0].url}
-                alt={productImages[0].altText || ''}
-                width={productImages[0].width || 300}
-                height={productImages[0].height || 300}
-              />
-              <div className=" bottom-4 left-1/2 -translate-x-1/2 hidden group-hover:block">
-                <Link
-                  href={`/products/${product.handle}`}
-                  className="bg-primary text-secondary px-4 py-2 rounded-full"
+              <div className="relative w-full h-full flex justify-center items-center">
+                <Image
+                  className="object-contain"
+                  src={productImages[0].url}
+                  alt={productImages[0].altText || ''}
+                  fill
+                />
+              </div>
+              <div className=" bottom-2 left-1/2 -translate-x-1/2 hidden group-hover:block absolute">
+                <Button
+                  variant={'ghost'}
+                  className="bg-background/70 rounded-full"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    nav.push(`/products/${product.handle}`, {});
+                  }}
                 >
                   {t('quickView')}
-                </Link>
+                </Button>
               </div>
             </div>
           )}
