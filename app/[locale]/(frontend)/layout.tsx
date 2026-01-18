@@ -4,6 +4,7 @@ import { Jost, Geist, Geist_Mono } from 'next/font/google';
 import '../../globals.css';
 import { Providers } from '@/app/providers';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { NextIntlClientProvider } from 'next-intl';
 
 // const geistSans = Geist({
 //   variable: '--font-geist-sans',
@@ -55,8 +56,10 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning className="">
       <body className={`${jostSans.variable}  antialiased `}>
         <Providers>
-          {children}
-          {/*{modal}*/}
+          <NextIntlClientProvider>
+            {children}
+            {/*{modal}*/}
+          </NextIntlClientProvider>
         </Providers>
       </body>
       <SpeedInsights />

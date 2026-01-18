@@ -532,5 +532,12 @@
     "viewAll": "View all",
     "noResults": "No results found",
     "tryAgain": "Try searching for something else."
+  },
+  "ProductCard": {
+    "new": "New",
+    "quickView": "Quick View"
+  },
+  "LoadMore": {
+    "showMore": "Show More"
   }
 }

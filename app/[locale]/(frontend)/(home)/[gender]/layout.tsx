@@ -11,21 +11,21 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 
 export async function generateStaticParams() {
+  const params = [];
   for (const gender of genders) {
     for (const locale of locales) {
-      return [{ locale: locale, gender: gender }];
+      params.push({ locale: locale, gender: gender });
     }
   }
+  return params;
 }
 
 export default async function LocaleLayout({
   children,
-  modal,
   params,
 }: Readonly<{
   children: React.ReactNode;
   params: Promise<{ locale: string; gender: string }>;
-  modal: React.ReactNode;
 }>) {
   const { locale, gender } = await params;
   if (!hasLocale(routing.locales, locale)) {
@@ -33,9 +33,8 @@ export default async function LocaleLayout({
   }
   setRequestLocale(locale);
   return (
-    <NextIntlClientProvider>
+    <>
       <Header locale={locale} gender={gender} />
-      {modal}
       {children}
       {(await draftMode()).isEnabled && (
         <>
@@ -47,6 +46,6 @@ export default async function LocaleLayout({
       <Suspense fallback={<div>Loading...</div>}>
         <SanityLive />
       </Suspense>
-    </NextIntlClientProvider>
+    </>
   );
 }

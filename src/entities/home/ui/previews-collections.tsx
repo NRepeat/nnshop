@@ -1,4 +1,5 @@
 import { getCollection } from '@entities/collection/api/getCollection';
+import { getLocalizedString } from '@shared/sanity/utils/getLocalizedString';
 import { HOME_PAGEResult } from '@shared/sanity/types';
 import { SyncedCarousels } from './SyncedCarousels';
 
@@ -8,7 +9,6 @@ export type PreviewsCollectionsProps = Extract<
 > & { locale: string; buttonText?: string };
 
 export const PreviewsCollections = async (props: PreviewsCollectionsProps) => {
-  console.log(props);
   const { collections, previews, locale, title } = props;
 
   const collectionsDataReq = collections
@@ -25,11 +25,12 @@ export const PreviewsCollections = async (props: PreviewsCollectionsProps) => {
     .filter(Boolean);
   if (!collectionsDataReq) return null;
   const collectionsData = await Promise.all(collectionsDataReq);
+  const localizedTitle = getLocalizedString(title ? title[0] : '', locale);
   return (
     <SyncedCarousels
       collectionsData={collectionsData}
       previews={previews}
-      title={title}
+      title={localizedTitle}
     />
   );
 };

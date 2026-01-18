@@ -1,4 +1,5 @@
 'use client';
+import getSymbolFromCurrency from 'currency-symbol-map';
 import { Card, CardContent } from '@/shared/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -15,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import { Heart } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@shared/ui/button';
+import { useTranslations } from 'next-intl';
 
 type ProductCardProps = {
   product: Product;
@@ -28,6 +30,7 @@ export const ProductCard = ({
   className,
   withCarousel = false,
 }: ProductCardProps) => {
+  const t = useTranslations('ProductCard');
   const productImages = [
     ...product?.media.edges.map((variant) => ({
       url: variant.node.previewImage?.url || '',
@@ -53,7 +56,9 @@ export const ProductCard = ({
             <Carousel className="relative" opts={{ align: 'center' }}>
               <div className="group relative">
                 {isNew && (
-                  <Badge className="absolute top-2 left-2 z-10">Новий</Badge>
+                  <Badge className="absolute top-2 left-2 z-10">
+                    {t('new')}
+                  </Badge>
                 )}
                 <CarouselContent>
                   {productImages.map((image, index) => (
@@ -85,17 +90,19 @@ export const ProductCard = ({
                   <Button
                     size={'icon'}
                     variant={'link'}
+                    className="hover:[&>svg]:stroke-[#e31e24]"
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
                     }}
                   >
-                    <Heart />
+                    <Heart className="" />
                   </Button>
                 </div>
-                <div className="absolute bottom-0  right-5  hidden group-hover:block">
+                <div className=" bottom-0 min-h-10 pt-1 right-5  flex w-full justify-end">
                   <Button
-                    variant={'default'}
+                    variant={'outline'}
+                    className="group-hover:flex hidden"
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
@@ -103,7 +110,7 @@ export const ProductCard = ({
                       nav.push(`/product/${product.handle}`, {});
                     }}
                   >
-                    Quick View
+                    {t('quickView')}
                   </Button>
                 </div>
               </div>
@@ -111,7 +118,7 @@ export const ProductCard = ({
           ) : (
             <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full group">
               {isNew && (
-                <Badge className="absolute top-2 left-2 z-10">Новий</Badge>
+                <Badge className="absolute top-2 left-2 z-10">{t('new')}</Badge>
               )}
               <Image
                 className=" w-full max-h-[350px] h-[350px]"
@@ -120,19 +127,19 @@ export const ProductCard = ({
                 width={productImages[0].width || 300}
                 height={productImages[0].height || 300}
               />
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 hidden group-hover:block">
+              <div className=" bottom-4 left-1/2 -translate-x-1/2 hidden group-hover:block">
                 <Link
                   href={`/products/${product.handle}`}
                   className="bg-primary text-secondary px-4 py-2 rounded-full"
                 >
-                  Quick View
+                  {t('quickView')}
                 </Link>
               </div>
             </div>
           )}
         </Link>
         {
-          <div className="w-full pt-2 md:pt-6  flex flex-col gap-1 flex-1 px-2">
+          <div className="w-full pt-2 md:pt-1  flex flex-col gap-1 flex-1 px-2">
             <span className="text-md font-bold">{product.vendor}</span>
             <div className="flex flex-col justify-between flex-1">
               <div className=" w-full flex-col  justify-between flex pb-4">
@@ -142,10 +149,45 @@ export const ProductCard = ({
                   </p>
                 </Link>
               </div>
-              <span>
-                {product.priceRange.maxVariantPrice.currencyCode}{' '}
-                {Number(product.priceRange.maxVariantPrice.amount).toFixed(0)}
-              </span>
+              <div className="mt-auto">
+                {product.metafield &&
+                product.metafield.key === 'znizka' &&
+                Number(product.metafield.value) !== 0 ? (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="line-through text-gray-500 text-xs">
+                      {parseFloat(
+                        product.priceRange.maxVariantPrice.amount,
+                      ).toFixed(0)}{' '}
+                      {getSymbolFromCurrency(
+                        product.priceRange.maxVariantPrice.currencyCode,
+                      ) || product.priceRange.maxVariantPrice.currencyCode}
+                    </span>
+
+                    <span className="text-red-600 font-bold text-sm">
+                      {(
+                        product.priceRange.maxVariantPrice.amount *
+                        (1 - parseFloat(product.metafield.value) / 100)
+                      ).toFixed(0)}{' '}
+                      {getSymbolFromCurrency(
+                        product.priceRange.maxVariantPrice.currencyCode,
+                      ) || product.priceRange.maxVariantPrice.currencyCode}
+                    </span>
+
+                    <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
+                      -{product.metafield.value}%
+                    </span>
+                  </div>
+                ) : (
+                  <span className="font-bold text-sm">
+                    {parseFloat(
+                      product.priceRange.maxVariantPrice.amount,
+                    ).toFixed(0)}{' '}
+                    {getSymbolFromCurrency(
+                      product.priceRange.maxVariantPrice.currencyCode,
+                    ) || product.priceRange.maxVariantPrice.currencyCode}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         }

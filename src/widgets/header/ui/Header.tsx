@@ -1,9 +1,13 @@
 import { AnnouncementBar } from '@entities/announcement-bar/announcement-bar';
-import Navigation from '@features/header/navigation/ui/Navigation';
+import Navigation, {
+  CurrentNavigationSession,
+  CurrentNavigationSessionSkilet,
+} from '@features/header/navigation/ui/Navigation';
 import { HeaderContent } from '@features/header/ui/HeaderContent';
 import { sanityFetch } from '@shared/sanity/lib/client';
 import { HEADER_QUERY } from '@shared/sanity/lib/query';
 import { HEADER_QUERYResult } from '@shared/sanity/types';
+import { Suspense } from 'react';
 
 export type HeaderBarProps = Extract<
   NonNullable<HEADER_QUERYResult>['header'],
@@ -15,7 +19,7 @@ export const Header = async ({
   gender,
 }: {
   locale: string;
-  gender: string;
+  gender?: string;
 }) => {
   const headerData = await sanityFetch({
     query: HEADER_QUERY,
@@ -37,9 +41,15 @@ export const Header = async ({
         {headerData?.header && (
           <HeaderContent locale={locale} {...headerData?.header} />
         )}
-        <div className="hidden md:block container">
-          <Navigation locale={locale} gender={gender} />
-        </div>
+        {gender ? (
+          <div className="hidden md:block container">
+            <Navigation locale={locale} gender={gender} />
+          </div>
+        ) : (
+          <Suspense fallback={<CurrentNavigationSessionSkilet />}>
+            <CurrentNavigationSession />
+          </Suspense>
+        )}
       </header>
     </>
   );

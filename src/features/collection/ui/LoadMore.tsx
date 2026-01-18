@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState, useTransition } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { getCollectionProducts } from '../api/getCollectionProducts';
 import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function LoadMore({
   handle,
@@ -19,6 +20,7 @@ export default function LoadMore({
   initialPageInfo: PageInfo;
   onDataLoadedAction: (products: Product[], pageInfo: PageInfo) => void;
 }) {
+  const t = useTranslations('LoadMore');
   const [pageInfo, setPageInfo] = useState<PageInfo>(initialPageInfo);
   const [isPending, startTransition] = useTransition();
   const { ref, inView } = useInView();
@@ -73,7 +75,7 @@ export default function LoadMore({
         disabled={isPending || !pageInfo.hasNextPage}
         className="px-8"
       >
-        Показать больше
+        {t('showMore')}
       </Button>
     </div>
   );

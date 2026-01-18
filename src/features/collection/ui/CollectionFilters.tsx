@@ -12,11 +12,14 @@ import { NuqsPriceRangeFilter } from './NuqsPriceRangeFilter';
 
 type Props = {
   filters: Filter[];
+  initialFilters: Filter[] | undefined;
 };
 
-export function CollectionFilters({ filters }: Props) {
+export function CollectionFilters({ filters, initialFilters }: Props) {
   const sortedFilters = filters;
-
+  const initialFilterPrice = initialFilters?.find(
+    (filter) => filter.id === 'filter.v.price',
+  );
   return (
     <div className="w-full relative">
       <Accordion
@@ -36,7 +39,10 @@ export function CollectionFilters({ filters }: Props) {
                 ) : filter.type === 'LIST' ? (
                   <NuqsListFilter filter={filter} />
                 ) : filter.type === 'PRICE_RANGE' ? (
-                  <NuqsPriceRangeFilter filter={filter} />
+                  <NuqsPriceRangeFilter
+                    filter={filter}
+                    initialFilterPrice={initialFilterPrice}
+                  />
                 ) : (
                   filter.type
                 )}

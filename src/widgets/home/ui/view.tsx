@@ -17,10 +17,6 @@ export const PageContent = async ({
   return (
     <div className="flex flex-col">
       <HeroPageBuilder content={page.content} locale={locale} />
-      {/*<ProductCarousel />
-      <SplitCollection />
-      <Topic />
-      <StoriesCarousel />*/}
     </div>
   );
 };

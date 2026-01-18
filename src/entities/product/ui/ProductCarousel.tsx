@@ -24,12 +24,12 @@ const ProductCarousel = async ({
   title: ProductCarouselProps['title'];
   collection: Collection;
 }) => {
+  const collectionHandle = collection?.store?.slug?.current;
+  const locale = await getLocale();
   const tBetterAuth = await getTranslations({
     locale,
     namespace: 'productCarousel',
   });
-  const collectionHandle = collection?.store?.slug?.current;
-  const locale = await getLocale();
   if (!collectionHandle) return null;
   const shopifyCollection = await getCollection({
     handle: collectionHandle,

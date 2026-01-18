@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@/shared/ui/select';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { useTransition, useState, useEffect } from 'react';
+import { useTransition, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 type SortSelectProps = {

@@ -41,7 +41,9 @@ export async function GET(request: Request) {
   const darkVibrantBackground =
     data?.image?.metadata?.palette?.darkVibrant?.background ?? '#3B82F6';
 
-  const text = isLocalizedString(data.title) ? data.title.en : data.title;
+  const text = isLocalizedString(data.title)
+    ? (data.title as any).en
+    : data.title;
 
   return new ImageResponse(
     <div

@@ -70,6 +70,7 @@ const ProductSessionView = async ({
       <ProductView
         product={product as Product}
         relatedProducts={relatedShopiyProductsData}
+        locale="en"
       />
     );
   } catch {

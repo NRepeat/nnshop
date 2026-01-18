@@ -7,7 +7,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
-import { Globe } from 'lucide-react';
 import { useLocale, useTranslations } from 'use-intl';
 import { usePathname, useRouter } from '@shared/i18n/navigation';
 import { useState } from 'react';

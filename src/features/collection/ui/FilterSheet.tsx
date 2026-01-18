@@ -14,9 +14,10 @@ import { Filter } from '@shared/lib/shopify/types/storefront.types';
 
 type Props = {
   filters: Filter[];
+  initialFilters: Filter[] | undefined;
 };
 
-export function FilterSheet({ filters }: Props) {
+export function FilterSheet({ filters, initialFilters }: Props) {
   const t = useTranslations('CollectionPage');
 
   return (
@@ -40,7 +41,10 @@ export function FilterSheet({ filters }: Props) {
           </SheetTitle>
         </SheetHeader>
         <div className="overflow-auto px-5 overflow-y-scroll">
-          <CollectionFilters filters={filters} />
+          <CollectionFilters
+            filters={filters}
+            initialFilters={initialFilters}
+          />
         </div>
       </SheetContent>
     </Sheet>

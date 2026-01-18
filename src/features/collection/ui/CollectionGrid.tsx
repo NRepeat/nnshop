@@ -12,23 +12,33 @@ import {
 } from '@shared/ui/breadcrumb';
 import { FilterSheet } from './FilterSheet';
 import { ActiveFiltersCarousel } from './ActiveFiltersCarousel';
-import { SortSelect } from './SortSelect'; // Import SortSelect
+import { SortSelect } from './SortSelect';
+import { SearchParams } from '~/app/[locale]/(frontend)/collection/[slug]/page';
+import { cookies } from 'next/headers';
+import { getTranslations } from 'next-intl/server';
+
 export const CollectionGrid = async ({
-  slug,
-  locale,
-  gender,
+  params,
   searchParams,
 }: {
-  slug: string;
-  locale: string;
-  gender?: string;
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ locale: string; slug: string }>;
+  searchParams: Promise<SearchParams>;
 }) => {
+  const { locale, slug } = await params;
+  const t = await getTranslations('Header');
+  const cookie = await cookies();
+  const gender = cookie.get('gender')?.value || 'woman';
+  const awaitedSearchParams = await searchParams;
   const collectionData = await getCollection({
     handle: slug,
     first: 20,
     locale: locale,
-    searchParams: searchParams,
+    searchParams: awaitedSearchParams,
+  });
+  const initialCollection = await getCollection({
+    handle: slug,
+    first: 20,
+    locale: locale,
   });
   if (!collectionData) {
     return notFound();
@@ -40,19 +50,23 @@ export const CollectionGrid = async ({
   }
   const pageInfo = collectionData.collection?.products.pageInfo;
   const products = collection.products.edges.map((edge) => edge.node);
-  const currentSort = searchParams.sort as string | undefined; // Get current sort from searchParams
+  const currentSort = awaitedSearchParams.sort as string | undefined;
+  const initialFilters = initialCollection.collection?.products.filters;
+  console.log(initialFilters);
 
   return (
-    <div className="flex flex-col gap-8 mt-8">
+    <div className="pl-5 flex flex-col gap-8 mt-8">
       <Breadcrumb className="">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/${locale}`}>Головна</BreadcrumbLink>
+            <BreadcrumbLink href={`/${locale}`}>{t('nav.home')}</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink>
-              {gender === 'man' ? 'Мужчини' : 'Жінки'}
+              {gender === 'man'
+                ? t('nav.collections.forMan.title')
+                : t('nav.collections.forWoman.title')}
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
@@ -68,7 +82,10 @@ export const CollectionGrid = async ({
         </div>
         <div className="flex h-full items-end flex-row gap-2 justify-end ">
           <SortSelect defaultValue={currentSort} />
-          <FilterSheet filters={collection.products.filters} />
+          <FilterSheet
+            filters={collection.products.filters}
+            initialFilters={initialFilters}
+          />
         </div>
       </div>
       <div className="flex justify-center  gap-8   h-full">

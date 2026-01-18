@@ -4,8 +4,6 @@ import Image from 'next/image';
 import { urlFor } from '@shared/sanity/lib/image';
 import { HeaderOptions } from './HeaderOptions';
 import { Link } from '@shared/i18n/navigation';
-import CartSheet from '../cart/ui/Sheet';
-import NavigationSheet from '../navigation/ui/NavigationSheet';
 import MenuSheet from '../navigation/ui/Sheet';
 import { SearchSession } from '../search/ui/search-session';
 
@@ -36,7 +34,7 @@ export const HeaderContent = async (props: HeaderContentProps) => {
                 src={urlFor(icon?.asset).url()}
                 width={304}
                 height={24}
-                alt="Icon"
+                alt="MioMio"
                 className="w-full h-full max-w-[180px]"
               />
             )}

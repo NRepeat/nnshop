@@ -1,8 +1,12 @@
+'use client';
+
 import { resolveLink } from '@/features/blocks/split-image/lib/resolveLink';
 import { Carousel, CarouselContent, CarouselItem } from '@/shared/ui/carousel';
 import { PAGE_QUERYResult } from '@/shared/sanity/types';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useLocale } from 'next-intl';
+import { getLocalizedString } from '@shared/sanity/utils/getLocalizedString';
 
 type HeroSwiperProps = Extract<
   NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],
@@ -14,6 +18,7 @@ type HeroSwiperProps = Extract<
 };
 export function HeroSwiper({ slides }: HeroSwiperProps) {
   if (!slides || slides.length === 0) return null;
+  const locale = useLocale();
 
   return (
     <Carousel
@@ -34,7 +39,9 @@ export function HeroSwiper({ slides }: HeroSwiperProps) {
                   //@ts-expect-error sanity
                   src={slide.backgroundImage?.asset.url}
                   className="min-h-[250px] object-cover md:min-h-fit md:object-contain"
-                  alt={slide.title?.en || 'Slider Image'}
+                  alt={
+                    getLocalizedString(slide.title, locale) || 'Slider Image'
+                  }
                   width={1920}
                   height={1280}
                   priority
