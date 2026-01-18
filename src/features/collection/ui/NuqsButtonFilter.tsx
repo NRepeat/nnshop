@@ -12,9 +12,14 @@ import { cn } from '@shared/lib/utils';
 type Props = {
   filter: Filter;
   showCount?: boolean;
+  isSizeFilter?: boolean;
 };
 
-export function NuqsButtonFilter({ filter, showCount = true }: Props) {
+export function NuqsButtonFilter({
+  filter,
+  showCount = true,
+  isSizeFilter = false,
+}: Props) {
   const [, startTransition] = useTransition();
   const filterKey = filter.id.split('.').pop() || filter.id;
 
@@ -34,30 +39,32 @@ export function NuqsButtonFilter({ filter, showCount = true }: Props) {
     });
   };
 
+  const sortedValues = isSizeFilter
+    ? [...filter.values]
+    : [...filter.values].sort((a, b) => a.label.localeCompare(b.label));
+
   return (
     <div className="grid grid-cols-3 gap-2 ">
-      {[...filter.values]
-        .sort((a, b) => a.label.localeCompare(b.label))
-        .map((value) => {
-          const isSelected = selectedValues.includes(value.label);
-          return (
-            <Button
-              key={value.label}
-              variant={isSelected ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => handleFilterChange(value)}
-              disabled={false} // value.count will always be > 0 now
-              className={cn('flex gap-x-2 w-full', {
-                'bg-black text-white': isSelected,
-              })}
-            >
-              {value.label}
-              {showCount && (
-                <span className="text-muted-foreground">{value.count}</span>
-              )}
-            </Button>
-          );
-        })}
+      {sortedValues.map((value) => {
+        const isSelected = selectedValues.includes(value.label);
+        return (
+          <Button
+            key={value.label}
+            variant={isSelected ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => handleFilterChange(value)}
+            disabled={false} // value.count will always be > 0 now
+            className={cn('flex gap-x-2 w-full', {
+              'bg-black text-white': isSelected,
+            })}
+          >
+            {value.label}
+            {showCount && (
+              <span className="text-muted-foreground">{value.count}</span>
+            )}
+          </Button>
+        );
+      })}
     </div>
   );
 }

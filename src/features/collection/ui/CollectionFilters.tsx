@@ -82,7 +82,11 @@ export function CollectionFilters({ filters, initialFilters }: Props) {
                   }
                   if (filter.label === 'Розмір' || filter.label === 'Размер') {
                     return (
-                      <NuqsButtonFilter filter={filter} showCount={false} />
+                      <NuqsButtonFilter
+                        filter={filter}
+                        showCount={false}
+                        isSizeFilter={true}
+                      />
                     );
                   }
                   if (filter.type === 'LIST') {
