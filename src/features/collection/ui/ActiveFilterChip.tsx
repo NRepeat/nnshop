@@ -26,13 +26,14 @@ export function ActiveFilterChip({ filterKey, filterValue }: Props) {
   };
 
   return (
-    <div className="flex items-center justify-center gap-1 rounded-full border border-muted-foreground px-4 py-1 basis-auto">
+    <div className="flex items-center justify-center gap-1 rounded-full border border-muted-foreground pl-3 py-1 basis-auto">
       <span className="text-sm font-medium">{filterValue}</span>
       <Button
         variant={'link'}
+        size={'icon'}
         onClick={removeFilter}
         disabled={isPending}
-        className="bg-background hover:bg-background h-auto p-1"
+        className="bg-transparent h-auto p-1 hover:bg-transparent [&>svg]:size-4"
       >
         <X className="h-4 w-4" />
       </Button>

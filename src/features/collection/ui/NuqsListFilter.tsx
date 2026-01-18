@@ -36,37 +36,46 @@ export function NuqsListFilter({ filter }: Props) {
     });
   };
 
-  return (
-    <ul className="space-y-2">
-      {[...filter.values]
-        .sort((a, b) => a.label.localeCompare(b.label))
-        .map((value) => {
-          const isChecked = selectedValues.includes(value.label);
-          const isChanging = changingFilter === value.label;
+  const isManufacturerFilter =
+    filter.label === 'Виробник' && filter.values.length > 6;
 
-          return (
-            <li key={value.label} className="cursor-pointer">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                {isPending && isChanging ? (
-                  <Spinner />
-                ) : (
-                  <Checkbox
-                    disabled={value.count === 0}
-                    checked={isChecked}
-                    onCheckedChange={() => handleFilterChange(value)}
-                  />
-                )}
-                <span
-                  className={cn({
-                    'text-muted-foreground line-through': value.count === 0,
-                  })}
-                >
-                  {value.label} ({value.count})
-                </span>
-              </label>
-            </li>
-          );
-        })}
-    </ul>
+  return (
+    <div
+      className={cn({
+        'max-h-56 overflow-y-auto custom-scroll pr-2': isManufacturerFilter,
+      })}
+    >
+      <ul className="space-y-2">
+        {[...filter.values]
+          .sort((a, b) => a.label.localeCompare(b.label))
+          .map((value) => {
+            const isChecked = selectedValues.includes(value.label);
+            const isChanging = changingFilter === value.label;
+
+            return (
+              <li key={value.label} className="cursor-pointer">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  {isPending && isChanging ? (
+                    <Spinner />
+                  ) : (
+                    <Checkbox
+                      disabled={value.count === 0}
+                      checked={isChecked}
+                      onCheckedChange={() => handleFilterChange(value)}
+                    />
+                  )}
+                  <span
+                    className={cn({
+                      'text-muted-foreground line-through': value.count === 0,
+                    })}
+                  >
+                    {value.label} ({value.count})
+                  </span>
+                </label>
+              </li>
+            );
+          })}
+      </ul>
+    </div>
   );
 }

@@ -34,7 +34,7 @@ export function FilterSheet({ filters, initialFilters }: Props) {
           </p>
         </Button>
       </SheetTrigger>
-      <SheetContent className="gap-5">
+      <SheetContent className="gap-5 md:min-w-[450px]">
         <SheetHeader className="w-full  flex justify-center items-center py-5 border-b border-b-muted">
           <SheetTitle className="text-base font-400">
             {t('filters.title')}

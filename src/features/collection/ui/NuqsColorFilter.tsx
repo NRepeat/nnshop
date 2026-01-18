@@ -39,7 +39,7 @@ export function NuqsColorFilter({ filter }: Props) {
   };
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="grid grid-cols-2 gap-x-2 gap-y-2">
       {[...filter.values]
         .sort((a, b) => a.label.localeCompare(b.label))
         .map((value) => {
@@ -62,7 +62,7 @@ export function NuqsColorFilter({ filter }: Props) {
               )}
               <span
                 className={cn(
-                  'w-6 h-6 rounded-full border',
+                  'min-w-6 h-6 border',
                   {
                     'border-gray-300': value.count > 0,
                     'border-muted': value.count === 0,
