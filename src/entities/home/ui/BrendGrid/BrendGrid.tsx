@@ -21,11 +21,11 @@ export function BrandGrid({
   return (
     <section className="container  ">
       <div className="px-4 mx-auto py-4 md:py-8">
-        {
+        {/*{
           <h2 className="mb-16 text-center  max-w-4xl text-pretty font-light text-lg md:text-3xl">
             {'Популярні бренди'}
           </h2>
-        }
+        }*/}
 
         <div className="hidden md:grid grid-cols-2 items-center justify-items-center gap-x-6 gap-y-10 md:grid-cols-5 md:gap-x-8 md:gap-y-8">
           {barnds.map((brand) => (

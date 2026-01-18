@@ -64,8 +64,8 @@ export const SyncedCarousels = ({
   }, [api1, api2, onSelect]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full container ">
-      <div className="py-16">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-20 w-full container ">
+      <div className="py-8">
         <Carousel opts={{ loop: true }} setApi={setApi1}>
           <CarouselContent>
             {previews?.map((preview) => (
@@ -77,7 +77,7 @@ export const SyncedCarousels = ({
                     width={500}
                     height={500}
                     sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-contain w-full max-h-[calc(100vw-100px)] md:max-h-[calc(100vh-220px)]"
+                    className="object-contain w-full max-h-[calc(500px)] md:max-h-[calc(700px)]"
                   />
                 </Link>
               </CarouselItem>
@@ -85,7 +85,7 @@ export const SyncedCarousels = ({
           </CarouselContent>
         </Carousel>
       </div>
-      <div className="flex items-center py-16 flex-col">
+      <div className="flex items-center py-8 flex-col">
         <Carousel
           opts={{ loop: true }}
           setApi={setApi2}
@@ -100,7 +100,7 @@ export const SyncedCarousels = ({
                 <div className="w-full flex justify-center">
                   <p className="text-2xl ">{collection.collection?.title}</p>
                 </div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-4 px-5 ">
                   {collection.collection?.products?.edges
                     ?.slice(0, 3)
                     .map((product) => (
@@ -108,7 +108,7 @@ export const SyncedCarousels = ({
                         <Link href={product.node.handle} className="h-full">
                           <div className="flex flex-col gap-3 group relative overflow-hidden h-full">
                             <div className="flex justify-start w-full">
-                              <div className="relative aspect-[1/1] w-full md:max-w-[90%] lg:max-w-[95%] ">
+                              <div className="relative aspect-[1/1] w-full ">
                                 <Image
                                   src={
                                     product.node.media.edges[0].node
@@ -123,7 +123,7 @@ export const SyncedCarousels = ({
                             </div>
 
                             <div className="flex flex-col flex-grow">
-                              <p className="text-start font-sans text-base group-hover:underline line-clamp-2 min-h-[3rem] mb-1">
+                              <p className="text-start font-sans text-base group-hover:underline line-clamp-2 min-h-[3rem] mb-1 max-w-[220px]">
                                 {product.node.title}
                               </p>
                               <div className="mt-auto">
