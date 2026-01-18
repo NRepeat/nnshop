@@ -73,6 +73,7 @@ export class StorefrontClient implements ShopifyClient {
         `query @inContext(language: ${language}) {`,
       );
     }
+
     return modifiedQuery;
   }
   async buildBody(

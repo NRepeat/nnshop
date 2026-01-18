@@ -12,6 +12,7 @@ import {
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useTransition, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { ChevronUpIcon, ChevronDownIcon } from 'lucide-react';
 
 type SortSelectProps = {
   defaultValue?: string;
@@ -25,11 +26,6 @@ export function SortSelect({ defaultValue }: SortSelectProps) {
   const t = useTranslations('CollectionPage.sort');
 
   const [currentSort, setCurrentSort] = useState(defaultValue || 'trending');
-
-  // useEffect(() => {
-  //   const sortFromUrl = searchParams.get('sort') || 'trending';
-  //   setCurrentSort(sortFromUrl);
-  // }, [searchParams]);
 
   const handleSortChange = (value: string) => {
     setCurrentSort(value);
@@ -54,7 +50,16 @@ export function SortSelect({ defaultValue }: SortSelectProps) {
       disabled={isPending}
     >
       <SelectTrigger className="w-[160px]  md:w-[160px] rounded-none">
-        <SelectValue placeholder={t('sortBy')} />
+        <div className="flex items-center gap-x-2">
+          <SelectValue placeholder={t('sortBy')} />
+          {currentSort === 'price-asc' && <ChevronUpIcon className="size-4" />}
+          {currentSort === 'price-desc' && (
+            <ChevronDownIcon className="size-4" />
+          )}
+          {currentSort === 'created-desc' && (
+            <ChevronDownIcon className="size-4" />
+          )}
+        </div>
       </SelectTrigger>
       <SelectContent className="rounded-none">
         <SelectGroup>

@@ -36,13 +36,12 @@ export function NuqsListFilter({ filter }: Props) {
     });
   };
 
-  const isManufacturerFilter =
-    filter.label === 'Виробник' && filter.values.length > 6;
+  const shouldCollapse = filter.values.length > 6;
 
   return (
     <div
       className={cn({
-        'max-h-56 overflow-y-auto custom-scroll pr-2': isManufacturerFilter,
+        'max-h-56 overflow-y-auto custom-scroll pr-2': shouldCollapse,
       })}
     >
       <ul className="space-y-2">

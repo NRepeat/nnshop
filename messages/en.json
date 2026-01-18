@@ -340,7 +340,8 @@
       "apply": "Apply",
       "clear": "Clear",
       "show": "Show",
-      "hide": "Hide"
+      "hide": "Hide",
+      "priceRange": "Price"
     }
   },
   "CheckoutPage": {

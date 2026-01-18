@@ -10,6 +10,7 @@ import { NuqsColorFilter } from './NuqsColorFilter';
 import { NuqsListFilter } from './NuqsListFilter';
 import { NuqsPriceRangeFilter } from './NuqsPriceRangeFilter';
 import { NuqsButtonFilter } from './NuqsButtonFilter';
+import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
 type Props = {
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export function CollectionFilters({ filters, initialFilters }: Props) {
+  const t = useTranslations('CollectionPage');
   const sortedFilters = useMemo(() => {
     const getOrder = (label: string) => {
       if (label === 'Цена' || label === 'Ціна' || label === 'Price') return 1;
@@ -61,7 +63,9 @@ export function CollectionFilters({ filters, initialFilters }: Props) {
           return (
             <AccordionItem key={filter.id} value={filter.id}>
               <AccordionTrigger className="font-medium cursor-pointer w-full">
-                {filter.label}
+                {filter.type === 'PRICE_RANGE'
+                  ? t('filters.priceRange')
+                  : filter.label}
               </AccordionTrigger>
               <AccordionContent>
                 {(() => {
