@@ -12,6 +12,7 @@ import { cn } from '@shared/lib/utils';
 import { Plus } from '@shared/ui/PlusIcon';
 import { AddToCartButton } from '@entities/product/ui/AddToCartButton';
 import ProductComments from '@entities/product/ui/ProductComments';
+import { Button } from '@shared/ui/button';
 
 export const colorMap: { [key: string]: string } = {
   Бежевий: 'bg-[#F5F5DC]',

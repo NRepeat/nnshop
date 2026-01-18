@@ -11,9 +11,10 @@ import { cn } from '@shared/lib/utils';
 
 type Props = {
   filter: Filter;
+  showCount?: boolean;
 };
 
-export function NuqsButtonFilter({ filter }: Props) {
+export function NuqsButtonFilter({ filter, showCount = true }: Props) {
   const [, startTransition] = useTransition();
   const filterKey = filter.id.split('.').pop() || filter.id;
 
@@ -34,12 +35,11 @@ export function NuqsButtonFilter({ filter }: Props) {
   };
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="grid grid-cols-3 gap-2 ">
       {[...filter.values]
         .sort((a, b) => a.label.localeCompare(b.label))
         .map((value) => {
           const isSelected = selectedValues.includes(value.label);
-          console.log('value', value, selectedValues, isSelected);
           return (
             <Button
               key={value.label}
@@ -47,12 +47,14 @@ export function NuqsButtonFilter({ filter }: Props) {
               size="sm"
               onClick={() => handleFilterChange(value)}
               disabled={value.count === 0}
-              className={cn('flex gap-x-2', {
+              className={cn('flex gap-x-2 w-full', {
                 'bg-black text-white': isSelected,
               })}
             >
               {value.label}
-              <span className="text-muted-foreground">{value.count}</span>
+              {showCount && (
+                <span className="text-muted-foreground">{value.count}</span>
+              )}
             </Button>
           );
         })}

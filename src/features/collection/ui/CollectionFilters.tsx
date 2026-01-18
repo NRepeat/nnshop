@@ -59,7 +59,9 @@ export function CollectionFilters({ filters, initialFilters }: Props) {
                     return <NuqsColorFilter filter={filter} />;
                   }
                   if (filter.label === 'Розмір' || filter.label === 'Размер') {
-                    return <NuqsButtonFilter filter={filter} />;
+                    return (
+                      <NuqsButtonFilter filter={filter} showCount={false} />
+                    );
                   }
                   if (filter.type === 'LIST') {
                     return <NuqsListFilter filter={filter} />;
