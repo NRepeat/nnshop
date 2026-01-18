@@ -26,17 +26,19 @@ type Preview = {
 };
 
 type SyncedCarouselsProps = {
-  collectionsData: any[]; // Replace with a more specific type if available
+  collectionsData: any[];
   previews: Preview[] | undefined | null;
+  title: string;
 };
 
 export const SyncedCarousels = ({
   collectionsData,
   previews,
+  title,
 }: SyncedCarouselsProps) => {
   const [api1, setApi1] = useState<CarouselApi>();
   const [api2, setApi2] = useState<CarouselApi>();
-
+  console.log('previews', collectionsData);
   const onSelect = useCallback(
     (api: CarouselApi) => {
       if (!api) return;
@@ -62,20 +64,20 @@ export const SyncedCarousels = ({
   }, [api1, api2, onSelect]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-      <div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full container ">
+      <div className="py-16">
         <Carousel opts={{ loop: true }} setApi={setApi1}>
           <CarouselContent>
             {previews?.map((preview) => (
               <CarouselItem key={preview._key}>
-                <Link href={`/products/${preview.handle?.current}`}>
+                <Link href={`/${preview.handle?.current}`}>
                   <Image
                     src={urlFor(preview).url()}
                     alt={preview.alt || 'Preview image'}
                     width={500}
                     height={500}
                     sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover w-full"
+                    className="object-contain w-full max-h-[calc(100vw-100px)] md:max-h-[calc(100vh-220px)]"
                   />
                 </Link>
               </CarouselItem>
@@ -83,11 +85,21 @@ export const SyncedCarousels = ({
           </CarouselContent>
         </Carousel>
       </div>
-      <div>
-        <Carousel opts={{ loop: true }} setApi={setApi2}>
-          <CarouselContent>
+      <div className="flex items-center py-16 flex-col">
+        <Carousel
+          opts={{ loop: true }}
+          setApi={setApi2}
+          className="flex h-full mb-12 flex-col justify-center items-center"
+        >
+          <div className="mb-12">
+            <p className="text-2xl font-bold text-center">{title}</p>
+          </div>
+          <CarouselContent className="h-fit">
             {collectionsData.filter(Boolean).map((collection, index) => (
               <CarouselItem key={index}>
+                <div className="w-full flex justify-center">
+                  <p className="text-2xl ">{collection.collection?.title}</p>
+                </div>
                 <div className="grid grid-cols-3 gap-4">
                   {collection.collection?.products?.edges
                     ?.slice(0, 3)
@@ -96,7 +108,7 @@ export const SyncedCarousels = ({
                         <Link href={product.node.handle} className="h-full">
                           <div className="flex flex-col gap-3 group relative overflow-hidden h-full">
                             <div className="flex justify-start w-full">
-                              <div className="relative aspect-[1/1] w-full md:max-w-[90%] lg:max-w-95%] ">
+                              <div className="relative aspect-[1/1] w-full md:max-w-[90%] lg:max-w-[95%] ">
                                 <Image
                                   src={
                                     product.node.media.edges[0].node
@@ -105,7 +117,7 @@ export const SyncedCarousels = ({
                                   alt={product.node.title}
                                   fill
                                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 30vw, 20vw"
-                                  className="object-cover w-full transition-transform duration-300 group-hover:scale-105"
+                                  className="object-contain w-full transition-transform duration-300 group-hover:scale-105"
                                 />
                               </div>
                             </div>

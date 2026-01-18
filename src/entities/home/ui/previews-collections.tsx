@@ -2,13 +2,14 @@ import { getCollection } from '@entities/collection/api/getCollection';
 import { HOME_PAGEResult } from '@shared/sanity/types';
 import { SyncedCarousels } from './SyncedCarousels';
 
-type PreviewsCollectionsProps = Extract<
+export type PreviewsCollectionsProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'collectionsWithPreviews' }
 > & { locale: string; buttonText?: string };
 
 export const PreviewsCollections = async (props: PreviewsCollectionsProps) => {
-  const { collections, previews, locale } = props;
+  console.log(props);
+  const { collections, previews, locale, title } = props;
 
   const collectionsDataReq = collections
     ?.map((col) => {
@@ -25,6 +26,10 @@ export const PreviewsCollections = async (props: PreviewsCollectionsProps) => {
   if (!collectionsDataReq) return null;
   const collectionsData = await Promise.all(collectionsDataReq);
   return (
-    <SyncedCarousels collectionsData={collectionsData} previews={previews} />
+    <SyncedCarousels
+      collectionsData={collectionsData}
+      previews={previews}
+      title={title}
+    />
   );
 };
