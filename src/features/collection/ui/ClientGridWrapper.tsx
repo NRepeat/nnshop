@@ -40,7 +40,7 @@ export const ClientGridWrapper = ({
   return (
     <div className="flex h-full">
       <div className="flex flex-col items-end">
-        <div className="flex flex-col w-full  pt-2 md:pt-0 h-full">
+        <div className="flex flex-col w-full  pt-2 pt-0 h-full">
           <ClientGrid products={products as Product[]} />
           <div className="w-full items-center">
             <LoadMore

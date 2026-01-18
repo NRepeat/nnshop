@@ -55,7 +55,7 @@ export const CollectionGrid = async ({
   console.log(initialFilters);
 
   return (
-    <div className="pl-5 flex flex-col gap-8 mt-8">
+    <div className="pl-2 md:pl-5 flex flex-col gap-4 md:gap-8 mt-8">
       <Breadcrumb className="">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -80,7 +80,7 @@ export const CollectionGrid = async ({
           <h2 className="text-2xl font-bold">{collection?.title}</h2>
           <ActiveFiltersCarousel filters={collection.products.filters} />
         </div>
-        <div className="flex h-full items-end flex-row gap-2 justify-end ">
+        <div className="flex h-full items-end flex-row gap-2 justify-between md:justify-end ">
           <SortSelect defaultValue={currentSort} />
           <FilterSheet
             filters={collection.products.filters}

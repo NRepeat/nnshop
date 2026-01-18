@@ -46,9 +46,11 @@ export const Header = async ({
             <Navigation locale={locale} gender={gender} />
           </div>
         ) : (
-          <Suspense fallback={<CurrentNavigationSessionSkilet />}>
-            <CurrentNavigationSession />
-          </Suspense>
+          <div className="hidden md:block container">
+            <Suspense fallback={<CurrentNavigationSessionSkilet />}>
+              <CurrentNavigationSession />
+            </Suspense>
+          </div>
         )}
       </header>
     </>

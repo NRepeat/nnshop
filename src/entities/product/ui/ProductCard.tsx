@@ -66,7 +66,7 @@ export const ProductCard = ({
                       <div className="relative flex justify-center items-center overflow-hidden  border-sidebar-ring w-full re">
                         <Image
                           key={index}
-                          className=" w-full max-h-[350px] h-[350px] md:max-h-[450px]  lg:max-h-[550px] lg:h-[450px] object-contain"
+                          className=" w-full max-h-[250px] h-[350px] md:max-h-[450px]  lg:max-h-[550px] lg:h-[450px] object-contain"
                           src={image.url}
                           alt={image.altText || ''}
                           width={image.width || 300}

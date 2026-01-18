@@ -35,7 +35,6 @@ export function SortSelect({ defaultValue }: SortSelectProps) {
     setCurrentSort(value);
     const newSearchParams = new URLSearchParams(searchParams.toString());
     if (value && value !== 'trending') {
-      // "trending" could be the default, so no need to put it in URL
       newSearchParams.set('sort', value);
     } else {
       newSearchParams.delete('sort');
@@ -54,7 +53,7 @@ export function SortSelect({ defaultValue }: SortSelectProps) {
       onValueChange={handleSortChange}
       disabled={isPending}
     >
-      <SelectTrigger className="w-[160px]  md:w-[210px] rounded-none">
+      <SelectTrigger className="w-[160px]  md:w-[160px] rounded-none">
         <SelectValue placeholder={t('sortBy')} />
       </SelectTrigger>
       <SelectContent className="rounded-none">
