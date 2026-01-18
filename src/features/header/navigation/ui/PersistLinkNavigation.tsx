@@ -1,8 +1,9 @@
-import { Button } from '@shared/ui/button';
 import { NavigationMenuItem } from '@shared/ui/navigation-menu';
 import { Link } from '@shared/i18n/navigation';
 import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';
 import { HeaderBarProps } from '@widgets/header/ui/Header';
+import { NavButton } from './NavButton';
+import { Suspense } from 'react';
 
 export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   const { locale } = props;
@@ -37,12 +38,18 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
         links.map((link) => (
           <NavigationMenuItem key={link.slug} className={`flex p-0`}>
             <Link href={`/${link.slug}`}>
-              <Button
-                className="rounded-none w-full  cursor-pointer  text-nowrap md:text-base font-300 font-sans h-full px-6 text-lg md:px-5 md:py-2"
-                variant={'ghost'}
+              <Suspense
+                fallback={
+                  <NavButton
+                    gender={link.slug}
+                    children={link.name as any as string}
+                  />
+                }
               >
-                {link.name as any as string}
-              </Button>
+                <NavButton gender={link.slug}>
+                  {link.name as any as string}
+                </NavButton>
+              </Suspense>
             </Link>
           </NavigationMenuItem>
         ))}
