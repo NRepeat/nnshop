@@ -2,6 +2,7 @@ import { Product } from '@shared/lib/shopify/types/storefront.types';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Plus } from '@shared/ui/PlusIcon';
+import getSymbolFromCurrency from 'currency-symbol-map';
 
 type ProductCardSPPProps = {
   product: Product;
@@ -38,10 +39,43 @@ export const ProductCardSPP = ({ product }: ProductCardSPPProps) => {
         <Link href={`/product/${product.handle}`}>
           <p className="relative shrink-0 w-full">{product.title}</p>
         </Link>
-        <p className="relative shrink-0 w-full">
-          {product.priceRange.maxVariantPrice.amount}{' '}
-          {product.priceRange.maxVariantPrice.currencyCode}
-        </p>
+        <div className="mt-auto">
+          {product.metafield &&
+          product.metafield.key === 'znizka' &&
+          Number(product.metafield.value) !== 0 ? (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="line-through text-gray-500 text-xs">
+                {parseFloat(product.priceRange.maxVariantPrice.amount).toFixed(
+                  0,
+                )}{' '}
+                {getSymbolFromCurrency(
+                  product.priceRange.maxVariantPrice.currencyCode,
+                ) || product.priceRange.maxVariantPrice.currencyCode}
+              </span>
+
+              <span className="text-red-600 font-bold text-sm">
+                {(
+                  product.priceRange.maxVariantPrice.amount *
+                  (1 - parseFloat(product.metafield.value) / 100)
+                ).toFixed(0)}{' '}
+                {getSymbolFromCurrency(
+                  product.priceRange.maxVariantPrice.currencyCode,
+                ) || product.priceRange.maxVariantPrice.currencyCode}
+              </span>
+
+              <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
+                -{product.metafield.value}%
+              </span>
+            </div>
+          ) : (
+            <span className="font-bold text-sm">
+              {parseFloat(product.priceRange.maxVariantPrice.amount).toFixed(0)}{' '}
+              {getSymbolFromCurrency(
+                product.priceRange.maxVariantPrice.currencyCode,
+              ) || product.priceRange.maxVariantPrice.currencyCode}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
 type Props = {
-  params: Promise<{ slug: string[] }>;
+  params: { slug: string[]; locale: string };
 };
 // export async function generateStaticParams() {
 //   const handles = [];
@@ -42,8 +42,8 @@ const ProductSessionView = async ({ product }: { product: Product }) => {
 };
 
 const ProductSession = async ({ params }: Props) => {
-  const p = await params;
-  const response = await getProduct({ handle: p.slug[0] });
+  const p = params;
+  const response = await getProduct({ handle: p.slug[0], locale: p.locale });
   const product = response?.product;
   return (
     <QuickView open={Boolean(product)}>
