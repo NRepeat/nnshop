@@ -1,8 +1,8 @@
 import { getProductsByIds } from './getProductsByIds';
 
-export const getReletedProducts = async (ids: string[]) => {
+export const getReletedProducts = async (ids: string[], locale: string) => {
   try {
-    const res = await getProductsByIds(ids);
+    const res = await getProductsByIds(ids, locale);
     return res;
   } catch (err) {
     console.log(err);

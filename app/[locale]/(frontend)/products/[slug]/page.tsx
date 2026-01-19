@@ -1,19 +1,25 @@
 import { getProduct } from '@/entities/product/api/getProduct';
-import { getProductPage } from '@/entities/product/api/getProductPage';
 import { ProductView } from '@/widgets/product-view';
 import { getMetaobject } from '@entities/metaobject/api/get-metaobject';
 import { getReletedProducts } from '@entities/product/api/get-related-products';
-import { getProducts } from '@entities/product/api/getProducts';
 import { auth } from '@features/auth/lib/auth';
+import { locales } from '@shared/i18n/routing';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { Session, User } from 'better-auth';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 type Props = {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 };
-
+export async function generateStaticParams() {
+  const params = [];
+  for (const locale of locales) {
+    params.push({ locale: locale });
+  }
+  return params;
+}
 // export async function generateStaticParams() {
 //   const handles = [];
 //   for (const locale of locales) {
@@ -30,14 +36,15 @@ export default async function ProductPage({ params }: Props) {
 }
 const ProductSessionView = async ({
   handle,
-  session,
+  locale,
 }: {
   handle: string;
-  session: { session: Session; user: User };
+  locale: string;
 }) => {
   'use cache';
   try {
-    const response = await getProduct({ handle });
+    console.log('handle', handle, locale);
+    const response = await getProduct({ handle, locale });
 
     const product = response?.product;
 
@@ -62,27 +69,32 @@ const ProductSessionView = async ({
       relatedProductsData.map((id) => id.split('/').pop()),
     );
 
-    const relatedShopiyProductsData =
-      await getReletedProducts(relatedProductsIds);
+    const relatedShopiyProductsData = await getReletedProducts(
+      relatedProductsIds,
+      locale,
+    );
     // const sanityProduct = await getProductPage();
 
     return (
-      <ProductView
-        product={product as Product}
-        relatedProducts={relatedShopiyProductsData}
-        locale="en"
-      />
+      <Suspense fallback={<div>Loading...</div>}>
+        <ProductView
+          product={product as Product}
+          relatedProducts={relatedShopiyProductsData}
+          locale={locale}
+        />
+      </Suspense>
     );
-  } catch {
+  } catch (e) {
+    console.log(e);
     return notFound();
   }
 };
 const ProductSession = async ({ params }: Props) => {
-  const { slug: handle } = await params;
+  const { slug: handle, locale } = await params;
 
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
     return notFound();
   }
-  return <ProductSessionView handle={handle} session={session} />;
+  return <ProductSessionView handle={handle} locale={locale} />;
 };

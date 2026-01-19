@@ -1,15 +1,8 @@
 import { getTranslations } from 'next-intl/server';
 import Gallery from '@features/product/ui/Gallery';
-import {
-  ProductVariant,
-  Product as ShopifyProduct,
-} from '@shared/lib/shopify/types/storefront.types';
-import { PAGE_QUERYResult } from '@shared/sanity/types';
-import { Session, User } from 'better-auth';
-import Link from 'next/link';
+import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
+
 import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
-import { cn } from '@shared/lib/utils';
-import { Plus } from '@shared/ui/PlusIcon';
 import { AddToCartButton } from '@entities/product/ui/AddToCartButton';
 import ProductComments from '@entities/product/ui/ProductComments';
 import { Button } from '@shared/ui/button';

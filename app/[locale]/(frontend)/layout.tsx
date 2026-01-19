@@ -5,6 +5,8 @@ import '../../globals.css';
 import { Providers } from '@/app/providers';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { NextIntlClientProvider } from 'next-intl';
+import { Header } from '@widgets/header/ui/Header';
+import { Footer } from '@widgets/footer/ui/Footer';
 
 // const geistSans = Geist({
 //   variable: '--font-geist-sans',
@@ -57,8 +59,10 @@ export default async function RootLayout({
       <body className={`${jostSans.variable}  antialiased `}>
         <Providers>
           <NextIntlClientProvider>
+            <Header locale={locale} />
             {children}
             {/*{modal}*/}
+            <Footer locale={locale} />
           </NextIntlClientProvider>
         </Providers>
       </body>

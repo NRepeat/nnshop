@@ -34,7 +34,7 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
   return (
     <>
-      <Header locale={locale} gender={gender} />
+      {/*<Header locale={locale} gender={gender} />*/}
       {children}
       {(await draftMode()).isEnabled && (
         <>
@@ -42,7 +42,6 @@ export default async function LocaleLayout({
           <VisualEditing />
         </>
       )}
-      <Footer locale={locale} />
       <Suspense fallback={<div>Loading...</div>}>
         <SanityLive />
       </Suspense>

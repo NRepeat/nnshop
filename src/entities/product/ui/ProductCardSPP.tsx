@@ -1,5 +1,3 @@
-'use client';
-
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import Image from 'next/image';
 import Link from 'next/link';

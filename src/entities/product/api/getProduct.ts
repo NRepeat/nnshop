@@ -117,8 +117,13 @@ export const GET_PRODUCT_QUERY = `#graphql
   }
   ${PRODUCT_METAFIELDS_FRAGMENT}
 `;
-export const getProduct = async ({ handle }: { handle: string }) => {
-  const locale = await getLocale();
+export const getProduct = async ({
+  handle,
+  locale,
+}: {
+  handle: string;
+  locale: string;
+}) => {
   const product = await storefrontClient.request<
     GetProductByHandleQuery,
     { handle: string }

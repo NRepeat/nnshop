@@ -72,8 +72,10 @@ interface PaginatedProductsResponse {
 
 const ID_BATCH_SIZE = 50;
 
-export const getProductsByIds = async (ids: string[]): Promise<Product[]> => {
-  const locale = await getLocale();
+export const getProductsByIds = async (
+  ids: string[],
+  locale: string,
+): Promise<Product[]> => {
   let allProducts: Product[] = [];
   let remainingIDs = [...ids];
 
