@@ -124,14 +124,22 @@ export const getProduct = async ({
   handle: string;
   locale: string;
 }) => {
-  const product = await storefrontClient.request<
-    GetProductByHandleQuery,
-    { handle: string }
-  >({
-    query: GET_PRODUCT_QUERY,
-    variables: { handle },
-    language: locale.toUpperCase() as StorefrontLanguageCode,
-  });
-  if (!product.product) throw new Error('Product not found');
-  return product;
+  try {
+    const product = await storefrontClient.request<
+      GetProductByHandleQuery,
+      { handle: string }
+    >({
+      query: GET_PRODUCT_QUERY,
+      variables: { handle },
+      language: locale.toUpperCase() as StorefrontLanguageCode,
+    });
+    console.log(product);
+    if (!product.product) {
+      throw new Error('Product not found');
+    }
+    return product;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to fetch product');
+  }
 };

@@ -109,7 +109,7 @@ export class StorefrontClient implements ShopifyClient {
         variables: ver,
         signal,
       });
-
+      console.log(response, modifiedQuery);
       if (response.errors) {
         console.error(JSON.stringify(response.errors, null, 2));
         throw new Error(

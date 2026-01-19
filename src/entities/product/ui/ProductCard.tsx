@@ -2,7 +2,6 @@
 import getSymbolFromCurrency from 'currency-symbol-map';
 import { Card, CardContent } from '@/shared/ui/card';
 import Image from 'next/image';
-import Link from 'next/link';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import clsx from 'clsx';
 import {
@@ -17,6 +16,7 @@ import { Heart } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@shared/ui/button';
 import { useTranslations } from 'next-intl';
+import { Link } from '@shared/i18n/navigation';
 
 type ProductCardProps = {
   product: Product;
