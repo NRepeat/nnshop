@@ -43,7 +43,6 @@ const ProductSessionView = async ({
 }) => {
   'use cache';
   try {
-    console.log('handle', handle, locale);
     const response = await getProduct({ handle, locale });
 
     const product = response?.product;
@@ -55,34 +54,26 @@ const ProductSessionView = async ({
     const relatedProducts = product.metafields.find(
       (m) => m?.key === 'recommended_products',
     )?.value as any as string;
-    const boundProducts = product.metafields.find(
-      (m) => m?.key === 'bound-products',
-    )?.value as any as string;
+    // const boundProducts = product.metafields.find(
+    //   (m) => m?.key === 'bound-products',
+    // )?.value as any as string;
     // const parsedBoundProducts = JSON.parse(boundProducts);
     const relatedProductsData = JSON.parse(relatedProducts) as string[];
     const relatedProductsIds = relatedProductsData
       .map((id) => id.split('/').pop() || null)
       .filter((id) => id !== null);
-    console.log(
-      response,
-      res,
-      relatedProductsData.map((id) => id.split('/').pop()),
-    );
 
     const relatedShopiyProductsData = await getReletedProducts(
       relatedProductsIds,
       locale,
     );
-    // const sanityProduct = await getProductPage();
 
     return (
-      <Suspense fallback={<div>Loading...</div>}>
-        <ProductView
-          product={product as Product}
-          relatedProducts={relatedShopiyProductsData}
-          locale={locale}
-        />
-      </Suspense>
+      <ProductView
+        product={product as Product}
+        relatedProducts={relatedShopiyProductsData}
+        locale={locale}
+      />
     );
   } catch (e) {
     console.log(e);
