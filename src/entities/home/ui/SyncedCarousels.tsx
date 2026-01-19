@@ -6,6 +6,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
   type CarouselApi,
 } from '@shared/ui/carousel';
 import { GetCollectionQuery } from '@shared/lib/shopify/types/storefront.generated';
@@ -103,6 +105,15 @@ export const SyncedCarousels = ({
                 ),
             )}
           </CarouselContent>
+          <CarouselNext
+            variant={'ghost'}
+            size={'icon'}
+            className="group-hover:flex  bg-background/70 rounded-full top-1/2 right-2 absolute hidden md:flex"
+          />
+          <CarouselPrevious
+            variant={'ghost'}
+            className="group-hover:flex  bg-background/70 rounded-full top-1/2 left-2 absolute hidden md:flex"
+          />
         </Carousel>
       </div>
       <div className="flex items-center py-8 flex-col">
@@ -112,7 +123,7 @@ export const SyncedCarousels = ({
           className="flex h-full mb-12 flex-col justify-center items-center"
         >
           <div className="mb-12">
-            <p className="text-2xl font-bold text-center">{title}</p>
+            <p className="text-2xl font-bold text-center">{}</p>
           </div>
           <CarouselContent className="h-fit">
             {collectionsData.filter(Boolean).map((collection, index) => (
@@ -214,6 +225,15 @@ export const SyncedCarousels = ({
               </CarouselItem>
             ))}
           </CarouselContent>
+          <CarouselNext
+            variant={'ghost'}
+            size={'icon'}
+            className="group-hover:flex  bg-background/70 rounded-full top-1/2 right-2 absolute hidden md:flex"
+          />
+          <CarouselPrevious
+            variant={'ghost'}
+            className="group-hover:flex  bg-background/70 rounded-full top-1/2 left-2 absolute hidden md:flex"
+          />
           <div className="flex justify-center gap-2 mt-4">
             {scrollSnaps.map((_, index) => (
               <button

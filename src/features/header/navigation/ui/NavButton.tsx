@@ -14,7 +14,6 @@ export const NavButton = ({
   const [currentGender, setCurrentGender] = useState<string | undefined>('');
   const onClick = async () => {
     if (gender) {
-      console.log('gender', gender);
       await cookieFenderSet(gender);
     }
   };
@@ -23,6 +22,9 @@ export const NavButton = ({
       const gender = await cookieFenderGet();
       if (gender) {
         setCurrentGender(gender);
+      } else {
+        await cookieFenderSet('women');
+        setCurrentGender('women');
       }
     };
     getGender();

@@ -21,7 +21,7 @@ export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
       return {
         ...collection,
         ...pathData,
-        href: pathData?.handle ? `/collections/${pathData.handle}` : '#',
+        href: pathData?.handle ? `/collection/${pathData.handle}` : '#',
       };
     }),
   );

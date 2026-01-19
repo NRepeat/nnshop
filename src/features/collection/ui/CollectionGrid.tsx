@@ -88,7 +88,7 @@ export const CollectionGrid = async ({
           />
         </div>
       </div>
-      <div className="flex justify-center  gap-8   h-full">
+      <div className="flex justify-between  gap-8   h-full">
         <ClientGridWrapper
           initialPageInfo={pageInfo as PageInfo}
           initialProducts={products as Product[]}

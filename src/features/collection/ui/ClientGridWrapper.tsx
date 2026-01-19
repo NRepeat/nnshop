@@ -38,9 +38,9 @@ export const ClientGridWrapper = ({
     ? params.slug.join('/')
     : (params.slug as string);
   return (
-    <div className="flex h-full">
-      <div className="flex flex-col items-end">
-        <div className="flex flex-col w-full  pt-2 pt-0 h-full">
+    <div className="flex h-full w-full justify-between">
+      <div className="flex flex-col w-full items-end justify-between">
+        <div className="flex flex-col w-full justify-between  pt-0 h-full">
           <ClientGrid products={products as Product[]} />
           <div className="w-full items-center">
             <LoadMore
