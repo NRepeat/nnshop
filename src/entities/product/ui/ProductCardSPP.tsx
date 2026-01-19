@@ -17,7 +17,7 @@ export const ProductCardSPP = ({ product }: ProductCardSPPProps) => {
     <div className="basis-0 content-stretch flex flex-col gap-[13px] grow h-[438px] items-start min-h-px min-w-px relative shrink-0">
       <div className="basis-0 content-stretch flex gap-[10px] grow items-start min-h-px min-w-px relative shrink-0 w-full">
         <Link
-          href={`/products/${product.handle}`}
+          href={`/product/${product.handle}`}
           className="basis-0 grow h-full min-h-px min-w-px relative shrink-0"
         >
           {imageUrl && (
@@ -35,7 +35,7 @@ export const ProductCardSPP = ({ product }: ProductCardSPPProps) => {
         </div>
       </div>
       <div className="content-stretch flex flex-col font-['Styrene_A_Web:Regular',sans-serif] gap-[3px] items-start leading-[20px] not-italic pb-[13px] pt-0 px-0 relative shrink-0 text-[13px] text-black w-full">
-        <Link href={`/products/${product.handle}`}>
+        <Link href={`/product/${product.handle}`}>
           <p className="relative shrink-0 w-full">{product.title}</p>
         </Link>
         <p className="relative shrink-0 w-full">

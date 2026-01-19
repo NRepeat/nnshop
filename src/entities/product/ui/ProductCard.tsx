@@ -50,11 +50,11 @@ export const ProductCard = ({
         className,
       )}
     >
-      <CardContent className="  flex flex-col  rounded-none p-1 border-0 shadow-none h-full justify-between bg-transparent">
-        <Link href={`/products/${product.handle}`}>
+      <CardContent className="  flex flex-col  rounded-none p-0 md:p-1 border-0 shadow-none h-full justify-between bg-transparent">
+        <Link href={`/product/${product.handle}`}>
           {withCarousel ? (
             <Carousel className="relative" opts={{ align: 'center' }}>
-              <div className="group relative aspect-square w-full overflow-hidden">
+              <div className="group relative md:aspect-square w-full overflow-hidden">
                 {isNew && (
                   <Badge className="absolute top-2 left-2 z-10">
                     {t('new')}
@@ -63,7 +63,7 @@ export const ProductCard = ({
                 <CarouselContent className="[&>div]:-ml-0">
                   {productImages.map((image, index) => (
                     <CarouselItem key={index} className=" relative">
-                      <div className="relative w-full h-full aspect-[1/1] flex justify-center items-center">
+                      <div className="relative w-full h-full aspect-[3/4] md:aspect-square flex justify-center items-center">
                         <Image
                           key={index}
                           className="object-contain "
@@ -80,11 +80,11 @@ export const ProductCard = ({
                 <CarouselNext
                   variant={'ghost'}
                   size={'icon'}
-                  className="group-hover:flex flex bg-background/70 rounded-full top-1/2 right-2 absolute"
+                  className="group-hover:flex hidden md:flex bg-background/70 rounded-full top-1/2 right-2 absolute"
                 />
                 <CarouselPrevious
                   variant={'ghost'}
-                  className="group-hover:flex flex bg-background/70 rounded-full top-1/2 left-2 absolute"
+                  className="group-hover:flex hidden md:flex bg-background/70 rounded-full top-1/2 left-2 absolute"
                 />
                 <div className="absolute top-2  right-2  hidden group-hover:block">
                   <Button
@@ -107,7 +107,7 @@ export const ProductCard = ({
                       e.stopPropagation();
                       e.preventDefault();
 
-                      nav.push(`/products/${product.handle}`, {});
+                      nav.push(`/product/${product.handle}`, {});
                     }}
                   >
                     {t('quickView')}
@@ -120,7 +120,7 @@ export const ProductCard = ({
               {isNew && (
                 <Badge className="absolute top-2 left-2 z-10">{t('new')}</Badge>
               )}
-              <div className="relative w-full h-full flex justify-center items-center">
+              <div className="relative  md:h-full w-full flex justify-center items-center">
                 <Image
                   className="object-contain"
                   src={productImages[0].url}
@@ -135,7 +135,7 @@ export const ProductCard = ({
                   onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
-                    nav.push(`/products/${product.handle}`, {});
+                    nav.push(`/product/${product.handle}`, {});
                   }}
                 >
                   {t('quickView')}
@@ -145,12 +145,12 @@ export const ProductCard = ({
           )}
         </Link>
         {
-          <div className="w-full pt-2 md:pt-1  flex flex-col gap-1 flex-1 px-2">
+          <div className="w-full pt-2 md:pt-1  flex flex-col gap-1 flex-1 md:px-2">
             <span className="text-md font-bold">{product.vendor}</span>
             <div className="flex flex-col justify-between flex-1">
               <div className=" w-full flex-col  justify-between flex pb-4">
-                <Link href={`/products/${product.handle}`}>
-                  <p className="text-md font-light  text-pretty">
+                <Link href={`/product/${product.handle}`}>
+                  <p className="text-sm md:text-md font-light  text-pretty">
                     {product?.title}
                   </p>
                 </Link>

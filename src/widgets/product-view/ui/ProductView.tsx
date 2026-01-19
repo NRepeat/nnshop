@@ -98,14 +98,6 @@ const ProductInfo = async ({
         {product.description}
       </p>
       <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
-        <div className="content-stretch flex gap-[2px] items-start leading-[20px] not-italic relative shrink-0 text-[13px] text-black w-full">
-          <p className="font-['Styrene_A_Web:Medium',sans-serif] relative shrink-0 text-nowrap">
-            {t('productColor')}
-          </p>
-          {/*<p className="font-sans relative shrink-0 w-[66px]">
-          {selectedVariant?.title.split(' / ')[1]}
-        </p>*/}
-        </div>
         <p className="font-sans leading-[20px] not-italic relative shrink-0 text-[#565656] text-[13px] w-full">
           {t('color')}
         </p>
@@ -262,14 +254,14 @@ export async function ProductView({
   if (!product) throw new Error('Product not found');
   const images = product.images.edges.map((edge) => edge.node).filter(Boolean);
   const colorOptions = product.options.find(
-    (option) => option.name.toLowerCase() === 'Колір'.toLowerCase(),
+    (option) => option.name.toLowerCase() === t('colorLabel').toLowerCase(),
   )?.values;
   const sizeOptions = product.options.find(
-    (option) => option.name.toLowerCase() === 'Розмір'.toLowerCase(),
+    (option) => option.name.toLowerCase() === t('sizeLabel').toLowerCase(),
   )?.values;
   return (
-    <div className="container mx-auto py-12 space-y-24">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+    <div className="container  space-y-16 mt-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12">
         <Gallery images={images} productId={product.id} isFavorite={false} />
         <ProductInfo
           product={product}

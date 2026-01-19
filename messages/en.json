@@ -308,7 +308,6 @@
     "guaranteedAuthenticity": "Guaranteed Authenticity",
     "authenticityDetails": "Every item is rigorously authenticated by our experts. All photos are of the actual product you will receive. We are confident in our processes and stand behind the authenticity of each item sold.",
     "shopClothing": "Shop / Clothing",
-    "productColor": "Product Color:",
     "color": "Color",
     "productSize": "Product Size:",
     "sizeChart": "Size Chart",
@@ -327,7 +326,9 @@
     "sustainableBabyAlpacaDescription": "Made using highest quality Baby Alpaca from Peru (certified mulesing free) and blended with a regenerated polyamide crafted for Cuyana.",
     "elegantEase": "Elegant Ease",
     "elegantEaseDescription": "Inspiration for Your Essential Wardrobe",
-    "styleWith": "Style With"
+    "styleWith": "Style With",
+    "colorLabel": "Color",
+    "sizeLabel": "Size"
   },
   "CollectionPage": {
     "explore": "Back to Search",

@@ -29,7 +29,7 @@ import moduleImage from './objects/module/image';
 import moduleImages from './objects/module/images';
 import moduleInstagram from './objects/module/instagram';
 import moduleProduct from './objects/module/product';
-import moduleProducts from './objects/module/products';
+import moduleProducts from './objects/module/product';
 import customProductOptionColor from './objects/customProductOption/color';
 import customProductOptionColorObject from './objects/customProductOption/colorObject';
 import customProductOptionSize from './objects/customProductOption/size';

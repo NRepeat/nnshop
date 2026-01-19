@@ -183,7 +183,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 overflow-y-auto max-h-[calc(100vh-200px)] pb-8">
                       {results.products?.map((product) => (
                         <Link
-                          href={`/products/${product.handle}`}
+                          href={`/product/${product.handle}`}
                           key={product.id}
                           scroll
                           className="group flex flex-col gap-2"

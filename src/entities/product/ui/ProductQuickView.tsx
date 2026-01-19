@@ -104,7 +104,7 @@ export const ProductQuickView = ({ product }: ProductQuickViewProps) => {
             className="w-full bg-black text-white hover:bg-gray-800"
           />
           <Link
-            href={`/products/${product.handle}`}
+            href={`/product/${product.handle}`}
             className="block text-center text-sm underline"
           >
             View Full Details

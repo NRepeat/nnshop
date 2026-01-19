@@ -3953,7 +3953,7 @@ export enum FilterPresentation {
  * The type of data that the filter group represents.
  *
  * For more information, refer to [Filter products in a collection with the Storefront API]
- * (https://shopify.dev/custom-storefronts/products-collections/filter-products).
+ * (https://shopify.dev/custom-storefronts/product-collections/filter-products).
  *
  */
 export enum FilterType {
@@ -6316,7 +6316,7 @@ export type PricingValue = MoneyV2 | PricingPercentageValue;
  * You can also add or update product [media](/docs/api/storefront/latest/interfaces/Media).
  * Products can be organized by grouping them into a [collection](/docs/api/storefront/latest/objects/Collection).
  *
- * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/products-collections).
+ * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/product-collections).
  *
  */
 export type Product = HasMetafields &
@@ -6343,7 +6343,7 @@ export type Product = HasMetafields &
     category?: Maybe<TaxonomyCategory>;
     /** A list of [collections](/docs/api/storefront/latest/objects/Collection) that include the product. */
     collections: CollectionConnection;
-    /** The [compare-at price range](https://help.shopify.com/manual/products/details/product-pricing/sale-pricing) of the product in the shop's default currency. */
+    /** The [compare-at price range](https://help.shopify.com/manual/product/details/product-pricing/sale-pricing) of the product in the shop's default currency. */
     compareAtPriceRange: ProductPriceRange;
     /** The date and time when the product was created. */
     createdAt: Scalars['DateTime']['output'];
@@ -6459,7 +6459,7 @@ export type Product = HasMetafields &
      */
     priceRange: ProductPriceRange;
     /**
-     * The [product type](https://help.shopify.com/manual/products/details/product-type)
+     * The [product type](https://help.shopify.com/manual/product/details/product-type)
      * that merchants define.
      *
      */
@@ -6538,7 +6538,7 @@ export type Product = HasMetafields &
  * You can also add or update product [media](/docs/api/storefront/latest/interfaces/Media).
  * Products can be organized by grouping them into a [collection](/docs/api/storefront/latest/objects/Collection).
  *
- * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/products-collections).
+ * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/product-collections).
  *
  */
 export type ProductAdjacentVariantsArgs = {
@@ -6557,7 +6557,7 @@ export type ProductAdjacentVariantsArgs = {
  * You can also add or update product [media](/docs/api/storefront/latest/interfaces/Media).
  * Products can be organized by grouping them into a [collection](/docs/api/storefront/latest/objects/Collection).
  *
- * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/products-collections).
+ * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/product-collections).
  *
  */
 export type ProductCollectionsArgs = {
@@ -6578,7 +6578,7 @@ export type ProductCollectionsArgs = {
  * You can also add or update product [media](/docs/api/storefront/latest/interfaces/Media).
  * Products can be organized by grouping them into a [collection](/docs/api/storefront/latest/objects/Collection).
  *
- * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/products-collections).
+ * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/product-collections).
  *
  */
 export type ProductDescriptionArgs = {
@@ -6595,7 +6595,7 @@ export type ProductDescriptionArgs = {
  * You can also add or update product [media](/docs/api/storefront/latest/interfaces/Media).
  * Products can be organized by grouping them into a [collection](/docs/api/storefront/latest/objects/Collection).
  *
- * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/products-collections).
+ * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/product-collections).
  *
  */
 export type ProductImagesArgs = {
@@ -6617,7 +6617,7 @@ export type ProductImagesArgs = {
  * You can also add or update product [media](/docs/api/storefront/latest/interfaces/Media).
  * Products can be organized by grouping them into a [collection](/docs/api/storefront/latest/objects/Collection).
  *
- * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/products-collections).
+ * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/product-collections).
  *
  */
 export type ProductMediaArgs = {
@@ -6639,7 +6639,7 @@ export type ProductMediaArgs = {
  * You can also add or update product [media](/docs/api/storefront/latest/interfaces/Media).
  * Products can be organized by grouping them into a [collection](/docs/api/storefront/latest/objects/Collection).
  *
- * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/products-collections).
+ * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/product-collections).
  *
  */
 export type ProductMetafieldArgs = {
@@ -6657,7 +6657,7 @@ export type ProductMetafieldArgs = {
  * You can also add or update product [media](/docs/api/storefront/latest/interfaces/Media).
  * Products can be organized by grouping them into a [collection](/docs/api/storefront/latest/objects/Collection).
  *
- * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/products-collections).
+ * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/product-collections).
  *
  */
 export type ProductMetafieldsArgs = {
@@ -6674,7 +6674,7 @@ export type ProductMetafieldsArgs = {
  * You can also add or update product [media](/docs/api/storefront/latest/interfaces/Media).
  * Products can be organized by grouping them into a [collection](/docs/api/storefront/latest/objects/Collection).
  *
- * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/products-collections).
+ * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/product-collections).
  *
  */
 export type ProductOptionsArgs = {
@@ -6691,7 +6691,7 @@ export type ProductOptionsArgs = {
  * You can also add or update product [media](/docs/api/storefront/latest/interfaces/Media).
  * Products can be organized by grouping them into a [collection](/docs/api/storefront/latest/objects/Collection).
  *
- * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/products-collections).
+ * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/product-collections).
  *
  */
 export type ProductSelectedOrFirstAvailableVariantArgs = {
@@ -6710,7 +6710,7 @@ export type ProductSelectedOrFirstAvailableVariantArgs = {
  * You can also add or update product [media](/docs/api/storefront/latest/interfaces/Media).
  * Products can be organized by grouping them into a [collection](/docs/api/storefront/latest/objects/Collection).
  *
- * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/products-collections).
+ * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/product-collections).
  *
  */
 export type ProductSellingPlanGroupsArgs = {
@@ -6731,7 +6731,7 @@ export type ProductSellingPlanGroupsArgs = {
  * You can also add or update product [media](/docs/api/storefront/latest/interfaces/Media).
  * Products can be organized by grouping them into a [collection](/docs/api/storefront/latest/objects/Collection).
  *
- * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/products-collections).
+ * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/product-collections).
  *
  */
 export type ProductVariantBySelectedOptionsArgs = {
@@ -6750,7 +6750,7 @@ export type ProductVariantBySelectedOptionsArgs = {
  * You can also add or update product [media](/docs/api/storefront/latest/interfaces/Media).
  * Products can be organized by grouping them into a [collection](/docs/api/storefront/latest/objects/Collection).
  *
- * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/products-collections).
+ * Learn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/product-collections).
  *
  */
 export type ProductVariantsArgs = {

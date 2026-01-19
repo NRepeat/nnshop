@@ -22,7 +22,7 @@ export default async function CollectionLayout({
 
   return (
     <>
-      <Header locale={locale} />
+      {/*<Header locale={locale} />*/}
       {children}
     </>
   );

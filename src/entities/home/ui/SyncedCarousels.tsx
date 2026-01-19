@@ -14,6 +14,7 @@ import { GetCollectionQuery } from '@shared/lib/shopify/types/storefront.generat
 import getSymbolFromCurrency from 'currency-symbol-map';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
+import { Button } from '@shared/ui/button';
 
 type Preview = {
   _key: string;
@@ -43,7 +44,6 @@ export const SyncedCarousels = ({
   const [api2, setApi2] = useState<CarouselApi>();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
-  console.log('previews', collectionsData);
   const onSelect = useCallback(
     (api: CarouselApi) => {
       if (!api) return;
@@ -91,7 +91,7 @@ export const SyncedCarousels = ({
                 preview &&
                 preview.asset && (
                   <CarouselItem key={preview._key}>
-                    <Link href={`/${preview.handle?.current}`}>
+                    <Link href={`/collection/${preview.handle?.current}`}>
                       <Image
                         src={urlFor(preview).url()}
                         alt={preview.alt || 'Preview image'}
@@ -140,7 +140,10 @@ export const SyncedCarousels = ({
                     ) =>
                       product && (
                         <div key={product.node.handle}>
-                          <Link href={product.node.handle} className="h-full">
+                          <Link
+                            href={`/product/${product.node.handle}`}
+                            className="h-full"
+                          >
                             <div className="flex flex-col gap-3 group relative overflow-hidden h-full">
                               <div className="flex justify-start w-full">
                                 <div className="relative aspect-[1/1] w-full ">
@@ -225,7 +228,7 @@ export const SyncedCarousels = ({
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselNext
+          {/*<CarouselNext
             variant={'ghost'}
             size={'icon'}
             className="group-hover:flex  bg-background/70 rounded-full top-1/2 right-2 absolute hidden md:flex"
@@ -233,12 +236,12 @@ export const SyncedCarousels = ({
           <CarouselPrevious
             variant={'ghost'}
             className="group-hover:flex  bg-background/70 rounded-full top-1/2 left-2 absolute hidden md:flex"
-          />
+          />*/}
           <div className="flex justify-center gap-2 mt-4">
             {scrollSnaps.map((_, index) => (
-              <button
+              <Button
                 key={index}
-                className={`w-2 h-2 rounded-full ${
+                className={`w-2 h-2 p-1 px-3 rounded-full ${
                   index === selectedIndex ? 'bg-gray-800' : 'bg-gray-300'
                 }`}
                 onClick={() => api2?.scrollTo(index)}
