@@ -1,3 +1,4 @@
+import { getLocale } from 'next-intl/server';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
 export const LanguageSwitcherSession = async ({
@@ -5,5 +6,6 @@ export const LanguageSwitcherSession = async ({
 }: {
   className?: string;
 }) => {
-  return <LanguageSwitcher className={className} />;
+  const locale = await getLocale();
+  return <LanguageSwitcher className={className} locale={locale} />;
 };

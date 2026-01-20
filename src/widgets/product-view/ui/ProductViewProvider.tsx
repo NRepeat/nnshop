@@ -5,17 +5,29 @@ import Gallery from '@features/product/ui/Gallery';
 import {
   Product as ShopifyProduct,
   ProductOption,
-  ProductVariant,
 } from '@shared/lib/shopify/types/storefront.types';
 import { ProductInfo } from './ProductInfo';
 
-export function ProductViewProvider({ product }: { product: ShopifyProduct }) {
+export function ProductViewProvider({
+  product,
+  boundProducts,
+}: {
+  product: ShopifyProduct;
+  boundProducts: ShopifyProduct[];
+}) {
   const t = useTranslations('ProductPage');
   if (!product) throw new Error('Product not found');
   const images = product.images.edges.map((edge) => edge.node).filter(Boolean);
   const colorOptions = product.options.find(
-    (option) => option.name.toLowerCase() === t('colorLabel').toLowerCase(),
+    (option) => option.name.toLowerCase() === 'Колір'.toLowerCase(),
   )?.values;
+
+  const boundProductColorOptions = boundProducts.filter((product) =>
+    product.options.find(
+      (option) => option.name.toLowerCase() === 'Колір'.toLowerCase(),
+    ),
+  );
+  console.log(product, 'product');
   const sizeOptions = product.options.find(
     (option) => option.name.toLowerCase() === t('sizeLabel').toLowerCase(),
   )?.values;
@@ -59,6 +71,7 @@ export function ProductViewProvider({ product }: { product: ShopifyProduct }) {
         colorOptions={colorOptions}
         sizeOptions={sizeOptions}
         selectedVariant={selectedVariant}
+        boundProduct={boundProductColorOptions}
         setColor={setColor}
         setSize={setSize}
         color={color ?? ''}

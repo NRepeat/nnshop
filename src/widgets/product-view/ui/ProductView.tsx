@@ -10,19 +10,21 @@ import { getTranslations } from 'next-intl/server';
 export async function ProductView({
   product,
   relatedProducts,
+  boundProducts,
   locale,
 }: {
   product: ShopifyProduct;
   relatedProducts: ShopifyProduct[];
+  boundProducts: ShopifyProduct[];
   locale: string;
 }) {
   const t = await getTranslations({ locale, namespace: 'ProductPage' });
   return (
     <div className="container  space-y-16 mt-10">
       <Suspense>
-        <ProductViewProvider product={product} />
+        <ProductViewProvider product={product} boundProducts={boundProducts} />
       </Suspense>
-      <ProductDetails locale={locale} />
+      {/*<ProductDetails locale={locale} product={product} />*/}
       <ElegantEase locale={locale} />
       <div className="content-stretch flex flex-col gap-[70px] items-center px-0 py-[74px] relative w-full">
         <p className="font-sans leading-[26px] not-italic relative shrink-0 text-[20px] text-black text-center w-full">

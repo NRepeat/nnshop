@@ -1,7 +1,6 @@
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
-import { getLocale } from 'next-intl/server';
 import { PRODUCT_METAFIELDS_FRAGMENT } from './getProduct';
 
 export const GET_PRODUCTS_BY_IDS = `

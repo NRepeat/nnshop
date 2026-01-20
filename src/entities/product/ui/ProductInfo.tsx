@@ -5,7 +5,6 @@ import {
 import Link from 'next/link';
 import { cn } from '@shared/lib/utils';
 import { AddToCartButton } from '@entities/product/ui/AddToCartButton';
-import { CaretDown } from '@shared/ui/CaretDownIcon';
 
 export const colorMap: { [key: string]: string } = {
   Бежевий: 'bg-[#F5F5DC]',
@@ -124,21 +123,17 @@ export const ProductInfo = ({
         <p className="basis-0 font-['Styrene_A_Web:Regular',sans-serif] grow leading-[20px] min-h-px min-w-px not-italic relative shrink-0 text-[13px] text-black">
           Check In-Store Availability
         </p>
-        <CaretDown className="overflow-clip relative shrink-0 size-[20px]" />
       </div>
       <div className="border-[#ddd] border-[0px_0px_1px] border-solid content-stretch flex gap-[10px] items-center px-0 py-[13px] relative shrink-0 w-full">
         <p className="basis-0 font-['Styrene_A_Web:Regular',sans-serif] grow leading-[20px] min-h-px min-w-px not-italic relative shrink-0 text-[13px] text-black">
           Fit Details
         </p>
-        <CaretDown className="overflow-clip relative shrink-0 size-[20px]" />
       </div>
       <div className="border-[#ddd] border-[0px_0px_1px] border-solid content-stretch flex gap-[10px] items-center px-0 py-[13px] relative shrink-0 w-full">
         <p className="basis-0 font-['Styrene_A_Web:Regular',sans-serif] grow leading-[20px] min-h-px min-w-px not-italic relative shrink-0 text-[13px] text-black">{`Fabrication & Care`}</p>
-        <CaretDown className="overflow-clip relative shrink-0 size-[20px]" />
       </div>
       <div className="border-[#ddd] border-[0px_0px_1px] border-solid content-stretch flex gap-[10px] items-center px-0 py-[13px] relative shrink-0 w-full">
         <p className="basis-0 font-['Styrene_A_Web:Regular',sans-serif] grow leading-[20px] min-h-px min-w-px not-italic relative shrink-0 text-[13px] text-black">{`Shipping & Returns`}</p>
-        <CaretDown className="overflow-clip relative shrink-0 size-[20px]" />
       </div>
     </div>
   </div>

@@ -50,28 +50,42 @@ const ProductSessionView = async ({
     if (!product) {
       return notFound();
     }
-    const res = await getMetaobject();
+    // const res = await getMetaobject();
     const relatedProducts = product.metafields.find(
       (m) => m?.key === 'recommended_products',
     )?.value as any as string;
-    // const boundProducts = product.metafields.find(
-    //   (m) => m?.key === 'bound-products',
-    // )?.value as any as string;
-    // const parsedBoundProducts = JSON.parse(boundProducts);
-    const relatedProductsData = JSON.parse(relatedProducts) as string[];
-    const relatedProductsIds = relatedProductsData
-      .map((id) => id.split('/').pop() || null)
-      .filter((id) => id !== null);
+    const relatedProductsData = relatedProducts
+      ? (JSON.parse(relatedProducts) as string[])
+      : [];
+    const relatedProductsIds =
+      relatedProductsData.length > 0
+        ? relatedProductsData
+            .map((id) => id.split('/').pop() || null)
+            .filter((id) => id !== null)
+        : [];
 
     const relatedShopiyProductsData = await getReletedProducts(
       relatedProductsIds,
       locale,
     );
-
+    const boundProductsIds = product.metafields.find(
+      (m) => m?.key === 'bound-products',
+    )?.value as any as string;
+    const parsedBoundProducts = boundProductsIds
+      ? (JSON.parse(boundProductsIds) as string[])
+      : [];
+    const boundProductsData =
+      parsedBoundProducts.length > 0
+        ? parsedBoundProducts
+            .map((id) => id.split('/').pop() || null)
+            .filter((id) => id !== null)
+        : [];
+    const boundProducts = await getReletedProducts(boundProductsData, locale);
     return (
       <ProductView
         product={product as Product}
         relatedProducts={relatedShopiyProductsData}
+        boundProducts={boundProducts}
         locale={locale}
       />
     );

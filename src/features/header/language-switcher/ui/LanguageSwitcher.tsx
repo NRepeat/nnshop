@@ -9,30 +9,36 @@ import {
 } from '@/shared/ui/dropdown-menu';
 import { useLocale, useTranslations } from 'use-intl';
 import { usePathname, useRouter } from '@shared/i18n/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from '@shared/lib/utils';
-
+const parseLocale = {
+  ru: 'РУС',
+  uk: 'УКР',
+};
 export function LanguageSwitcher({
   className,
   align,
+  locale,
 }: {
+  locale?: string;
   className?: string;
   align?: 'center' | 'start' | 'end' | undefined;
 }) {
   const t = useTranslations('Header.locale');
-  const locale = useLocale();
   const pathname = usePathname();
-  const [selectedLocale, setSelectedLocale] = useState<string>(locale);
 
+  const [selectedLocale, setSelectedLocale] = useState<string>(locale);
   const router = useRouter();
   const changeLocale = (newLocale: string) => {
     setSelectedLocale(newLocale);
     router.replace(pathname, { locale: newLocale });
   };
-  const parseLocale = {
-    ru: 'РУС',
-    uk: 'УКР',
-  };
+  useEffect(() => {
+    if (locale) {
+      setSelectedLocale(locale);
+    }
+  }, []);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className={className}>
@@ -48,19 +54,19 @@ export function LanguageSwitcher({
       <DropdownMenuContent className="rounded-none gap-2" align={align}>
         <DropdownMenuItem
           className={cn('rounded-none', {
-            'bg-gray-200': selectedLocale === 'ru',
-          })}
-          onClick={() => changeLocale('ru')}
-        >
-          {t('ru')}
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className={cn('rounded-none', {
             'bg-gray-200': selectedLocale === 'uk',
           })}
           onClick={() => changeLocale('uk')}
         >
           {t('uk')}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className={cn('rounded-none', {
+            'bg-gray-200': selectedLocale === 'ru',
+          })}
+          onClick={() => changeLocale('ru')}
+        >
+          {t('ru')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
