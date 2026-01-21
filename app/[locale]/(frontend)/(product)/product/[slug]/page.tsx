@@ -1,12 +1,10 @@
-import { getProduct } from '@/entities/product/api/getProduct';
-import { ProductView } from '@/widgets/product-view';
-import { PathSync } from '@entities/path-sync/ui/path-sync';
-import { getReletedProducts } from '@entities/product/api/get-related-products';
+import { getAllProductHandles } from '@entities/product/api/getAllProductsHandlers';
 import { auth } from '@features/auth/lib/auth';
+import { ProductSessionView } from '@features/product/ui/ProductSessionView';
 import { locales } from '@shared/i18n/routing';
-import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -19,89 +17,31 @@ export async function generateStaticParams() {
   return params;
 }
 // export async function generateStaticParams() {
-//   const handles = [];
+//   const params = [];
+
 //   for (const locale of locales) {
 //     const allProductsHandlers = await getAllProductHandles(locale);
-//     handles.push(...allProductsHandlers);
+
+//     // Map the handles to the expected param shape immediately
+//     const localeParams = allProductsHandlers.map((handle) => ({
+//       slug: handle,
+//       locale: locale, // Now 'locale' is correctly scoped here
+//     }));
+
+//     params.push(...localeParams);
 //   }
-//   return handles.map((handle) => ({
-//     slug: [handle],
-//   }));
+
+//   return params;
 // }
 
 export default async function ProductPage({ params }: Props) {
-  return <ProductSession params={params} />;
+  return (
+    <Suspense>
+      <ProductSession params={params} />;
+    </Suspense>
+  );
 }
-const ProductSessionView = async ({
-  handle,
-  locale,
-}: {
-  handle: string;
-  locale: string;
-}) => {
-  'use cache';
-  try {
-    const { alternateHandle, originProduct } = await getProduct({
-      handle,
-      locale,
-    });
-    const product = originProduct;
-    console.log('PRODUCT', product);
-    if (!product) {
-      return notFound();
-    }
-    // const res = await getMetaobject();
-    const relatedProducts = product.metafields.find(
-      (m) => m?.key === 'recommended_products',
-    )?.value as any as string;
-    const relatedProductsData = relatedProducts
-      ? (JSON.parse(relatedProducts) as string[])
-      : [];
-    const relatedProductsIds =
-      relatedProductsData.length > 0
-        ? relatedProductsData
-            .map((id) => id.split('/').pop() || null)
-            .filter((id) => id !== null)
-        : [];
 
-    const relatedShopiyProductsData = await getReletedProducts(
-      relatedProductsIds,
-      locale,
-    );
-    const boundProductsIds = product.metafields.find(
-      (m) => m?.key === 'bound-products',
-    )?.value as any as string;
-    const parsedBoundProducts = boundProductsIds
-      ? (JSON.parse(boundProductsIds) as string[])
-      : [];
-    const boundProductsData =
-      parsedBoundProducts.length > 0
-        ? parsedBoundProducts
-            .map((id) => id.split('/').pop() || null)
-            .filter((id) => id !== null)
-        : [];
-    const boundProducts = await getReletedProducts(boundProductsData, locale);
-    const targetLocale = locale === 'ru' ? 'uk' : 'ru';
-    const paths = {
-      [locale]: `/product/${handle}`,
-      [targetLocale]: `/product/${alternateHandle}`,
-    };
-    return (
-      <>
-        <PathSync paths={paths} />
-        <ProductView
-          product={product as Product}
-          relatedProducts={relatedShopiyProductsData}
-          boundProducts={boundProducts}
-          locale={locale}
-        />
-      </>
-    );
-  } catch (e) {
-    console.log(e);
-    return notFound();
-  }
-};
 const ProductSession = async ({ params }: Props) => {
   const { slug: handle, locale } = await params;
 

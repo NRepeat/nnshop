@@ -1,22 +1,19 @@
-import { getHomePage } from '@features/home/api/get-home-page';
 import { HeroPageBuilder } from '@features/home/ui/HeroPageBuilder';
 import { Locale } from '@shared/i18n/routing';
-import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 export const PageContent = async ({
-  locale,
-  gender,
+  params,
 }: {
-  locale: Locale;
-  gender: string;
+  params: Promise<{ locale: Locale; gender: string }>;
 }) => {
-  const page = await getHomePage({ locale, gender });
-  if (!page) {
-    return notFound();
-  }
+  const { locale, gender } = await params;
+
   return (
-    <div className="flex flex-col">
-      <HeroPageBuilder content={page.content} locale={locale} />
-    </div>
+    <Suspense>
+      <div className="flex flex-col">
+        <HeroPageBuilder gender={gender} locale={locale} />
+      </div>
+    </Suspense>
   );
 };

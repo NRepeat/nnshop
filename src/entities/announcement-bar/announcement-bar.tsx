@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { HEADER_QUERYResult } from '@/shared/sanity/types';
 import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';
 import { HeaderBarProps } from '@widgets/header/ui/Header';
+import { Suspense } from 'react';
 
 type AnnouncementBarProps = Extract<
   NonNullable<HEADER_QUERYResult>['infoBar'],
@@ -48,7 +49,9 @@ export const AnnouncementBar = async (props: AnnouncementBarProps) => {
             </p>
           </Link>
           <div className="flex justify-end">
-            <LanguageSwitcherSession className="flex" />
+            <Suspense>
+              <LanguageSwitcherSession className="flex" locale={locale} />
+            </Suspense>
           </div>
         </div>
       </div>

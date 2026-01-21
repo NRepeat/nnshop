@@ -16,6 +16,7 @@ type HeaderContentProps = Extract<
 
 export const HeaderContent = async (props: HeaderContentProps) => {
   const { icon, locale, mainCategory } = props;
+
   return (
     <div className="container w-full ">
       <div className="w-full  font-sans text-foreground grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 text-base  py-3">
@@ -23,7 +24,7 @@ export const HeaderContent = async (props: HeaderContentProps) => {
           {mainCategory && <PersistLinkNavigation {...props} />}
         </div>
         <div className="md:hidden flex items-center gap-2">
-          <MenuSheet />
+          <MenuSheet locale={locale} />
           <SearchSession className="h-full block md:hidden" />
         </div>
 

@@ -7,6 +7,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { Header } from '@widgets/header/ui/Header';
 import { Footer } from '@widgets/footer/ui/Footer';
 import { locales } from '@shared/i18n/routing';
+import { setRequestLocale } from 'next-intl/server';
 
 const jostSans = Jost({
   variable: '--font-jost-sans',
@@ -40,23 +41,22 @@ interface RootProps {
 }
 
 export default async function RootLayout(props: RootProps) {
-  const { children, modal, auth, params } = props;
+  const { children, params, auth, modal } = props;
   const { locale } = await params;
 
+  setRequestLocale(locale);
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={`${jostSans.variable} antialiased`}>
         <Providers>
-          <NextIntlClientProvider locale={locale}>
-            <Header locale={locale} />
+          <Header locale={locale} />
 
-            {children}
+          {children}
 
-            {modal && <div id="modal-slot">{modal}</div>}
-            {auth && <div id="auth-slot">{auth}</div>}
+          {modal && <div id="modal-slot">{modal}</div>}
+          {auth && <div id="auth-slot">{auth}</div>}
 
-            <Footer locale={locale} />
-          </NextIntlClientProvider>
+          <Footer locale={locale} />
         </Providers>
       </body>
     </html>

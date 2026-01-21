@@ -1,11 +1,8 @@
 import { getTranslations } from 'next-intl/server';
 import { getMainMenu } from '../api/getMainMenu';
-import { getLocale } from 'next-intl/server';
 import NavigationSheet from './NavigationSheet';
 
-const MenuSheet = async () => {
-  const locale = await getLocale();
-
+const MenuSheet = async ({ locale }: { locale: string }) => {
   const t = await getTranslations({
     locale,
     namespace: 'Header.nav.drawer',

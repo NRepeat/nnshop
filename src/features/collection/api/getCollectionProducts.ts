@@ -29,8 +29,10 @@ export async function getCollectionProducts({
   if (!collection) {
     throw new Error('Collection not found');
   }
-  const pageInfo = collectionData.collection?.products.pageInfo;
-  const products = collection.products.edges.map((edge) => edge.node);
+  const pageInfo = collectionData.collection?.collection?.products.pageInfo;
+  const products = collection.collection?.products.edges.map(
+    (edge) => edge.node,
+  );
   return {
     products,
     pageInfo,

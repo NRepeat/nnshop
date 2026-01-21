@@ -40,15 +40,16 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
             <Link href={`/${link.slug}`}>
               <Suspense
                 fallback={
-                  <NavButton
-                    gender={link.slug}
-                    children={link.name as any as string}
-                  />
+                  <></>
+                  // <NavButton
+                  //   gender={link.slug}
+                  //   children={link.name as any as string}
+                  // />
                 }
               >
-                <NavButton gender={link.slug}>
-                  {link.name as any as string}
-                </NavButton>
+                {/* <NavButton gender={link.slug}> */}
+                {link.name as any as string}
+                {/* </NavButton> */}
               </Suspense>
             </Link>
           </NavigationMenuItem>

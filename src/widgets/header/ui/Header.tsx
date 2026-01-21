@@ -7,6 +7,7 @@ import { HeaderContent } from '@features/header/ui/HeaderContent';
 import { sanityFetch } from '@shared/sanity/lib/client';
 import { HEADER_QUERY } from '@shared/sanity/lib/query';
 import { HEADER_QUERYResult } from '@shared/sanity/types';
+import { setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
 export type HeaderBarProps = Extract<
@@ -27,6 +28,7 @@ export const Header = async ({
     params: { locale },
     tags: ['siteSettings'],
   });
+  setRequestLocale(locale);
   return (
     <>
       {headerData?.infoBar && headerData?.header && (
@@ -38,9 +40,12 @@ export const Header = async ({
         />
       )}
       <header className="sticky top-0  z-30  bg-background   md:h-fit flex flex-col items-center">
-        {headerData?.header && (
-          <HeaderContent locale={locale} {...headerData?.header} />
-        )}
+        <Suspense>
+          {headerData?.header && (
+            <HeaderContent locale={locale} {...headerData?.header} />
+          )}
+        </Suspense>
+
         {gender ? (
           <div className="hidden md:block container">
             <Navigation locale={locale} gender={gender} />

@@ -19,7 +19,6 @@ export const getHomePage = async (params: RouteProps['params']) => {
     tags: [params.gender, 'page'],
     revalidate: 60,
   });
-  console.log('sanityLocale', page, sanityLocale, params.gender);
 
   return page;
 };

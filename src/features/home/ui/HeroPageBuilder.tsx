@@ -7,13 +7,21 @@ import {
 import { BrandGrid } from '@entities/home/ui/BrendGrid/BrendGrid';
 import { PreviewsCollections } from '@entities/home/ui/previews-collections';
 import { SplitImage } from '@entities/split-image';
-import { HOME_PAGEResult } from '@shared/sanity/types';
+import { notFound } from 'next/navigation';
+import { getHomePage } from '../api/get-home-page';
+import { Locale } from '@/shared/i18n/routing';
 type HeroPageProps = {
-  content: NonNullable<HOME_PAGEResult>['content'];
-  locale: string;
+  // content: NonNullable<HOME_PAGEResult>['content'];
+  locale: Locale;
+  gender: string;
 };
 
-export const HeroPageBuilder = ({ content, locale }: HeroPageProps) => {
+export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
+  const page = await getHomePage({ locale, gender });
+  if (!page) {
+    return notFound();
+  }
+  const { content } = page;
   if (!Array.isArray(content)) {
     return null;
   }

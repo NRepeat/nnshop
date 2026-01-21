@@ -44,9 +44,8 @@ export const ProductCard = ({
     .splice(0, 5);
   const nav = useRouter();
   const isNew = product.tags.includes('новий') || product.tags.includes('new');
-  const handleAddToFavorites = async (e: React.MouseEvent) => {
+  const handleAddToFavorites = async () => {
     const data = await addToFavorites(product.id, '1');
-    console.log(data, 'data');
     if (!data) {
       nav.push(`/auth/sign-in`, { scroll: false });
     }
@@ -102,7 +101,7 @@ export const ProductCard = ({
                     onClick={async (e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      await handleAddToFavorites(e);
+                      await handleAddToFavorites();
                     }}
                   >
                     <Heart className="" />
