@@ -88,11 +88,11 @@ export const ProductCard = ({
                 <CarouselNext
                   variant={'ghost'}
                   size={'icon'}
-                  className="group-hover:flex hidden md:flex bg-background/70 rounded-full top-1/2 right-2 absolute"
+                  className="group-hover:flex hidden md:hover:flex bg-background/70 rounded-full top-1/2 right-2 absolute"
                 />
                 <CarouselPrevious
                   variant={'ghost'}
-                  className="group-hover:flex hidden md:flex bg-background/70 rounded-full top-1/2 left-2 absolute"
+                  className="group-hover:flex hidden md:hover:flex bg-background/70 rounded-full top-1/2 left-2 absolute"
                 />
                 <div className="absolute top-2  right-2  hidden group-hover:block">
                   <Button
