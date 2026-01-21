@@ -148,6 +148,7 @@ export default function LoginForm({
 
                 <Field className="grid grid-cols-2 gap-4">
                   <Button
+                    size={'icon'}
                     variant="outline"
                     type="button"
                     disabled={isLoading}
@@ -187,6 +188,7 @@ export default function LoginForm({
                   <Button
                     variant="outline"
                     type="button"
+                    size={'icon'}
                     disabled={isLoading}
                     onClick={async () => {
                       setIsLoading(true);

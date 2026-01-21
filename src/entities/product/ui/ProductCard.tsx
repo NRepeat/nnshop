@@ -17,6 +17,7 @@ import { Badge } from '@/shared/ui/badge';
 import { Button } from '@shared/ui/button';
 import { useTranslations } from 'next-intl';
 import { Link } from '@shared/i18n/navigation';
+import { addToFavorites } from '@entities/favorite/api/add-to-fav';
 
 type ProductCardProps = {
   product: Product;
@@ -43,6 +44,13 @@ export const ProductCard = ({
     .splice(0, 5);
   const nav = useRouter();
   const isNew = product.tags.includes('новий') || product.tags.includes('new');
+  const handleAddToFavorites = async (e: React.MouseEvent) => {
+    const data = await addToFavorites(product.id, '1');
+    console.log(data, 'data');
+    if (!data) {
+      nav.push(`/auth/sign-in`, { scroll: false });
+    }
+  };
   return (
     <Card
       className={clsx(
@@ -91,9 +99,10 @@ export const ProductCard = ({
                     size={'icon'}
                     variant={'ghost'}
                     className="hover:[&>svg]:stroke-[#e31e24] bg-background/70 rounded-full"
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.stopPropagation();
                       e.preventDefault();
+                      await handleAddToFavorites(e);
                     }}
                   >
                     <Heart className="" />
@@ -107,7 +116,7 @@ export const ProductCard = ({
                       e.stopPropagation();
                       e.preventDefault();
 
-                      nav.push(`/product/${product.handle}`, {});
+                      nav.push(`/quick/${product.handle}`, { scroll: false });
                     }}
                   >
                     {t('quickView')}
@@ -149,7 +158,7 @@ export const ProductCard = ({
             <span className="text-md font-bold">{product.vendor}</span>
             <div className="flex flex-col justify-between flex-1">
               <div className=" w-full flex-col  justify-between flex pb-4">
-                <Link href={`/product/${product.handle}`}>
+                <Link href={`/productt/${product.handle}`}>
                   <p className="text-sm md:text-md font-light  text-pretty">
                     {product?.title}
                   </p>

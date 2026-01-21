@@ -1,25 +1,31 @@
 import { getProduct } from '@/entities/product/api/getProduct';
 import { ProductQuickView } from '@/entities/product/ui/ProductQuickView';
 import { QuickView } from '@/widgets/product-view/ui/QuickView';
-import { getAllProductHandles } from '@entities/product/api/getAllProductsHandlers';
 import { locales } from '@shared/i18n/routing';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
 type Props = {
-  params: { slug: string[]; locale: string };
+  params: Promise<{ slug: string; locale: string }>;
 };
 // export async function generateStaticParams() {
 //   const handles = [];
 //   for (const locale of locales) {
-//     const allProductsHandlers = await getAllProductHandles(locale);
-//     handles.push(...allProductsHandlers);
+//     // const allProductsHandlers = await getAllProductHandles(locale);
+//     // handles.push(...allProductsHandlers);
 //   }
 //   return handles.map((handle) => ({
 //     slug: [handle],
 //   }));
 // }
+export async function generateStaticParams() {
+  const params = [];
+  for (const locale of locales) {
+    params.push({ locale: locale });
+  }
+  return params;
+}
 
 export default async function ProductQuickViewPage({ params }: Props) {
   return (
@@ -31,20 +37,21 @@ export default async function ProductQuickViewPage({ params }: Props) {
 
 const ProductSessionView = async ({ product }: { product: Product }) => {
   try {
-    if (!product) {
-      return notFound();
-    }
-
-    return <ProductQuickView product={product as Product} />;
+    // if (!product) {
+    //   return notFound();
+    // }
+    return <>Hi</>;
+    // return <ProductQuickView product={product as Product} />;
   } catch {
     return notFound();
   }
 };
 
 const ProductSession = async ({ params }: Props) => {
-  const p = params;
-  const response = await getProduct({ handle: p.slug[0], locale: p.locale });
-  const product = response?.product;
+  const p = await params;
+  const response = await getProduct({ handle: p.slug, locale: p.locale });
+  const product = response?.originProduct;
+  console.log(product);
   return (
     <QuickView open={Boolean(product)}>
       <ProductSessionView product={product as Product} />

@@ -37,7 +37,7 @@ const ProductCarousel = async ({
     locale,
   });
   if (!shopifyCollection) return null;
-  const products = shopifyCollection.collection?.products.edges.map(
+  const products = shopifyCollection.collection?.collection?.products.edges.map(
     (edge) => edge.node,
   );
   return (

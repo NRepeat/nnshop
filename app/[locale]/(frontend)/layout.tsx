@@ -1,12 +1,12 @@
-import { StyreneAWeb } from '@/shared/utils/custom-fonts';
 import type { Metadata } from 'next';
-import { Jost, Geist, Geist_Mono } from 'next/font/google';
+import { Jost } from 'next/font/google';
 import '../../globals.css';
 import { Providers } from '@/app/providers';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { NextIntlClientProvider } from 'next-intl';
 import { Header } from '@widgets/header/ui/Header';
 import { Footer } from '@widgets/footer/ui/Footer';
+import { locales } from '@shared/i18n/routing';
 
 // const geistSans = Geist({
 //   variable: '--font-geist-sans',
@@ -45,12 +45,22 @@ const jostSans = Jost({
 export const metadata: Metadata = {
   title: 'Mio Mio',
 };
-
+export async function generateStaticParams() {
+  const params = [];
+  for (const locale of locales) {
+    params.push({ locale: locale });
+  }
+  return params;
+}
 export default async function RootLayout({
   children,
   params,
+  auth,
+  modal,
 }: {
   children: React.ReactNode;
+  modal: React.ReactNode;
+  auth: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
@@ -61,7 +71,8 @@ export default async function RootLayout({
           <NextIntlClientProvider>
             <Header locale={locale} />
             {children}
-            {/*{modal}*/}
+            {modal}
+            {auth}
             <Footer locale={locale} />
           </NextIntlClientProvider>
         </Providers>

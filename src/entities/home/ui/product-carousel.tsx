@@ -19,7 +19,7 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
     locale,
   });
   if (!shopifyCollection) return null;
-  const products = shopifyCollection.collection?.products.edges.map(
+  const products = shopifyCollection.collection?.collection?.products.edges.map(
     (edge) => edge.node,
   );
   const items = products?.map((product, index) => {

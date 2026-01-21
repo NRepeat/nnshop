@@ -30,7 +30,13 @@ type Preview = {
 };
 
 type SyncedCarouselsProps = {
-  collectionsData: any[];
+  collectionsData: (
+    | {
+        collection: GetCollectionQuery;
+        alternateHandle: string;
+      }
+    | undefined
+  )[];
   previews: Preview[] | undefined | null;
   title: string | undefined;
 };
@@ -38,7 +44,6 @@ type SyncedCarouselsProps = {
 export const SyncedCarousels = ({
   collectionsData,
   previews,
-  title,
 }: SyncedCarouselsProps) => {
   const [api1, setApi1] = useState<CarouselApi>();
   const [api2, setApi2] = useState<CarouselApi>();
@@ -129,46 +134,86 @@ export const SyncedCarousels = ({
             {collectionsData.filter(Boolean).map((collection, index) => (
               <CarouselItem key={index}>
                 <div className="w-full flex justify-center">
-                  <p className="text-2xl ">{collection.collection?.title}</p>
+                  <p className="text-2xl ">
+                    {collection?.collection?.collection?.title}
+                  </p>
                 </div>
                 <div className="grid grid-cols-3 gap-4 px-5 ">
-                  {collection.collection?.products?.edges?.slice(0, 3).map(
-                    (
-                      product: NonNullable<
-                        GetCollectionQuery['collection']
-                      >['products']['edges'][0],
-                    ) =>
-                      product && (
-                        <div key={product.node.handle}>
-                          <Link
-                            href={`/product/${product.node.handle}`}
-                            className="h-full"
-                          >
-                            <div className="flex flex-col gap-3 group relative overflow-hidden h-full">
-                              <div className="flex justify-start w-full">
-                                <div className="relative aspect-[1/1] w-full ">
-                                  <Image
-                                    src={
-                                      product.node.media.edges[0].node
-                                        .previewImage?.url
-                                    }
-                                    alt={product.node.title}
-                                    fill
-                                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 30vw, 20vw"
-                                    className="object-contain w-full transition-transform duration-300 group-hover:scale-105"
-                                  />
+                  {collection?.collection?.collection?.products?.edges
+                    ?.slice(0, 3)
+                    .map(
+                      (
+                        product: NonNullable<
+                          GetCollectionQuery['collection']
+                        >['products']['edges'][0],
+                      ) =>
+                        product && (
+                          <div key={product.node.handle}>
+                            <Link
+                              href={`/product/${product.node.handle}`}
+                              className="h-full"
+                            >
+                              <div className="flex flex-col gap-3 group relative overflow-hidden h-full">
+                                <div className="flex justify-start w-full">
+                                  <div className="relative aspect-[1/1] w-full ">
+                                    <Image
+                                      src={
+                                        product.node.media.edges[0].node
+                                          .previewImage?.url
+                                      }
+                                      alt={product.node.title}
+                                      fill
+                                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 30vw, 20vw"
+                                      className="object-contain w-full transition-transform duration-300 group-hover:scale-105"
+                                    />
+                                  </div>
                                 </div>
-                              </div>
 
-                              <div className="flex flex-col flex-grow">
-                                <p className="text-start font-sans text-base group-hover:underline line-clamp-2 min-h-[3rem] mb-1 max-w-[220px]">
-                                  {product.node.title}
-                                </p>
-                                <div className="mt-auto">
-                                  {product.node.metafield &&
-                                  product.node.metafield.key === 'znizka' ? (
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                      <span className="line-through text-gray-500 text-xs">
+                                <div className="flex flex-col flex-grow">
+                                  <p className="text-start font-sans text-base group-hover:underline line-clamp-2 min-h-[3rem] mb-1 max-w-[220px]">
+                                    {product.node.title}
+                                  </p>
+                                  <div className="mt-auto">
+                                    {product.node.metafield &&
+                                    product.node.metafield.key === 'znizka' ? (
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        <span className="line-through text-gray-500 text-xs">
+                                          {
+                                            product.node.priceRange
+                                              .maxVariantPrice.amount
+                                          }{' '}
+                                          {getSymbolFromCurrency(
+                                            product.node.priceRange
+                                              .maxVariantPrice.currencyCode,
+                                          ) ||
+                                            product.node.priceRange
+                                              .maxVariantPrice.currencyCode}
+                                        </span>
+
+                                        <span className="text-red-600 font-bold text-sm">
+                                          {(
+                                            product.node.priceRange
+                                              .maxVariantPrice.amount *
+                                            (1 -
+                                              parseFloat(
+                                                product.node.metafield.value,
+                                              ) /
+                                                100)
+                                          ).toFixed(2)}{' '}
+                                          {getSymbolFromCurrency(
+                                            product.node.priceRange
+                                              .maxVariantPrice.currencyCode,
+                                          ) ||
+                                            product.node.priceRange
+                                              .maxVariantPrice.currencyCode}
+                                        </span>
+
+                                        <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
+                                          -{product.node.metafield.value}%
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <span className="font-bold text-sm">
                                         {
                                           product.node.priceRange
                                             .maxVariantPrice.amount
@@ -180,50 +225,14 @@ export const SyncedCarousels = ({
                                           product.node.priceRange
                                             .maxVariantPrice.currencyCode}
                                       </span>
-
-                                      <span className="text-red-600 font-bold text-sm">
-                                        {(
-                                          product.node.priceRange
-                                            .maxVariantPrice.amount *
-                                          (1 -
-                                            parseFloat(
-                                              product.node.metafield.value,
-                                            ) /
-                                              100)
-                                        ).toFixed(2)}{' '}
-                                        {getSymbolFromCurrency(
-                                          product.node.priceRange
-                                            .maxVariantPrice.currencyCode,
-                                        ) ||
-                                          product.node.priceRange
-                                            .maxVariantPrice.currencyCode}
-                                      </span>
-
-                                      <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
-                                        -{product.node.metafield.value}%
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    <span className="font-bold text-sm">
-                                      {
-                                        product.node.priceRange.maxVariantPrice
-                                          .amount
-                                      }{' '}
-                                      {getSymbolFromCurrency(
-                                        product.node.priceRange.maxVariantPrice
-                                          .currencyCode,
-                                      ) ||
-                                        product.node.priceRange.maxVariantPrice
-                                          .currencyCode}
-                                    </span>
-                                  )}
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </Link>
-                        </div>
-                      ),
-                  )}
+                            </Link>
+                          </div>
+                        ),
+                    )}
                 </div>
               </CarouselItem>
             ))}

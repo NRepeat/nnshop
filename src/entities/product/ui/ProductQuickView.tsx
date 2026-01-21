@@ -17,7 +17,6 @@ type ProductQuickViewProps = {
 };
 
 export const ProductQuickView = ({ product }: ProductQuickViewProps) => {
-  console.log(product);
   const productImages = product.images.edges
     .map((edge) => edge.node)
     .filter(Boolean);
