@@ -13,7 +13,7 @@ import { useTranslations } from 'next-intl';
 import { Filter } from '@shared/lib/shopify/types/storefront.types';
 
 type Props = {
-  filters: Filter[];
+  filters: Filter[] | undefined;
   initialFilters: Filter[] | undefined;
 };
 
@@ -41,10 +41,12 @@ export function FilterSheet({ filters, initialFilters }: Props) {
           </SheetTitle>
         </SheetHeader>
         <div className="overflow-auto px-5 overflow-y-scroll">
-          <CollectionFilters
-            filters={filters}
-            initialFilters={initialFilters}
-          />
+          {filters && (
+            <CollectionFilters
+              filters={filters}
+              initialFilters={initialFilters}
+            />
+          )}
         </div>
       </SheetContent>
     </Sheet>

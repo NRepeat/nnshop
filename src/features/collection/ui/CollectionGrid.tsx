@@ -16,7 +16,7 @@ import { SortSelect } from './SortSelect';
 import { SearchParams } from '~/app/[locale]/(frontend)/collection/[slug]/page';
 import { cookies } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
-
+import { PathSync } from '@entities/path-sync/ui/path-sync';
 export const CollectionGrid = async ({
   params,
   searchParams,
@@ -24,76 +24,108 @@ export const CollectionGrid = async ({
   params: Promise<{ locale: string; slug: string }>;
   searchParams: Promise<SearchParams>;
 }) => {
-  const { locale, slug } = await params;
-  const t = await getTranslations('Header');
-  const cookie = await cookies();
-  const gender = cookie.get('gender')?.value || 'woman';
-  const awaitedSearchParams = await searchParams;
-  const collectionData = await getCollection({
-    handle: slug,
-    first: 20,
-    locale: locale,
-    searchParams: awaitedSearchParams,
-  });
-  const initialCollection = await getCollection({
-    handle: slug,
-    first: 20,
-    locale: locale,
-  });
-  if (!collectionData) {
-    return notFound();
-  }
-  const collection = collectionData.collection;
+  const [awaitedParams, awaitedSearchParams, cookieStore, t] =
+    await Promise.all([
+      params,
+      searchParams,
+      cookies(),
+      getTranslations('Header'),
+    ]);
 
-  if (!collection) {
+  const { locale, slug } = awaitedParams;
+  const gender = cookieStore.get('gender')?.value || 'woman';
+  const hasFilters = Object.keys(awaitedSearchParams).length > 0;
+
+  const collectionPromises = [
+    getCollection({
+      handle: slug,
+      first: 20,
+      locale: locale,
+      searchParams: awaitedSearchParams,
+    }),
+  ];
+
+  if (hasFilters) {
+    collectionPromises.push(
+      getCollection({ handle: slug, first: 20, locale: locale }),
+    );
+  }
+
+  const [currentData, initialData] = await Promise.all(collectionPromises);
+
+  if (!currentData?.collection) {
     return notFound();
   }
-  const pageInfo = collectionData.collection?.products.pageInfo;
-  const products = collection.products.edges.map((edge) => edge.node);
-  const currentSort = awaitedSearchParams.sort as string | undefined;
-  const initialFilters = initialCollection.collection?.products.filters;
-  console.log(initialFilters);
+
+  const { collection, alternateHandle } = currentData;
+  const initialFilters = hasFilters
+    ? initialData?.collection?.collection?.products.filters
+    : collection.collection?.products.filters;
+
+  const targetLocale = locale === 'ru' ? 'uk' : 'ru';
+  const paths = {
+    [locale]: `/collection/${slug}`,
+    [targetLocale]: `/collection/${alternateHandle}`,
+  };
+
+  const products = collection.collection?.products.edges.map(
+    (edge) => edge.node,
+  );
+  const pageInfo = collection.collection?.products.pageInfo;
 
   return (
-    <div className="pl-2 md:pl-5 flex flex-col gap-4 md:gap-8 mt-8">
-      <Breadcrumb className="">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href={`/${locale}`}>{t('nav.home')}</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink>
-              {gender === 'man'
-                ? t('nav.collections.forMan.title')
-                : t('nav.collections.forWoman.title')}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{collection?.title}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-      <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row   justify-between lg:items-end gap-6">
-        <div className="flex flex-col gap-3.5 w-full">
-          <h2 className="text-2xl font-bold">{collection?.title}</h2>
-          <ActiveFiltersCarousel filters={collection.products.filters} />
+    <>
+      <PathSync paths={paths} />
+      <div className="pl-2 md:pl-5 flex flex-col gap-4 md:gap-8 mt-8">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`/${locale}`}>
+                {t('nav.home')}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink>
+                {gender === 'man'
+                  ? t('nav.collections.forMan.title')
+                  : t('nav.collections.forWoman.title')}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{collection.collection?.title}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
+        <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row justify-between lg:items-end gap-6">
+          <div className="flex flex-col gap-3.5 w-full">
+            <h2 className="text-2xl font-bold">
+              {collection.collection?.title}
+            </h2>
+            {collection.collection?.products.filters && (
+              <ActiveFiltersCarousel
+                filters={collection.collection?.products.filters}
+              />
+            )}
+          </div>
+          <div className="flex h-full items-end flex-row gap-2 justify-between md:justify-end">
+            <SortSelect defaultValue={awaitedSearchParams.sort as string} />
+            <FilterSheet
+              filters={collection.collection?.products.filters}
+              initialFilters={initialFilters}
+            />
+          </div>
         </div>
-        <div className="flex h-full items-end flex-row gap-2 justify-between md:justify-end ">
-          <SortSelect defaultValue={currentSort} />
-          <FilterSheet
-            filters={collection.products.filters}
-            initialFilters={initialFilters}
+
+        <div className="flex justify-between gap-8 h-full">
+          <ClientGridWrapper
+            initialPageInfo={pageInfo as PageInfo}
+            initialProducts={products as Product[]}
           />
         </div>
       </div>
-      <div className="flex justify-between  gap-8   h-full">
-        <ClientGridWrapper
-          initialPageInfo={pageInfo as PageInfo}
-          initialProducts={products as Product[]}
-        />
-      </div>
-    </div>
+    </>
   );
 };

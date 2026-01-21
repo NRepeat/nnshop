@@ -35,7 +35,7 @@ export const AnnouncementBar = async (props: AnnouncementBarProps) => {
         <div className="w-full  justify-center bg-foreground text-background grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 container ">
           <div className="px-2 md:px-5 items-center  gap-2 w-full justify-start  flex h-full ">
             <span className="text-nowrap">{telephone}</span>
-            <Button variant={'default'}>
+            <Button variant={'default'} className="bg-foreground">
               <Send className="max-w-[16px]" />
             </Button>
           </div>

@@ -1,14 +1,12 @@
 import { getProduct } from '@/entities/product/api/getProduct';
 import { ProductView } from '@/widgets/product-view';
-import { getMetaobject } from '@entities/metaobject/api/get-metaobject';
+import { PathSync } from '@entities/path-sync/ui/path-sync';
 import { getReletedProducts } from '@entities/product/api/get-related-products';
 import { auth } from '@features/auth/lib/auth';
 import { locales } from '@shared/i18n/routing';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
-import { Session, User } from 'better-auth';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { Suspense } from 'react';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -43,10 +41,12 @@ const ProductSessionView = async ({
 }) => {
   'use cache';
   try {
-    const response = await getProduct({ handle, locale });
-
-    const product = response?.product;
-
+    const { alternateHandle, originProduct } = await getProduct({
+      handle,
+      locale,
+    });
+    const product = originProduct;
+    console.log('PRODUCT', product);
     if (!product) {
       return notFound();
     }
@@ -81,13 +81,21 @@ const ProductSessionView = async ({
             .filter((id) => id !== null)
         : [];
     const boundProducts = await getReletedProducts(boundProductsData, locale);
+    const targetLocale = locale === 'ru' ? 'uk' : 'ru';
+    const paths = {
+      [locale]: `/product/${handle}`,
+      [targetLocale]: `/product/${alternateHandle}`,
+    };
     return (
-      <ProductView
-        product={product as Product}
-        relatedProducts={relatedShopiyProductsData}
-        boundProducts={boundProducts}
-        locale={locale}
-      />
+      <>
+        <PathSync paths={paths} />
+        <ProductView
+          product={product as Product}
+          relatedProducts={relatedShopiyProductsData}
+          boundProducts={boundProducts}
+          locale={locale}
+        />
+      </>
     );
   } catch (e) {
     console.log(e);

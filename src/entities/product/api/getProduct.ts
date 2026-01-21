@@ -1,6 +1,5 @@
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
-import { getLocale } from 'next-intl/server';
 import { GetProductByHandleQuery } from '@shared/lib/shopify/types/storefront.generated';
 
 export const PRODUCT_METAFIELDS_FRAGMENT = `#graphql
@@ -41,6 +40,7 @@ export const PRODUCT_METAFIELDS_FRAGMENT = `#graphql
 
 export const GET_PRODUCT_QUERY = `#graphql
   query getProductByHandle($handle: String!, $variant: ID) {
+  
     product(handle: $handle, id: $variant) {
       id
       title
@@ -49,6 +49,7 @@ export const GET_PRODUCT_QUERY = `#graphql
       descriptionHtml
       vendor
       productType
+      
       priceRange {
         maxVariantPrice {
           amount
@@ -125,6 +126,7 @@ export const getProduct = async ({
   locale: string;
 }) => {
   try {
+    const targetLocale = locale === 'ru' ? 'UK' : 'RU';
     const product = await storefrontClient.request<
       GetProductByHandleQuery,
       { handle: string }
@@ -133,11 +135,30 @@ export const getProduct = async ({
       variables: { handle },
       language: locale.toUpperCase() as StorefrontLanguageCode,
     });
-    console.log(product);
     if (!product.product) {
       throw new Error('Product not found');
     }
-    return product;
+    const alternateRequest = storefrontClient.request<
+      {
+        product: { handle: string };
+      },
+      { id: string }
+    >({
+      query: `#graphql
+        query getHandleById($id: ID!) {
+          product(id: $id) {
+            handle
+          }
+        }`,
+      variables: { id: product.product.id },
+      language: targetLocale as StorefrontLanguageCode,
+    });
+
+    const alternateData = await alternateRequest;
+    return {
+      originProduct: product.product,
+      alternateHandle: alternateData.product?.handle,
+    };
   } catch (error) {
     console.error(error);
     throw new Error('Failed to fetch product');

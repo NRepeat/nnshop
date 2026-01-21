@@ -325,5 +325,23 @@ export const getCollection = async ({
     },
     language: locale.toUpperCase() as StorefrontLanguageCode,
   });
-  return collection as GetCollectionQuery;
+  const targetLocale = locale === 'ru' ? 'UK' : 'RU';
+  const alternateRequest = storefrontClient.request<
+    {
+      collection: { handle: string };
+    },
+    { id: string }
+  >({
+    query: `#graphql
+        query getCollectionHandleById($id: ID!) {
+          collection(id: $id) {
+            handle
+          }
+        }`,
+    variables: { id: collection.collection?.id || '' },
+    language: targetLocale as StorefrontLanguageCode,
+  });
+
+  const alternateData = await alternateRequest;
+  return { collection, alternateHandle: alternateData.collection?.handle };
 };
