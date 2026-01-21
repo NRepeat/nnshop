@@ -1,10 +1,7 @@
 import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
 import { Suspense } from 'react';
 import { ProductViewProvider } from './ProductViewProvider';
-import { ProductDetails } from './ProductDetails';
-import { ElegantEase } from './ElegantEase';
 import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
-import ProductComments from '@entities/product/ui/ProductComments';
 import { getTranslations } from 'next-intl/server';
 
 export async function ProductView({
@@ -25,18 +22,18 @@ export async function ProductView({
         <ProductViewProvider product={product} boundProducts={boundProducts} />
       </Suspense>
       {/*<ProductDetails locale={locale} product={product} />*/}
-      <ElegantEase locale={locale} />
+      {/* <ElegantEase locale={locale} /> */}
       <div className="content-stretch flex flex-col gap-[70px] items-center px-0 py-[74px] relative w-full">
         <p className="font-sans leading-[26px] not-italic relative shrink-0 text-[20px] text-black text-center w-full">
           {t('styleWith')}
         </p>
-        <div className="content-stretch flex gap-[20px] items-start px-[153px] py-0 relative shrink-0 w-full">
+        <div className="content-stretch flex gap-5 items-start mx-auto max-w-5xl py-0 relative  w-full">
           {relatedProducts.slice(0, 3).map((p) => (
             <ProductCardSPP product={p} key={p.id} />
           ))}
         </div>
       </div>
-      <ProductComments />
+      {/* <ProductComments /> */}
     </div>
   );
 }

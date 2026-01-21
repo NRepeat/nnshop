@@ -1,48 +1,28 @@
 'use client';
-import { useTranslations } from 'next-intl';
 import {
   Product as ShopifyProduct,
   ProductVariant,
-  ProductOption,
 } from '@shared/lib/shopify/types/storefront.types';
 import { Button } from '@shared/ui/button';
 import { AddToCartButton } from '@entities/product/ui/AddToCartButton';
-import getSymbolFromCurrency from 'currency-symbol-map';
 import { cn } from '@shared/lib/utils';
 import { Link } from '@shared/i18n/navigation';
-export const colorMap: { [key: string]: string } = {
-  Бежевий: 'bg-[#F5F5DC]',
-  Блакитний: 'bg-[#87CEEB]',
-  Бордовий: 'bg-[#800000]',
-  Бронзовий: 'bg-[#CD7F32]',
-  Білий: 'bg-[#FFFFFF]',
-  Жовтий: 'bg-[#FFFF00]',
-  Зелений: 'bg-[#008000]',
-  Золото: 'bg-[#FFD700]',
-  Коричневий: 'bg-[#A52A2A]',
-  "М'ятний": 'bg-[#98FF98]',
-  Мультиколор: 'bg-gradient-to-r from-red-500 to-blue-500',
-  Помаранчевий: 'bg-[#FFA500]',
-  Пітон: 'bg-gray-500',
-  Рожевий: 'bg-[#FFC0CB]',
-  Рудий: 'bg-[#D2691E]',
-  Синій: 'bg-[#0000FF]',
-  Срібло: 'bg-[#C0C0C0]',
-  Сірий: 'bg-[#808080]',
-  Фіолетовий: 'bg-[#8A2BE2]',
-  Хакі: 'bg-[#F0E68C]',
-  Червоний: 'bg-[#FF0000]',
-  Чорний: 'bg-[#000000]',
-};
+import { ProductPrice } from './Price';
+import { COLOR_MAP } from './collors';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@shared/ui/accordion';
+import { useTranslations } from 'next-intl';
 
 export const ProductInfo = ({
   product,
   colorOptions,
   sizeOptions,
   selectedVariant,
-  setColor,
   setSize,
-  color,
   boundProduct,
   size,
 }: {
@@ -51,228 +31,149 @@ export const ProductInfo = ({
   sizeOptions: string[] | undefined;
   boundProduct: ShopifyProduct[] | undefined;
   selectedVariant: ProductVariant | undefined;
-  setColor: (value: string) => void;
   setSize: (value: string) => void;
-  color: string;
   size: string;
 }) => {
   const t = useTranslations('ProductPage');
+
   const sale =
-    product.metafields
-      .filter((metafield) => metafield?.key === 'znizka')
-      .find((metafield) => metafield?.value)?.value || '0';
+    product.metafields.find((m) => m?.key === 'znizka')?.value || '0';
 
-  const boundColorOptions = boundProduct?.flatMap(
-    (product) =>
-      product.options.find((option) => option.name === 'Колір') || [],
-  );
-  const colorOptionsValues: { name: string; product: string }[] = [];
-  if (colorOptions && colorOptions.length > 0) {
-    colorOptionsValues.push(
-      ...colorOptions.map((op) => ({ name: op, product: product.handle })),
-    );
-  }
-
-  if (boundColorOptions && boundColorOptions.length > 0) {
-    colorOptionsValues.push(
-      ...boundColorOptions.map((op) => ({
-        name: op.optionValues[0].name,
-        product: boundProduct![0].handle,
-      })),
-    );
-  }
-  console.log(sizeOptions, 'sizeOptions');
+  const colorOptionsValues = [
+    ...(colorOptions?.map((name) => ({ name, product: product.handle })) || []),
+    ...(boundProduct?.flatMap(
+      (p) =>
+        p.options
+          .find((o) => o.name === 'Колір')
+          ?.optionValues.map((v) => ({ name: v.name, product: p.handle })) ||
+        [],
+    ) || []),
+  ];
   return (
-    <div className="content-stretch flex flex-col gap-[30px] items-start px-[50px] py-0 relative w-full">
-      {/*<p className="font-sans leading-[20px] not-italic relative shrink-0 text-[#979797] text-[13px] w-full">
-        {t('shopClothing')}
-      </p>*/}
-      <div className="content-stretch flex flex-col font-sans gap-[8px] items-start not-italic relative shrink-0 text-black w-full">
-        <p className="leading-[24px] relative shrink-0 text-xl font-semibold w-full">
-          {product.vendor}
-        </p>
-        <p className="leading-[24px] relative shrink-0 text-[18px] w-full">
-          {product.title}
-        </p>
-        <div className="w-full  flex flex-col gap-1 flex-1 ">
-          <div className="flex flex-col justify-between flex-1">
-            <div className="mt-auto">
-              {Number(sale) !== 0 ? (
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="line-through text-gray-500 text-sm">
-                    {parseFloat(
-                      product.priceRange.maxVariantPrice.amount,
-                    ).toFixed(0)}{' '}
-                    {getSymbolFromCurrency(
-                      product.priceRange.maxVariantPrice.currencyCode,
-                    ) || product.priceRange.maxVariantPrice.currencyCode}
-                  </span>
-
-                  <span className="text-red-600 font-bold text-lg">
-                    {(
-                      product.priceRange.maxVariantPrice.amount *
-                      (1 - parseFloat(sale) / 100)
-                    ).toFixed(0)}{' '}
-                    {getSymbolFromCurrency(
-                      product.priceRange.maxVariantPrice.currencyCode,
-                    ) || product.priceRange.maxVariantPrice.currencyCode}
-                  </span>
-                  <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
-                    -{sale}%
-                  </span>
-                </div>
-              ) : (
-                <span className="font-bold text-lg">
-                  {parseFloat(
-                    product.priceRange.maxVariantPrice.amount,
-                  ).toFixed(0)}{' '}
-                  {getSymbolFromCurrency(
-                    product.priceRange.maxVariantPrice.currencyCode,
-                  ) || product.priceRange.maxVariantPrice.currencyCode}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="mt-auto">
-          {selectedVariant?.compareAtPrice && (
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="line-through text-gray-500 text-xs">
-                {parseFloat(selectedVariant.compareAtPrice.amount).toFixed(0)}
-                {getSymbolFromCurrency(
-                  selectedVariant.compareAtPrice.currencyCode,
-                ) || selectedVariant.compareAtPrice.currencyCode}
-              </span>
-
-              <span className="text-red-600 font-bold text-sm">
-                {parseFloat(selectedVariant.price.amount).toFixed(0)}{' '}
-                {getSymbolFromCurrency(selectedVariant.price.currencyCode) ||
-                  selectedVariant.price.currencyCode}
-              </span>
-
-              <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
-                -
-                {(
-                  (1 -
-                    parseFloat(selectedVariant.price.amount) /
-                      parseFloat(selectedVariant.compareAtPrice.amount)) *
-                  100
-                ).toFixed(0)}
-                %
-              </span>
-            </div>
-          )}
-          {!selectedVariant?.compareAtPrice && selectedVariant?.price && (
-            <span className="font-bold text-sm">
-              {parseFloat(selectedVariant.price.amount).toFixed(0)}{' '}
-              {getSymbolFromCurrency(selectedVariant.price.currencyCode) ||
-                selectedVariant.price.currencyCode}
-            </span>
-          )}
-        </div>
+    <div className="content-stretch flex flex-col gap-[30px] items-start  py-0 relative w-full">
+      <div className="flex flex-col gap-8 items-start  w-full max-w-2xl">
+        <section className="space-y-2 w-full">
+          <h1 className="text-xl font-semibold uppercase tracking-tight">
+            {product.vendor}
+          </h1>
+          <h2 className="text-lg text-gray-800">{product.title}</h2>
+          <ProductPrice
+            product={product}
+            selectedVariant={selectedVariant}
+            sale={sale}
+          />
+        </section>
       </div>
+      {/* Выбор размера */}
       {sizeOptions && sizeOptions.length > 0 && (
-        <>
-          <div className="flex gap-4 items-center relative shrink-0 w-full">
-            <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
-              <div className="content-stretch flex  justify-between leading-[20px] not-italic relative shrink-0 text-base text-black text-nowrap w-full items-center">
-                <p className="font-serif relative shrink-0">
-                  {t('productSize')}
-                </p>
-                <Button className="p-0" variant={'link'}>
-                  <p className="[text-decoration-skip-ink:none] text-sm [text-underline-position:from-font] decoration-solid font-sans relative shrink-0 text-right underline">
-                    {t('sizeChart')}
-                  </p>
-                </Button>
-              </div>
-              <div className="content-stretch flex gap-2 leading-[20px] not-italic relative shrink-0 text-base text-black text-nowrap w-full items-center">
-                {sizeOptions &&
-                  sizeOptions.map((s: string) => (
-                    <Button
-                      key={s}
-                      variant={
-                        size.toLowerCase() === s.toLowerCase()
-                          ? 'default'
-                          : 'outline'
-                      }
-                      className={cn('rounded-none', {
-                        'bg-black text-white':
-                          size.toLowerCase() === s.toLowerCase(),
-                      })}
-                      onClick={() => setSize(s.toLowerCase())}
-                    >
-                      {s}
-                    </Button>
-                  ))}
-              </div>
-            </div>
+        <section className="w-full space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="font-serif text-base">{t('productSize')}</span>
+            <Button variant="link" className="p-0 h-auto text-sm underline">
+              {t('sizeChart')}
+            </Button>
           </div>
-        </>
+          <div className="flex flex-wrap gap-2">
+            {sizeOptions.map((s) => (
+              <Button
+                key={s}
+                variant={
+                  size.toLowerCase() === s.toLowerCase() ? 'default' : 'outline'
+                }
+                className={cn('rounded-none min-w-[50px]', {
+                  'bg-primary text-white':
+                    size.toLowerCase() === s.toLowerCase(),
+                })}
+                onClick={() => setSize(s.toLowerCase())}
+              >
+                {s}
+              </Button>
+            ))}
+          </div>
+        </section>
       )}
-      {product.descriptionHtml && (
-        <p
-          className="font-sans leading-[20px] not-italic relative shrink-0 text-[14px] text-black w-full"
-          dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
-        ></p>
-      )}
-      {colorOptions && colorOptions.length > 0 && (
-        <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
-          <p className="font-sans leading-[20px] not-italic relative shrink-0 text-[#565656] text-[13px] w-full">
+      {/* Выбор цвета */}
+      {colorOptionsValues.length > 0 && (
+        <section className="w-full space-y-3">
+          <span className="text-sm text-gray-500 uppercase tracking-wider">
             {t('color')}
-          </p>
-          <div className="flex gap-[20px] items-center relative shrink-0 w-full">
-            {colorOptionsValues &&
-              colorOptionsValues.length > 0 &&
-              colorOptionsValues.map((c, i) => (
-                <Link href={`/product/${c.product}`} className="flex">
+          </span>
+          <div className="flex flex-wrap gap-4">
+            {colorOptionsValues.map((c) => (
+              <Link
+                key={c.name}
+                href={`/product/${c.product}`}
+                className="group"
+              >
+                <div
+                  className={cn(
+                    'size-9 border p-0.5 transition-all',
+                    c.product === product.handle
+                      ? 'border-black'
+                      : 'border-transparent group-hover:border-gray-300',
+                  )}
+                >
                   <div
                     className={cn(
-                      'relative shrink-0 size-[32px] border border-muted',
-                      { 'border-[#565656]': i === 0 },
+                      'w-full h-full',
+                      COLOR_MAP[c.name] || 'bg-gray-200',
                     )}
-                    key={c.name}
-                    // onClick={() => setColor(c.name.toLowerCase())}
-                  >
-                    <div
-                      className={cn('absolute inset-[10%]', {
-                        [`${colorMap[c.name]}`]: colorMap[c.name],
-                      })}
-                    ></div>
-                  </div>
-                </Link>
-              ))}
+                    title={c.name}
+                  />
+                </div>
+              </Link>
+            ))}
           </div>
-        </div>
+        </section>
       )}
-
+      {product.descriptionHtml && (
+        <div
+          className="text-sm leading-relaxed text-gray-700 prose prose-sm max-w-none"
+          dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+        />
+      )}
       <AddToCartButton product={product} variant="default" />
-      {/*<div className="bg-black content-stretch flex items-center justify-center px-[18px] py-[11px] relative shrink-0 w-full">
-      <p className="font-sans leading-[20px] not-italic relative shrink-0 text-[15px] text-nowrap text-white">
-        Add to Bag
-      </p>
-    </div>*/}
-      <div className="content-stretch flex flex-col gap-px items-start relative shrink-0 w-full">
-        <div className="border-[#ddd] border-[0px_0px_1px] border-solid content-stretch flex gap-[10px] items-center px-0 py-[13px] relative shrink-0 w-full">
-          <p className="basis-0 font-sans grow leading-[20px] min-h-px min-w-px not-italic relative shrink-0 text-[13px] text-black">
+      {/* Аккордеон деталей */}
+      <Accordion type="single" collapsible className="w-full border-t mt-4">
+        <AccordionItem value="availability">
+          <AccordionTrigger className="text-sm uppercase">
             {t('checkInStoreAvailability')}
-          </p>
-        </div>
-        <div className="border-[#ddd] border-[0px_0px_1px] border-solid content-stretch flex gap-[10px] items-center px-0 py-[13px] relative shrink-0 w-full">
-          <p className="basis-0 font-sans grow leading-[20px] min-h-px min-w-px not-italic relative shrink-0 text-[13px] text-black">
+          </AccordionTrigger>
+          <AccordionContent className="text-sm text-gray-600">
+            {/* Контент для наличия */}
+            Информация о наличии товара в магазинах вашего города.
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="fit">
+          <AccordionTrigger className="text-sm uppercase">
             {t('fitDetails')}
-          </p>
-        </div>
-        <div className="border-[#ddd] border-[0px_0px_1px] border-solid content-stretch flex gap-[10px] items-center px-0 py-[13px] relative shrink-0 w-full">
-          <p className="basis-0 font-sans grow leading-[20px] min-h-px min-w-px not-italic relative shrink-0 text-[13px] text-black">
+          </AccordionTrigger>
+          <AccordionContent className="text-sm text-gray-600">
+            Параметры модели и особенности посадки данного изделия.
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="care">
+          <AccordionTrigger className="text-sm uppercase">
             {t('fabricationAndCare')}
-          </p>
-        </div>
-        <div className="border-[#ddd] border-[0px_0px_1px] border-solid content-stretch flex gap-[10px] items-center px-0 py-[13px] relative shrink-0 w-full">
-          <p className="basis-0 font-sans grow leading-[20px] min-h-px min-w-px not-italic relative shrink-0 text-[13px] text-black">
+          </AccordionTrigger>
+          <AccordionContent className="text-sm text-gray-600">
+            {/* Здесь можно вывести данные из метаполей о составе */}
+            Рекомендации по уходу: только ручная стирка, не отбеливать.
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="shipping">
+          <AccordionTrigger className="text-sm uppercase">
             {t('shippingAndReturns')}
-          </p>
-        </div>
-      </div>
+          </AccordionTrigger>
+          <AccordionContent className="text-sm text-gray-600">
+            Бесплатная доставка при заказе от 5000 грн. Возврат в течение 14
+            дней.
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 };

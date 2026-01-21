@@ -27,19 +27,10 @@ export function ProductViewProvider({
       (option) => option.name.toLowerCase() === 'Колір'.toLowerCase(),
     ),
   );
-  console.log(product, 'product');
   const sizeOptions = product.options.find(
     (option) => option.name.toLowerCase() === t('sizeLabel').toLowerCase(),
   )?.values;
-  const [color, setColor] = useQueryState('color', {
-    defaultValue:
-      product.options
-        .find(
-          (option: ProductOption) =>
-            option.name.toLowerCase() === t('colorLabel').toLowerCase(),
-        )
-        ?.values[0].toLowerCase() || '',
-  });
+
   const [size, setSize] = useQueryState('size', {
     defaultValue:
       product.options
@@ -51,17 +42,13 @@ export function ProductViewProvider({
   });
   const selectedVariant = product.variants.edges.find((edge) => {
     const variant = edge.node;
-    const colorMatch = variant.selectedOptions.find(
-      (option) =>
-        option.name.toLowerCase() === t('colorLabel').toLowerCase() &&
-        option.value.toLowerCase() === (color ?? ''),
-    );
+
     const sizeMatch = variant.selectedOptions.find(
       (option) =>
         option.name.toLowerCase() === t('sizeLabel').toLowerCase() &&
         option.value.toLowerCase() === (size ?? ''),
     );
-    return colorMatch && sizeMatch;
+    return sizeMatch;
   })?.node;
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12">
@@ -71,10 +58,8 @@ export function ProductViewProvider({
         colorOptions={colorOptions}
         sizeOptions={sizeOptions}
         selectedVariant={selectedVariant}
-        boundProduct={boundProductColorOptions}
-        setColor={setColor}
         setSize={setSize}
-        color={color ?? ''}
+        boundProduct={boundProductColorOptions}
         size={size ?? ''}
       />
     </div>
