@@ -32,14 +32,37 @@ export function ProductViewProvider({
     (option) => option.name.toLowerCase() === 'Розмір'.toLowerCase(),
   )?.values;
 
+  const sortedSizeOptions = sizeOptions?.sort((a, b) => {
+    const sizeOrder = ['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl'];
+    const aIsNumeric = !isNaN(Number(a));
+    const bIsNumeric = !isNaN(Number(b));
+
+    if (aIsNumeric && bIsNumeric) {
+      return Number(a) - Number(b);
+    }
+
+    if (!aIsNumeric && !bIsNumeric) {
+      return (
+        sizeOrder.indexOf(a.toLowerCase()) - sizeOrder.indexOf(b.toLowerCase())
+      );
+    }
+
+    return aIsNumeric ? -1 : 1;
+  });
+
+  const firstAvailableSize = sortedSizeOptions?.find((s) => {
+    const variant = product.variants.edges.find((edge) =>
+      edge.node.selectedOptions.some(
+        (option) =>
+          option.name.toLowerCase() === 'розмір' &&
+          option.value.toLowerCase() === s.toLowerCase(),
+      ),
+    )?.node;
+    return variant?.availableForSale;
+  });
+
   const [size, setSize] = useQueryState('size', {
-    defaultValue:
-      product.options
-        .find(
-          (option: ProductOption) =>
-            option.name.toLowerCase() === 'Розмір'.toLowerCase(),
-        )
-        ?.values[0].toLowerCase() || '',
+    defaultValue: firstAvailableSize?.toLowerCase() || '',
   });
   const selectedVariant = product.variants.edges.find((edge) => {
     const variant = edge.node;
@@ -50,7 +73,20 @@ export function ProductViewProvider({
         option.value.toLowerCase() === (size ?? ''),
     );
     return sizeMatch;
-  })?.node || product.variants.edges[0].node
+  })?.node;
+  if (!selectedVariant) {
+    const firstAvailableVariant = product.variants.edges.find(
+      (edge) => edge.node.availableForSale,
+    )?.node;
+    if (firstAvailableVariant) {
+      const sizeOption = firstAvailableVariant.selectedOptions.find(
+        (option) => option.name.toLowerCase() === 'розмір',
+      );
+      if (sizeOption) {
+        setSize(sizeOption.value.toLowerCase());
+      }
+    }
+  }
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12">
       <Gallery images={images} productId={product.id} isFavorite={false} />
