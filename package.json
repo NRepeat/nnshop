@@ -13,12 +13,7 @@
     "graphql-codegen": "graphql-codegen",
     "typegen": "sanity schema extract --path=./src/shared/sanity/extract.json && sanity typegen generate"
   },
-  "lint-staged": {
-    // "*.{js,jsx,ts,tsx}": [
-    //   "prettier --write"
-    // ],
-    // "*.{css,scss,md,json}": "prettier --write"
-  },
+  
   "dependencies": {
     "@captchafox/react": "^1.10.0",
     "@custom-react-hooks/use-window-size": "^1.5.1",

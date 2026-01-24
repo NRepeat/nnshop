@@ -31,7 +31,7 @@ export const ProductCardSPP = ({ product, className }: ProductCardSPPProps) => {
   return (
     <div className={cn('group flex flex-col gap-3 w-full', className)}>
       {/* Контейнер изображения */}
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-gray-100">
+      <div className="relative aspect-[1/1] w-full overflow-hidden bg-gray-100">
         <Link
           href={`/product/${product.handle}`}
           className="block h-full w-full"
@@ -42,7 +42,7 @@ export const ProductCardSPP = ({ product, className }: ProductCardSPPProps) => {
               alt={imageAlt}
               fill
               sizes="(max-width: 768px) 50vw, 33vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className="object-contain transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
             <div className="flex h-full items-center justify-center bg-muted text-muted-foreground">

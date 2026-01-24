@@ -31,7 +31,8 @@ const DetailsContent = ({
       {attributes
         .filter(
           (attr) =>
-            attr?.fields.find((f) => f.key === 'title')?.value !== 'Особливості',
+            attr?.fields.find((f) => f.key === 'title')?.value !==
+            'Особливості',
         )
         .map((attr) => {
           if (!attr) return null;
@@ -152,9 +153,7 @@ export const ProductInfo = ({
               <Button
                 key={s}
                 variant={
-                  size.toLowerCase() === s.toLowerCase()
-                    ? 'default'
-                    : 'outline'
+                  size.toLowerCase() === s.toLowerCase() ? 'default' : 'outline'
                 }
                 className={cn('rounded-none min-w-[50px]', {
                   'bg-primary text-white':
@@ -251,13 +250,14 @@ export const ProductInfo = ({
             {t('shippingAndReturns')}
           </AccordionTrigger>
           <AccordionContent className="text-sm text-gray-600">
-            {t.rich('shippingAndReturnsContent', {
-              br: () => <br />,
-            })}
+            <div
+              dangerouslySetInnerHTML={{
+                __html: t.raw('shippingAndReturnsContent'),
+              }}
+            />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
     </div>
   );
 };
-
