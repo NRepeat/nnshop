@@ -14,12 +14,10 @@ export const ProductCardSPP = ({ product, className }: ProductCardSPPProps) => {
   const { url: imageUrl, altText } = product.featuredImage || {};
   const imageAlt = altText || product.title;
 
-  // 2. Логика цен и скидок
   const priceAmount = parseFloat(product.priceRange.maxVariantPrice.amount);
   const currencyCode = product.priceRange.maxVariantPrice.currencyCode;
   const currencySymbol = getSymbolFromCurrency(currencyCode) || currencyCode;
 
-  // Ищем метаполе скидки (проверка на массив или объект в зависимости от вашего API)
   const discountMeta = Array.isArray(product.metafields)
     ? product.metafields.find((m) => m?.key === 'znizka')
     : (product as any).metafield?.key === 'znizka'

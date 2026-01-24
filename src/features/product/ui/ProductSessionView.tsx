@@ -1,8 +1,11 @@
+'use cache';
+
 import { PathSync } from '@entities/path-sync/ui/path-sync';
 import { getReletedProducts } from '@entities/product/api/get-related-products';
 import { getProduct } from '@entities/product/api/getProduct';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { ProductView } from '@widgets/product-view';
+import { cacheLife } from 'next/cache';
 import { notFound } from 'next/navigation';
 
 export const ProductSessionView = async ({
@@ -12,7 +15,7 @@ export const ProductSessionView = async ({
   handle: string;
   locale: string;
 }) => {
-  // 'use cache';
+  cacheLife('default');
   try {
     const { alternateHandle, originProduct } = await getProduct({
       handle,
@@ -22,7 +25,6 @@ export const ProductSessionView = async ({
     if (!product) {
       return notFound();
     }
-    // const res = await getMetaobject();
     const relatedProducts = product.metafields.find(
       (m) => m?.key === 'recommended_products',
     )?.value as any as string;

@@ -310,6 +310,8 @@
     "shopClothing": "Shop / Clothing",
     "color": "Color",
     "productSize": "Product Size:",
+    "size": "Size",
+    "quickOrder": "Quick Order",
     "sizeChart": "Size Chart",
     "checkInStoreAvailability": "Check In-Store Availability",
     "fitDetails": "Fit Details",

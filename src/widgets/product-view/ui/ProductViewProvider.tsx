@@ -21,14 +21,14 @@ export function ProductViewProvider({
   const colorOptions = product.options.find(
     (option) => option.name.toLowerCase() === 'Колір'.toLowerCase(),
   )?.values;
-
+  console.log(product, 'product');
   const boundProductColorOptions = boundProducts.filter((product) =>
     product.options.find(
       (option) => option.name.toLowerCase() === 'Колір'.toLowerCase(),
     ),
   );
   const sizeOptions = product.options.find(
-    (option) => option.name.toLowerCase() === t('sizeLabel').toLowerCase(),
+    (option) => option.name.toLowerCase() === 'Розмір'.toLowerCase(),
   )?.values;
 
   const [size, setSize] = useQueryState('size', {
@@ -36,7 +36,7 @@ export function ProductViewProvider({
       product.options
         .find(
           (option: ProductOption) =>
-            option.name.toLowerCase() === t('sizeLabel').toLowerCase(),
+            option.name.toLowerCase() === 'Розмір'.toLowerCase(),
         )
         ?.values[0].toLowerCase() || '',
   });
@@ -45,11 +45,12 @@ export function ProductViewProvider({
 
     const sizeMatch = variant.selectedOptions.find(
       (option) =>
-        option.name.toLowerCase() === t('sizeLabel').toLowerCase() &&
+        option.name.toLowerCase() === 'Розмір'.toLowerCase() &&
         option.value.toLowerCase() === (size ?? ''),
     );
     return sizeMatch;
   })?.node;
+  console.log(selectedVariant, 'sizeOptions');
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12">
       <Gallery images={images} productId={product.id} isFavorite={false} />

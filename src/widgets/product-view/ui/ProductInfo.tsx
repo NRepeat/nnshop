@@ -53,10 +53,17 @@ export const ProductInfo = ({
     <div className="content-stretch flex flex-col gap-[30px] items-start  py-0 relative w-full">
       <div className="flex flex-col gap-8 items-start  w-full max-w-2xl">
         <section className="space-y-2 w-full">
-          <h1 className="text-xl font-semibold uppercase tracking-tight">
-            {product.vendor}
-          </h1>
+          <Link href={`/collection/${product.vendor.toLowerCase()}`}>
+            <h1 className="text-xl font-semibold uppercase tracking-tight">
+              {product.vendor}
+            </h1>
+          </Link>
           <h2 className="text-lg text-gray-800">{product.title}</h2>
+          {selectedVariant?.sku && (
+            <p className="text-sm text-gray-500">
+              Артикул: {selectedVariant.sku}
+            </p>
+          )}
           <ProductPrice
             product={product}
             selectedVariant={selectedVariant}
@@ -68,7 +75,7 @@ export const ProductInfo = ({
       {sizeOptions && sizeOptions.length > 0 && (
         <section className="w-full space-y-3">
           <div className="flex justify-between items-center">
-            <span className="font-serif text-base">{t('productSize')}</span>
+            <span className="font-serif text-base">{t('size')}</span>
             <Button variant="link" className="p-0 h-auto text-sm underline">
               {t('sizeChart')}
             </Button>
@@ -132,7 +139,15 @@ export const ProductInfo = ({
           dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
         />
       )}
-      <AddToCartButton product={product} variant="default" />
+      <div className="flex gap-4 flex-nowrap flex-col w-full">
+        <AddToCartButton product={product} variant="default" />
+        <Button
+          variant="secondary"
+          className="w-full h-10 md:h-14 text-md rounded-none"
+        >
+          {t('quickOrder')}
+        </Button>
+      </div>
       {/* Аккордеон деталей */}
       <Accordion type="single" collapsible className="w-full border-t mt-4">
         <AccordionItem value="availability">

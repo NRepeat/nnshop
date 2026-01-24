@@ -72,6 +72,7 @@ export const GET_PRODUCT_QUERY = `#graphql
             id
             title
             availableForSale
+            sku
             price {
               amount
               currencyCode

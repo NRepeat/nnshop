@@ -27,7 +27,7 @@ export async function ProductView({
         <p className="font-sans leading-[26px] not-italic relative shrink-0 text-[20px] text-black text-center w-full">
           {t('styleWith')}
         </p>
-        <div className="content-stretch flex gap-5 items-start mx-auto max-w-5xl py-0 relative  w-full">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 mx-auto max-w-5xl py-0 w-full">
           {relatedProducts.slice(0, 3).map((p) => (
             <ProductCardSPP product={p} key={p.id} />
           ))}
