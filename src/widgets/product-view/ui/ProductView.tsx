@@ -1,11 +1,11 @@
 import {
-  Metaobject,
   Product as ShopifyProduct,
 } from '@shared/lib/shopify/types/storefront.types';
 import { Suspense } from 'react';
 import { ProductViewProvider } from './ProductViewProvider';
 import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
 import { getTranslations } from 'next-intl/server';
+import { ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
 
 export async function ProductView({
   product,
@@ -18,7 +18,7 @@ export async function ProductView({
   relatedProducts: ShopifyProduct[];
   boundProducts: ShopifyProduct[];
   locale: string;
-  attributes: Pick<Metaobject, 'handle' | 'id' | 'type'>[] | null;
+  attributes: ProductMEtaobjectType[]
 }) {
   const t = await getTranslations({ locale, namespace: 'ProductPage' });
 

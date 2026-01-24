@@ -1,6 +1,6 @@
 'use cache';
 
-import { getMetaobject } from '@entities/metaobject/api/get-metaobject';
+import { getMetaobject, ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
 import { PathSync } from '@entities/path-sync/ui/path-sync';
 import { getReletedProducts } from '@entities/product/api/get-related-products';
 import { getProduct } from '@entities/product/api/getProduct';
@@ -71,7 +71,7 @@ export const ProductSessionView = async ({
     const parsedIDs = JSON.parse(attributesJsonIds);
     console.log('🚀 ~ ProductView ~ parsedIDs:', parsedIDs);
 
-    const attributes: Pick<Metaobject, 'handle' | 'id' | 'type'>[] | null = [];
+    const attributes: ProductMEtaobjectType[] = [];
     for (const id of parsedIDs) {
       const attribute = await getMetaobject(id);
       if (attribute) {

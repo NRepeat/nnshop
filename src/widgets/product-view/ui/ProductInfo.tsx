@@ -16,7 +16,72 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@shared/ui/accordion';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
+
+const DetailsContent = ({
+  attributes,
+  locale,
+}: {
+  attributes: ProductMEtaobjectType[];
+  locale: string;
+}) => {
+  return (
+    <div className="text-sm text-gray-600">
+      {attributes
+        .filter(
+          (attr) =>
+            attr?.fields.find((f) => f.key === 'title')?.value !== 'Особливості',
+        )
+        .map((attr) => {
+          if (!attr) return null;
+          const title =
+            locale === 'ru'
+              ? attr.fields.find((f) => f.key === 'ru_title')?.value
+              : attr.fields.find((f) => f.key === 'title')?.value;
+          const value =
+            locale === 'ru'
+              ? attr.fields.find((f) => f.key === 'ru_translation')?.value
+              : attr.fields.find((f) => f.key === 'atribute_payload')?.value;
+          if (!title || !value) return null;
+          return (
+            <div key={attr.id} className="flex justify-between">
+              <span>{title}</span>
+              <span>{value}</span>
+            </div>
+          );
+        })}
+    </div>
+  );
+};
+
+const FittingGuideContent = ({
+  attributes,
+  locale,
+}: {
+  attributes: ProductMEtaobjectType[];
+  locale: string;
+}) => {
+  const fittingAttr = attributes.find(
+    (attr) =>
+      attr?.fields.find((f) => f.key === 'title')?.value === 'Особливості',
+  );
+
+  if (!fittingAttr) {
+    return (
+      <p className="text-sm text-gray-600">
+        Параметры модели и особенности посадки данного изделия.
+      </p>
+    );
+  }
+
+  const value =
+    locale === 'ru'
+      ? fittingAttr.fields.find((f) => f.key === 'ru_translation')?.value
+      : fittingAttr.fields.find((f) => f.key === 'atribute_payload')?.value;
+
+  return <p className="text-sm text-gray-600">{value}</p>;
+};
 
 export const ProductInfo = ({
   product,
@@ -26,6 +91,7 @@ export const ProductInfo = ({
   setSize,
   boundProduct,
   size,
+  attributes,
 }: {
   product: ShopifyProduct;
   colorOptions: string[] | undefined;
@@ -34,8 +100,10 @@ export const ProductInfo = ({
   selectedVariant: ProductVariant | undefined;
   setSize: (value: string) => void;
   size: string;
+  attributes: ProductMEtaobjectType[];
 }) => {
   const t = useTranslations('ProductPage');
+  const locale = useLocale();
 
   const sale =
     product.metafields.find((m) => m?.key === 'znizka')?.value || '0';
@@ -84,7 +152,9 @@ export const ProductInfo = ({
               <Button
                 key={s}
                 variant={
-                  size.toLowerCase() === s.toLowerCase() ? 'default' : 'outline'
+                  size.toLowerCase() === s.toLowerCase()
+                    ? 'default'
+                    : 'outline'
                 }
                 className={cn('rounded-none min-w-[50px]', {
                   'bg-primary text-white':
@@ -149,13 +219,12 @@ export const ProductInfo = ({
       </div>
       {/* Аккордеон деталей */}
       <Accordion type="single" collapsible className="w-full border-t mt-4">
-        <AccordionItem value="availability">
+        <AccordionItem value="details">
           <AccordionTrigger className="text-sm uppercase">
-            {t('checkInStoreAvailability')}
+            {t('details')}
           </AccordionTrigger>
-          <AccordionContent className="text-sm text-gray-600">
-            {/* Контент для наличия */}
-            Информация о наличии товара в магазинах вашего города.
+          <AccordionContent>
+            <DetailsContent attributes={attributes} locale={locale} />
           </AccordionContent>
         </AccordionItem>
 
@@ -163,31 +232,32 @@ export const ProductInfo = ({
           <AccordionTrigger className="text-sm uppercase">
             {t('fitDetails')}
           </AccordionTrigger>
-          <AccordionContent className="text-sm text-gray-600">
-            Параметры модели и особенности посадки данного изделия.
+          <AccordionContent>
+            <FittingGuideContent attributes={attributes} locale={locale} />
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="care">
+        {/* <AccordionItem value="care">
           <AccordionTrigger className="text-sm uppercase">
             {t('fabricationAndCare')}
           </AccordionTrigger>
           <AccordionContent className="text-sm text-gray-600">
-            {/* Здесь можно вывести данные из метаполей о составе */}
             Рекомендации по уходу: только ручная стирка, не отбеливать.
           </AccordionContent>
-        </AccordionItem>
+        </AccordionItem> */}
 
         <AccordionItem value="shipping">
           <AccordionTrigger className="text-sm uppercase">
             {t('shippingAndReturns')}
           </AccordionTrigger>
           <AccordionContent className="text-sm text-gray-600">
-            Бесплатная доставка при заказе от 5000 грн. Возврат в течение 14
-            дней.
+            {t.rich('shippingAndReturnsContent', {
+              br: () => <br />,
+            })}
           </AccordionContent>
         </AccordionItem>
       </Accordion>
     </div>
   );
 };
+

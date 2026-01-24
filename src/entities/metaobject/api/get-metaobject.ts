@@ -1,11 +1,15 @@
 import { storefrontClient } from '@shared/lib/shopify/client';
 import {
-  GetMetaobjectQueryQuery,
-  GetMetaobjectQueryQueryVariables,
+  GetPRoductMetaobjectQueryVariables,
+  GetPRoductMetaobjectQuery,
 } from '@shared/lib/shopify/types/storefront.generated';
+import {
+  Metaobject,
+  MetaobjectField,
+} from '@shared/lib/shopify/types/storefront.types';
 
 const GET_METAOBJECT_QUERY = `#graphql
-  query GetMetaobject($id: ID!) {
+  query GetPRoductMetaobject($id: ID!) {
     metaobject(id: $id) {
       id
       handle
@@ -17,17 +21,23 @@ const GET_METAOBJECT_QUERY = `#graphql
     }
   }
 `;
-
-export const getMetaobject = async (id: string) => {
+export type ProductMEtaobjectType =
+  | (Pick<Metaobject, 'id' | 'handle' | 'type'> & {
+      fields: Array<Pick<MetaobjectField, 'key' | 'value'>>;
+    })
+  | null;
+export const getMetaobject = async (
+  id: string,
+): Promise<ProductMEtaobjectType> => {
   try {
-    const variables: GetMetaobjectQueryQueryVariables = {
+    const variables: GetPRoductMetaobjectQueryVariables = {
       //@ts-ignore
       id: id,
     };
 
     const res = await storefrontClient.request<
-      GetMetaobjectQueryQuery,
-      GetMetaobjectQueryQueryVariables
+      GetPRoductMetaobjectQuery,
+      GetPRoductMetaobjectQueryVariables
     >({
       query: GET_METAOBJECT_QUERY,
       variables,

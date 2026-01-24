@@ -4,17 +4,18 @@ import Gallery from '@features/product/ui/Gallery';
 import {
   Product as ShopifyProduct,
   ProductOption,
-  Metaobject,
 } from '@shared/lib/shopify/types/storefront.types';
 import { ProductInfo } from './ProductInfo';
+import { ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
 
 export function ProductViewProvider({
   product,
   boundProducts,
+  attributes,
 }: {
   product: ShopifyProduct;
   boundProducts: ShopifyProduct[];
-  attributes: Pick<Metaobject, 'handle' | 'id' | 'type'>[] | null;
+  attributes: ProductMEtaobjectType[];
 }) {
   // const t = useTranslations('ProductPage');
   if (!product) throw new Error('Product not found');
@@ -62,6 +63,7 @@ export function ProductViewProvider({
         setSize={setSize}
         boundProduct={boundProductColorOptions}
         size={size ?? ''}
+        attributes={attributes}
       />
     </div>
   );

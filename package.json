@@ -14,10 +14,10 @@
     "typegen": "sanity schema extract --path=./src/shared/sanity/extract.json && sanity typegen generate"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "prettier --write"
-    ],
-    "*.{css,scss,md,json}": "prettier --write"
+    // "*.{js,jsx,ts,tsx}": [
+    //   "prettier --write"
+    // ],
+    // "*.{css,scss,md,json}": "prettier --write"
   },
   "dependencies": {
     "@captchafox/react": "^1.10.0",
