@@ -126,6 +126,7 @@ export const getProduct = async ({
   handle: string;
   locale: string;
 }) => {
+  'use cache';
   try {
     const targetLocale = locale === 'ru' ? 'UK' : 'RU';
     const product = await storefrontClient.request<
