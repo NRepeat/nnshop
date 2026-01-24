@@ -5,7 +5,6 @@ import { PathSync } from '@entities/path-sync/ui/path-sync';
 import { getReletedProducts } from '@entities/product/api/get-related-products';
 import { getProduct } from '@entities/product/api/getProduct';
 import {
-  Metaobject,
   Product,
 } from '@shared/lib/shopify/types/storefront.types';
 import { ProductView } from '@widgets/product-view';
@@ -69,7 +68,6 @@ export const ProductSessionView = async ({
       (m) => m?.key === 'attributes',
     )?.value as any as string;
     const parsedIDs = JSON.parse(attributesJsonIds);
-    console.log('🚀 ~ ProductView ~ parsedIDs:', parsedIDs);
 
     const attributes: ProductMEtaobjectType[] = [];
     for (const id of parsedIDs) {

@@ -23,10 +23,12 @@ const Content = async ({
     title: string;
     price: string;
     size: string;
+    handle: string;
     totalPrice: string;
     quantity: number;
     color: string;
     image: string;
+    sale: string;
   }[];
   cartId: string;
   estimateTotal: number;
@@ -38,14 +40,20 @@ const Content = async ({
     namespace: 'Header.cart.drawer',
   });
   return (
-    <SheetContent className="w-full md:min-w-[450px] font-light ">
+    <SheetContent className="w-full sm:min-w-[500px] font-light ">
       <div className="h-full overflow-hidden flex flex-col">
-        <SheetHeader className="sticky top-0">
-          <SheetTitle>{t('title')}</SheetTitle>
+        <SheetHeader className="pt-6 pb-2 px-4">
+          <SheetTitle className="font-sans">{t('title')}</SheetTitle>
         </SheetHeader>
+        {/* <SheetHeader className="sticky top-0">
+          <SheetTitle>{t('title')}</SheetTitle>
+        </SheetHeader> */}
         <div className="overflow-auto flex-1">
           <div className="flex flex-col space-y-2 px-4">
-            <div className="flex flex-col  sticky top-0 ">
+            <div
+              className="flex flex-col  sticky top-0 bg-background z-20
+            "
+            >
               <div className="flex justify-between bg-background pb-2">
                 <span className="capitalize">{t('product')}</span>
                 <span className="capitalize">{t('total')}</span>

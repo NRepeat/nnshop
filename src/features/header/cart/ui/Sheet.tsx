@@ -5,26 +5,56 @@ import { ShoppingCart } from 'lucide-react';
 import { getCart } from '@entities/cart/api/get';
 import { Badge } from '@shared/ui/badge';
 import { Button } from '@shared/ui/button';
+import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
+import { auth } from '@features/auth/lib/auth';
+import { headers } from 'next/headers';
 
 const CartSheet = async ({ locale }: { locale: string }) => {
-  const cart = await getCart();
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) {
+    return null;
+  }
+  const cart = (await getCart({
+    userId: session.user.id,
+    locale,
+  })) as GetCartQuery | null;
   const cartId = cart?.cart?.id;
-  const items = cart?.cart?.lines.edges.map((item) => ({
-    id: item.node.id,
-    title: item.node.merchandise.product.title,
-    price: item.node.cost.amountPerQuantity.amount,
-    size: item.node.merchandise.selectedOptions.find(
-      (option) => option.name === 'Size',
-    )?.value,
-    color: item.node.merchandise.selectedOptions.find(
-      (option) => option.name === 'Color',
-    )?.value,
-    quantity: item.node.quantity,
-    totalPrice: item.node.cost.totalAmount.amount,
-    image: item.node.merchandise?.image
-      ? item.node.merchandise.image.url
-      : null,
-  }));
+  const sizeLabel = {
+    uk: 'Розмір',
+    ru: 'Розмір',
+    en: 'Розмір',
+  }[locale];
+
+  const items = cart?.cart?.lines.edges.map((item) => {
+    const product = item.node.merchandise.product;
+    const sale =
+      Number(
+        product.metafields.find((m) => m?.key === 'znizka')?.value || '0',
+      ) || 0;
+    const price = Number(item.node.cost.amountPerQuantity.amount);
+    const quantity = item.node.quantity;
+    const discountedPrice = price - (price * sale) / 100;
+    const totalPrice = sale > 0 ? discountedPrice * quantity : price * quantity;
+
+    return {
+      id: item.node.id,
+      title: product.title,
+      price: item.node.cost.amountPerQuantity.amount,
+      handle: product.handle,
+      size: item.node.merchandise.selectedOptions.find(
+        (option) => option.name === sizeLabel,
+      )?.value,
+      color: item.node.merchandise.selectedOptions.find(
+        (option) => option.name === 'Color',
+      )?.value,
+      quantity: item.node.quantity,
+      totalPrice: totalPrice.toString(),
+      image: item.node.merchandise?.image
+        ? item.node.merchandise.image.url
+        : null,
+      sale: sale.toString(),
+    };
+  });
   const currencySymbol =
     cart?.cart?.lines.edges && cart?.cart?.lines.edges.length > 0
       ? cart?.cart?.lines.edges[0].node.cost.totalAmount.currencyCode
@@ -38,6 +68,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
     (acc, item) => acc + Number(item.quantity),
     0,
   );
+
   return (
     <Sheet>
       <SheetTrigger

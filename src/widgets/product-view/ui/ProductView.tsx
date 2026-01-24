@@ -33,7 +33,7 @@ export async function ProductView({
       </Suspense>
       {/*<ProductDetails locale={locale} product={product} />*/}
       {/* <ElegantEase locale={locale} /> */}
-      <div className="content-stretch flex flex-col gap-[70px] items-center px-0 py-[74px] relative w-full">
+      <div className="content-stretch flex flex-col gap-[30px] items-center px-0 py-[30px] relative w-full">
         <p className="font-sans leading-[26px] not-italic relative shrink-0 text-[20px] text-black text-center w-full">
           {t('styleWith')}
         </p>

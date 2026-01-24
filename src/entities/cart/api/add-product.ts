@@ -28,10 +28,8 @@ export async function addToCartAction(productVariantId: string) {
         productVariantId,
       });
       if (result.success) {
-        // @ts-ignore
-        revalidateTag(CART_TAGS.CART);
-        // @ts-ignore
-        revalidateTag(CART_TAGS.CART_ITEMS);
+        revalidateTag(CART_TAGS.CART, { expire: 0 });
+        revalidateTag(CART_TAGS.CART_ITEMS, { expire: 0 });
         return { success: true, cart: result.cart };
       }
     } else {

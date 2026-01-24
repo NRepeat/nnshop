@@ -3,7 +3,7 @@
 import { removeProductFromCart } from '@entities/cart/api/remove-product';
 import { Button } from '@shared/ui/button';
 import { useTranslations } from 'next-intl';
-import { useTransition } from 'react';
+import { MouseEvent, useTransition } from 'react';
 import { toast } from 'sonner';
 import { X } from 'lucide-react';
 
@@ -16,7 +16,11 @@ export const RemoveItemButton = ({
 }) => {
   const t = useTranslations('Header.cart.drawer');
   const [isPending, startTransition] = useTransition();
-  const handleRemove = () => {
+  const handleRemove = (
+    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
+  ) => {
+    e.preventDefault()
+    e.stopPropagation()
     startTransition(async () => {
       console.log('Removing item from cart...');
       const result = await removeProductFromCart(cartId, itemId);
@@ -31,7 +35,7 @@ export const RemoveItemButton = ({
     <Button
       variant={'ghost'}
       size={'icon'}
-      onClick={() => handleRemove()}
+      onClick={(e) => handleRemove(e)}
       disabled={isPending}
       className="text-muted-foreground hover:text-foreground size-5 p-0"
     >
