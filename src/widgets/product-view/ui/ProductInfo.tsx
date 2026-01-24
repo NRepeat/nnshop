@@ -117,7 +117,7 @@ export const ProductInfo = ({
   const atTheFitting = selectedVariant?.metafields.find(
     (m) => m?.key === 'at_the_fitting',
   )?.value;
-  console.log(selectedVariant,"selectedVariant")
+  console.log(selectedVariant, 'selectedVariant');
   const colorOptionsValues = [
     ...(colorOptions?.map((name) => ({ name, product: product.handle })) || []),
     ...(boundProduct?.flatMap(
@@ -139,8 +139,7 @@ export const ProductInfo = ({
           </Link>
           <div className="flex items-center gap-2">
             <h2 className="text-lg text-gray-800">{product.title}</h2>
-            {atTheFitting}
-            {Boolean(atTheFitting) && <Badge>{t('atTheFitting')}</Badge>}
+            {atTheFitting === 'true' && <Badge>{t('atTheFitting')}</Badge>}
           </div>
           {selectedVariant?.sku && (
             <p className="text-sm text-gray-500">

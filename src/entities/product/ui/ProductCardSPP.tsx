@@ -51,11 +51,11 @@ export const ProductCardSPP = ({ product, className }: ProductCardSPPProps) => {
           )}
         </Link>
 
-        <div className="absolute bottom-4 right-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        {/* <div className="absolute bottom-4 right-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <div className="flex size-8 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-black/5">
             <PlusIcon className="size-4 text-black" />
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Инфо-блок */}
@@ -75,7 +75,7 @@ export const ProductCardSPP = ({ product, className }: ProductCardSPPProps) => {
               <span className="text-xs text-gray-400 line-through">
                 {priceAmount.toFixed(0)} {currencySymbol}
               </span>
-              <span className="bg-red-50 px-1.5 py-0.5 text-[10px] font-medium text-red-700">
+              <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
                 -{discountValue}%
               </span>
             </>

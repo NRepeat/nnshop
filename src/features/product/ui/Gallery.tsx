@@ -153,7 +153,7 @@ const Gallery = ({
               className="group-hover:flex  bg-background/70 rounded-full top-1/2 left-2 absolute hidden md:flex"
             />
           </Carousel>
-          <div className="absolute -top-5 right-4">
+          <div className="absolute -top-5 right-2">
             <Button
               variant="ghost"
               size="icon"
