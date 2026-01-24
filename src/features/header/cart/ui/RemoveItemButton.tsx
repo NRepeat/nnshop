@@ -5,6 +5,7 @@ import { Button } from '@shared/ui/button';
 import { useTranslations } from 'next-intl';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
+import { X } from 'lucide-react';
 
 export const RemoveItemButton = ({
   cartId,
@@ -20,20 +21,21 @@ export const RemoveItemButton = ({
       console.log('Removing item from cart...');
       const result = await removeProductFromCart(cartId, itemId);
       if (result.success) {
-        toast.success('Item removed from cart');
+        toast.success(t('removeSuccess'));
       } else {
-        toast.error('Failed to remove item');
+        toast.error(t('removeError'));
       }
     });
   };
   return (
     <Button
-      variant={'link'}
+      variant={'ghost'}
+      size={'icon'}
       onClick={() => handleRemove()}
       disabled={isPending}
-      className="hover:underline  justify-start font-light p-0"
+      className="text-muted-foreground hover:text-foreground size-5 p-0"
     >
-      <p className="hover:underline cursor-pointer">{t('remove')}</p>
+      <X className="size-3" />
     </Button>
   );
 };

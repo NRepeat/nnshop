@@ -375,6 +375,16 @@ export type GetCollectionsHandlesQuery = {
   };
 };
 
+export type GetCollectionHandleByIdQueryVariables = StorefrontTypes.Exact<{
+  id: StorefrontTypes.Scalars['ID']['input'];
+}>;
+
+export type GetCollectionHandleByIdQuery = {
+  collection?: StorefrontTypes.Maybe<
+    Pick<StorefrontTypes.Collection, 'handle'>
+  >;
+};
+
 export type GetCollectionsQueryVariables = StorefrontTypes.Exact<{
   [key: string]: never;
 }>;
@@ -390,7 +400,9 @@ export type GetMetaobjectQueryQueryVariables = StorefrontTypes.Exact<{
 }>;
 
 export type GetMetaobjectQueryQuery = {
-  metaobject?: StorefrontTypes.Maybe<Pick<StorefrontTypes.Metaobject, 'id'>>;
+  metaobject?: StorefrontTypes.Maybe<
+    Pick<StorefrontTypes.Metaobject, 'id' | 'handle' | 'type'>
+  >;
 };
 
 export type ProductMetafieldsFragment = {
@@ -435,7 +447,7 @@ export type GetProductByHandleQuery = {
         edges: Array<{
           node: Pick<
             StorefrontTypes.ProductVariant,
-            'id' | 'title' | 'availableForSale'
+            'id' | 'title' | 'availableForSale' | 'sku'
           > & {
             price: Pick<StorefrontTypes.MoneyV2, 'amount' | 'currencyCode'>;
             compareAtPrice?: StorefrontTypes.Maybe<
@@ -476,6 +488,14 @@ export type GetProductByHandleQuery = {
       >;
     }
   >;
+};
+
+export type GetHandleByIdQueryVariables = StorefrontTypes.Exact<{
+  id: StorefrontTypes.Scalars['ID']['input'];
+}>;
+
+export type GetHandleByIdQuery = {
+  product?: StorefrontTypes.Maybe<Pick<StorefrontTypes.Product, 'handle'>>;
 };
 
 export type GetProductsQueryVariables = StorefrontTypes.Exact<{
@@ -625,17 +645,25 @@ interface GeneratedQueryTypes {
     return: GetCollectionsHandlesQuery;
     variables: GetCollectionsHandlesQueryVariables;
   };
+  '#graphql\n        query getCollectionHandleById($id: ID!) {\n          collection(id: $id) {\n            handle\n          }\n        }': {
+    return: GetCollectionHandleByIdQuery;
+    variables: GetCollectionHandleByIdQueryVariables;
+  };
   '#graphql\n  query GetCollections {\n    collections(first: 250) {\n      edges {\n        node {\n          handle\n        }\n      }\n    }\n  }\n': {
     return: GetCollectionsQuery;
     variables: GetCollectionsQueryVariables;
   };
-  '\n  #graphql\n  query GetMetaobjectQuery{\n    metaobject(id:"gid://shopify/Metaobject/129047363746"){\n    id\n  }\n  }\n  ': {
+  '#graphql\n  query GetMetaobjectQuery{\n    metaobject(id:"gid://shopify/Metaobject/130444198050"){\n    id\n    handle\n    type\n  \n  }\n  }\n  ': {
     return: GetMetaobjectQueryQuery;
     variables: GetMetaobjectQueryQueryVariables;
   };
-  '#graphql\n  query getProductByHandle($handle: String!, $variant: ID) {\n    product(handle: $handle, id: $variant) {\n      id\n      title\n      handle\n      description\n      descriptionHtml\n      vendor\n      productType\n      priceRange {\n        maxVariantPrice {\n          amount\n          currencyCode\n        }\n        minVariantPrice {\n          amount\n          currencyCode\n        }\n      }\n      options(first: 250) {\n        id\n        name\n        values\n      }\n      ...ProductMetafields\n      variants(first: 250) {\n        edges {\n          node {\n            id\n            title\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n            selectedOptions {\n              name\n              value\n            }\n            metafields(identifiers: {key: "at_the_fitting", namespace: "custom"}) {\n              id\n              key\n              value\n            }\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n      }\n      images(first: 250) {\n        edges {\n          node {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n      featuredImage {\n        url\n        altText\n        width\n        height\n      }\n    }\n  }\n  #graphql\n  fragment ProductMetafields on Product {\n    metafields(\n      identifiers: [\n        {key: "recommended_products", namespace: "custom"},\n        {key: "bound-products", namespace: "custom"},\n        {key: "attributes", namespace: "custom"},\n        {key: "znizka", namespace: "custom"},\n        {key: "color", namespace: "custom"},\n        {key: "kolektsiya", namespace: "custom"},\n        {key: "styl", namespace: "custom"},\n        {key: "krayina", namespace: "custom"},\n        {key: "pidoshva", namespace: "custom"},\n        {key: "posadka", namespace: "custom"},\n        {key: "osoblyvosti", namespace: "custom"},\n        {key: "tip", namespace: "custom"},\n        {key: "kategorija", namespace: "custom"},\n        {key: "vysota-pidoshvy", namespace: "custom"},\n        {key: "zastibka", namespace: "custom"},\n        {key: "kabluk", namespace: "custom"},\n        {key: "napovnjuvach", namespace: "custom"},\n        {key: "sostav", namespace: "custom"},\n        {key: "material", namespace: "custom"},\n        {key: "rozmir", namespace: "custom"},\n        {key: "sezon", namespace: "custom"},\n        {key: "pidkladka", namespace: "custom"},\n        {key: "gender", namespace: "custom"}\n      ]\n    ) {\n      id\n      key\n      value\n    }\n  }\n\n': {
+  '#graphql\n  query getProductByHandle($handle: String!, $variant: ID) {\n  \n    product(handle: $handle, id: $variant) {\n      id\n      title\n      handle\n      description\n      descriptionHtml\n      vendor\n      productType\n      \n      priceRange {\n        maxVariantPrice {\n          amount\n          currencyCode\n        }\n        minVariantPrice {\n          amount\n          currencyCode\n        }\n      }\n      options(first: 250) {\n        id\n        name\n        values\n      }\n      ...ProductMetafields\n      variants(first: 250) {\n        edges {\n          node {\n            id\n            title\n            availableForSale\n            sku\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n            selectedOptions {\n              name\n              value\n            }\n            metafields(identifiers: {key: "at_the_fitting", namespace: "custom"}) {\n              id\n              key\n              value\n            }\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n      }\n      images(first: 250) {\n        edges {\n          node {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n      featuredImage {\n        url\n        altText\n        width\n        height\n      }\n    }\n  }\n  #graphql\n  fragment ProductMetafields on Product {\n    metafields(\n      identifiers: [\n        {key: "recommended_products", namespace: "custom"},\n        {key: "bound-products", namespace: "custom"},\n        {key: "attributes", namespace: "custom"},\n        {key: "znizka", namespace: "custom"},\n        {key: "color", namespace: "custom"},\n        {key: "kolektsiya", namespace: "custom"},\n        {key: "styl", namespace: "custom"},\n        {key: "krayina", namespace: "custom"},\n        {key: "pidoshva", namespace: "custom"},\n        {key: "posadka", namespace: "custom"},\n        {key: "osoblyvosti", namespace: "custom"},\n        {key: "tip", namespace: "custom"},\n        {key: "kategorija", namespace: "custom"},\n        {key: "vysota-pidoshvy", namespace: "custom"},\n        {key: "zastibka", namespace: "custom"},\n        {key: "kabluk", namespace: "custom"},\n        {key: "napovnjuvach", namespace: "custom"},\n        {key: "sostav", namespace: "custom"},\n        {key: "material", namespace: "custom"},\n        {key: "rozmir", namespace: "custom"},\n        {key: "sezon", namespace: "custom"},\n        {key: "pidkladka", namespace: "custom"},\n        {key: "gender", namespace: "custom"}\n      ]\n    ) {\n      id\n      key\n      value\n    }\n  }\n\n': {
     return: GetProductByHandleQuery;
     variables: GetProductByHandleQueryVariables;
+  };
+  '#graphql\n        query getHandleById($id: ID!) {\n          product(id: $id) {\n            handle\n          }\n        }': {
+    return: GetHandleByIdQuery;
+    variables: GetHandleByIdQueryVariables;
   };
   '#graphql\n  query getProducts($first: Int!) {\n    products(first: $first) {\n      edges {\n        node {\n          id\n          title\n          handle\n          description\n          descriptionHtml\n          vendor\n          productType\n          priceRange {\n            maxVariantPrice {\n              amount\n              currencyCode\n            }\n            minVariantPrice {\n              amount\n              currencyCode\n            }\n          }\n          options(first: 10) {\n            id\n            name\n            values\n          }\n          variants(first: 50) {\n            edges {\n              node {\n                id\n                title\n                availableForSale\n                price {\n                  amount\n                  currencyCode\n                }\n                compareAtPrice {\n                  amount\n                  currencyCode\n                }\n                selectedOptions {\n                  name\n                  value\n                }\n                image {\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n          }\n          images(first: 10) {\n            edges {\n              node {\n                url\n                altText\n                width\n                height\n              }\n            }\n          }\n          featuredImage {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n  }\n': {
     return: GetProductsQuery;

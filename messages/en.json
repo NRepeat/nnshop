@@ -51,7 +51,6 @@
         "close": "Close",
         "empty": "Your cart is empty",
         "checkout": "Checkout",
-        "tax_information": "Taxes, discounts and shipping calculated at checkout.",
         "estimate_total": "Estimated total.",
         "order_instraction": "Order special instractions",
         "order_instraction_placeholder": "Type your message here.",
@@ -66,7 +65,9 @@
           "login": "Log in",
           "login_description": " to check out faster.",
           "new_arrivals": "New Arrivals"
-        }
+        },
+        "removeSuccess": "Item removed from cart",
+        "removeError": "Failed to remove item"
       }
     }
   },

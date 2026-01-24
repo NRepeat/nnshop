@@ -22,7 +22,7 @@ const CartItem = ({
 }) => {
   return (
     <Card className="p-0 rounded-none shadow-none ">
-      <CardContent className="grid grid-cols-7 justify-between  p-0 rounded-none shadow-none">
+      <CardContent className="grid grid-cols-7 justify-between  p-0 rounded-none shadow-none relative">
         <Link href={''} className="flex col-span-2">
           <Image
             className="w-full h-auto object-cover"
@@ -38,14 +38,16 @@ const CartItem = ({
             <p>
               {product.price} x {product.quantity}
             </p>
-            <p>Size:{product.size}</p>
-            <p>Color:{product.color}</p>
+            {product.size && <p>Size:{product.size}</p>}
+            {product.color && <p>Color:{product.color}</p>}
           </div>
-          <RemoveItemButton cartId={cartId} itemId={itemId} />
         </div>
         <p className="justify-items-end text-right  col-span-2 ">
           {product.totalPrice}
         </p>
+        <div className="absolute top-0 right-0 mr-1 mt-1">
+          <RemoveItemButton cartId={cartId} itemId={itemId} />
+        </div>
       </CardContent>
     </Card>
   );

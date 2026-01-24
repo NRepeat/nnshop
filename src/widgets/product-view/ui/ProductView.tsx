@@ -1,4 +1,7 @@
-import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
+import {
+  Metaobject,
+  Product as ShopifyProduct,
+} from '@shared/lib/shopify/types/storefront.types';
 import { Suspense } from 'react';
 import { ProductViewProvider } from './ProductViewProvider';
 import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
@@ -9,17 +12,24 @@ export async function ProductView({
   relatedProducts,
   boundProducts,
   locale,
+  attributes,
 }: {
   product: ShopifyProduct;
   relatedProducts: ShopifyProduct[];
   boundProducts: ShopifyProduct[];
   locale: string;
+  attributes: Pick<Metaobject, 'handle' | 'id' | 'type'>[] | null;
 }) {
   const t = await getTranslations({ locale, namespace: 'ProductPage' });
+
   return (
     <div className="container  space-y-16 mt-10">
       <Suspense>
-        <ProductViewProvider product={product} boundProducts={boundProducts} />
+        <ProductViewProvider
+          product={product}
+          boundProducts={boundProducts}
+          attributes={attributes}
+        />
       </Suspense>
       {/*<ProductDetails locale={locale} product={product} />*/}
       {/* <ElegantEase locale={locale} /> */}

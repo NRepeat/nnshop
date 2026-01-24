@@ -2,8 +2,6 @@
 
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
-import { getLocale } from 'next-intl/server';
-import { locales } from '@shared/i18n/routing';
 
 const GET_ALL_PRODUCT_HANDLES = `
 

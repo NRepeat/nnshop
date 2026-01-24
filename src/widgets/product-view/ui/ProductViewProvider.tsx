@@ -1,10 +1,10 @@
 'use client';
 import { useQueryState } from 'nuqs';
-import { useTranslations } from 'next-intl';
 import Gallery from '@features/product/ui/Gallery';
 import {
   Product as ShopifyProduct,
   ProductOption,
+  Metaobject,
 } from '@shared/lib/shopify/types/storefront.types';
 import { ProductInfo } from './ProductInfo';
 
@@ -14,6 +14,7 @@ export function ProductViewProvider({
 }: {
   product: ShopifyProduct;
   boundProducts: ShopifyProduct[];
+  attributes: Pick<Metaobject, 'handle' | 'id' | 'type'>[] | null;
 }) {
   // const t = useTranslations('ProductPage');
   if (!product) throw new Error('Product not found');
@@ -50,7 +51,6 @@ export function ProductViewProvider({
     );
     return sizeMatch;
   })?.node;
-  console.log(selectedVariant, 'sizeOptions');
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12">
       <Gallery images={images} productId={product.id} isFavorite={false} />
