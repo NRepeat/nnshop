@@ -61,6 +61,8 @@ const DetailsContent = ({
 
 import { Badge } from '@shared/ui/badge';
 
+import { CrossedLine } from '@shared/ui/crossed-line';
+
 const FittingGuideContent = ({
   attributes,
   locale,
@@ -197,15 +199,15 @@ export const ProductInfo = ({
                       ? 'default'
                       : 'outline'
                   }
-                  className={cn('rounded-none min-w-[50px]', {
+                  className={cn('rounded-none min-w-[50px] relative', {
                     'bg-primary text-white':
                       size.toLowerCase() === s.toLowerCase(),
-                    'line-through': !availableForSale,
                   })}
                   onClick={() => setSize(s.toLowerCase())}
                   disabled={!availableForSale}
                 >
                   {s}
+                  {!availableForSale && <CrossedLine />}
                 </Button>
               );
             })}
