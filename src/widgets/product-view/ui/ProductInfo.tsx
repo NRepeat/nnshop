@@ -56,6 +56,8 @@ const DetailsContent = ({
   );
 };
 
+import { Badge } from '@shared/ui/badge';
+
 const FittingGuideContent = ({
   attributes,
   locale,
@@ -109,6 +111,10 @@ export const ProductInfo = ({
   const sale =
     product.metafields.find((m) => m?.key === 'znizka')?.value || '0';
 
+  const atTheFitting =
+    selectedVariant?.metafields.find((m) => m?.key === 'at_the_fitting')
+      ?.value === 'true';
+
   const colorOptionsValues = [
     ...(colorOptions?.map((name) => ({ name, product: product.handle })) || []),
     ...(boundProduct?.flatMap(
@@ -128,7 +134,10 @@ export const ProductInfo = ({
               {product.vendor}
             </h1>
           </Link>
-          <h2 className="text-lg text-gray-800">{product.title}</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg text-gray-800">{product.title}</h2>
+            {atTheFitting && <Badge>{t('atTheFitting')}</Badge>}
+          </div>
           {selectedVariant?.sku && (
             <p className="text-sm text-gray-500">
               Артикул: {selectedVariant.sku}
@@ -149,21 +158,34 @@ export const ProductInfo = ({
             <SizeChartDialog productType={product.productType} />
           </div>
           <div className="flex flex-wrap gap-2">
-            {sizeOptions.map((s) => (
-              <Button
-                key={s}
-                variant={
-                  size.toLowerCase() === s.toLowerCase() ? 'default' : 'outline'
-                }
-                className={cn('rounded-none min-w-[50px]', {
-                  'bg-primary text-white':
-                    size.toLowerCase() === s.toLowerCase(),
-                })}
-                onClick={() => setSize(s.toLowerCase())}
-              >
-                {s}
-              </Button>
-            ))}
+            {sizeOptions.map((s) => {
+              const variant = product.variants.edges.find((edge) =>
+                edge.node.selectedOptions.some(
+                  (option) =>
+                    option.name.toLowerCase() === 'розмір' &&
+                    option.value.toLowerCase() === s.toLowerCase(),
+                ),
+              )?.node;
+              const availableForSale = variant?.availableForSale ?? false;
+              return (
+                <Button
+                  key={s}
+                  variant={
+                    size.toLowerCase() === s.toLowerCase()
+                      ? 'default'
+                      : 'outline'
+                  }
+                  className={cn('rounded-none min-w-[50px]', {
+                    'bg-primary text-white':
+                      size.toLowerCase() === s.toLowerCase(),
+                  })}
+                  onClick={() => setSize(s.toLowerCase())}
+                  disabled={!availableForSale}
+                >
+                  {s}
+                </Button>
+              );
+            })}
           </div>
         </section>
       )}
@@ -174,30 +196,42 @@ export const ProductInfo = ({
             {t('color')}
           </span>
           <div className="flex flex-wrap gap-4 mt-1">
-            {colorOptionsValues.map((c) => (
-              <Link
-                key={c.name}
-                href={`/product/${c.product}`}
-                className="group"
-              >
-                <div
-                  className={cn(
-                    ' border p-1 transition-all rounded-none flex justify-center items-center',
-                    c.product === product.handle
-                      ? 'border-black'
-                      : ' border-gray-200 group-hover:border-gray-300',
-                  )}
+            {colorOptionsValues.map((c) => {
+              const productForColor =
+                c.product === product.handle
+                  ? product
+                  : boundProduct?.find((p) => p.handle === c.product);
+              const availableForSale =
+                productForColor?.variants.edges.some(
+                  (edge) => edge.node.availableForSale,
+                ) ?? false;
+              return (
+                <Link
+                  key={c.name}
+                  href={`/product/${c.product}`}
+                  className={cn('group', {
+                    'pointer-events-none opacity-50': !availableForSale,
+                  })}
                 >
                   <div
                     className={cn(
-                      'w-8 h-8 rounded-none',
-                      COLOR_MAP[c.name] || 'bg-gray-200',
+                      ' border p-1 transition-all rounded-none flex justify-center items-center',
+                      c.product === product.handle
+                        ? 'border-black'
+                        : ' border-gray-200 group-hover:border-gray-300',
                     )}
-                    title={c.name}
-                  />
-                </div>
-              </Link>
-            ))}
+                  >
+                    <div
+                      className={cn(
+                        'w-8 h-8 rounded-none',
+                        COLOR_MAP[c.name] || 'bg-gray-200',
+                      )}
+                      title={c.name}
+                    />
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </section>
       )}

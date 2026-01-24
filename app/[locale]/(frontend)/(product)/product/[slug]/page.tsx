@@ -36,9 +36,5 @@ export default async function ProductPage({ params }: Props) {
 const ProductSession = async ({ params }: Props) => {
   const { slug: handle, locale } = await params;
   setRequestLocale(locale);
-  // const session = await auth.api.getSession({ headers: await headers() });
-  // if (!session) {
-  //   return notFound();
-  // }
   return <ProductSessionView handle={handle} locale={locale} />;
 };

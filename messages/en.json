@@ -67,7 +67,8 @@
           "new_arrivals": "New Arrivals"
         },
         "removeSuccess": "Item removed from cart",
-        "removeError": "Failed to remove item"
+        "removeError": "Failed to remove item",
+        "sizeLabel": "Size: "
       }
     }
   },
@@ -333,7 +334,8 @@
     "styleWith": "Style With",
     "colorLabel": "Color",
     "sizeLabel": "Size",
-    "shippingAndReturnsContent": "Delivery<br/>We deliver by Nova Poshta with cash on delivery to all working branches.<br/><br/>Free delivery for all fully prepaid orders.<br/>Reservation of your order at the branch with cash on delivery payment - 3 days from the date of arrival.<br/>Courier delivery is possible with prepayment for delivery, which will be deducted from the cash on delivery amount, or with full prepayment for the goods.<br/>Product return<br/>Within 14 days from the date of purchase"
+    "shippingAndReturnsContent": "Delivery<br/>We deliver by Nova Poshta with cash on delivery to all working branches.<br/><br/>Free delivery for all fully prepaid orders.<br/>Reservation of your order at the branch with cash on delivery payment - 3 days from the date of arrival.<br/>Courier delivery is possible with prepayment for delivery, which will be deducted from the cash on delivery amount, or with full prepayment for the goods.<br/>Product return<br/>Within 14 days from the date of purchase",
+    "atTheFitting": "At the fitting"
   },
   "CollectionPage": {
     "explore": "Back to Search",

@@ -26,7 +26,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
   const t = useTranslations('Search');
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [debouncedQuery] = useDebounce(query, 500);
+  const [debouncedQuery] = useDebounce(query, 200);
   const [results, setResults] = useState<PredictiveSearchResult | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -64,7 +64,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
   }, [isOpen]);
 
   useEffect(() => {
-    if (debouncedQuery.length > 1) {
+    if (debouncedQuery.length >= 1) {
       setLoading(true);
       fetch('/api/predictive-search', {
         method: 'POST',
@@ -111,14 +111,14 @@ export const SearchClient = ({ className }: { className?: string }) => {
             {/* Main Search Container */}
             <motion.div
               ref={searchContainerRef}
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -20, opacity: 0 }}
+              initial={{ y: -20, opacity: 0, animationDuration: 100 }}
+              animate={{ y: 0, opacity: 1, animationDuration: 100 }}
+              exit={{ y: -20, opacity: 0, animationDuration: 100 }}
               className="fixed inset-0 top-[0px] h-fit min-h-[50vh] z-[101] bg-white overflow-y-auto"
             >
               {/* Header with Input */}
               <div className="container mx-auto px-4">
-                <div className="h-[80px] flex items-center gap-4 border-b">
+                <div className="h-[80px] flex items-center gap-4 border-b px-4">
                   <Search className="w-5 h-5" />
                   <input
                     autoFocus
@@ -162,7 +162,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="py-8"
+                    className="py-8 px-4"
                   >
                     <div className="flex justify-between items-center mb-6 text-sm text-gray-500">
                       <span>

@@ -37,6 +37,7 @@
         "close": "Закрити",
         "empty": "Ваш кошик порожній",
         "checkout": "Оформити замовлення",
+        "tax_information": "",
         "estimate_total": "Орієнтовна вартість.",
         "order_instraction": "Особливі інструкції до замовлення",
         "order_instraction_placeholder": "Введіть ваше повідомлення тут.",
@@ -53,7 +54,8 @@
           "new_arrivals": "Нові надходження"
         },
         "removeSuccess": "Товар видалено з кошика",
-        "removeError": "Не вдалося видалити товар"
+        "removeError": "Не вдалося видалити товар",
+        "sizeLabel": "Розмір: "
       }
     }
   },

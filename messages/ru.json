@@ -43,6 +43,7 @@
         "close": "Закрыть",
         "empty": "Ваша корзина пуста",
         "checkout": "Оформить заказ",
+        "tax_information": "",
         "estimate_total": "Ориентировочная стоимость.",
         "order_instraction": "Особые инструкции к заказу",
         "order_instraction_placeholder": "Введите ваше сообщение здесь.",
@@ -59,7 +60,8 @@
           "new_arrivals": "Новинки"
         },
         "removeSuccess": "Товар удален из корзины",
-        "removeError": "Не удалось удалить товар"
+        "removeError": "Не удалось удалить товар",
+        "sizeLabel": "Размер: "
       }
     }
   },
@@ -325,7 +327,8 @@
     "sustainableBabyAlpacaDescription": "Изготовлено из высококачественной бэби-альпаки из Перу (сертифицировано как без мьюлесинга) в смеси с регенерированным полиамидом, разработанным для Cuyana.",
     "elegantEase": "Элегантная легкость",
     "elegantEaseDescription": "Вдохновение для вашего основного гардероба",
-    "styleWith": "Может понравиться"
+    "styleWith": "Может понравиться",
+    "atTheFitting": "На примерке"
   },
   "CollectionPage": {
     "noProducts": "Ничего не найдено",
