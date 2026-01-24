@@ -543,5 +543,24 @@
   },
   "LoadMore": {
     "showMore": "Show More"
+  },
+  "SizeChartDialog": {
+    "boots": {
+      "title": "Size chart",
+      "description": "To measure your shoe size:<br/>Place your foot on a sheet of paper.<br/>Draw the outline of the foot on it.<br/>Mark two lines that coincide with the toe and the heel.<br/>Measure the distance between the heel and the longest toe.<br/>Use the measurements you have obtained and compare with the size table to determine your shoe size.",
+      "eu": "EU",
+      "us": "US",
+      "uk": "UK",
+      "cm": "cm",
+      "in": "in"
+    },
+    "clothes": {
+      "title": "Size chart",
+      "description": "To measure your clothing size, please refer to the chart below.",
+      "size": "Size",
+      "bust": "Bust (in)",
+      "waist": "Waist (in)",
+      "hips": "Hips (in)"
+    }
   }
 }

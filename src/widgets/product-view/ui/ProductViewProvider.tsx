@@ -15,7 +15,7 @@ export function ProductViewProvider({
   product: ShopifyProduct;
   boundProducts: ShopifyProduct[];
 }) {
-  const t = useTranslations('ProductPage');
+  // const t = useTranslations('ProductPage');
   if (!product) throw new Error('Product not found');
   const images = product.images.edges.map((edge) => edge.node).filter(Boolean);
   const colorOptions = product.options.find(

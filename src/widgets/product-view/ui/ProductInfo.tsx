@@ -9,6 +9,7 @@ import { cn } from '@shared/lib/utils';
 import { Link } from '@shared/i18n/navigation';
 import { ProductPrice } from './Price';
 import { COLOR_MAP } from './collors';
+import { SizeChartDialog } from './SizeChartDialog';
 import {
   Accordion,
   AccordionContent,
@@ -76,9 +77,7 @@ export const ProductInfo = ({
         <section className="w-full space-y-3">
           <div className="flex justify-between items-center">
             <span className="font-serif text-base">{t('size')}</span>
-            <Button variant="link" className="p-0 h-auto text-sm underline">
-              {t('sizeChart')}
-            </Button>
+            <SizeChartDialog productType={product.productType} />
           </div>
           <div className="flex flex-wrap gap-2">
             {sizeOptions.map((s) => (
