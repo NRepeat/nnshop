@@ -128,6 +128,25 @@ export const ProductInfo = ({
         [],
     ) || []),
   ];
+
+  const sortedSizeOptions = sizeOptions?.sort((a, b) => {
+    const sizeOrder = ['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl'];
+    const aIsNumeric = !isNaN(Number(a));
+    const bIsNumeric = !isNaN(Number(b));
+
+    if (aIsNumeric && bIsNumeric) {
+      return Number(a) - Number(b);
+    }
+
+    if (!aIsNumeric && !bIsNumeric) {
+      return (
+        sizeOrder.indexOf(a.toLowerCase()) - sizeOrder.indexOf(b.toLowerCase())
+      );
+    }
+
+    return aIsNumeric ? -1 : 1;
+  });
+
   return (
     <div className="content-stretch flex flex-col gap-[30px] items-start  py-0 relative w-full">
       <div className="flex flex-col gap-8 items-start  w-full max-w-2xl">
@@ -154,14 +173,14 @@ export const ProductInfo = ({
         </section>
       </div>
       {/* Выбор размера */}
-      {sizeOptions && sizeOptions.length > 0 && (
+      {sortedSizeOptions && sortedSizeOptions.length > 0 && (
         <section className="w-full space-y-3">
           <div className="flex justify-between items-center">
             <span className="font-serif text-base">{t('size')}</span>
             <SizeChartDialog productType={product.productType} />
           </div>
           <div className="flex flex-wrap gap-2">
-            {sizeOptions.map((s) => {
+            {sortedSizeOptions.map((s) => {
               const variant = product.variants.edges.find((edge) =>
                 edge.node.selectedOptions.some(
                   (option) =>
@@ -181,6 +200,7 @@ export const ProductInfo = ({
                   className={cn('rounded-none min-w-[50px]', {
                     'bg-primary text-white':
                       size.toLowerCase() === s.toLowerCase(),
+                    'line-through': !availableForSale,
                   })}
                   onClick={() => setSize(s.toLowerCase())}
                   disabled={!availableForSale}
