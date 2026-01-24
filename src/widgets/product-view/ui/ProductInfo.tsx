@@ -27,7 +27,7 @@ const DetailsContent = ({
   locale: string;
 }) => {
   return (
-    <div className="text-sm text-gray-600">
+    <div className="text-sm text-gray-600 flex flex-col gap-2">
       {attributes
         .filter(
           (attr) =>
@@ -46,9 +46,12 @@ const DetailsContent = ({
               : attr.fields.find((f) => f.key === 'atribute_payload')?.value;
           if (!title || !value) return null;
           return (
-            <div key={attr.id} className="flex justify-between">
-              <span>{title}</span>
-              <span>{value}</span>
+            <div
+              key={attr.id}
+              className="grid grid-cols-[auto_1fr] gap-x-8 gap-y-2 "
+            >
+              <span className="content-start min-w-[100px]">{title}</span>
+              <span className="content-start">{value}</span>
             </div>
           );
         })}
@@ -111,10 +114,10 @@ export const ProductInfo = ({
   const sale =
     product.metafields.find((m) => m?.key === 'znizka')?.value || '0';
 
-  const atTheFitting =
-    selectedVariant?.metafields.find((m) => m?.key === 'at_the_fitting')
-      ?.value === 'true';
-
+  const atTheFitting = selectedVariant?.metafields.find(
+    (m) => m?.key === 'at_the_fitting',
+  )?.value;
+  console.log(selectedVariant,"selectedVariant")
   const colorOptionsValues = [
     ...(colorOptions?.map((name) => ({ name, product: product.handle })) || []),
     ...(boundProduct?.flatMap(
@@ -136,7 +139,8 @@ export const ProductInfo = ({
           </Link>
           <div className="flex items-center gap-2">
             <h2 className="text-lg text-gray-800">{product.title}</h2>
-            {atTheFitting && <Badge>{t('atTheFitting')}</Badge>}
+            {atTheFitting}
+            {Boolean(atTheFitting) && <Badge>{t('atTheFitting')}</Badge>}
           </div>
           {selectedVariant?.sku && (
             <p className="text-sm text-gray-500">

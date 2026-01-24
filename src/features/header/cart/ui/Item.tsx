@@ -25,8 +25,14 @@ const CartItem = ({
   cartId: string;
   itemId: string;
 }) => {
+  //   const sizeOptions = product.options.find(
+  //   (option) => option.name.toLowerCase() === 'Розмір'.toLowerCase(),
+  // )?.values;
+  console.log(product)
+  const sale = Number(product.sale);
+  const price = Number(product.price);
+  const discountedPrice = price - (price * sale) / 100;
   const t = useTranslations('Header.cart.drawer');
-
   return (
     <Card className="p-0 rounded-none shadow-none ">
       <Link href={'/product/' + product.handle} className="flex col-span-1">
@@ -42,10 +48,26 @@ const CartItem = ({
             <div className="flex flex-col gap-1">
               <p className="text-pretty ">{product.title}</p>
               <p>
-                {Number(product.price).toFixed()}
-                {getSymbolFromCurrency('UAH')} x {product.quantity}
+                {sale > 0 ? (
+                  <>
+                    <span className="line-through">
+                      {price.toFixed()}
+                      {getSymbolFromCurrency('UAH')}
+                    </span>
+                    <span className="text-red-500 ml-2">
+                      {discountedPrice.toFixed()}
+                    </span>
+                  </>
+                ) : (
+                  price.toFixed()
+                )}
+                {sale > 0}
+                <span className={cn({ 'text-red-500': sale > 0 })}>
+                  {getSymbolFromCurrency('UAH')}{' '}
+                </span>
+                x {product.quantity}
               </p>
-              {product.size && <p>{t('sizeLabel')}{product.size}</p>}
+             {product.size && <p>{t('sizeLabel')}{product.size}</p>}
             </div>
           </div>
           <div className="col-span-1 flex flex-col justify-center">

@@ -10,6 +10,7 @@ import {
 import { Separator } from '@shared/ui/separator';
 import { getTranslations } from 'next-intl/server';
 import { CreateOrderButton } from './CreateOrderButton';
+import getSymbolFromCurrency from 'currency-symbol-map';
 
 const Content = async ({
   mockProducts,
@@ -86,9 +87,9 @@ const Content = async ({
           <Separator />
         </div>
         <div className="w-full flex justify-between px-4 py-4">
-          <span>{t('estimate_total')}</span>
+          {/* <span>{t('estimate_total')}</span> */}
           <span className="">
-            {currencySymbol} {estimateTotal}
+            {getSymbolFromCurrency(currencySymbol)} {estimateTotal}
           </span>
         </div>
         <CreateOrderButton />

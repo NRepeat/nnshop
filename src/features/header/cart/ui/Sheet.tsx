@@ -21,8 +21,8 @@ const CartSheet = async ({ locale }: { locale: string }) => {
   const cartId = cart?.cart?.id;
   const sizeLabel = {
     uk: 'Розмір',
-    ru: 'Размер',
-    en: 'Size',
+    ru: 'Розмір',
+    en: 'Розмір',
   }[locale];
 
   const items = cart?.cart?.lines.edges.map((item) => {
