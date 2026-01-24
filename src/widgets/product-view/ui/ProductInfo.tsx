@@ -173,7 +173,7 @@ export const ProductInfo = ({
           <span className="text-sm text-gray-500 uppercase tracking-wider">
             {t('color')}
           </span>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4 mt-1">
             {colorOptionsValues.map((c) => (
               <Link
                 key={c.name}
@@ -182,15 +182,15 @@ export const ProductInfo = ({
               >
                 <div
                   className={cn(
-                    'size-9 border p-0.5 transition-all',
+                    ' border p-1 transition-all rounded-none flex justify-center items-center',
                     c.product === product.handle
                       ? 'border-black'
-                      : 'border-transparent group-hover:border-gray-300',
+                      : ' border-gray-200 group-hover:border-gray-300',
                   )}
                 >
                   <div
                     className={cn(
-                      'w-full h-full',
+                      'w-8 h-8 rounded-none',
                       COLOR_MAP[c.name] || 'bg-gray-200',
                     )}
                     title={c.name}
@@ -208,7 +208,11 @@ export const ProductInfo = ({
         />
       )}
       <div className="flex gap-4 flex-nowrap flex-col w-full">
-        <AddToCartButton product={product} variant="default" />
+        <AddToCartButton
+          product={product}
+          variant="default"
+          selectedVariant={selectedVariant}
+        />
         <Button
           variant="secondary"
           className="w-full h-10 md:h-14 text-md rounded-none"

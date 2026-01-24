@@ -4,6 +4,7 @@ import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';
 import { HeaderBarProps } from '@widgets/header/ui/Header';
 import { NavButton } from './NavButton';
 import { Suspense } from 'react';
+import { cookieFenderGet } from '../api/setCookieGender';
 
 export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   const { locale } = props;
@@ -47,13 +48,31 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
                   // />
                 }
               >
-                {/* <NavButton gender={link.slug}> */}
-                {link.name as any as string}
-                {/* </NavButton> */}
+                <GenderSession
+                  label={link.name as any as string}
+                  slug={link.slug}
+                />
               </Suspense>
             </Link>
           </NavigationMenuItem>
         ))}
+    </>
+  );
+};
+const GenderSession = async ({
+  label,
+  slug,
+}: {
+  label: string;
+  slug: string;
+}) => {
+  const gender = await cookieFenderGet();
+  console.log('cookieFenderGet', gender);
+  return (
+    <>
+      <NavButton gender={gender} slug={slug}>
+        {label as any as string}
+      </NavButton>
     </>
   );
 };

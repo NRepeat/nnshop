@@ -1,9 +1,6 @@
 import { HEADER_QUERYResult } from '@shared/sanity/types';
 import { PersistLinkNavigation } from '../navigation/ui/PersistLinkNavigation';
-import Image from 'next/image';
-import { urlFor } from '@shared/sanity/lib/image';
 import { HeaderOptions } from './HeaderOptions';
-import { Link } from '@shared/i18n/navigation';
 import MenuSheet from '../navigation/ui/Sheet';
 import { SearchSession } from '../search/ui/search-session';
 
@@ -14,8 +11,12 @@ type HeaderContentProps = Extract<
   locale: string;
 };
 
-export const HeaderContent = async (props: HeaderContentProps) => {
-  const { icon, locale, mainCategory } = props;
+export const HeaderContent = async (
+  props: HeaderContentProps & {
+    childern?: React.ReactNode;
+  },
+) => {
+  const { locale, mainCategory, childern } = props;
 
   return (
     <div className="container w-full ">
@@ -27,20 +28,8 @@ export const HeaderContent = async (props: HeaderContentProps) => {
           <MenuSheet locale={locale} />
           <SearchSession className="h-full block md:hidden" />
         </div>
+        {childern}
 
-        <Link href="/" className="flex items-center justify-center">
-          <div className="flex justify-center w-full items-center">
-            {icon?.asset && (
-              <Image
-                src={urlFor(icon?.asset).url()}
-                width={304}
-                height={24}
-                alt="MioMio"
-                className="w-full h-full max-w-[180px]"
-              />
-            )}
-          </div>
-        </Link>
         <HeaderOptions locale={locale} />
       </div>
       <div className=" justify-center w-full items-center  flex md:hidden flex-row pb-1">

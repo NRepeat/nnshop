@@ -11,6 +11,5 @@ export async function cookieFenderSet(gender: string) {
 export async function cookieFenderGet() {
   const cookieStore = await cookies();
   const gender = cookieStore.get('gender');
-  console.log('cookie get', gender);
   return gender?.value;
 }

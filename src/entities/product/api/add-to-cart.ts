@@ -3,6 +3,7 @@
 import { addToCartAction } from '@entities/cart/api/add-product';
 import { CART_TAGS } from '@shared/lib/cached-fetch';
 import { revalidateTag } from 'next/cache';
+import { checkInventoryLevel } from './check-inventory-level';
 
 async function addToCart(_: any, formData: FormData) {
   try {
@@ -11,7 +12,10 @@ async function addToCart(_: any, formData: FormData) {
     if (!variantId) {
       return { success: false, message: 'Missing variant ID' };
     }
-
+    const itemQuantity = await checkInventoryLevel(variantId);
+    if (itemQuantity?.quantity === 0) {
+      return { error: 'No products avalible' };
+    }
     const result = await addToCartAction(variantId);
 
     if (!result.success) {
