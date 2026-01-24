@@ -15,12 +15,16 @@ const BootsSizeChart = ({ t }: { t: (key: string) => string }) => (
   <div className="flex flex-col gap-6">
     <DialogHeader>
       <DialogTitle className="text-center text-3xl font-light italic font-serif">
-        {t('clothes.title')}
+        {t('boots.title')}
       </DialogTitle>
     </DialogHeader>
+    {/* <p>
+      {t.rich('boots.description', {
+        br: () => <br />,
+      })}
+    </p> */}
     {/* @ts-ignore */}
-    <p dangerouslySetInnerHTML={{ __html: t.raw('boots.description') }} />
-
+    <div dangerouslySetInnerHTML={{ __html: t.raw('boots.description') }} />
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mt-2">
       {/* Контейнер для GIF (слева) */}
       <div className="flex flex-col items-center justify-center border border-black p-8 aspect-square md:aspect-auto h-full">
@@ -43,35 +47,26 @@ const BootsSizeChart = ({ t }: { t: (key: string) => string }) => (
                 {t('boots.eu')}
               </th>
               <th className="border border-gray-300 p-2 font-medium">
-                {t('boots.us')}
-              </th>
-              <th className="border border-gray-300 p-2 font-medium">
-                {t('boots.uk')}
-              </th>
-              <th className="border border-gray-300 p-2 font-medium">
                 {t('boots.cm')}
-              </th>
-              <th className="border border-gray-300 p-2 font-medium">
-                {t('boots.in')}
               </th>
             </tr>
           </thead>
           <tbody className="text-gray-600">
             {/* Пример данных, как на скриншоте */}
             {[
-              ['35', '5', '2', '21.5', '8.5"'],
-              ['35,5', '5,5', '2,5', '22', '8.5"'],
-              ['36', '6', '3', '22', '8.5"'],
-              ['36,5', '6,5', '3,5', '22.5', '9"'],
-              ['37', '7', '4', '23', '9"'],
-              ['37,5', '7,5', '4,5', '23.5', '9"'],
-              ['38', '8', '5', '24', '9.5"'],
-              ['38,5', '8,5', '5,5', '24', '9.5"'],
-              ['39', '9', '6', '24.5', '9.5"'],
-              ['39,5', '9,5', '6,5', '25', '10"'],
-              ['40', '10', '7', '25.5', '10"'],
-              ['40,5', '10,5', '7,5', '26', '10"'],
-              ['41', '11', '8', '26', '10.5"'],
+              ['35', '21.5'],
+              ['35,5', '22'],
+              ['36', '22'],
+              ['36,5', '22.5'],
+              ['37', '23'],
+              ['37,5', '23.5'],
+              ['38', '24'],
+              ['38,5', '24'],
+              ['39', '24.5'],
+              ['39,5', '25'],
+              ['40', '25.5'],
+              ['40,5', '26'],
+              ['41', '26'],
             ].map((row, idx) => (
               <tr key={idx}>
                 {row.map((cell, cIdx) => (
