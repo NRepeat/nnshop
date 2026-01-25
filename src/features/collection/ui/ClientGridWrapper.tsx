@@ -10,11 +10,11 @@ export const ClientGridWrapper = ({
   initialPageInfo,
   initialProducts,
 }: {
-  initialProducts: Product[];
+  initialProducts: (Product & { isFav: boolean })[];
   initialPageInfo: PageInfo;
 }) => {
   const locale = useLocale();
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<(Product & { isFav: boolean })[]>(initialProducts);
   const [pageInfo, setPageInfo] = useState(initialPageInfo);
   useEffect(() => {
     setProducts(initialProducts);
@@ -41,7 +41,7 @@ export const ClientGridWrapper = ({
     <div className="flex h-full w-full justify-between">
       <div className="flex flex-col w-full items-end justify-between">
         <div className="flex flex-col w-full justify-between  pt-0 h-full">
-          <ClientGrid products={products as Product[]} />
+          <ClientGrid products={products as (Product & { isFav: boolean })[]} />
           <div className="w-full items-center">
             <LoadMore
               initialPageInfo={pageInfo}

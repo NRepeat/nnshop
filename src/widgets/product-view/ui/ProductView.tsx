@@ -1,11 +1,10 @@
-import {
-  Product as ShopifyProduct,
-} from '@shared/lib/shopify/types/storefront.types';
-import { Suspense } from 'react';
+import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
 import { ProductViewProvider } from './ProductViewProvider';
 import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
 import { getTranslations } from 'next-intl/server';
 import { ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
+import { Suspense } from 'react';
+import { GallerySession } from './GallerySession';
 
 export async function ProductView({
   product,
@@ -18,19 +17,22 @@ export async function ProductView({
   relatedProducts: ShopifyProduct[];
   boundProducts: ShopifyProduct[];
   locale: string;
-  attributes: ProductMEtaobjectType[]
+  attributes: ProductMEtaobjectType[];
 }) {
   const t = await getTranslations({ locale, namespace: 'ProductPage' });
 
   return (
     <div className="container  space-y-16 mt-10">
-      <Suspense>
-        <ProductViewProvider
-          product={product}
-          boundProducts={boundProducts}
-          attributes={attributes}
-        />
-      </Suspense>
+      <ProductViewProvider
+        favCommponent={
+          <Suspense>
+            <GallerySession product={product} />
+          </Suspense>
+        }
+        product={product}
+        boundProducts={boundProducts}
+        attributes={attributes}
+      />
       {/*<ProductDetails locale={locale} product={product} />*/}
       {/* <ElegantEase locale={locale} /> */}
       <div className="content-stretch flex flex-col gap-[30px] items-center px-0 py-[30px] relative w-full">

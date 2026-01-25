@@ -12,15 +12,16 @@ import {
   CarouselPrevious,
 } from '@shared/ui/carousel';
 import { useRouter } from 'next/navigation';
-import { Heart } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@shared/ui/button';
 import { useTranslations } from 'next-intl';
 import { Link } from '@shared/i18n/navigation';
-import { addToFavorites } from '@entities/favorite/api/add-to-fav';
+import { FavSession } from '@features/header/ui/FavSession';
+import { cn } from '@shared/lib/utils';
 
 type ProductCardProps = {
   product: Product;
+  isFav?: boolean;
   addToCard?: boolean;
   className?: string;
   withCarousel?: boolean;
@@ -30,6 +31,7 @@ export const ProductCard = ({
   product,
   className,
   withCarousel = false,
+  isFav,
 }: ProductCardProps) => {
   const t = useTranslations('ProductCard');
   const productImages = [
@@ -44,12 +46,6 @@ export const ProductCard = ({
     .splice(0, 5);
   const nav = useRouter();
   const isNew = product.tags.includes('новий') || product.tags.includes('new');
-  const handleAddToFavorites = async () => {
-    const data = await addToFavorites(product.id, '1');
-    if (!data) {
-      nav.push(`/auth/sign-in`, { scroll: false });
-    }
-  };
   return (
     <Card
       className={clsx(
@@ -93,8 +89,17 @@ export const ProductCard = ({
                   variant={'ghost'}
                   className="group-hover:flex hidden md:hover:flex bg-background/70 rounded-full top-1/2 left-2 absolute"
                 />
-                <div className="absolute top-2  right-2  hidden group-hover:block">
-                  <Button
+                <div
+                  className={cn('absolute top-2  right-2   group-hover:block', {
+                    hidden: !isFav,
+                  })}
+                >
+                  <FavSession
+                    fav={isFav}
+                    productId={product.id}
+                    handle={product.handle}
+                  />
+                  {/* <Button
                     size={'icon'}
                     variant={'ghost'}
                     className="hover:[&>svg]:stroke-[#e31e24] bg-background/70 rounded-full"
@@ -105,7 +110,7 @@ export const ProductCard = ({
                     }}
                   >
                     <Heart className="" />
-                  </Button>
+                  </Button> */}
                 </div>
                 <div className=" bottom-2  right-2  flex w-full justify-end absolute">
                   <Button

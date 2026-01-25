@@ -8,7 +8,11 @@ const item = {
   exit: { opacity: 0, y: -20 },
 };
 
-export const ClientGrid = ({ products }: { products: Product[] }) => {
+export const ClientGrid = ({
+  products,
+}: {
+  products: (Product & { isFav: boolean })[];
+}) => {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-1 md:gap-6 h-full">
       <AnimatePresence>
@@ -22,7 +26,12 @@ export const ClientGrid = ({ products }: { products: Product[] }) => {
             animate="show"
             exit="exit"
           >
-            <ProductCard product={product} className=" px-0" withCarousel />
+            <ProductCard
+              product={product}
+              className=" px-0"
+              withCarousel
+              isFav={product.isFav}
+            />
           </motion.div>
         ))}
       </AnimatePresence>

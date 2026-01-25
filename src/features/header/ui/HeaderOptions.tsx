@@ -1,16 +1,25 @@
-import { ShoppingCart } from 'lucide-react';
+import { Heart, ShoppingCart } from 'lucide-react';
 import CartSheet from '../cart/ui/Sheet';
 import { Button } from '@shared/ui/button';
 import { SearchSession } from '../search/ui/search-session';
 import { Suspense } from 'react';
 import { AccountButton } from '../account/ui/AccoutnButton';
-import { FavSession } from './FavSession';
+import { Link } from '@shared/i18n/navigation';
 
 export const HeaderOptions = ({ locale }: { locale: string }) => {
   return (
     <div className="col-span-1 flex justify-end gap-1 items-center px-1">
       <SearchSession className="h-full hidden md:block" />
-      <FavSession />
+      <Link href={'/favorites'}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="group hover:[&>svg]:stroke-[#e31e24]"
+        >
+          <Heart />
+        </Button>
+      </Link>
+
       <AccountButton className="hidden md:flex " locale={locale} />
       <Suspense
         fallback={

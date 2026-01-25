@@ -2,10 +2,7 @@
 import 'photoswipe/dist/photoswipe.css';
 import { useWindowSize } from '@uidotdev/usehooks';
 import { Gallery as PhotoSwipeGallery, Item } from 'react-photoswipe-gallery';
-import type {
-  ProductVariant,
-  Image as ShoipifyImage,
-} from '@shared/lib/shopify/types/storefront.types';
+import type { Image as ShoipifyImage } from '@shared/lib/shopify/types/storefront.types';
 import { Button } from '@shared/ui/button';
 import {
   Carousel,
@@ -15,23 +12,18 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@shared/ui/carousel';
-import { Bookmark, Heart } from 'lucide-react';
-
-import { toggleFavoriteProduct } from '../api/toggle-favorite';
-import { BookmarkFilledIcon, HeartFilledIcon } from '@sanity/icons';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { cn } from '@shared/lib/utils';
-import { FavSession } from '@features/header/ui/FavSession';
 
 const Gallery = ({
   images,
-  isFavorite,
-  productId,
+  children,
 }: {
   images: ShoipifyImage[];
   productId: string;
-  isFavorite?: boolean;
+  children?: React.ReactNode;
+  handle: string;
 }) => {
   const [mainApi, setMainApi] = useState<CarouselApi>();
   const [secApi, setSecApi] = useState<CarouselApi>();
@@ -102,17 +94,9 @@ const Gallery = ({
     };
   }, [mainApi, secApi, onSelect, onInit]);
 
-  const handleFavoriteToggle = async (id: string) => {
-    try {
-      await toggleFavoriteProduct(id);
-    } catch (error) {
-      console.error(error);
-    }
-  };
   const { width: windowWidth } = useWindowSize();
   const md = windowWidth && windowWidth >= 768;
-  const lg = windowWidth && windowWidth >= 1024;
-  console.log(md ? 3 : 5);
+
   return (
     <PhotoSwipeGallery>
       <div className="col-span-1 lg:col-span-2 gap-6 flex flex-col">
@@ -154,23 +138,7 @@ const Gallery = ({
               className="group-hover:flex  bg-background/70 rounded-full top-1/2 left-2 absolute hidden md:flex"
             />
           </Carousel>
-          <div className="absolute -top-5 right-2">
-            <FavSession />
-            {/* <Button
-              variant="ghost"
-              size="icon"
-              onClick={async () => {
-                await handleFavoriteToggle(productId);
-              }}
-              className="hover:[&>svg]:stroke-[#e31e24]"
-            >
-              {isFavorite ? (
-                <HeartFilledIcon className="stroke-[#e31e24]" />
-              ) : (
-                <FavSession />
-              )}
-            </Button> */}
-          </div>
+          <div className="absolute -top-5 right-2">{children}</div>
         </div>
         {images.length > 1 && (
           <Carousel

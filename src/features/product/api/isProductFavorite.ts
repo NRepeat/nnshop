@@ -1,12 +1,10 @@
 'use server';
-import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { Session, User } from 'better-auth';
-import { headers } from 'next/headers';
 
 export const isProductFavorite = async (
   productId: string,
-  session: { session: Session; user: User },
+  session: { session: Session; user: User } | null,
 ): Promise<boolean> => {
   if (!session || !session.user) {
     return false;
