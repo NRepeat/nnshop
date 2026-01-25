@@ -1,6 +1,6 @@
 'use client';
 import 'photoswipe/dist/photoswipe.css';
-import { useWindowSize } from "@uidotdev/usehooks";
+import { useWindowSize } from '@uidotdev/usehooks';
 import { Gallery as PhotoSwipeGallery, Item } from 'react-photoswipe-gallery';
 import type {
   ProductVariant,
@@ -22,6 +22,7 @@ import { BookmarkFilledIcon, HeartFilledIcon } from '@sanity/icons';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { cn } from '@shared/lib/utils';
+import { FavSession } from '@features/header/ui/FavSession';
 
 const Gallery = ({
   images,
@@ -111,7 +112,7 @@ const Gallery = ({
   const { width: windowWidth } = useWindowSize();
   const md = windowWidth && windowWidth >= 768;
   const lg = windowWidth && windowWidth >= 1024;
-  console.log( md ? 3 : 5);
+  console.log(md ? 3 : 5);
   return (
     <PhotoSwipeGallery>
       <div className="col-span-1 lg:col-span-2 gap-6 flex flex-col">
@@ -154,7 +155,8 @@ const Gallery = ({
             />
           </Carousel>
           <div className="absolute -top-5 right-2">
-            <Button
+            <FavSession />
+            {/* <Button
               variant="ghost"
               size="icon"
               onClick={async () => {
@@ -165,9 +167,9 @@ const Gallery = ({
               {isFavorite ? (
                 <HeartFilledIcon className="stroke-[#e31e24]" />
               ) : (
-                <Heart />
+                <FavSession />
               )}
-            </Button>
+            </Button> */}
           </div>
         </div>
         {images.length > 1 && (

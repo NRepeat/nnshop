@@ -110,6 +110,7 @@ export const ProductInfo = ({
   size: string;
   attributes: ProductMEtaobjectType[];
 }) => {
+  console.log("🚀 ~ ProductInfo ~ selectedVariant:", selectedVariant)
   const t = useTranslations('ProductPage');
   const locale = useLocale();
 
@@ -160,6 +161,7 @@ export const ProductInfo = ({
           </Link>
           <div className="flex items-center gap-2">
             <h2 className="text-lg text-gray-800">{product.title}</h2>
+            {atTheFitting}
             {atTheFitting === 'true' && <Badge>{t('atTheFitting')}</Badge>}
           </div>
           {selectedVariant?.sku && (
