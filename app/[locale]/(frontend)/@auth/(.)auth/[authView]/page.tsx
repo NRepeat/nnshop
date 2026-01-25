@@ -4,14 +4,22 @@ import { AuthViewRenderer } from '@/features/auth/ui/auth-view-renderer';
 import { QuickView } from '@widgets/product-view';
 import { locales } from '@shared/i18n/routing';
 import { Suspense } from 'react';
-export async function generateStaticParams() {
-  const params = [];
-  for (const locale of locales) {
-    // for (const authView of Object.values(authViewPaths)) {
-    params.push({ locale: locale });
-    // }
-  }
-  return params;
+// export async function generateStaticParams() {
+//   const params = [];
+//   for (const locale of locales) {
+//     // for (const authView of Object.values(authViewPaths)) {
+//     params.push({ locale: locale });
+//     // }
+//   }
+//   return params;
+// }
+export function generateStaticParams() {
+  return locales.flatMap((locale) =>
+    Object.values(authViewPaths).map((path) => ({
+      locale,
+      path,
+    })),
+  );
 }
 // export function generateStaticParams() {
 //   return Object.values(authViewPaths).map((path) => ({ authView: path }));

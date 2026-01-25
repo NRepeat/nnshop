@@ -6,13 +6,13 @@ import { NextIntlClientProvider } from 'next-intl';
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    // <Provider>
     <NextIntlClientProvider>
-      <NuqsAdapter>
-        {children}
-        <Toaster />
-      </NuqsAdapter>
+      <Provider>
+        <NuqsAdapter>
+          {children}
+          <Toaster />
+        </NuqsAdapter>
+      </Provider>
     </NextIntlClientProvider>
-    // </Provider>
   );
 }
