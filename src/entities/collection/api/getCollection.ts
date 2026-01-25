@@ -10,8 +10,7 @@ import {
 } from '@shared/lib/shopify/types/storefront.generated';
 import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
 
-const GetCollectionWithProducts = `
-  #graphql
+const GetCollectionWithProducts = `#graphql
   query GetCollection(
     $handle: String!
     $filters: [ProductFilter!]

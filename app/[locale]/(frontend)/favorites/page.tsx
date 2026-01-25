@@ -83,7 +83,12 @@ async function FavoritesPageSession({
       <h1 className="text-2xl font-bold my-4">{t('title')}</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            withCarousel
+            isFav={true}
+          />
         ))}
       </div>
     </div>

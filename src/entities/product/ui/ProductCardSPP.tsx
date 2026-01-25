@@ -3,14 +3,18 @@ import Image from 'next/image';
 import Link from 'next/link';
 import getSymbolFromCurrency from 'currency-symbol-map';
 import { cn } from '@shared/lib/utils';
-import { PlusIcon } from 'lucide-react';
 
 type ProductCardSPPProps = {
   product: Product;
   className?: string;
+  link?: boolean;
 };
 
-export const ProductCardSPP = ({ product, className }: ProductCardSPPProps) => {
+export const ProductCardSPP = ({
+  product,
+  className,
+  link = true,
+}: ProductCardSPPProps) => {
   const { url: imageUrl, altText } = product.featuredImage || {};
   const imageAlt = altText || product.title;
 
@@ -27,15 +31,25 @@ export const ProductCardSPP = ({ product, className }: ProductCardSPPProps) => {
   const discountValue = discountMeta ? parseFloat(discountMeta.value) : 0;
   const hasDiscount = discountValue > 0;
   const discountedPrice = priceAmount * (1 - discountValue / 100);
-
-  return (
-    <div className={cn('group flex flex-col gap-3 w-full', className)}>
-      {/* Контейнер изображения */}
-      <div className="relative aspect-[1/1] w-full overflow-hidden bg-background">
+  const WithLink = ({ children }: { children: React.ReactNode }) => {
+    if (link) {
+      return (
         <Link
           href={`/product/${product.handle}`}
           className="block h-full w-full"
         >
+          {children}
+        </Link>
+      );
+    } else { 
+     return <div className="block h-full w-full">{children}</div>;
+    }
+  };
+  return (
+    <div className={cn('group flex flex-col gap-3 w-full', className)}>
+      {/* Контейнер изображения */}
+      <div className="relative aspect-[1/1] w-full overflow-hidden bg-background">
+        <WithLink>
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -49,13 +63,7 @@ export const ProductCardSPP = ({ product, className }: ProductCardSPPProps) => {
               No image
             </div>
           )}
-        </Link>
-
-        {/* <div className="absolute bottom-4 right-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <div className="flex size-8 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-black/5">
-            <PlusIcon className="size-4 text-black" />
-          </div>
-        </div> */}
+        </WithLink>
       </div>
 
       {/* Инфо-блок */}

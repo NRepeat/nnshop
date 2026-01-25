@@ -173,7 +173,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
                         })}
                       </span>
                       <Link
-                        href={'/search' + `?q=${query}`}
+                        href="/search"
                         className="underline"
                         onClick={() => setIsOpen(false)}
                       >
@@ -191,7 +191,8 @@ export const SearchClient = ({ className }: { className?: string }) => {
                           className="group flex flex-col gap-2"
                           onClick={() => setIsOpen(false)}
                         >
-                          <ProductCardSPP
+                            <ProductCardSPP
+                            link={false}
                             product={product as Product}
                             key={product.id}
                           />
