@@ -59,8 +59,6 @@ const DetailsContent = ({
   );
 };
 
-import { Badge } from '@shared/ui/badge';
-
 import { CrossedLine } from '@shared/ui/crossed-line';
 
 const FittingGuideContent = ({
@@ -91,6 +89,10 @@ const FittingGuideContent = ({
   return <p className="text-sm text-gray-600">{value}</p>;
 };
 
+import { QuickBuyModal } from '@features/product/quick-buy/ui/QuickBuyModal';
+import { useState } from 'react';
+import { Badge } from '@shared/ui/badge';
+
 export const ProductInfo = ({
   product,
   colorOptions,
@@ -110,9 +112,9 @@ export const ProductInfo = ({
   size: string;
   attributes: ProductMEtaobjectType[];
 }) => {
-  console.log("🚀 ~ ProductInfo ~ selectedVariant:", selectedVariant)
   const t = useTranslations('ProductPage');
   const locale = useLocale();
+  const [isQuickBuyOpen, setQuickBuyOpen] = useState(false);
 
   const sale =
     product.metafields.find((m) => m?.key === 'znizka')?.value || '0';
@@ -120,7 +122,6 @@ export const ProductInfo = ({
   const atTheFitting = selectedVariant?.metafields.find(
     (m) => m?.key === 'at_the_fitting',
   )?.value;
-  console.log(selectedVariant, 'selectedVariant');
   const colorOptionsValues = [
     ...(colorOptions?.map((name) => ({ name, product: product.handle })) || []),
     ...(boundProduct?.flatMap(
@@ -161,7 +162,6 @@ export const ProductInfo = ({
           </Link>
           <div className="flex items-center gap-2">
             <h2 className="text-lg text-gray-800">{product.title}</h2>
-            {atTheFitting}
             {atTheFitting === 'true' && <Badge>{t('atTheFitting')}</Badge>}
           </div>
           {selectedVariant?.sku && (
@@ -277,10 +277,17 @@ export const ProductInfo = ({
         <Button
           variant="secondary"
           className="w-full h-10 md:h-14 text-md rounded-none"
+          onClick={() => setQuickBuyOpen(true)}
         >
           {t('quickOrder')}
         </Button>
       </div>
+      <QuickBuyModal
+        product={product}
+        open={isQuickBuyOpen}
+        onOpenChange={setQuickBuyOpen}
+        sizeOptions={sizeOptions}
+      />
       {/* Аккордеон деталей */}
       <Accordion type="single" collapsible className="w-full border-t mt-4">
         <AccordionItem value="details">

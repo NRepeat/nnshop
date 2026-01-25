@@ -328,7 +328,13 @@
     "elegantEase": "Элегантная легкость",
     "elegantEaseDescription": "Вдохновение для вашего основного гардероба",
     "styleWith": "Может понравиться",
-    "atTheFitting": "На примерке"
+    "atTheFitting": "На примерке",
+    "quickOrderDescription": "Быстрое оформление заказа в два шага.",
+    "selectSize": "Выберите размер",
+    "contactInfo": "Контактная информация",
+    "next": "Далее",
+    "back": "Назад",
+    "submitOrder": "Оформить заказ"
   },
   "CollectionPage": {
     "noProducts": "Ничего не найдено",

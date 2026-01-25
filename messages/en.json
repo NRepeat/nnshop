@@ -335,7 +335,13 @@
     "colorLabel": "Color",
     "sizeLabel": "Size",
     "shippingAndReturnsContent": "Delivery<br/>We deliver by Nova Poshta with cash on delivery to all working branches.<br/><br/>Free delivery for all fully prepaid orders.<br/>Reservation of your order at the branch with cash on delivery payment - 3 days from the date of arrival.<br/>Courier delivery is possible with prepayment for delivery, which will be deducted from the cash on delivery amount, or with full prepayment for the goods.<br/>Product return<br/>Within 14 days from the date of purchase",
-    "atTheFitting": "At the fitting"
+    "atTheFitting": "At the fitting",
+    "quickOrderDescription": "Quick two-step checkout.",
+    "selectSize": "Select size",
+    "contactInfo": "Contact information",
+    "next": "Next",
+    "back": "Back",
+    "submitOrder": "Submit order"
   },
   "CollectionPage": {
     "explore": "Back to Search",
