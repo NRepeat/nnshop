@@ -546,7 +546,11 @@
     "results": "{count, plural, one {# result} other {# results} zero {# results}}",
     "viewAll": "View all",
     "noResults": "No results found",
-    "tryAgain": "Try searching for something else."
+    "tryAgain": "Try searching for something else.",
+    "title": "Search",
+    "loading": "Loading results",
+    "resultsFor": "Results for",
+    "errorFetchingResults": "Error fetching search results."
   },
   "ProductCard": {
     "new": "New",

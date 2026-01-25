@@ -14,8 +14,8 @@ export const ProductCardSPP = ({ product, className }: ProductCardSPPProps) => {
   const { url: imageUrl, altText } = product.featuredImage || {};
   const imageAlt = altText || product.title;
 
-  const priceAmount = parseFloat(product.priceRange.maxVariantPrice.amount);
-  const currencyCode = product.priceRange.maxVariantPrice.currencyCode;
+  const priceAmount = parseFloat(product.priceRange?.maxVariantPrice.amount);
+  const currencyCode = product.priceRange?.maxVariantPrice.currencyCode;
   const currencySymbol = getSymbolFromCurrency(currencyCode) || currencyCode;
 
   const discountMeta = Array.isArray(product.metafields)

@@ -51,8 +51,8 @@ export const ProductInfo = ({
         {product.title}
       </p>
       <p className="leading-[22px] relative shrink-0 text-[16px] w-full">
-        {product.priceRange.maxVariantPrice.currencyCode}
-        {Number(product.priceRange.maxVariantPrice.amount).toFixed(0)}
+        {product.priceRange?.maxVariantPrice.currencyCode}
+        {Number(product.priceRange?.maxVariantPrice.amount).toFixed(0)}
       </p>
     </div>
     <p className="font-['Styrene_A_Web:Regular',sans-serif] leading-[20px] not-italic relative shrink-0 text-[13px] text-black w-full">

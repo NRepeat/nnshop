@@ -54,8 +54,8 @@ export const ProductQuickView = ({ product }: ProductQuickViewProps) => {
           <div>
             <h2 className="text-xl font-medium">{product.title}</h2>
             <p className="text-lg">
-              {product.priceRange.maxVariantPrice.amount}{' '}
-              {product.priceRange.maxVariantPrice.currencyCode}
+              {product.priceRange?.maxVariantPrice.amount}{' '}
+              {product.priceRange?.maxVariantPrice.currencyCode}
             </p>
           </div>
         </div>

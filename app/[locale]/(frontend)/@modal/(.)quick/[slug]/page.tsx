@@ -1,4 +1,3 @@
-import { ProductQuickView } from '@/entities/product/ui/ProductQuickView';
 import { QuickView } from '@/widgets/product-view/ui/QuickView';
 import {
   ProductMEtaobjectType,

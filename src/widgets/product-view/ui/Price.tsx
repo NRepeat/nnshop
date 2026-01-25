@@ -15,7 +15,7 @@ export const ProductPrice = ({
 }) => {
   // Базовая цена (берем либо вариант, либо из диапазона продукта)
   const basePriceObj =
-    selectedVariant?.price || product.priceRange.maxVariantPrice;
+    selectedVariant?.price || product.priceRange?.maxVariantPrice;
   const comparePriceObj = selectedVariant?.compareAtPrice;
 
   const baseAmount = parseFloat(basePriceObj.amount);

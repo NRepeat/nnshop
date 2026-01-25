@@ -3,7 +3,6 @@ import { useQueryState } from 'nuqs';
 import Gallery from '@features/product/ui/Gallery';
 import {
   Product as ShopifyProduct,
-  ProductOption,
 } from '@shared/lib/shopify/types/storefront.types';
 import { ProductInfo } from './ProductInfo';
 import { ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';

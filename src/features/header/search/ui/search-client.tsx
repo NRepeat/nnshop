@@ -17,6 +17,8 @@ import {
   EmptyTitle,
 } from '@shared/ui/empty';
 import { Skeleton } from '@shared/ui/skeleton';
+import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
+import { Product } from '@shared/lib/shopify/types/storefront.types';
 
 type PredictiveSearchResult = NonNullable<
   PredictiveSearchQuery['predictiveSearch']
@@ -171,7 +173,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
                         })}
                       </span>
                       <Link
-                        href="/search"
+                        href={'/search' + `?q=${query}`}
                         className="underline"
                         onClick={() => setIsOpen(false)}
                       >
@@ -189,7 +191,11 @@ export const SearchClient = ({ className }: { className?: string }) => {
                           className="group flex flex-col gap-2"
                           onClick={() => setIsOpen(false)}
                         >
-                          <div className="relative aspect-[3/4] bg-background overflow-hidden">
+                          <ProductCardSPP
+                            product={product as Product}
+                            key={product.id}
+                          />
+                          {/* <div className="relative aspect-[3/4] bg-background overflow-hidden">
                             {product.featuredImage?.url && (
                               <Image
                                 src={product.featuredImage.url}
@@ -211,7 +217,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
                               {product.title}
                             </h3>
                             <p className="text-sm text-gray-600">{`${product.variants.edges[0]?.node.price.amount} ${product.variants.edges[0]?.node.price.currencyCode}`}</p>
-                          </div>
+                          </div> */}
                         </Link>
                       ))}
                     </div>

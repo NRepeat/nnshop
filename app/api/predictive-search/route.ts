@@ -32,9 +32,21 @@ const PREDICTIVE_SEARCH_QUERY = `#graphql
         featuredImage {
           url
         }
+        metafields(identifiers: [
+        {key: "znizka", namespace: "custom"}]){
+          key
+          value
+        }
+          priceRange {
+             maxVariantPrice{
+              amount
+              currencyCode
+             }
+            }
         variants(first: 1) {
           edges {
             node {
+              
               price {
                 amount
                 currencyCode

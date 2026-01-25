@@ -46,20 +46,20 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
               {product.metafield && product.metafield.key === 'znizka' ? (
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="line-through text-gray-500 text-xs">
-                    {product.priceRange.maxVariantPrice.amount}{' '}
+                    {product.priceRange?.maxVariantPrice.amount}{' '}
                     {getSymbolFromCurrency(
-                      product.priceRange.maxVariantPrice.currencyCode,
-                    ) || product.priceRange.maxVariantPrice.currencyCode}
+                      product.priceRange?.maxVariantPrice.currencyCode,
+                    ) || product.priceRange?.maxVariantPrice.currencyCode}
                   </span>
 
                   <span className="text-red-600 font-bold text-sm">
                     {(
-                      product.priceRange.maxVariantPrice.amount *
+                      product.priceRange?.maxVariantPrice.amount *
                       (1 - parseFloat(product.metafield.value) / 100)
                     ).toFixed(2)}{' '}
                     {getSymbolFromCurrency(
-                      product.priceRange.maxVariantPrice.currencyCode,
-                    ) || product.priceRange.maxVariantPrice.currencyCode}
+                      product.priceRange?.maxVariantPrice.currencyCode,
+                    ) || product.priceRange?.maxVariantPrice.currencyCode}
                   </span>
 
                   <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
@@ -68,10 +68,10 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
                 </div>
               ) : (
                 <span className="font-bold text-sm">
-                  {product.priceRange.maxVariantPrice.amount}{' '}
+                  {product.priceRange?.maxVariantPrice.amount}{' '}
                   {getSymbolFromCurrency(
-                    product.priceRange.maxVariantPrice.currencyCode,
-                  ) || product.priceRange.maxVariantPrice.currencyCode}
+                    product.priceRange?.maxVariantPrice.currencyCode,
+                  ) || product.priceRange?.maxVariantPrice.currencyCode}
                 </span>
               )}
             </div>
