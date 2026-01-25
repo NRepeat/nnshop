@@ -1,79 +1,51 @@
-import { Skeleton } from '@/shared/ui/skeleton';
+// src/widgets/product-view/ui/ProductViewSkeleton.tsx
+
+import { Skeleton } from '@shared/ui/skeleton';
 
 export const ProductViewSkeleton = () => {
   return (
-    <div className="container  w-full py-12 space-y-24 animate-pulse">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        {/* Left column: Image Gallery */}
-        <div className="flex flex-col gap-4">
-          <Skeleton className="w-full h-[500px]" />
-          <div className="flex gap-2">
-            <Skeleton className="w-24 h-24" />
-            <Skeleton className="w-24 h-24" />
-            <Skeleton className="w-24 h-24" />
-          </div>
-        </div>
-        {/* Right column: Product Details */}
-        <div className="flex flex-col gap-4">
-          <Skeleton className="h-8 w-3/4" />
-          <Skeleton className="h-6 w-1/4" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-2/3" />
-
-          {/* Color options */}
-          <div className="mt-6">
-            <Skeleton className="h-4 w-24" />
-            <div className="flex gap-2 mt-2">
-              <Skeleton className="w-8 h-8 rounded-full" />
-              <Skeleton className="w-8 h-8 rounded-full" />
-              <Skeleton className="w-8 h-8 rounded-full" />
-            </div>
-          </div>
-
-          {/* Size options */}
-          <div className="mt-4">
-            <div className="flex justify-between items-center">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-4 w-16" />
-            </div>
-            <div className="flex gap-2 mt-2">
-              <Skeleton className="w-12 h-10" />
-              <Skeleton className="w-12 h-10" />
-              <Skeleton className="w-12 h-10" />
-            </div>
-          </div>
-
-          {/* Add to Bag button */}
-          <Skeleton className="h-12 w-full mt-6" />
-
-          {/* Accordion items */}
-          <div className="mt-6 space-y-4">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-          </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12 p-4">
+      {/* Gallery Skeleton */}
+      <div className="flex flex-col gap-4">
+        <Skeleton className="w-full aspect-square rounded-lg" />
+        <div className="grid grid-cols-4 gap-2">
+          <Skeleton className="w-full aspect-square rounded" />
+          <Skeleton className="w-full aspect-square rounded" />
+          <Skeleton className="w-full aspect-square rounded" />
+          <Skeleton className="w-full aspect-square rounded" />
         </div>
       </div>
 
-      {/* Style With section */}
-      <div>
-        <Skeleton className="h-8 w-1/3 mx-auto mb-8" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Skeleton className="h-[300px]" />
-          <Skeleton className="h-[300px]" />
-          <Skeleton className="h-[300px]" />
-        </div>
-      </div>
+      {/* Spacer */}
+      <div></div>
 
-      {/* Recently Viewed section */}
-      <div>
-        <Skeleton className="h-8 w-1/3 mx-auto mb-8" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Skeleton className="h-[300px]" />
-          <Skeleton className="h-[300px]" />
-          <Skeleton className="h-[300px]" />
+      {/* Product Info Skeleton */}
+      <div className="flex flex-col gap-6">
+        <Skeleton className="h-8 w-3/4" />
+        <Skeleton className="h-6 w-1/2" />
+        <Skeleton className="h-10 w-1/4" />
+        
+        {/* Size Selection Skeleton */}
+        <div className="space-y-3">
+          <Skeleton className="h-6 w-20" />
+          <div className="flex flex-wrap gap-2">
+            <Skeleton className="h-10 w-12" />
+            <Skeleton className="h-10 w-12" />
+            <Skeleton className="h-10 w-12" />
+          </div>
+        </div>
+
+        {/* Buttons Skeleton */}
+        <div className="flex flex-col gap-4 mt-4">
+          <Skeleton className="h-14 w-full" />
+          <Skeleton className="h-14 w-full" />
+        </div>
+
+        {/* Accordion Skeleton */}
+        <div className="space-y-4 mt-4">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
         </div>
       </div>
     </div>
