@@ -142,7 +142,6 @@ const linkProduct = async ({
         lines: [cartLineInput],
       },
     });
-    console.log(JSON.stringify(response, null, 2));
     const { cartLinesAdd } = response;
 
     if (cartLinesAdd.userErrors && cartLinesAdd.userErrors.length > 0) {

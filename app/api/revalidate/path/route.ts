@@ -6,8 +6,6 @@ import { revalidateSecret } from '@/shared/sanity/env';
 
 export async function POST(req: NextRequest) {
   try {
-    console.log('start', req);
-
     const { body, isValidSignature } = await parseBody<{
       type: string;
       slug?: string;
@@ -21,7 +19,6 @@ export async function POST(req: NextRequest) {
       const message = 'Bad Request';
       return new Response(message, { status: 400 });
     }
-    console.log(body, '---------------', isValidSignature);
     if (body.slug) {
       revalidateTag(body.slug, 'default');
       // revalidatePath('/');

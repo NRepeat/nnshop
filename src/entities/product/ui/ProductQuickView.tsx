@@ -26,7 +26,6 @@ export const ProductQuickView = ({ product }: ProductQuickViewProps) => {
   const sizeOptions = product.options.find(
     (option) => option.name.toLowerCase() === 'Розмір'.toLowerCase(),
   )?.values;
-  console.log(sizeOptions, 'sizeOptions');
 
   return (
     <div className="bg-background  flex gap-8 w-full max-w-full p-4">

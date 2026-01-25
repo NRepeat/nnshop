@@ -67,7 +67,6 @@ const GenderSession = async ({
   slug: string;
 }) => {
   const gender = await cookieFenderGet();
-  console.log('cookieFenderGet', gender);
   return (
     <>
       <NavButton gender={gender} slug={slug}>

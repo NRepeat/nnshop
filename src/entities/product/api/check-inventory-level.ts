@@ -28,7 +28,6 @@ export const checkInventoryLevel = async (variantId: string) => {
       query: CHECK_INVENTORY_QUERY,
       variables: { id: variantId },
     });
-    console.log('🚀 ~ checkInventoryLevel ~ res:', res);
 
     const variant = res.productVariant;
 

@@ -28,7 +28,6 @@ const CartItem = ({
   //   const sizeOptions = product.options.find(
   //   (option) => option.name.toLowerCase() === 'Розмір'.toLowerCase(),
   // )?.values;
-  console.log(product)
   const sale = Number(product.sale);
   const price = Number(product.price);
   const discountedPrice = price - (price * sale) / 100;

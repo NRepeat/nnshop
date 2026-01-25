@@ -37,5 +37,4 @@ export const getSubNavCollections = async ({
     },
     language: locale.toUpperCase() as StorefrontLanguageCode,
   });
-  console.log(responce);
 };

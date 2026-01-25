@@ -10,11 +10,10 @@ import {
 } from '@shared/ui/dialog';
 import { Button } from '@shared/ui/button';
 import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@shared/lib/utils';
 import { CrossedLine } from '@shared/ui/crossed-line';
-
 import { compareSizes } from '@shared/lib/sort-sizes';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,13 +27,23 @@ import {
   FormMessage,
 } from '@shared/ui/form';
 import { Input } from '@shared/ui/input';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
+
+export const isValidPhone = (phone: string) => {
+  try {
+    const phoneNumber = parsePhoneNumberFromString(phone);
+    return phoneNumber?.isValid() || false;
+  } catch {
+    return false;
+  }
+};
 
 const formSchema = z.object({
   name: z.string().min(2, {
     message: 'Имя должно содержать не менее 2 символов.',
   }),
-  phone: z.string().min(10, {
-    message: 'Номер телефона должен состоять не менее чем из 10 цифр.',
+  phone: z.string().refine(isValidPhone, {
+    message: 'Введите корректный номер телефона.',
   }),
 });
 
@@ -52,16 +61,27 @@ export const QuickBuyModal = ({
   sizeOptions,
 }: QuickBuyModalProps) => {
   const t = useTranslations('ProductPage');
-  const [step, setStep] = useState(1);
+  const hasSizes = sizeOptions && sizeOptions.length > 0;
+  
+  const [step, setStep] = useState(hasSizes ? 1 : 2);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    mode: 'onChange',
     defaultValues: {
       name: '',
       phone: '',
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      setStep(hasSizes ? 1 : 2);
+      setSelectedSize(null);
+      form.reset();
+    }
+  }, [open, hasSizes, form]);
 
   const handleSizeSelect = (size: string) => {
     setSelectedSize(size.toLowerCase());
@@ -93,7 +113,7 @@ export const QuickBuyModal = ({
           <DialogDescription>{t('quickOrderDescription')}</DialogDescription>
         </DialogHeader>
 
-        {step === 1 && (
+        {step === 1 && hasSizes && (
           <div className="py-4">
             <h3 className="mb-4 font-semibold">{t('selectSize')}</h3>
             <div className="flex flex-wrap gap-2">
@@ -127,7 +147,7 @@ export const QuickBuyModal = ({
 
         {step === 2 && (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="name"
@@ -135,7 +155,11 @@ export const QuickBuyModal = ({
                   <FormItem>
                     <FormLabel>Имя</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ваше имя" {...field} />
+                      <Input 
+                        placeholder="Ваше имя" 
+                        autoComplete="name"
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -148,7 +172,12 @@ export const QuickBuyModal = ({
                   <FormItem>
                     <FormLabel>Телефон</FormLabel>
                     <FormControl>
-                      <Input placeholder="+380..." {...field} />
+                      <Input 
+                        type="tel"
+                        placeholder="+380..." 
+                        autoComplete="tel"
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -158,25 +187,27 @@ export const QuickBuyModal = ({
           </Form>
         )}
 
-        <DialogFooter>
+        <DialogFooter className="mt-4">
           {step === 1 && (
-            <Button onClick={handleNextStep} disabled={!selectedSize}>
+            <Button onClick={handleNextStep} disabled={!selectedSize} className="w-full sm:w-auto">
               {t('next')}
             </Button>
           )}
           {step === 2 && (
-            <>
-              <Button variant="outline" onClick={handlePrevStep}>
-                {t('back')}
-              </Button>
+            <div className="flex w-full gap-2">
+              {hasSizes && (
+                <Button variant="outline" onClick={handlePrevStep} className="flex-1">
+                  {t('back')}
+                </Button>
+              )}
               <Button
+                className="flex-1"
                 onClick={form.handleSubmit(onSubmit)}
-                type="submit"
                 disabled={!form.formState.isValid}
               >
                 {t('submitOrder')}
               </Button>
-            </>
+            </div>
           )}
         </DialogFooter>
       </DialogContent>

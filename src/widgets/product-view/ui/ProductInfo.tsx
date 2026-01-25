@@ -284,14 +284,14 @@ export const ProductInfo = ({
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="fit">
+        {/* <AccordionItem value="fit">
           <AccordionTrigger className="text-sm uppercase">
             {t('fitDetails')}
           </AccordionTrigger>
           <AccordionContent>
             <FittingGuideContent attributes={attributes} locale={locale} />
           </AccordionContent>
-        </AccordionItem>
+        </AccordionItem> */}
 
         {/* <AccordionItem value="care">
           <AccordionTrigger className="text-sm uppercase">

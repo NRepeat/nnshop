@@ -121,7 +121,7 @@ const SearchResultsComponent = async ({
   return (
     <>
       {pageTitle}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-10">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-10">
         {results.products.map((product) => (
           <ProductCardSPP
             product={product as ShopifyProduct}

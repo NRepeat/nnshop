@@ -157,7 +157,6 @@ export const getCart = async ({
     }
     return response;
   } catch (error) {
-    console.log('🚀 ~ getCart ~ error:', error);
     throw new Error('Error get cart');
   }
 };
