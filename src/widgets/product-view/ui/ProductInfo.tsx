@@ -89,6 +89,7 @@ const FittingGuideContent = ({
   return <p className="text-sm text-gray-600">{value}</p>;
 };
 
+import { compareSizes } from '@shared/lib/sort-sizes';
 import { QuickBuyModal } from '@features/product/quick-buy/ui/QuickBuyModal';
 import { useState } from 'react';
 import { Badge } from '@shared/ui/badge';
@@ -133,23 +134,7 @@ export const ProductInfo = ({
     ) || []),
   ];
 
-  const sortedSizeOptions = sizeOptions?.sort((a, b) => {
-    const sizeOrder = ['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl'];
-    const aIsNumeric = !isNaN(Number(a));
-    const bIsNumeric = !isNaN(Number(b));
-
-    if (aIsNumeric && bIsNumeric) {
-      return Number(a) - Number(b);
-    }
-
-    if (!aIsNumeric && !bIsNumeric) {
-      return (
-        sizeOrder.indexOf(a.toLowerCase()) - sizeOrder.indexOf(b.toLowerCase())
-      );
-    }
-
-    return aIsNumeric ? -1 : 1;
-  });
+  const sortedSizeOptions = sizeOptions?.slice().sort(compareSizes);
 
   return (
     <div className="content-stretch flex flex-col gap-[30px] items-start  py-0 relative w-full">

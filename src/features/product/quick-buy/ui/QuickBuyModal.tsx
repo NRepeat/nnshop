@@ -15,6 +15,7 @@ import { useTranslations } from 'next-intl';
 import { cn } from '@shared/lib/utils';
 import { CrossedLine } from '@shared/ui/crossed-line';
 
+import { compareSizes } from '@shared/lib/sort-sizes';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -82,24 +83,7 @@ export const QuickBuyModal = ({
     onOpenChange(false);
   };
 
-  const sortedSizeOptions = sizeOptions?.sort((a, b) => {
-    const sizeOrder = ['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl'];
-    const aIsNumeric = !isNaN(Number(a));
-    const bIsNumeric = !isNaN(Number(b));
-
-    if (aIsNumeric && bIsNumeric) {
-      return Number(a) - Number(b);
-    }
-
-    if (!aIsNumeric && !bIsNumeric) {
-      return (
-        sizeOrder.indexOf(a.toLowerCase()) -
-        sizeOrder.indexOf(b.toLowerCase())
-      );
-    }
-
-    return aIsNumeric ? -1 : 1;
-  });
+  const sortedSizeOptions = sizeOptions?.slice().sort(compareSizes);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
