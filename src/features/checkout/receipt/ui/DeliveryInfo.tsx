@@ -1,7 +1,6 @@
 import { getDeliveryInfo } from '@features/checkout/delivery/api/getDeliveryInfo';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@shared/ui/tooltip';
-import { Link } from '@shared/i18n/navigation';
-import DeliveryInfo from '@shared/assets/DeliveryInfo';
+import { Link } from '@shared/i18n/navigation';import DeliveryInfo from '@shared/assets/DeliveryInfo';
 import { PlaceHolder } from './PlaceHolder';
 import { getTranslations } from 'next-intl/server';
 

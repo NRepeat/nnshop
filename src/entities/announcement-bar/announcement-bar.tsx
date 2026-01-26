@@ -1,8 +1,7 @@
 import { LanguageSwitcherSession } from '@features/header/language-switcher/ui/LanguageSwitcherSession';
 import { Button } from '@shared/ui/button';
 import { Send } from 'lucide-react';
-import { Link } from '@shared/i18n/navigation';
-import { HEADER_QUERYResult } from '@/shared/sanity/types';
+import { Link } from '@shared/i18n/navigation';import { HEADER_QUERYResult } from '@/shared/sanity/types';
 import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';
 import { HeaderBarProps } from '@widgets/header/ui/Header';
 import { Suspense } from 'react';

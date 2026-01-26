@@ -5,8 +5,7 @@ import {} from './action';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Image from 'next/image';
-import { Link } from '@shared/i18n/navigation';
-import { useState } from 'react';
+import { Link } from '@shared/i18n/navigation';import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';

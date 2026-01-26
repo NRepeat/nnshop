@@ -1,7 +1,6 @@
 import getContactInfo from '@features/checkout/contact-info/api/get-contact-info';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@shared/ui/tooltip';
-import { Link } from '@shared/i18n/navigation';
-import ContactInfo from '@shared/assets/ContactInfo';
+import { Link } from '@shared/i18n/navigation';import ContactInfo from '@shared/assets/ContactInfo';
 import { PlaceHolder } from './PlaceHolder';
 import { getTranslations } from 'next-intl/server';
 

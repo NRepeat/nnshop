@@ -1,7 +1,6 @@
 import { Card, CardContent } from '@shared/ui/card';
 import Image from 'next/image';
-import { Link } from '@shared/i18n/navigation';
-import { RemoveItemButton } from './RemoveItemButton';
+import { Link } from '@shared/i18n/navigation';import { RemoveItemButton } from './RemoveItemButton';
 import getSymbolFromCurrency from 'currency-symbol-map';
 import { cn } from '@shared/lib/utils';
 import { useTranslations } from 'next-intl';
