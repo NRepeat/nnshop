@@ -26,7 +26,7 @@ export const isProductFavorite = async (
       },
     },
   });
-  console.log("🚀 ~ isProductFavorite ~ existingFavorite:", existingFavorite,productId,session.user)
+
   
   return !!existingFavorite;
 };

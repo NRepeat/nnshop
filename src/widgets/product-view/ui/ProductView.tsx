@@ -3,12 +3,6 @@ import { ProductViewProvider } from './ProductViewProvider';
 import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
 import { getTranslations } from 'next-intl/server';
 import { ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
-import { Suspense } from 'react';
-import { GallerySession } from './GallerySession';
-import { auth } from '@features/auth/lib/auth';
-import { isProductFavorite } from '@features/product/api/isProductFavorite';
-import { headers } from 'next/headers';
-import { FavSession } from '@features/header/ui/FavSession';
 
 export async function ProductView({
   product,

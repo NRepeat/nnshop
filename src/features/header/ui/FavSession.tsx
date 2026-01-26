@@ -9,7 +9,6 @@ import { cn } from '@shared/lib/utils';
 import { useSession } from '@features/auth/lib/client';
 import { useLocale } from 'next-intl';
 
-// ✅ Мемоизируем компонент
 export const FavSession = memo(({
   productId,
   fav,
@@ -19,7 +18,6 @@ export const FavSession = memo(({
   handle: string;
   fav?: boolean | undefined;
 }) => {
-  console.log('🚀 ~ FavSession render ~ fav:', fav);
   
   const router = useRouter();
   const [isFav, setIsFav] = useState(fav);
@@ -92,5 +90,4 @@ export const FavSession = memo(({
   );
 });
 
-// ✅ Добавляем displayName для отладки
 FavSession.displayName = 'FavSession';

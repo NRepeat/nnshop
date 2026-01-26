@@ -32,12 +32,9 @@ export const toggleFavoriteProduct = async (
       isFavorited = true;
     }
 
-    // ✅ Правильный синтаксис с profile="max" (stale-while-revalidate)
- // Для случаев когда нужно немедленное истечение кеша
-revalidateTag('favorites', { expire: 0 });
-revalidateTag(`favorite-${userId}`, { expire: 0 });
-revalidateTag(`product-${productId}`, { expire: 0 });
-    // Ревалидируем пути
+    revalidateTag('favorites', { expire: 0 });
+    revalidateTag(`favorite-${userId}`, { expire: 0 });
+    revalidateTag(`product-${productId}`, { expire: 0 });
     revalidatePath(`/${locale}/favorites`, 'page');
     if (handle) {
       revalidatePath(`/${locale}/product/${handle}`, 'page');
