@@ -30,10 +30,10 @@ export const AuthViewRenderer = ({
     case 'magic-link':
     case 'verify-email':
     case 'account-link':
+      case 'sign-out':
       return (
       <AuthView path={authView} localization={localization(tBetterAuth)} />
     );
-    case 'sign-out':
       return (<SignOut/>)
     default:
       notFound();

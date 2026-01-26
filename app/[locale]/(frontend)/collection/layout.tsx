@@ -18,8 +18,7 @@ export default async function CollectionLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
-  setRequestLocale(locale);
+
   return (
     <>
       {/*<Header locale={locale} />*/}

@@ -1,38 +1,28 @@
-import { Breadcrumbs } from '@shared/ui/breadcrumbs';
-import { getTranslations } from 'next-intl/server';
-import React from 'react';
+import { BreadcrumbsSkeleton } from '@shared/ui/breadcrumbs';
+import { Skeleton } from '@shared/ui/skeleton';
 
-function OrderListItemSkeleton() {
+export default function Loading() {
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between p-4 border-b animate-pulse">
-      <div className="flex flex-col gap-2 w-full md:w-1/2">
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div> {/* Order ID */}
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div> {/* Order Date */}
-      </div>
-      <div className="flex flex-col gap-2 w-full md:w-1/4 mt-4 md:mt-0">
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-full"></div> {/* Total */}
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div> {/* Status */}
-      </div>
-    </div>
-  );
-}
-
-export default async function OrdersLoading() {
-  const t = await getTranslations('OrderPage');
-  const tHeader = await getTranslations('Header.nav');
-
-  const breadcrumbItems = [
-    { label: tHeader('home'), href: '/' },
-    { label: t('title'), href: '/orders', isCurrent: true },
-  ];
-
-  return (
-    <div className="container mx-auto py-10 h-screen mt-2 md:mt-10 animate-pulse">
-      <Breadcrumbs items={breadcrumbItems} />
-      <h1 className="text-2xl font-bold my-4">{t('title')}</h1>
-      <div className="border rounded-lg">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <OrderListItemSkeleton key={i} />
+    <div className="container mx-auto py-10 h-screen mt-2 md:mt-10">
+      <BreadcrumbsSkeleton />
+      <Skeleton className="h-8 w-64 my-4" /> {/* Skeleton for the title */}
+      <div className="grid grid-cols-1 gap-4 mt-6">
+        {/* Skeletons for multiple order items */}
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md shadow-sm">
+            <div className="flex justify-between items-center mb-2">
+              <Skeleton className="h-5 w-48" /> {/* Order ID */}
+              <Skeleton className="h-5 w-24" /> {/* Order Status */}
+            </div>
+            <div className="flex justify-between items-center mb-2">
+              <Skeleton className="h-4 w-32" /> {/* Order Date */}
+              <Skeleton className="h-4 w-20" /> {/* Order Total */}
+            </div>
+            <div className="space-y-1">
+              <Skeleton className="h-4 w-full" /> {/* Item 1 */}
+              <Skeleton className="h-4 w-5/6" /> {/* Item 2 */}
+            </div>
+          </div>
         ))}
       </div>
     </div>

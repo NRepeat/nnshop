@@ -1,15 +1,29 @@
 import { getOrder } from '@entities/order/api/getOrder';
 import { notFound } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Breadcrumbs } from '@shared/ui/breadcrumbs';
 import { OrderDetails } from '@features/order/ui/OrderDetails';
+import { Suspense } from 'react';
 
 export default async function OrderPage({
   params,
 }: {
   params: Promise<{ id: string; locale: string }>;
 }) {
+  return (
+    <Suspense>
+      <OrderPageSession params={params} />;
+    </Suspense>
+  );
+}
+
+const OrderPageSession = async ({
+  params,
+}: {
+  params: Promise<{ id: string; locale: string }>;
+}) => {
   const { id, locale } = await params;
+  setRequestLocale(locale);
   const tHeader = await getTranslations({ locale, namespace: 'Header.nav' });
   const tOrderPage = await getTranslations({ locale, namespace: 'OrderPage' });
 
@@ -37,4 +51,4 @@ export default async function OrderPage({
       <OrderDetails order={order} locale={locale} />
     </div>
   );
-}
+};

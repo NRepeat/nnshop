@@ -7,7 +7,7 @@ export default async function LocaleLayout({
 }>) {
   return (
     <>
-      <div className=" flex-col items-center justify-center flex w-full">
+      <div className=" flex-col items-center justify-center flex w-full ">
         <Provider> {children}</Provider>
       </div>
     </>

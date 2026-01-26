@@ -14,9 +14,9 @@ import { OrderList } from '@features/order/ui/OrderList';
 import { locales } from '@shared/i18n/routing';
 import { prisma } from '@shared/lib/prisma';
 import { Breadcrumbs } from '@shared/ui/breadcrumbs';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { headers } from 'next/headers';
-
+import { Suspense } from 'react';
 
 export async function generateStaticParams() {
   const params = [];
@@ -32,6 +32,7 @@ type Props = {
 };
 export async function OrdersPageSession({ params, searchParams }: Props) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations('OrderPage');
   const tHeader = await getTranslations('Header.nav');
 
@@ -107,5 +108,9 @@ export async function OrdersPageSession({ params, searchParams }: Props) {
   );
 }
 export default async function OrdersPage({ params, searchParams }: Props) {
-  return <OrdersPageSession params={params} searchParams={searchParams} />;
+  return (
+    <Suspense>
+      <OrdersPageSession params={params} searchParams={searchParams} />;
+    </Suspense>
+  );
 }
