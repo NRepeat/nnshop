@@ -42,7 +42,6 @@ export async function generateStaticParams() {
 }
 
 export default async function ProductQuickViewPage({ params }: Props) {
-  // return <>h</>
   return (
     <Suspense fallback={<ProductSessionViewSkeleton />}>
       <ProductSession params={params} />

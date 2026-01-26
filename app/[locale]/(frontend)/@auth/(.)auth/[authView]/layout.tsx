@@ -1,4 +1,5 @@
 import { Provider } from '@/app/providers/authUIProvider';
+import { Suspense } from 'react';
 
 export default async function LocaleLayout({
   children,
@@ -7,8 +8,10 @@ export default async function LocaleLayout({
 }>) {
   return (
     <>
-      <div className=" flex-col items-center justify-center flex w-full ">
-        <Provider> {children}</Provider>
+      <div className=" flex-col items-center justify-center flex w-full">
+        <Suspense>
+          <Provider> {children}</Provider>
+        </Suspense>
       </div>
     </>
   );

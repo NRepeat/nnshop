@@ -1,10 +1,10 @@
-import { authViewPaths } from '@daveyplate/better-auth-ui/server';
 import { getTranslations } from 'next-intl/server';
 import { AuthViewRenderer } from '@/features/auth/ui/auth-view-renderer';
 import { QuickView } from '@widgets/product-view';
-import { locales } from '@shared/i18n/routing';
 import { Suspense } from 'react';
 import { AuthModalSkeleton } from './AuthModalSkeleton';
+import { locales } from '@shared/i18n/routing';
+import { authViewPaths } from '@daveyplate/better-auth-ui';
 // export async function generateStaticParams() {
 //   const params = [];
 //   for (const locale of locales) {

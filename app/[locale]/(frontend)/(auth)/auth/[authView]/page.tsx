@@ -12,14 +12,14 @@ import { Suspense } from 'react';
 //   }
 //   return params;
 // }
-export function generateStaticParams() {
-  return locales.flatMap((locale) =>
-    Object.values(authViewPaths).map((path) => ({
-      locale,
-      path,
-    })),
-  );
-}
+// export function generateStaticParams() {
+//   return locales.flatMap((locale) =>
+//     Object.values(authViewPaths).map((path) => ({
+//       locale,
+//       path,
+//     })),
+//   );
+// }
 // export function generateStaticParams() {
 //   return Object.values(authViewPaths).map((path) => ({ authView: path }));
 // }
