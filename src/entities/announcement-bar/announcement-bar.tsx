@@ -39,16 +39,26 @@ export const AnnouncementBar = async (props: AnnouncementBarProps) => {
               <Send className="max-w-[16px]" />
             </Button>
           </div>
-          <Link href={resolvedLink} className="hidden sm:block">
-            <p className=" w-full items-center justify-center py-3 font-400 hidden md:flex  ">
-              {text as any as string}
-            </p>
-            <p className=" w-full items-center justify-center py-3  font-400 flex md:hidden">
-              {text as any as string}
-            </p>
-          </Link>
+          <Suspense>
+            <Link href={resolvedLink} className="hidden sm:block">
+              <p className=" w-full items-center justify-center py-3 font-400 hidden md:flex  ">
+                {text as any as string}
+              </p>
+              <p className=" w-full items-center justify-center py-3  font-400 flex md:hidden">
+                {text as any as string}
+              </p>
+            </Link>
+          </Suspense>
+
           <div className="flex justify-end">
-            <Suspense>
+            <Suspense
+              fallback={
+                <Button
+                  variant="default"
+                  className="h-full w-12 animate-pulse bg-gray-200 dark:bg-gray-700"
+                />
+              }
+            >
               <LanguageSwitcherSession className="flex" locale={locale} />
             </Suspense>
           </div>

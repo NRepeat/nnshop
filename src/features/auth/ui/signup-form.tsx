@@ -10,7 +10,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/shared/ui/button';
@@ -210,7 +210,7 @@ export function SignupForm({
 
                 <p className="text-center text-sm text-muted-foreground mt-2">
                   {t('alreadyHaveAccount')}{' '}
-                  <Link href="/auth/sign-in" className="underline underline-offset-4 font-semibold hover:text-primary transition-colors">
+                  <Link href="/auth/sign-in" scroll={false} className="underline underline-offset-4 font-semibold hover:text-primary transition-colors">
                     {t('signIn')}
                   </Link>
                 </p>
@@ -232,11 +232,11 @@ export function SignupForm({
       
       <p className="px-6 text-center text-[11px] text-muted-foreground leading-relaxed uppercase tracking-wide">
         {tCommon('byClickingContinue')}{' '}
-        <Link href="/terms-of-service" className="underline underline-offset-2">
+        <Link href="/terms-of-service" className="underline underline-offset-2" scroll={false}>
           {tCommon('termsOfService')}
         </Link>{' '}
         {tCommon('and')}{' '}
-        <Link href="/privacy-policy" className="underline underline-offset-2">
+        <Link href="/privacy-policy" className="underline underline-offset-2" scroll={false}> 
           {tCommon('privacyPolicy')}
         </Link>.
       </p>

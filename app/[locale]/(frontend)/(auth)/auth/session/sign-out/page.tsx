@@ -1,27 +1,26 @@
 'use client';
+
 import { authClient } from '@features/auth/lib/auth-client';
-import { Suspense, useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
-const SignOut = () => {
-  //   const nav = useRouter();
-
+export default function SignOutPage() {
+  const router = useRouter();
   useEffect(() => {
-    authClient.signOut();
-    //   nav.push('/', { scroll: false });
-    //   nav.refresh();
-    //   redirect('/', RedirectType.replace);
-    if (window) {
+    const signOut = () => {
+      authClient.signOut();
+      setTimeout(() => {}, 1000);
       window.location.href = '/';
-    }
-  }, []);
-  return <></>;
-};
+    };
 
-const SignOutSession = () => {
+    signOut();
+  }, [router]);
+
   return (
-    <Suspense>
-      <SignOut />
-    </Suspense>
+    <div className="flex  w-full flex-col items-center justify-center gap-4 h-screen">
+      <p>Signing out...</p>
+      <Loader2 className="h-12 w-12" />
+    </div>
   );
-};
-export default SignOutSession;
+}

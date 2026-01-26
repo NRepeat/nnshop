@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import Image from 'next/image';
 import { HOME_PAGEResult } from '@shared/sanity/types';
 import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';

@@ -58,18 +58,19 @@ export default async function RootLayout(props: RootProps) {
 
           {modal && <div id="modal-slot">{modal}</div>}
           {auth && <div id="auth-slot">{auth}</div>}
-
-          <Footer locale={locale} />
+          <Suspense>
+            <Footer locale={locale} />
+          </Suspense>
         </Providers>
-            {(await draftMode()).isEnabled && (
-        <>
-          <DisableDraftMode />
-          <VisualEditing />
-        </>
-      )}
-      <Suspense fallback={<div>Loading...</div>}>
-        <SanityLive />
-      </Suspense>
+        {(await draftMode()).isEnabled && (
+          <>
+            <DisableDraftMode />
+            <VisualEditing />
+          </>
+        )}
+        <Suspense fallback={<div>Loading...</div>}>
+          <SanityLive />
+        </Suspense>
       </body>
     </html>
   );

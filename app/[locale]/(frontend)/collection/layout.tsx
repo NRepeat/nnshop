@@ -1,8 +1,4 @@
 import { locales } from '@shared/i18n/routing';
-import { Header } from '@widgets/header/ui/Header';
-import { setRequestLocale } from 'next-intl/server';
-import { cookies } from 'next/headers';
-import { Suspense } from 'react';
 
 export async function generateStaticParams() {
   const params = [];
@@ -14,17 +10,8 @@ export async function generateStaticParams() {
 
 export default async function CollectionLayout({
   children,
-  params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
-  setRequestLocale(locale);
-  return (
-    <>
-      {/*<Header locale={locale} />*/}
-      {children}
-    </>
-  );
+  return <>{children}</>;
 }

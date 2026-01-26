@@ -2,6 +2,7 @@ import nextPlugin from '@next/eslint-plugin-next';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import hooksPlugin from 'eslint-plugin-react-hooks';
 
 const eslintConfig = [
   {
@@ -9,6 +10,7 @@ const eslintConfig = [
     plugins: {
       '@next/next': nextPlugin,
       '@typescript-eslint': tsPlugin,
+      'react-hooks': hooksPlugin,
     },
     languageOptions: {
       parser: tsParser,

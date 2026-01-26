@@ -74,7 +74,7 @@ export const SyncedCarousels = ({
     if (api2) {
       api2.on('select', onSelect);
       api2.on('reInit', onSelect);
-      onInit(api2);
+      setTimeout(() => onInit(api2), 0);
     }
 
     return () => {

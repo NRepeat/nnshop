@@ -12,11 +12,14 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { getProduct } from '@entities/product/api/getProduct';
 import { GallerySession } from '@widgets/product-view/ui/GallerySession';
-import { getAllProductHandles } from '@entities/product/api/getAllProductsHandlers';
+// import { getAllProductHandles } from '@entities/product/api/getAllProductsHandlers'; // Removed unused import
 import { setRequestLocale } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { auth } from '@features/auth/lib/auth';
 import { isProductFavorite } from '@features/product/api/isProductFavorite';
+import { ProductSessionViewSkeleton } from './ProductSessionViewSkeleton';
+import { Button } from '@shared/ui/button';
+import { Heart } from 'lucide-react';
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
 };
@@ -39,9 +42,8 @@ export async function generateStaticParams() {
 }
 
 export default async function ProductQuickViewPage({ params }: Props) {
-  // return <>h</>
   return (
-    <Suspense>
+    <Suspense fallback={<ProductSessionViewSkeleton />}>
       <ProductSession params={params} />
     </Suspense>
   );
@@ -100,7 +102,17 @@ const ProductSessionView = async ({ params }: Props) => {
       <div className="mt-10">
         <ProductViewProvider
           favCommponent={
-            <Suspense>
+            <Suspense
+              fallback={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="group animate-pulse bg-gray-200 dark:bg-gray-700"
+                >
+                  <Heart className="h-4 w-4" />
+                </Button>
+              }
+            >
               <GallerySession
                 product={product as ShopifyProduct}
                 isFavorite={isFavorite}

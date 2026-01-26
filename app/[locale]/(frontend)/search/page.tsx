@@ -69,6 +69,8 @@ const SearchResultsComponent = async ({
   }
 
   let results: PredictiveSearchQuery['predictiveSearch'] | null = null;
+  let errorContent: React.ReactNode | null = null;
+
   try {
     // Using an absolute URL is important for fetch in Server Components
 
@@ -83,22 +85,27 @@ const SearchResultsComponent = async ({
 
     if (!apiResponse.ok) {
       console.error('Error fetching search results:', apiResponse.statusText);
-      return (
+      errorContent = (
         <>
           {pageTitle}
           <p>{t('errorFetchingResults')}</p>
         </>
       );
+    } else {
+      results = await apiResponse.json();
     }
-    results = await apiResponse.json();
   } catch (error) {
     console.error('Network error fetching search results:', error);
-    return (
+    errorContent = (
       <>
         {pageTitle}
         <p>{t('errorFetchingResults')}</p>
       </>
     );
+  }
+
+  if (errorContent) {
+    return errorContent;
   }
 
   if (!results || !results.products || results.products.length === 0) {

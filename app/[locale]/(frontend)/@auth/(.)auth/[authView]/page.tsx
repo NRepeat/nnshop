@@ -1,11 +1,9 @@
-import { authViewPaths } from '@daveyplate/better-auth-ui/server';
 import { getTranslations } from 'next-intl/server';
 import { AuthViewRenderer } from '@/features/auth/ui/auth-view-renderer';
 import { QuickView } from '@widgets/product-view';
-import { locales } from '@shared/i18n/routing';
 import { Suspense } from 'react';
-import { redirect } from 'next/navigation';
-import { auth } from '@features/auth/lib/auth';
+import { AuthModalSkeleton } from './AuthModalSkeleton';
+
 // export async function generateStaticParams() {
 //   const params = [];
 //   for (const locale of locales) {
@@ -15,14 +13,7 @@ import { auth } from '@features/auth/lib/auth';
 //   }
 //   return params;
 // }
-export function generateStaticParams() {
-  return locales.flatMap((locale) =>
-    Object.values(authViewPaths).map((path) => ({
-      locale,
-      path,
-    })),
-  );
-}
+
 // export function generateStaticParams() {
 //   return Object.values(authViewPaths).map((path) => ({ authView: path }));
 // }
@@ -50,7 +41,7 @@ export default async function AuthPage({
   params: Promise<{ authView: string; locale: string }>;
 }) {
   return (
-    <Suspense>
+    <Suspense fallback={<AuthModalSkeleton />}>
       <AuthSession params={params} />
     </Suspense>
   );

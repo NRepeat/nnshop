@@ -40,10 +40,10 @@ export function LanguageSwitcher({
     router.replace(targetPath, { locale: newLocale });
   };
   useEffect(() => {
-    if (locale) {
-      setSelectedLocale(locale);
+    if (locale && selectedLocale !== locale) {
+      setTimeout(() => setSelectedLocale(locale), 0);
     }
-  }, []);
+  }, [locale, selectedLocale]);
 
   return (
     <DropdownMenu>

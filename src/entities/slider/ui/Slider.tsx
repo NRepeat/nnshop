@@ -16,8 +16,8 @@ type HeroSwiperProps = Extract<
   blockIndex: number;
 };
 export function HeroSwiper({ slides }: HeroSwiperProps) {
-  if (!slides || slides.length === 0) return null;
   const locale = useLocale();
+  if (!slides || slides.length === 0) return null;
 
   return (
     <Carousel

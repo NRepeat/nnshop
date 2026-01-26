@@ -15,7 +15,7 @@ import { ActiveFiltersCarousel } from './ActiveFiltersCarousel';
 import { SortSelect } from './SortSelect';
 import { SearchParams } from '~/app/[locale]/(frontend)/collection/[slug]/page';
 import { cookies, headers } from 'next/headers';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { PathSync } from '@entities/path-sync/ui/path-sync';
 import { isProductFavorite } from '@features/product/api/isProductFavorite';
 import { auth } from '@features/auth/lib/auth';
@@ -34,6 +34,7 @@ export const CollectionGrid = async ({
       getTranslations('Header'),
     ]);
   const { locale, slug } = awaitedParams;
+  setRequestLocale(locale);
   const gender = cookieStore.get('gender')?.value || 'woman';
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
 
@@ -63,13 +64,12 @@ export const CollectionGrid = async ({
     collection.collection?.products.edges.map((edge) => edge.node) || [];
 
   const session = await auth.api.getSession({ headers: await headers() });
-  // 2. Обогащаем продукты статусом isFav параллельно
   const productsWithFav = await Promise.all(
     rawProducts.map(async (product) => {
       const isFav = await isProductFavorite(product.id, session);
       return {
         ...product,
-        isFav, // Добавляем поле
+        isFav,
       };
     }),
   );

@@ -9,6 +9,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@shared/ui/breadcrumb';
+import { Skeleton } from './skeleton';
 
 type BreadcrumbItem = {
   label: string;
@@ -44,3 +45,24 @@ export const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
     </Breadcrumb>
   );
 };
+
+export const BreadcrumbsSkeleton = () => {
+  return (
+    <Breadcrumb>
+      <BreadcrumbList>
+        <div className="flex items-center">
+          <BreadcrumbItem>
+            <Skeleton className="h-4 w-20" />
+          </BreadcrumbItem>
+          <BreadcrumbSeparator className="px-2 pt-0.5" />
+        </div>
+        <div className="flex items-center">
+          <BreadcrumbItem>
+            <Skeleton className="h-4 w-24" />
+          </BreadcrumbItem>
+        </div>
+      </BreadcrumbList>
+    </Breadcrumb>
+  );
+};
+
