@@ -1,5 +1,5 @@
 import { auth } from '@features/auth/lib/auth';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@shared/ui/avatar';
 import {
   DropdownMenu,
@@ -17,7 +17,7 @@ import { cn } from '@shared/lib/utils';
 
 const AccountButtonContent = ({ className }: { className: string }) => {
   return (
-    <Link href={'/auth/sign-in'} className="rounded-none">
+    <Link href={'/auth/sign-in'} scroll={false} className="rounded-none">
       <Button variant="ghost" size="icon" className={cn(className)}>
         <User2 />
       </Button>

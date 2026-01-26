@@ -1,6 +1,5 @@
 import { HeroPageBuilder } from '@features/home/ui/HeroPageBuilder';
 import { Locale } from '@shared/i18n/routing';
-import { Suspense } from 'react';
 
 export const PageContent = async ({
   params,

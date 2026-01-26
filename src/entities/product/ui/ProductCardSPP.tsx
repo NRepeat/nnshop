@@ -1,6 +1,6 @@
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import getSymbolFromCurrency from 'currency-symbol-map';
 import { cn } from '@shared/lib/utils';
 
@@ -31,7 +31,7 @@ export const ProductCardSPP = ({
   const discountValue = discountMeta ? parseFloat(discountMeta.value) : 0;
   const hasDiscount = discountValue > 0;
   const discountedPrice = priceAmount * (1 - discountValue / 100);
-  const WithLink = ({ children }: { children: React.ReactNode }) => {
+  const hoc = ({ children }: { children: React.ReactNode }) => {
     if (link) {
       return (
         <Link
@@ -41,16 +41,16 @@ export const ProductCardSPP = ({
           {children}
         </Link>
       );
-    } else { 
-     return <div className="block h-full w-full">{children}</div>;
+    } else {
+      return <div className="block h-full w-full">{children}</div>;
     }
   };
   return (
     <div className={cn('group flex flex-col gap-3 w-full', className)}>
       {/* Контейнер изображения */}
       <div className="relative aspect-[1/1] w-full overflow-hidden bg-background">
-        <WithLink>
-          {imageUrl ? (
+        {hoc({
+          children: imageUrl ? (
             <Image
               src={imageUrl}
               alt={imageAlt}
@@ -62,8 +62,8 @@ export const ProductCardSPP = ({
             <div className="flex h-full items-center justify-center bg-muted text-muted-foreground">
               No image
             </div>
-          )}
-        </WithLink>
+          ),
+        })}
       </div>
 
       {/* Инфо-блок */}

@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { Maybe } from '@shared/lib/shopify/types/storefront.types';
 import { Menu } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 
 import { LanguageSwitcher } from '@features/header/language-switcher/ui/LanguageSwitcher';
 import { Button } from '@shared/ui/button';

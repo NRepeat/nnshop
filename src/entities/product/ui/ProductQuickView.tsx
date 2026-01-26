@@ -9,7 +9,7 @@ import {
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import Image from 'next/image';
 import { Button } from '@shared/ui/button';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { AddToCartButton } from './AddToCartButton';
 
 type ProductQuickViewProps = {

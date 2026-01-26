@@ -1,7 +1,7 @@
 import { LanguageSwitcherSession } from '@features/header/language-switcher/ui/LanguageSwitcherSession';
 import { Button } from '@shared/ui/button';
 import { Send } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { HEADER_QUERYResult } from '@/shared/sanity/types';
 import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';
 import { HeaderBarProps } from '@widgets/header/ui/Header';
@@ -49,7 +49,14 @@ export const AnnouncementBar = async (props: AnnouncementBarProps) => {
             </p>
           </Link>
           <div className="flex justify-end">
-            <Suspense>
+            <Suspense
+              fallback={
+                <Button
+                  variant="default"
+                  className="h-full w-12 animate-pulse bg-gray-200 dark:bg-gray-700"
+                />
+              }
+            >
               <LanguageSwitcherSession className="flex" locale={locale} />
             </Suspense>
           </div>

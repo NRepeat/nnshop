@@ -16,7 +16,6 @@ import { prisma } from '@shared/lib/prisma';
 import { Breadcrumbs } from '@shared/ui/breadcrumbs';
 import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
-import { Suspense } from 'react';
 
 
 export async function generateStaticParams() {
@@ -108,9 +107,5 @@ export async function OrdersPageSession({ params, searchParams }: Props) {
   );
 }
 export default async function OrdersPage({ params, searchParams }: Props) {
-  return (
-    <Suspense>
-      <OrdersPageSession params={params} searchParams={searchParams} />
-    </Suspense>
-  );
+  return <OrdersPageSession params={params} searchParams={searchParams} />;
 }

@@ -41,11 +41,12 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
             <Link href={`/${link.slug}`}>
               <Suspense
                 fallback={
-                  <></>
-                  // <NavButton
-                  //   gender={link.slug}
-                  //   children={link.name as any as string}
-                  // />
+                  <NavButton
+                    children={
+                      <div className="h-6 w-20 animate-pulse bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    }
+                    slug={link.slug}
+                  />
                 }
               >
                 <GenderSession

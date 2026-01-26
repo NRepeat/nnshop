@@ -11,6 +11,7 @@ import { getProduct } from '@entities/product/api/getProduct';
 import { notFound } from 'next/navigation';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { Heart } from 'lucide-react';
+import { Button } from '@shared/ui/button';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -48,7 +49,17 @@ export default async function ProductPage({ params }: Props) {
   return (
     <>
       <ProductSessionView handle={handle} locale={locale}>
-        <Suspense fallback={<Heart />}>
+        <Suspense
+          fallback={
+            <Button
+              variant="ghost"
+              size="icon"
+              className="group animate-pulse bg-gray-200 dark:bg-gray-700"
+            >
+              <Heart className="h-4 w-4" />
+            </Button>
+          }
+        >
           <ProductSession handle={product.id} product={product as Product} />
         </Suspense>
       </ProductSessionView>

@@ -1,15 +1,64 @@
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { urlFor } from '@/shared/sanity/lib/image';
 import { HOME_PAGEResult } from '@/shared/sanity/types';
 import { Button } from '@/shared/ui/button';
 import { stegaClean } from 'next-sanity';
 import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';
+import {
+  Image as SanityImage,
+  Maybe,
+} from '@shared/lib/shopify/types/storefront.types';
 
 type SplitGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'splitImage' }
 > & { locale: string };
+
+const TextContentComponent = ({
+  title,
+  linkUrl,
+  mobile = false,
+}: {
+  title: string | null;
+  linkUrl: {
+    locale: string;
+    title?: string | undefined;
+    handle?: string | undefined;
+    image?: Maybe<Pick<SanityImage, 'url'>> | undefined;
+  } | null;
+  mobile?: boolean;
+}) => (
+  <div
+    className={`flex flex-col gap-6 ${
+      mobile ? 'items-center text-white px-6' : 'items-start text-black'
+    }`}
+  >
+    {title ? (
+      <h2
+        className={`text-pretty font-light leading-tight tracking-tight ${
+          mobile
+            ? 'text-center text-3xl sm:text-4xl'
+            : 'text-left text-3xl md:text-4xl lg:text-5xl'
+        }`}
+      >
+        {title as unknown as string}
+      </h2>
+    ) : null}
+
+    {linkUrl && linkUrl?.handle && (
+      <Button
+        asChild
+        variant="link"
+        className={`h-auto p-0 text-base uppercase tracking-widest transition-all hover:opacity-70 ${
+          mobile ? 'text-white  border-white' : 'text-black  border-black'
+        } rounded-none`}
+      >
+        <Link href={linkUrl.handle}>{linkUrl?.title}</Link>
+      </Button>
+    )}
+  </div>
+);
 
 export async function SplitImage(props: SplitGridProps) {
   const { title, image, orientation, collection, locale } = props;
@@ -31,38 +80,6 @@ export async function SplitImage(props: SplitGridProps) {
     </div>
   ) : null;
 
-  const TextContent = ({ mobile = false }) => (
-    <div
-      className={`flex flex-col gap-6 ${
-        mobile ? 'items-center text-white px-6' : 'items-start text-black'
-      }`}
-    >
-      {title ? (
-        <h2
-          className={`text-pretty font-light leading-tight tracking-tight ${
-            mobile
-              ? 'text-center text-3xl sm:text-4xl'
-              : 'text-left text-3xl md:text-4xl lg:text-5xl'
-          }`}
-        >
-          {title as unknown as string}
-        </h2>
-      ) : null}
-
-      {linkUrl && linkUrl?.handle && (
-        <Button
-          asChild
-          variant="link"
-          className={`h-auto p-0 text-base uppercase tracking-widest transition-all hover:opacity-70 ${
-            mobile ? 'text-white  border-white' : 'text-black  border-black'
-          } rounded-none`}
-        >
-          <Link href={linkUrl.handle}>{linkUrl?.title}</Link>
-        </Button>
-      )}
-    </div>
-  );
-
   return (
     <section className="container  ">
       <div className="py-8 md:py-8">
@@ -80,12 +97,19 @@ export async function SplitImage(props: SplitGridProps) {
             )}
 
             <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[2px] md:hidden">
-              <TextContent mobile />
+              <TextContentComponent
+                mobile
+                title={title as string | null}
+                linkUrl={linkUrl}
+              />
             </div>
           </div>
 
           <div className="hidden w-full md:flex md:w-1/3 md:pl-12 data-[orientation='imageRight']:md:pl-0 data-[orientation='imageRight']:md:pr-12">
-            <TextContent />
+            <TextContentComponent
+              title={title as string | null}
+              linkUrl={linkUrl}
+            />
           </div>
         </div>
       </div>

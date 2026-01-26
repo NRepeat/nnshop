@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { usePathname } from '@shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import { Shield, User, ChevronRight } from 'lucide-react';

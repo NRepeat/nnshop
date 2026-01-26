@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { createDataAttribute } from 'next-sanity';
 import { POST_QUERYResult } from '@/shared/sanity/types';
 import { client } from '@/shared/sanity/lib/client';

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import Logo from '@shared/assets/Logo';
 import { getTranslations } from 'next-intl/server';
 
@@ -22,10 +22,10 @@ export const Footer = async ({ locale }: { locale: string }) => {
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div className="flex flex-col items-start gap-4">
             <Link href="/">
-              <Logo className="w-10 h-10 text-white" />
+              <Logo className=" text-white" />
             </Link>
             <p className="text-gray-400 text-sm text-start">
-              &copy; NNShop. All rights reserved.
+              &copy; MIMIO. All rights reserved.
             </p>
           </div>
 

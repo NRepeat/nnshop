@@ -7,7 +7,7 @@ import { Button } from '@shared/ui/button';
 import { getMainMenu } from '../api/getMainMenu';
 import { getLocale } from 'next-intl/server';
 import { cookies } from 'next/headers';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { NavigationClient } from './NavigationClient';
 import { Skeleton } from '@shared/ui/skeleton';
 import Image from 'next/image';

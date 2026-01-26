@@ -1,14 +1,13 @@
 'use client';
 import { Button } from '@shared/ui/button';
-import { Search, X, PlusIcon, SearchIcon } from 'lucide-react';
+import { Search, X,  SearchIcon } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useDebounce } from 'use-debounce';
 import { PredictiveSearchQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import {
   Empty,
   EmptyDescription,
@@ -67,6 +66,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
 
   useEffect(() => {
     if (debouncedQuery.length >= 1) {
+      //@ts-ignore
       setLoading(true);
       fetch('/api/predictive-search', {
         method: 'POST',

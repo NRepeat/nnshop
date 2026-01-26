@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 import { Settings, User, Shield, Key, Building2, LogOut } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 
 export function UserNav() {
   const { data: session } = client.useSession();

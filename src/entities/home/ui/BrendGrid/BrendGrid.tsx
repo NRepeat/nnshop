@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { urlFor } from '@/shared/sanity/lib/image';
 import { Button } from '@/shared/ui/button';
 import { ArrowRightIcon } from 'lucide-react';

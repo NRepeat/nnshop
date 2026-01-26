@@ -1,6 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
 import {
   Table,
@@ -29,6 +29,34 @@ type OrderListProps = {
   orders: Order[];
 };
 
+const SortableHeaderComponent = ({
+  title,
+  sortKey,
+  sortBy,
+  order,
+  createSortLink,
+}: {
+  title: string;
+  sortKey: string;
+  sortBy: string | null;
+  order: string | null;
+  createSortLink: (newSortBy: string) => string;
+}) => (
+  <TableHead>
+    <Link href={createSortLink(sortKey)} className="flex items-center gap-1">
+      {title}
+      {sortBy
+        ? sortKey &&
+          (order === 'asc' ? (
+            <ArrowUp className="h-4 w-4" />
+          ) : (
+            <ArrowDown className="h-4 w-4" />
+          ))
+        : null}
+    </Link>
+  </TableHead>
+);
+
 export const OrderList = ({ orders }: OrderListProps) => {
   const t = useTranslations('OrderPage.list');
   const searchParams = useSearchParams();
@@ -43,35 +71,25 @@ export const OrderList = ({ orders }: OrderListProps) => {
     return `?${params.toString()}`;
   };
 
-  const SortableHeader = ({
-    title,
-    sortKey,
-  }: {
-    title: string;
-    sortKey: string;
-  }) => (
-    <TableHead>
-      <Link href={createSortLink(sortKey)} className="flex items-center gap-1">
-        {title}
-        {sortBy
-          ? sortKey &&
-            (order === 'asc' ? (
-              <ArrowUp className="h-4 w-4" />
-            ) : (
-              <ArrowDown className="h-4 w-4" />
-            ))
-          : null}
-      </Link>
-    </TableHead>
-  );
-
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead>{t('order')}</TableHead>
-          <SortableHeader title={t('date')} sortKey="date" />
-          <SortableHeader title={t('fulfillmentStatus')} sortKey="status" />
+          <SortableHeaderComponent
+            title={t('date')}
+            sortKey="date"
+            sortBy={sortBy}
+            order={order}
+            createSortLink={createSortLink}
+          />
+          <SortableHeaderComponent
+            title={t('fulfillmentStatus')}
+            sortKey="status"
+            sortBy={sortBy}
+            order={order}
+            createSortLink={createSortLink}
+          />
           <TableHead className="text-right">{t('total')}</TableHead>
         </TableRow>
       </TableHeader>

@@ -4,13 +4,14 @@ import Navigation, {
   CurrentNavigationSessionSkilet,
 } from '@features/header/navigation/ui/Navigation';
 import { HeaderContent } from '@features/header/ui/HeaderContent';
+import { HeaderContentSkeleton } from '@features/header/ui/HeaderContentSkeleton';
 import { sanityFetch } from '@shared/sanity/lib/client';
 import { urlFor } from '@shared/sanity/lib/image';
 import { HEADER_QUERY } from '@shared/sanity/lib/query';
 import { HEADER_QUERYResult } from '@shared/sanity/types';
 import { setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { Suspense } from 'react';
 
 export type HeaderBarProps = Extract<
@@ -34,16 +35,19 @@ export const Header = async ({
   setRequestLocale(locale);
   return (
     <>
-      {headerData?.infoBar && headerData?.header && (
-        <AnnouncementBar
-          locale={locale}
-          icon={headerData?.header?.icon}
-          categories={{ locale, ...headerData?.header }}
-          {...headerData?.infoBar}
-        />
-      )}
+      <Suspense fallback={<></>}>
+        {headerData?.infoBar && headerData?.header && (
+          <AnnouncementBar
+            locale={locale}
+            icon={headerData?.header?.icon}
+            categories={{ locale, ...headerData?.header }}
+            {...headerData?.infoBar}
+          />
+        )}
+      </Suspense>
+
       <header className="sticky top-0  z-30  bg-background   md:h-fit flex flex-col items-center">
-        <Suspense>
+        <Suspense fallback={<HeaderContentSkeleton />}>
           {headerData?.header && (
             <HeaderContent
               locale={locale}
