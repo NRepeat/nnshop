@@ -1,14 +1,27 @@
 'use client';
 import { authClient } from '@features/auth/lib/auth-client';
-import { redirect, RedirectType, useRouter } from 'next/navigation';
+import { Suspense, useEffect } from 'react';
 
 const SignOut = () => {
   //   const nav = useRouter();
-  authClient.signOut();
-  //   nav.push('/', { scroll: false });
-  //   nav.refresh();
-  //   redirect('/', RedirectType.replace);
-  window.location.href = '/';
+
+  useEffect(() => {
+    authClient.signOut();
+    //   nav.push('/', { scroll: false });
+    //   nav.refresh();
+    //   redirect('/', RedirectType.replace);
+    if (window) {
+      window.location.href = '/';
+    }
+  }, []);
   return <></>;
 };
-export default SignOut;
+
+const SignOutSession = () => {
+  return (
+    <Suspense>
+      <SignOut />
+    </Suspense>
+  );
+};
+export default SignOutSession;

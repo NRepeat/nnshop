@@ -10,6 +10,7 @@ import { SplitImage } from '@entities/split-image';
 import { notFound } from 'next/navigation';
 import { getHomePage } from '../api/get-home-page';
 import { Locale } from '@/shared/i18n/routing';
+import { Suspense } from 'react';
 type HeroPageProps = {
   // content: NonNullable<HOME_PAGEResult>['content'];
   locale: Locale;
@@ -33,14 +34,20 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
             return <HeroBanner key={block._key} {...block} />;
           case 'mainCollectionGrid':
             return (
-              <MainCollectionGrid key={block._key} locale={locale} {...block} />
+              <Suspense key={block._key}>
+                <MainCollectionGrid locale={locale} {...block} />
+              </Suspense>
             );
           case 'productCarousel':
             return (
               <ProductCarousel key={block._key} locale={locale} {...block} />
             );
           case 'splitImage':
-            return <SplitImage key={block._key} locale={locale} {...block} />;
+            return (
+              <Suspense key={block._key}>
+                <SplitImage locale={locale} {...block} />
+              </Suspense>
+            );
           case 'features':
             return <Features key={block._key} locale={locale} {...block} />;
           case 'brandGridBlock':

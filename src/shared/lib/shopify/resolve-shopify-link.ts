@@ -1,3 +1,4 @@
+'use server'
 import { storefrontClient } from './client';
 import { StorefrontLanguageCode } from '../clients/types';
 import { ResolveLinkQuery } from './types/storefront.generated';

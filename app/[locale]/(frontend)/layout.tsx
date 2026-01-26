@@ -2,12 +2,15 @@ import type { Metadata } from 'next';
 import { Jost } from 'next/font/google';
 import '../../globals.css';
 import { Providers } from '@/app/providers';
-import { SpeedInsights } from '@vercel/speed-insights/next';
-import { NextIntlClientProvider } from 'next-intl';
 import { Header } from '@widgets/header/ui/Header';
 import { Footer } from '@widgets/footer/ui/Footer';
 import { locales } from '@shared/i18n/routing';
 import { setRequestLocale } from 'next-intl/server';
+import { DisableDraftMode } from '@shared/sanity/components/live/DisableDraftMode';
+import { SanityLive } from '@shared/sanity/lib/live';
+import { VisualEditing } from 'next-sanity/visual-editing';
+import { draftMode } from 'next/headers';
+import { Suspense } from 'react';
 
 const jostSans = Jost({
   variable: '--font-jost-sans',
@@ -58,6 +61,15 @@ export default async function RootLayout(props: RootProps) {
 
           <Footer locale={locale} />
         </Providers>
+            {(await draftMode()).isEnabled && (
+        <>
+          <DisableDraftMode />
+          <VisualEditing />
+        </>
+      )}
+      <Suspense fallback={<div>Loading...</div>}>
+        <SanityLive />
+      </Suspense>
       </body>
     </html>
   );

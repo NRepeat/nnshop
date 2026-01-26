@@ -1,13 +1,4 @@
-import { VisualEditing } from 'next-sanity/visual-editing';
-import { genders, locales, routing } from '@/shared/i18n/routing';
-import { Header } from '@widgets/header/ui/Header';
-import { SanityLive } from '@shared/sanity/lib/live';
-import { DisableDraftMode } from '@shared/sanity/components/live/DisableDraftMode';
-import { draftMode } from 'next/headers';
-import { Footer } from '@widgets/footer/ui/Footer';
-import { Suspense } from 'react';
-import { hasLocale, NextIntlClientProvider } from 'next-intl';
-import { notFound } from 'next/navigation';
+import { genders, locales } from '@shared/i18n/routing';
 import { setRequestLocale } from 'next-intl/server';
 
 export async function generateStaticParams() {
@@ -27,24 +18,8 @@ export default async function LocaleLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string; gender: string }>;
 }>) {
-  const { locale, gender } = await params;
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
-  }
+  const { locale } = await params;
+
   setRequestLocale(locale);
-  return (
-    <>
-      {/*<Header locale={locale} gender={gender} />*/}
-      {children}
-      {(await draftMode()).isEnabled && (
-        <>
-          <DisableDraftMode />
-          <VisualEditing />
-        </>
-      )}
-      <Suspense fallback={<div>Loading...</div>}>
-        <SanityLive />
-      </Suspense>
-    </>
-  );
+  return <>{children}</>;
 }

@@ -6,8 +6,8 @@ import { ProductCard } from '@entities/product/ui/ProductCard';
 import { Breadcrumbs } from '@shared/ui/breadcrumbs';
 import { Empty, EmptyHeader, EmptyTitle } from '@shared/ui/empty';
 import { getTranslations } from 'next-intl/server';
-import { Suspense } from 'react';
-async function FavoritesPageSession({
+
+export default async function FavoritesPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
@@ -92,16 +92,5 @@ async function FavoritesPageSession({
         ))}
       </div>
     </div>
-  );
-}
-export default async function FavoritesPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  return (
-    <Suspense>
-      <FavoritesPageSession params={params} />
-    </Suspense>
   );
 }
