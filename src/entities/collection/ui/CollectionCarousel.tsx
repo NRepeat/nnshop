@@ -8,8 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/shared/ui/carousel';
-import Link from 'next/link';
-import Image from 'next/image';
+import { Link } from '@shared/i18n/navigation';import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 import { Locale } from '@/shared/i18n/routing';
 

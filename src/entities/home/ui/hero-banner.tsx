@@ -1,8 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
-import Autoplay from 'embla-carousel-autoplay';
+import { Link } from '@shared/i18n/navigation';import Autoplay from 'embla-carousel-autoplay';
 import { Button } from '@shared/ui/button';
 import { Carousel, CarouselContent, CarouselItem } from '@shared/ui/carousel';
 import { urlFor } from '@shared/sanity/lib/image';

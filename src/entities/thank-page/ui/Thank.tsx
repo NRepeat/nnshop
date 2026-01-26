@@ -7,8 +7,7 @@ import {
   CardTitle,
 } from '@shared/ui/card';
 import { Button } from '@shared/ui/button';
-import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
+import { Link } from '@shared/i18n/navigation';import { getTranslations } from 'next-intl/server';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
 

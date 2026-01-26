@@ -5,8 +5,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/shared/ui/carousel';
-import Link from 'next/link';
-import { Collection, PAGE_QUERYResult } from '@/shared/sanity/types';
+import { Link } from '@shared/i18n/navigation';import { Collection, PAGE_QUERYResult } from '@/shared/sanity/types';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { getCollection } from '@entities/collection/api/getCollection';
 import { ProductCard } from './ProductCard';

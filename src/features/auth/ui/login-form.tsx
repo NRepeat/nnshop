@@ -10,7 +10,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/shared/ui/button';
@@ -30,6 +29,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from '@/shared/ui/field';
+import { Link } from '@shared/i18n/navigation';
 
 export default function LoginForm({
   className,
@@ -113,6 +113,7 @@ export default function LoginForm({
                         </FieldLabel>
                         <Link
                           href="/auth/forgot-password"
+                          scroll={false}
                           className="text-xs underline underline-offset-4 hover:text-primary transition-colors"
                         >
                           {t('forgotPassword')}
@@ -134,9 +135,9 @@ export default function LoginForm({
                   )}
                 />
 
-                <Button 
-                  type="submit" 
-                  disabled={isLoading} 
+                <Button
+                  type="submit"
+                  disabled={isLoading}
                   className="w-full rounded-none h-11"
                 >
                   {isLoading ? t('signingIn') : t('signInButton')}
@@ -181,13 +182,19 @@ export default function LoginForm({
                     }}
                   >
                     <GoogleIcon />
-                    <span className="ml-2 text-xs font-medium uppercase tracking-tighter">Google</span>
+                    <span className="ml-2 text-xs font-medium uppercase tracking-tighter">
+                      Google
+                    </span>
                   </Button>
                 </div>
 
                 <p className="text-center text-sm text-muted-foreground mt-2">
                   {t('dontHaveAccount')}{' '}
-                  <Link href="/auth/sign-up" className="underline underline-offset-4 font-semibold hover:text-primary transition-colors">
+                  <Link
+                    href="/auth/sign-up"
+                    scroll={false}
+                    className="underline underline-offset-4 font-semibold hover:text-primary transition-colors"
+                  >
                     {t('signUp')}
                   </Link>
                 </p>
@@ -206,16 +213,25 @@ export default function LoginForm({
           </div>
         </CardContent>
       </Card>
-      
+
       <p className="px-6 text-center text-[11px] text-muted-foreground leading-relaxed uppercase tracking-wide">
         {tCommon('byClickingContinue')}{' '}
-        <Link href="/terms-of-service" className="underline underline-offset-2">
+        <Link
+          href="/terms-of-service"
+          scroll={false}
+          className="underline underline-offset-2"
+        >
           {tCommon('termsOfService')}
         </Link>{' '}
         {tCommon('and')}{' '}
-        <Link href="/privacy-policy" className="underline underline-offset-2">
+        <Link
+          href="/privacy-policy"
+          scroll={false}
+          className="underline underline-offset-2"
+        >
           {tCommon('privacyPolicy')}
-        </Link>.
+        </Link>
+        .
       </p>
     </div>
   );
@@ -223,14 +239,30 @@ export default function LoginForm({
 
 // Вынес иконки в отдельные мини-компоненты для чистоты кода
 const ShopifyIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 147.5 192.5" preserveAspectRatio="xMidYMid meet">
-    <path fill="#95BF47" d="M131.5 341.9c-.1-.9-.9-1.3-1.5-1.3s-13.7-1-13.7-1-9.1-9.1-10.2-10c-1-1-2.9-.7-3.7-.5-.1 0-2 .6-5.1 1.6-3.1-8.9-8.4-17-17.9-17h-.9c-2.6-3.4-6-5-8.8-5-22 0-32.6 27.5-35.9 41.5-8.6 2.7-14.7 4.5-15.4 4.8-4.8 1.5-4.9 1.6-5.5 6.1-.5 3.4-13 100.1-13 100.1l97.3 18.2L150 468c.1-.2-18.4-125.2-18.5-126.1zm-39.6-9.8c-2.4.7-5.3 1.6-8.2 2.6v-1.8c0-5.4-.7-9.8-2-13.3 5 .6 8.1 6.1 10.2 12.5zm-16.3-11.4c1.3 3.4 2.2 8.2 2.2 14.8v1c-5.4 1.7-11.1 3.4-17 5.3 3.3-12.6 9.6-18.8 14.8-21.1zm-6.4-6.2c1 0 2 .4 2.8 1-7.1 3.3-14.6 11.6-17.7 28.4-4.7 1.5-9.2 2.8-13.5 4.2 3.6-12.8 12.6-33.6 28.4-33.6z" transform="translate(-2.5 -302.1)"/>
-    <path fill="#5E8E3E" d="M130 340.4c-.6 0-13.7-1-13.7-1s-9.1-9.1-10.2-10c-.4-.4-.9-.6-1.3-.6l-7.3 150.6 52.8-11.4s-18.5-125.2-18.6-126.1c-.4-.9-1.1-1.3-1.7-1.5z" transform="translate(-2.5 -302.1)"/>
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 147.5 192.5"
+    preserveAspectRatio="xMidYMid meet"
+  >
+    <path
+      fill="#95BF47"
+      d="M131.5 341.9c-.1-.9-.9-1.3-1.5-1.3s-13.7-1-13.7-1-9.1-9.1-10.2-10c-1-1-2.9-.7-3.7-.5-.1 0-2 .6-5.1 1.6-3.1-8.9-8.4-17-17.9-17h-.9c-2.6-3.4-6-5-8.8-5-22 0-32.6 27.5-35.9 41.5-8.6 2.7-14.7 4.5-15.4 4.8-4.8 1.5-4.9 1.6-5.5 6.1-.5 3.4-13 100.1-13 100.1l97.3 18.2L150 468c.1-.2-18.4-125.2-18.5-126.1zm-39.6-9.8c-2.4.7-5.3 1.6-8.2 2.6v-1.8c0-5.4-.7-9.8-2-13.3 5 .6 8.1 6.1 10.2 12.5zm-16.3-11.4c1.3 3.4 2.2 8.2 2.2 14.8v1c-5.4 1.7-11.1 3.4-17 5.3 3.3-12.6 9.6-18.8 14.8-21.1zm-6.4-6.2c1 0 2 .4 2.8 1-7.1 3.3-14.6 11.6-17.7 28.4-4.7 1.5-9.2 2.8-13.5 4.2 3.6-12.8 12.6-33.6 28.4-33.6z"
+      transform="translate(-2.5 -302.1)"
+    />
+    <path
+      fill="#5E8E3E"
+      d="M130 340.4c-.6 0-13.7-1-13.7-1s-9.1-9.1-10.2-10c-.4-.4-.9-.6-1.3-.6l-7.3 150.6 52.8-11.4s-18.5-125.2-18.6-126.1c-.4-.9-1.1-1.3-1.7-1.5z"
+      transform="translate(-2.5 -302.1)"
+    />
   </svg>
 );
 
 const GoogleIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24">
-    <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" fill="currentColor"/>
+    <path
+      d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
+      fill="currentColor"
+    />
   </svg>
 );

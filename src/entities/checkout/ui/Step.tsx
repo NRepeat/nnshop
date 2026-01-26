@@ -1,7 +1,6 @@
 import { Button } from '@shared/ui/button';
 import clsx from 'clsx';
-import Link from 'next/link';
-import { type ReactNode } from 'react';
+import { Link } from '@shared/i18n/navigation';import { type ReactNode } from 'react';
 
 const Step = async ({
   title,

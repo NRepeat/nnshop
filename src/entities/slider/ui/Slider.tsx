@@ -4,8 +4,7 @@ import { resolveLink } from '@/features/blocks/split-image/lib/resolveLink';
 import { Carousel, CarouselContent, CarouselItem } from '@/shared/ui/carousel';
 import { PAGE_QUERYResult } from '@/shared/sanity/types';
 import Image from 'next/image';
-import Link from 'next/link';
-import { useLocale } from 'next-intl';
+import { Link } from '@shared/i18n/navigation';import { useLocale } from 'next-intl';
 import { getLocalizedString } from '@shared/sanity/utils/getLocalizedString';
 
 type HeroSwiperProps = Extract<
