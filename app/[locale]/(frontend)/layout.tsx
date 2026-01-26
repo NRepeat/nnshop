@@ -73,5 +73,5 @@ export default async function RootLayout(props: RootProps) {
         </Suspense>
       </body>
     </html>
-  );
+  )
 }

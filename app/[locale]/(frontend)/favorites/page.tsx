@@ -23,9 +23,11 @@ export default async function FavoritesPage({
   params: Promise<{ locale: string }>;
 }) {
   return (
-    <Suspense fallback={<CollectionGridSkeleton />}>
-      <FavoritesPageSession params={params} />;
-    </Suspense>
+    <div className="h-svh">
+      <Suspense fallback={<CollectionGridSkeleton />}>
+        <FavoritesPageSession params={params} />
+      </Suspense>
+    </div>
   );
 }
 const FavoritesPageSession = async ({

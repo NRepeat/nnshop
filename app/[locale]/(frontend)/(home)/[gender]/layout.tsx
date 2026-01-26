@@ -21,5 +21,5 @@ export default async function LocaleLayout({
   const { locale } = await params;
 
   setRequestLocale(locale);
-  return <>{children}</>;
+  return <>{children}</>
 }
