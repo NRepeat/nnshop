@@ -96,7 +96,6 @@ const ProductSessionView = async ({ params }: Props) => {
     }
     const session = await auth.api.getSession({ headers: await headers() });
     const isFavorite = await isProductFavorite(product.id, session);
-    console.log('🚀 ~ ProductSessionView ~ isFavorite:', isFavorite);
     return (
       <div className="mt-10">
         <ProductViewProvider

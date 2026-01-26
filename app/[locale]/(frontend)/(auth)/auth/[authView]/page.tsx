@@ -1,11 +1,8 @@
 import { authViewPaths } from '@daveyplate/better-auth-ui/server';
 import { getTranslations } from 'next-intl/server';
 import { AuthViewRenderer } from '@/features/auth/ui/auth-view-renderer';
-import { QuickView } from '@widgets/product-view';
 import { locales } from '@shared/i18n/routing';
 import { Suspense } from 'react';
-import { redirect } from 'next/navigation';
-import { auth } from '@features/auth/lib/auth';
 // export async function generateStaticParams() {
 //   const params = [];
 //   for (const locale of locales) {
@@ -37,11 +34,9 @@ const AuthSession = async ({
     namespace: 'BetterAuthUI',
   });
   return (
-    <QuickView open={Boolean(params)}>
-      <main className=" flex grow flex-col items-center justify-center self-center  ">
-        <AuthViewRenderer authView={authView} tBetterAuth={tBetterAuth} />
-      </main>
-    </QuickView>
+    <main className=" flex grow flex-col items-center justify-center self-center  ">
+      <AuthViewRenderer authView={authView} tBetterAuth={tBetterAuth} />
+    </main>
   );
 };
 export default async function AuthPage({

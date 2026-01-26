@@ -5,6 +5,7 @@ import { localization } from '@/shared/i18n/localization/authView';
 import { AuthView } from '@daveyplate/better-auth-ui';
 // import { AuthView } from '@daveyplate/better-auth-ui';
 import { notFound } from 'next/navigation';
+import { SignOut } from './sign-out';
 
 interface AuthViewRendererProps {
   authView: string;
@@ -25,14 +26,15 @@ export const AuthViewRenderer = ({
       return <SignupForm />;
     case 'forgot-password':
       return <ForgotPasswordForm />;
-    // case 'reset-password':
-    // case 'magic-link':
-    // case 'verify-email':
-    // case 'account-link':
-    // case 'sign-out':
-    return (
+    case 'reset-password':
+    case 'magic-link':
+    case 'verify-email':
+    case 'account-link':
+      return (
       <AuthView path={authView} localization={localization(tBetterAuth)} />
     );
+    case 'sign-out':
+      return (<SignOut/>)
     default:
       notFound();
   }

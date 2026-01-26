@@ -133,8 +133,8 @@ export function SettingsPageLayout({
   const tSettings = useTranslations('Settings');
 
   return (
-    <div className="container h-screen  flex flex-col w-full items-center">
-      <div className="max-w-6xl">
+    <div className="container  flex flex-col w-full items-center">
+      <div className="max-w-6xl min-h-screen">
         <div className="mb-8">
           <SettingsNav variant="breadcrumb" className="mb-4" />
           {title && (

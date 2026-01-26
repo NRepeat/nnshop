@@ -21,12 +21,12 @@ export async function OrderEmptyState({
     namespace: `OrderPage.${type}`,
   });
   return (
-    <Empty>
+    <Empty className='flex flex-col items-center justify-center  h-screen'>
       <EmptyHeader>
         <EmptyTitle>{t('title')}</EmptyTitle>
         <EmptyDescription>{t('description')}</EmptyDescription>
       </EmptyHeader>
-      <EmptyContent>
+      <EmptyContent className=" ">
         {type === 'notLoggedIn' ? (
           <Button asChild>
             <Link href="/auth/sign-in">{t('login')}</Link>
