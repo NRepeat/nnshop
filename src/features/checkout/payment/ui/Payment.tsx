@@ -7,6 +7,7 @@ import { headers } from 'next/headers';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
+import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 
 export default async function Payment({
   draftOrderId,
@@ -44,7 +45,11 @@ export default async function Payment({
     if (!sessionCart) {
       throw new Error('Cart not found');
     }
-    const cartResult = await getCart(sessionCart.cartToken);
+
+    const cartResult = (await getCart({
+      userId: session.user.id,
+      locale,
+    })) as GetCartQuery | null;
     if (cartResult && cartResult.cart?.cost?.totalAmount) {
       cartAmount = parseFloat(cartResult.cart.cost.totalAmount.amount);
       currency = cartResult.cart.cost.totalAmount.currencyCode;

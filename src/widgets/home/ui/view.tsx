@@ -10,10 +10,8 @@ export const PageContent = async ({
   const { locale, gender } = await params;
 
   return (
-    <Suspense>
       <div className="flex flex-col">
         <HeroPageBuilder gender={gender} locale={locale} />
       </div>
-    </Suspense>
   );
 };

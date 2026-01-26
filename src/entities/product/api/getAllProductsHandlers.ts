@@ -43,12 +43,12 @@ export const getAllProductHandles = async (
   let allHandles: string[] = [];
   let hasNextPage = true;
   let cursor: string | null = null;
-  const BATCH_SIZE = 50; // Shopify's maximum limit for products per request
+  const BATCH_SIZE = 250; // Shopify's maximum limit for products per request
   const sleep = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
   try {
     while (hasNextPage) {
-      await sleep(100); // To avoid hitting rate limits
+      // await sleep(100); // To avoid hitting rate limits
       const response: PaginatedHandlesResponse = await storefrontClient.request<
         PaginatedHandlesResponse,
         { first: number; after: string | null }
@@ -67,7 +67,8 @@ export const getAllProductHandles = async (
         const handles = productsData.edges.map((edge) => edge.node.handle);
         allHandles.push(...handles);
 
-        hasNextPage = productsData.pageInfo.hasNextPage;
+        // hasNextPage = productsData.pageInfo.hasNextPage;
+        hasNextPage =false
         cursor = productsData.pageInfo.endCursor;
       } else {
         hasNextPage = false;

@@ -5,6 +5,10 @@ import { getTranslations } from 'next-intl/server';
 import { ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
 import { Suspense } from 'react';
 import { GallerySession } from './GallerySession';
+import { auth } from '@features/auth/lib/auth';
+import { isProductFavorite } from '@features/product/api/isProductFavorite';
+import { headers } from 'next/headers';
+import { FavSession } from '@features/header/ui/FavSession';
 
 export async function ProductView({
   product,
@@ -12,22 +16,25 @@ export async function ProductView({
   boundProducts,
   locale,
   attributes,
+  children,
 }: {
   product: ShopifyProduct;
   relatedProducts: ShopifyProduct[];
   boundProducts: ShopifyProduct[];
   locale: string;
   attributes: ProductMEtaobjectType[];
+  children: React.ReactNode;
 }) {
   const t = await getTranslations({ locale, namespace: 'ProductPage' });
-
+  // const session = await auth.api.getSession({ headers: await headers() });
+  // const isFavorite = await isProductFavorite(product.id, session);
+  // console.log('🚀 ~ ProductSessionView ~ isFavorite:', isFavorite);
   return (
     <div className="container  space-y-16 mt-10">
       <ProductViewProvider
         favCommponent={
-          <Suspense>
-            <GallerySession product={product} />
-          </Suspense>
+          children
+          // <FavSession productId={product.id} handle={product.handle} />
         }
         product={product}
         boundProducts={boundProducts}

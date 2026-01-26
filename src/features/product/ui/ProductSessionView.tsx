@@ -1,3 +1,4 @@
+'use cache';
 import {
   getMetaobject,
   ProductMEtaobjectType,
@@ -13,9 +14,11 @@ import { notFound } from 'next/navigation';
 export const ProductSessionView = async ({
   handle,
   locale,
+  children
 }: {
   handle: string;
   locale: string;
+  children:React.ReactNode
 }) => {
   try {
     const { alternateHandle, originProduct: product } = await getProduct({
@@ -74,7 +77,9 @@ export const ProductSessionView = async ({
           relatedProducts={relatedShopiyProductsData}
           boundProducts={boundProducts}
           locale={locale}
-        />
+        >
+          {children}
+        </ProductView>
       </>
     );
   } catch (e) {

@@ -2,8 +2,6 @@ import {
   ProductVariant,
   Product as ShopifyProduct,
 } from '@shared/lib/shopify/types/storefront.types';
-import Link from 'next/link';
-import { cn } from '@shared/lib/utils';
 import { AddToCartButton } from '@entities/product/ui/AddToCartButton';
 
 export const colorMap: { [key: string]: string } = {

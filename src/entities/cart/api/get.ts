@@ -1,3 +1,5 @@
+'use cache';
+
 import { CART_TAGS } from '@shared/lib/cached-fetch';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { prisma } from '@shared/lib/prisma';
@@ -6,7 +8,7 @@ import {
   GetCartQuery,
   GetCartQueryVariables,
 } from '@shared/lib/shopify/types/storefront.generated';
-import { cacheTag } from 'next/cache';
+import { cacheLife, cacheTag } from 'next/cache';
 const CART_QUERY = `#graphql
   query GetCart($id: ID!) {
     cart(id: $id) {
@@ -128,9 +130,9 @@ export const getCart = async ({
   cartId?: string;
   locale: string;
 }) => {
-  'use cache';
   const tags = [CART_TAGS.CART, CART_TAGS.CART_ITEMS] as string[];
   cacheTag(...tags);
+  cacheLife({ expire: 0 });
   try {
     const sessionCart = await prisma.cart.findFirst({
       where: {
@@ -157,6 +159,7 @@ export const getCart = async ({
     }
     return response;
   } catch (error) {
+    console.log("🚀 ~ getCart ~ error:", error)
     throw new Error('Error get cart');
   }
 };

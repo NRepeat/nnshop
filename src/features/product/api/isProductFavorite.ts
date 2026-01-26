@@ -1,30 +1,32 @@
-'use server';
 import { prisma } from '@shared/lib/prisma';
 import { Session, User } from 'better-auth';
+// import { cacheTag } from 'next/cache';
 
 export const isProductFavorite = async (
   productId: string,
   session: { session: Session; user: User } | null,
 ): Promise<boolean> => {
-  if (!session || !session.user) {
-    return false;
-  }
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-  });
+  // 'use cache';
 
-  if (!user) {
+  // cacheTag('favorites');
+  // if (session?.user?.id) {
+  //   cacheTag(`favorite-${session.user.id}`);
+  //   cacheTag(`product-${productId}`);
+  // }
+
+  if (!session || !session.user) {
     return false;
   }
 
   const existingFavorite = await prisma.favoriteProduct.findUnique({
     where: {
       userId_productId: {
-        userId: user.id,
+        userId: session.user.id,
         productId,
       },
     },
   });
-  const isFavorite = !!existingFavorite;
-  return isFavorite;
+  console.log("🚀 ~ isProductFavorite ~ existingFavorite:", existingFavorite,productId,session.user)
+  
+  return !!existingFavorite;
 };

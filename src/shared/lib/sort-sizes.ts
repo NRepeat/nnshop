@@ -30,6 +30,7 @@ export function compareSizes(a: string, b: string) {
   const typeOrder = { clothing: 0, numeric: 1, other: 2 };
 
   if (parsedA.type !== parsedB.type) {
+    //@ts-ignore
     return typeOrder[parsedA.type] - typeOrder[parsedB.type];
   }
 

@@ -4,16 +4,19 @@ import { isProductFavorite } from '@features/product/api/isProductFavorite';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { headers } from 'next/headers';
 
-export const GallerySession = async ({ product }: { product: Product }) => {
-  const session = await auth.api.getSession({ headers: await headers() });
-  const isFavorite = await isProductFavorite(product.id, session);
-
+export const GallerySession = async ({
+  product,
+  isFavorite,
+}: {
+  product: Product;
+  isFavorite: boolean;
+}) => {
   return (
     <>
       <FavSession
         fav={isFavorite}
-        productId={product.id}
         handle={product.handle}
+        productId={product.id}
       />
     </>
   );

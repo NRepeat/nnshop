@@ -24,6 +24,7 @@ async function addToCart(_: any, formData: FormData) {
 
     revalidateTag(CART_TAGS.CART, { expire: 0 });
     revalidateTag(CART_TAGS.CART_ITEMS, { expire: 0 });
+    
     return { success: true, message: 'Added to cart' };
   } catch (error) {
     return { success: false, message: String(error) };

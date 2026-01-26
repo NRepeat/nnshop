@@ -5,6 +5,7 @@ import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { headers } from 'next/headers';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
+import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 
 type DrafOrder = {
   id: string;
@@ -93,7 +94,11 @@ export async function createDraftOrder(
     const existDraftOrder = await prisma.order.findFirst({
       where: { userId: session.user.id, draft: true },
     });
-    const result = await getCart(cartId?.cartToken);
+
+    const result = (await getCart({
+      userId: session.user.id,
+      locale: 'uk',
+    })) as GetCartQuery | null;
     if (!result) {
       console.error('CART NOT FOUND');
       return {

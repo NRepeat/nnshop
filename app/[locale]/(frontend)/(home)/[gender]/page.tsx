@@ -19,7 +19,7 @@ export default async function Page({
 }) {
   return (
     <Suspense>
-      <PageContent params={params} />;
+      <PageContent params={params} />
     </Suspense>
   );
 }

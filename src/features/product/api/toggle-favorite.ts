@@ -1,13 +1,14 @@
 'use server';
-
-import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
-import { headers } from 'next/headers';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
+import { Session, User } from 'better-auth';
 
-export const toggleFavoriteProduct = async (productId: string,handle:string) => {
-  const session = await auth.api.getSession({ headers: await headers() });
-
+export const toggleFavoriteProduct = async (
+  productId: string,
+  session: { session: Session; user: User } | null,
+  locale: string,
+  handle?: string,
+) => {
   if (!session?.user?.id) {
     return { success: false, error: 'AUTH_REQUIRED' };
   }
@@ -15,7 +16,6 @@ export const toggleFavoriteProduct = async (productId: string,handle:string) => 
   const userId = session.user.id;
 
   try {
-    // Ищем запись по составному индексу
     const existingFavorite = await prisma.favoriteProduct.findUnique({
       where: { userId_productId: { userId, productId } },
     });
@@ -32,9 +32,16 @@ export const toggleFavoriteProduct = async (productId: string,handle:string) => 
       isFavorited = true;
     }
 
-    // Очищаем кэш страниц, где может быть этот товар
-    revalidatePath('/favorite');
-    revalidatePath(`/product/${handle}`);
+    // ✅ Правильный синтаксис с profile="max" (stale-while-revalidate)
+ // Для случаев когда нужно немедленное истечение кеша
+revalidateTag('favorites', { expire: 0 });
+revalidateTag(`favorite-${userId}`, { expire: 0 });
+revalidateTag(`product-${productId}`, { expire: 0 });
+    // Ревалидируем пути
+    revalidatePath(`/${locale}/favorites`, 'page');
+    if (handle) {
+      revalidatePath(`/${locale}/product/${handle}`, 'page');
+    }
 
     return { success: true, isFavorited };
   } catch (error) {

@@ -199,9 +199,9 @@ export async function updateCartDeliveryPreferences(
     }
 
     // @ts-ignore
-    revalidateTag(CART_TAGS.CART);
+    revalidateTag(CART_TAGS.CART,{expire:0});
     // @ts-ignore
-    revalidateTag(CART_TAGS.CART_SESSION);
+    revalidateTag(CART_TAGS.CART_SESSION,{expire:0});
 
     console.log(
       'updateCartDeliveryPreferences: Cart delivery address added successfully!',

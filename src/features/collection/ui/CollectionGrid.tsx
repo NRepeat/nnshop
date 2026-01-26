@@ -33,7 +33,6 @@ export const CollectionGrid = async ({
       cookies(),
       getTranslations('Header'),
     ]);
-
   const { locale, slug } = awaitedParams;
   const gender = cookieStore.get('gender')?.value || 'woman';
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;

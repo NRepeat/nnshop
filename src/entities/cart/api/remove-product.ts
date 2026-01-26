@@ -124,8 +124,6 @@ export async function removeProductFromCart(
 
     const { cartLinesRemove } = response;
 
-    // Check for user errors
-    console.log('errore', cartLinesRemove.userErrors);
     if (cartLinesRemove.userErrors && cartLinesRemove.userErrors.length > 0) {
       return {
         success: false,
@@ -133,8 +131,7 @@ export async function removeProductFromCart(
       };
     }
 
-    // @ts-ignore
-    revalidateTag(CART_TAGS.CART);
+    revalidateTag(CART_TAGS.CART, { expire: 0 });
 
     return {
       success: true,

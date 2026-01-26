@@ -1,5 +1,6 @@
 import { locales } from '@shared/i18n/routing';
 import { Header } from '@widgets/header/ui/Header';
+import { setRequestLocale } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import { Suspense } from 'react';
 
@@ -19,7 +20,7 @@ export default async function CollectionLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-
+  setRequestLocale(locale);
   return (
     <>
       {/*<Header locale={locale} />*/}

@@ -48,15 +48,15 @@ export function AddToCartButton({
     success: false,
     message: '',
   });
-  // useEffect(() => {
-  //   if (formState.message) {
-  //     if (formState.success) {
-  //       toast.success(formState.message);
-  //     } else {
-  //       toast.error(formState.message);
-  //     }
-  //   }
-  // }, [formState]);
+  useEffect(() => {
+    if (formState.message) {
+      if (formState.success) {
+        toast.success(formState.message);
+      } else {
+        toast.error(formState.message);
+      }
+    }
+  }, [formState]);
   const isProductAvalible = selectedVariant
     ? selectedVariant?.quantityAvailable !== 0
     : //@ts-ignore

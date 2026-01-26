@@ -7,17 +7,24 @@ import { getReletedProducts } from '@entities/product/api/get-related-products';
 import { locales } from '@shared/i18n/routing';
 import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
 import { ProductViewProvider } from '@widgets/product-view/ui/ProductViewProvider';
+
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { getProduct } from '@entities/product/api/getProduct';
+import { GallerySession } from '@widgets/product-view/ui/GallerySession';
+import { getAllProductHandles } from '@entities/product/api/getAllProductsHandlers';
+import { setRequestLocale } from 'next-intl/server';
+import { headers } from 'next/headers';
+import { auth } from '@features/auth/lib/auth';
+import { isProductFavorite } from '@features/product/api/isProductFavorite';
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
 };
 // export async function generateStaticParams() {
 //   const handles = [];
 //   for (const locale of locales) {
-//     // const allProductsHandlers = await getAllProductHandles(locale);
-//     // handles.push(...allProductsHandlers);
+//     const allProductsHandlers = await getAllProductHandles(locale);
+//     handles.push(...allProductsHandlers);
 //   }
 //   return handles.map((handle) => ({
 //     slug: [handle],
@@ -32,6 +39,7 @@ export async function generateStaticParams() {
 }
 
 export default async function ProductQuickViewPage({ params }: Props) {
+  // return <>h</>
   return (
     <Suspense>
       <ProductSession params={params} />
@@ -42,6 +50,7 @@ export default async function ProductQuickViewPage({ params }: Props) {
 const ProductSessionView = async ({ params }: Props) => {
   try {
     const { locale, slug } = await params;
+    setRequestLocale(locale);
     const { originProduct } = await getProduct({
       handle: slug,
       locale: locale,
@@ -85,13 +94,25 @@ const ProductSessionView = async ({ params }: Props) => {
         ),
       );
     }
-
+    const session = await auth.api.getSession({ headers: await headers() });
+    const isFavorite = await isProductFavorite(product.id, session);
+    console.log('🚀 ~ ProductSessionView ~ isFavorite:', isFavorite);
     return (
-      <ProductViewProvider
-        product={product as ShopifyProduct}
-        boundProducts={boundProducts}
-        attributes={attributes}
-      />
+      <div className="mt-10">
+        <ProductViewProvider
+          favCommponent={
+            <Suspense>
+              <GallerySession
+                product={product as ShopifyProduct}
+                isFavorite={isFavorite}
+              />
+            </Suspense>
+          }
+          product={product as ShopifyProduct}
+          boundProducts={boundProducts}
+          attributes={attributes}
+        />
+      </div>
     );
   } catch (e) {
     console.error(e);
