@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import { Link } from '@shared/i18n/navigation';
-
 const LeftImage = `${process.env.BLOB_BASE_URL}/assests/home/image/home-banner/hero-banner-left.png`;
 
 export const SplitCollection = () => {

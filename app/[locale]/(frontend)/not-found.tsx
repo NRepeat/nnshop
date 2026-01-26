@@ -1,7 +1,6 @@
 import { Button } from '@shared/ui/button';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@shared/i18n/navigation';
-
 export default async function NotFoundPage() {
   const locale = await getLocale();
   const t = await getTranslations({ locale, namespace: 'NotFound' });

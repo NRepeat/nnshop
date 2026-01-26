@@ -1,7 +1,6 @@
 'use client';
 import { Maybe } from '@shared/lib/shopify/types/storefront.types';
 import { Link } from '@shared/i18n/navigation';
-
 import {
   Accordion,
   AccordionContent,
