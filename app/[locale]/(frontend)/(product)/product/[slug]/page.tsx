@@ -41,11 +41,11 @@ export default async function ProductPage({ params }: Props) {
     handle,
     locale,
   });
+  setRequestLocale(locale);
 
   if (!product) {
     return notFound();
   }
-  setRequestLocale(locale);
   return (
     <>
       <ProductSessionView handle={handle} locale={locale}>

@@ -3,8 +3,7 @@ import { AuthViewRenderer } from '@/features/auth/ui/auth-view-renderer';
 import { QuickView } from '@widgets/product-view';
 import { Suspense } from 'react';
 import { AuthModalSkeleton } from './AuthModalSkeleton';
-import { locales } from '@shared/i18n/routing';
-import { authViewPaths } from '@daveyplate/better-auth-ui';
+
 // export async function generateStaticParams() {
 //   const params = [];
 //   for (const locale of locales) {
@@ -14,14 +13,7 @@ import { authViewPaths } from '@daveyplate/better-auth-ui';
 //   }
 //   return params;
 // }
-export function generateStaticParams() {
-  return locales.flatMap((locale) =>
-    Object.values(authViewPaths).map((path) => ({
-      locale,
-      path,
-    })),
-  );
-}
+
 // export function generateStaticParams() {
 //   return Object.values(authViewPaths).map((path) => ({ authView: path }));
 // }
