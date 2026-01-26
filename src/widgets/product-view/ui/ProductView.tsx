@@ -28,7 +28,6 @@ export async function ProductView({
       <ProductViewProvider
         favCommponent={
           children
-          // <FavSession productId={product.id} handle={product.handle} />
         }
         product={product}
         boundProducts={boundProducts}

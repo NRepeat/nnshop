@@ -60,7 +60,7 @@ export default async function ProductPage({ params }: Props) {
             </Button>
           }
         >
-          <ProductSession handle={product.id} product={product as Product} />
+          {/* <ProductSession handle={product.id} product={product as Product} /> */}
         </Suspense>
       </ProductSessionView>
     </>
