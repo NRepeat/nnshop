@@ -22,10 +22,10 @@ const Step = async ({
       disabled={disabled}
       variant={isActive ? 'default' : 'ghost'}
     >
-      <Link href={link} className={clsx('flex')}>
+      {/* <Link href={link} className={clsx('flex')}> */}
         <span className="sm:hidden">{icon}</span>
         <span className="hidden sm:inline capitalize">{title}</span>
-      </Link>
+      {/* </Link> */}
     </Button>
   );
 };

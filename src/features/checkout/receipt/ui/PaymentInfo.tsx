@@ -14,11 +14,13 @@ export default async function PaymentInfoSection({ locale }: { locale: string })
         <Tooltip>
           <TooltipTrigger className="w-full">
             <Link href={'/checkout/payment'} className="w-full">
-              <div className="flex justify-start p-2.5 py-0.5 w-full bg-white  gap-2 border border-gray-300 items-center ">
-                <PaymentInfo />
-                <div className="flex flex-col text-start justify-start space-y-1  h-full w-full">
-                  <p className="text-gray-700 text-overflow-ellipsis">
-                    <span className="font-semibold">
+              <div className="flex items-center gap-3 p-3 w-full min-h-[72px] bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="shrink-0 text-gray-400">
+                  <PaymentInfo />
+                </div>
+                <div className="flex flex-col text-start space-y-0.5 min-w-0 w-full">
+                  <p className="text-sm text-gray-700 truncate">
+                    <span className="font-medium text-gray-900">
                       {tr('payment_method')}:{' '}
                     </span>
                     {t(paymentInfo.paymentMethod)}

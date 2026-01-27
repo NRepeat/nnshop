@@ -88,6 +88,17 @@ export class StorefrontClient implements ShopifyClient {
     return data as GraphQLResponse<T>;
   }
 
+  private validLanguages: Set<string> = new Set(['RU', 'UK']);
+
+  private sanitizeLanguage(
+    language: StorefrontLanguageCode,
+  ): StorefrontLanguageCode {
+    if (this.validLanguages.has(language)) {
+      return language;
+    }
+    return 'UK';
+  }
+
   async request<T, V>({
     query,
     variables,
@@ -102,7 +113,10 @@ export class StorefrontClient implements ShopifyClient {
     try {
       let modifiedQuery = query;
       if (language) {
-        modifiedQuery = this.addLanguageContext(query, language);
+        modifiedQuery = this.addLanguageContext(
+          query,
+          this.sanitizeLanguage(language),
+        );
       }
 
       const ver = variables as Record<string, unknown>;

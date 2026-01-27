@@ -2,7 +2,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 
 export const SkeletonLoader = () => {
   return (
-    <div className="container mx-auto px-4 py-8 h-screen">
+    <div className="container mx-auto px-4 py-8 min-h-screen">
       <div className="space-y-4">
         <Skeleton className="h-8 w-1/2" />
         <div className="space-y-2">

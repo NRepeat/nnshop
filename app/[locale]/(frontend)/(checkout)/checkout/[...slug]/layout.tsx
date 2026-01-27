@@ -26,13 +26,13 @@ async function CheckoutLayoutContent({
   }
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <CheckoutHeader slug={slug} locale={locale} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 mb-10 flex-1 container">
         {children}
         {receipt}
       </div>
-    </>
+    </div>
   );
 }
 

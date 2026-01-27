@@ -13,19 +13,21 @@ export default async function ContactInfoSection({ locale }: { locale: string })
         <Tooltip>
           <TooltipTrigger className="w-full">
             <Link href={'/checkout/info'} className="w-full">
-              <div className="flex justify-start p-2.5 py-0.5 w-full bg-white  gap-2 border border-gray-300 items-center ">
-                <ContactInfo />
-                <div className="flex flex-col text-start justify-start space-y-1  w-full">
-                  <p className="text-gray-700 text-overflow-ellipsis">
-                    <span className="font-semibold">{t('name')}: </span>
+              <div className="flex items-center gap-3 p-3 w-full min-h-[72px] bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="shrink-0 text-gray-400">
+                  <ContactInfo />
+                </div>
+                <div className="flex flex-col text-start space-y-0.5 min-w-0 w-full">
+                  <p className="text-sm text-gray-700 truncate">
+                    <span className="font-medium text-gray-900">{t('name')}: </span>
                     {contactInfo.name}
                   </p>
-                  <p className="text-gray-700 text-overflow-ellipsis">
-                    <span className="font-semibold">{t('email')}: </span>
+                  <p className="text-sm text-gray-700 truncate">
+                    <span className="font-medium text-gray-900">{t('email')}: </span>
                     {contactInfo.email}
                   </p>
-                  <p className="text-gray-700 text-overflow-ellipsis">
-                    <span className="font-semibold">{t('phone')}: </span>
+                  <p className="text-sm text-gray-700 truncate">
+                    <span className="font-medium text-gray-900">{t('phone')}: </span>
                     {contactInfo.phone}
                   </p>
                 </div>
