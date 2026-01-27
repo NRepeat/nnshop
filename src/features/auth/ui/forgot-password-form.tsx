@@ -79,7 +79,7 @@ export function ForgotPasswordForm({
   if (isSubmitted) {
     return (
       <div
-        className={cn('flex flex-col gap-6 w-full max-w-3xl', className)}
+        className={cn('flex flex-col gap-6 w-full max-w-3xl ', className)}
         {...props}
       >
       <Card className="overflow-hidden p-0 rounded-none shadow-none border-none">
@@ -148,7 +148,7 @@ export function ForgotPasswordForm({
 
   return (
     <div
-      className={cn('flex flex-col gap-6 w-full max-w-3xl', className)}
+      className={cn('flex flex-col gap-6 w-full max-w-3xl  ', className)}
       {...props}
     >
      <Card className="overflow-hidden p-0 rounded-none shadow-none border-none">

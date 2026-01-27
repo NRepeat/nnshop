@@ -8,7 +8,7 @@ export default async function LocaleLayout({
 }>) {
   return (
     <>
-      <div className=" flex-col items-center justify-center flex w-full my-10">
+      <div className=" flex-col items-center justify-center flex w-full my-10 ">
         <Suspense>
           <Provider> {children}</Provider>
         </Suspense>
