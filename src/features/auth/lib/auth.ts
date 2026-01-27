@@ -5,6 +5,7 @@ import { nextCookies } from 'better-auth/next-js';
 import { anonymous } from 'better-auth/plugins';
 import { anonymousCartBuyerIdentityUpdate } from '../../../entities/cart/api/anonymous-cart-buyer-identity-update';
 import { prisma } from '../../../shared/lib/prisma';
+import { resend } from '../../../shared/lib/resend';
 import { linkAnonymousDataToUser } from './on-link-account';
 
 const betterAuthSecret = process.env.BETTER_AUTH_SECRET;
@@ -36,16 +37,12 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: false,
     sendResetPassword: async ({ user, url }) => {
-      // You can implement custom email sending logic here
-      // For now, we'll use console.log - replace with your email service
-      console.log(`Password reset URL for ${user.email}: ${url}`);
-
-      // Example with a hypothetical email service:
-      // await sendEmail({
-      //   to: user.email,
-      //   subject: 'Reset your password',
-      //   html: `<p>Click <a href="${url}">here</a> to reset your password.</p>`
-      // });
+      await resend.emails.send({
+        from: process.env.RESEND_FROM_EMAIL || 'noreply@example.com',
+        to: user.email,
+        subject: 'Reset your password',
+        html: `<p>Click <a href="${url}">here</a> to reset your password.</p>`,
+      });
     },
   },
   socialProviders: {

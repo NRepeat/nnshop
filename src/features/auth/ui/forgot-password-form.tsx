@@ -26,8 +26,8 @@ import {
   FieldLabel,
 } from '@/shared/ui/field';
 import z from 'zod';
-import { client } from '../lib/client';
 import { toast } from 'sonner';
+import { authClient } from '../lib/auth-client';
 
 const forgotPasswordSchema = z.object({
   email: z.email({
@@ -53,13 +53,12 @@ export function ForgotPasswordForm({
     },
   });
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true);
     try {
-      const result = await client.resetPassword({
-        newPassword: '',
-        // email: data.email,
-        // redirectTo: `${window.location.origin}/reset-password`,
+      const result = await authClient.requestPasswordReset({
+        email: data.email!,
+        redirectTo: '/reset-password',
       });
 
       if (result.error) {
@@ -83,8 +82,8 @@ export function ForgotPasswordForm({
         className={cn('flex flex-col gap-6 w-full max-w-3xl', className)}
         {...props}
       >
-        <Card className="overflow-hidden p-0">
-          <CardContent className="grid p-0 md:grid-cols-2">
+      <Card className="overflow-hidden p-0 rounded-none shadow-none border-none">
+          <CardContent className="grid p-0 md:grid-cols-2 rounded-none border-none">
             <div className="p-6 space-y-6">
               <div className="flex flex-col items-center gap-2 text-center">
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
@@ -124,6 +123,7 @@ export function ForgotPasswordForm({
                 <div className="text-center">
                   <Link
                     href="/auth/sign-in"
+                    scroll={false}
                     className="text-sm underline underline-offset-2 hover:no-underline"
                   >
                     {t('backToSignIn')}
@@ -151,8 +151,8 @@ export function ForgotPasswordForm({
       className={cn('flex flex-col gap-6 w-full max-w-3xl', className)}
       {...props}
     >
-      <Card className="overflow-hidden p-0">
-        <CardContent className="grid p-0 md:grid-cols-2">
+     <Card className="overflow-hidden p-0 rounded-none shadow-none border-none">
+        <CardContent className="grid p-0 md:grid-cols-2 rounded-none shadow-none border-none">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
@@ -196,7 +196,8 @@ export function ForgotPasswordForm({
 
                 <FieldDescription className="text-center">
                   {t('rememberPassword')}{' '}
-                  <Link href="/auth/sign-in" className="underline">
+                  <Link href="/auth/sign-in" className="underline"  
+                  scroll={false}> 
                     {t('signIn')}
                   </Link>
                 </FieldDescription>
@@ -217,7 +218,7 @@ export function ForgotPasswordForm({
       </Card>
       <FieldDescription className="px-6 text-center">
         {tCommon('byClickingContinue')}{' '}
-        <Link href="/terms-of-service" className="underline">
+        <Link href="/terms-of-service" className="underline" >
           {tCommon('termsOfService')}
         </Link>{' '}
         {tCommon('and')}{' '}
