@@ -12,7 +12,7 @@ export default async function DeliveryInfoSection({ locale }: { locale: string }
       {deliveryInfo ? (
         <Tooltip>
           <TooltipTrigger className="w-full">
-            <Link href={'/checkout/info'} className="w-full">
+            <Link href={'/checkout/delivery'} className="w-full">
               <div className="flex justify-start p-2.5 py-0.5 w-full bg-white  gap-2 border border-gray-300 items-center ">
                 <DeliveryInfo />
                 {deliveryInfo.novaPoshtaDepartment ? (

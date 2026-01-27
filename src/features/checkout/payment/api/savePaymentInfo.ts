@@ -12,15 +12,9 @@ export async function savePaymentInfo(
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
-      const user = await prisma.user.findFirst({
-        where: {
-          orders: {
-            some: {
-              id: orderId,
-            },
-          },
-        },
-      });
+      const order = await prisma.order.findUnique({ where: { id: orderId } });
+      if (!order) throw new Error('Order not found');
+      const user = await prisma.user.findUnique({ where: { id: order.userId } });
       if (!user) {
         throw new Error('User not found');
       }

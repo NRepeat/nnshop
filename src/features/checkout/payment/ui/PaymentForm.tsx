@@ -75,7 +75,14 @@ export default function PaymentForm({
         }
 
         if (data.paymentMethod === 'pay-now') {
-          return;
+          const completedOrder = await completeOrder(
+            draftOrder.shopifyDraftOrderId,
+          );
+          await savePaymentInfo(data, completedOrder.id);
+          await resetCartSession();
+          return router.push(
+            `/checkout/success/${completedOrder?.shopifyDraftOrderId?.split('/').pop()}`,
+          );
         }
       } else {
         // toast.error(result.message);

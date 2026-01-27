@@ -4,11 +4,19 @@ import { prisma } from '../../../shared/lib/prisma';
 import { storefrontClient } from '../../../shared/lib/shopify/client';
 
 import { Session, User } from 'better-auth';
+import {
+  LinkCartBuyerIdentityUpdateMutation,
+  LinkCartBuyerIdentityUpdateMutationVariables,
+  LinkCartLinesAddMutation,
+  LinkCartLinesAddMutationVariables,
+  LinkGetCartQuery,
+  LinkGetCartQueryVariables,
+} from '@shared/lib/shopify/types/storefront.generated';
 
 export type UserWithAnonymous = User & { isAnonymous: boolean };
 
-const GET_CART_QUERY = `
-  query getCart($cartId: ID!) {
+const GET_CART_QUERY = `#graphql
+  query LinkGetCart($cartId: ID!) {
     cart(id: $cartId) {
       lines(first: 100) {
         nodes {
@@ -19,11 +27,12 @@ const GET_CART_QUERY = `
         }
       }
     }
+    
   }
 `;
 
-const CART_LINES_ADD_MUTATION = `
-  mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+const CART_LINES_ADD_MUTATION = `#graphql
+  mutation LinkCartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
     cartLinesAdd(cartId: $cartId, lines: $lines) {
       cart { id }
       userErrors { field message }
@@ -31,11 +40,14 @@ const CART_LINES_ADD_MUTATION = `
   }
 `;
 
-const CART_BUYER_IDENTITY_UPDATE = `
-  mutation cartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {
+const CART_BUYER_IDENTITY_UPDATE = `#graphql
+  mutation LinkCartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {
     cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
       cart { id }
       userErrors { field message }
+      userErrors{
+        message
+      }
     }
   }
 `;
@@ -43,20 +55,21 @@ const CART_BUYER_IDENTITY_UPDATE = `
 // --- Helper Functions ---
 
 async function updateShopifyBuyerIdentity(cartId: string, email: string) {
-  const response = await storefrontClient.request<any>({
+  const response = await storefrontClient.request<
+    LinkCartBuyerIdentityUpdateMutation,
+    LinkCartBuyerIdentityUpdateMutationVariables
+  >({
     query: CART_BUYER_IDENTITY_UPDATE,
     variables: { cartId, buyerIdentity: { email } },
   });
-  console.log(
-    '🚀 ~ updateShopifyBuyerIdentity ~ response:',
-    JSON.stringify(response, null, 2),
-  );
-  if (response.userErrors?.length > 0) {
-    throw new Error(response.userErrors[0].message);
+  if (
+    response.cartBuyerIdentityUpdate &&
+    response.cartBuyerIdentityUpdate?.userErrors?.length > 0
+  ) {
+    throw new Error(response.cartBuyerIdentityUpdate.userErrors[0].message);
   }
-  return response.cartBuyerIdentityUpdate.cart.id;
+  return response.cartBuyerIdentityUpdate?.cart?.id;
 }
-
 // --- Main Function ---
 
 export const anonymousCartBuyerIdentityUpdate = async ({
@@ -74,7 +87,6 @@ export const anonymousCartBuyerIdentityUpdate = async ({
 }) => {
   try {
     await prisma.$transaction(async (tx) => {
-      // 1. Ищем обе корзины в нашей БД
       const anonCartRecord = await tx.cart.findFirst({
         where: { userId: anonymousUser.user.id, completed: false },
       });
@@ -91,57 +103,52 @@ export const anonymousCartBuyerIdentityUpdate = async ({
         // --- СЦЕНАРИЙ СЛИЯНИЯ (Merge) ---
 
         // 2. Получаем товары из анонимной корзины в Shopify
-        const { cart: anonShopifyCart } = await storefrontClient.request<any>({
+        const { cart: anonShopifyCart } = await storefrontClient.request<
+          LinkGetCartQuery,
+          LinkGetCartQueryVariables
+        >({
           query: GET_CART_QUERY,
 
           variables: { cartId: anonCartRecord.cartToken.split('?')[0] },
         });
-        console.log(
-          '🚀 ~ anonymousCartBuyerIdentityUpdate ~ anonShopifyCart:',
-          JSON.stringify(anonShopifyCart, null, 2),
-        );
 
-        if (anonShopifyCart?.lines?.nodes?.length > 0) {
-          // Формируем массив товаров для добавления
+        if (
+          anonShopifyCart?.lines?.nodes &&
+          anonShopifyCart?.lines?.nodes?.length > 0
+        ) {
           const linesToAdd = anonShopifyCart.lines.nodes.map((node: any) => ({
             merchandiseId: node.merchandise.id,
             quantity: node.quantity,
           }));
-          console.log(
-            '🚀 ~ anonymousCartBuyerIdentityUpdate ~ linesToAdd:',
-            linesToAdd,
-          );
 
           // 3. Добавляем товары в уже существующую корзину пользователя
-          const addLinesResponse = await storefrontClient.request<any>({
+          const addLinesResponse = await storefrontClient.request<
+            LinkCartLinesAddMutation,
+            LinkCartLinesAddMutationVariables
+          >({
             query: CART_LINES_ADD_MUTATION,
             variables: {
               cartId: userCartRecord.cartToken,
               lines: linesToAdd,
             },
           });
-          console.log(
-            '🚀 ~ anonymousCartBuyerIdentityUpdate ~ addLinesResponse:',
-            JSON.stringify(addLinesResponse, null, 2),
-          );
 
-          if (addLinesResponse.userErrors?.length > 0) {
+          if (
+            addLinesResponse.cartLinesAdd &&
+            addLinesResponse.cartLinesAdd?.userErrors?.length > 0
+          ) {
             throw new Error('Failed to merge cart lines');
           }
-          finalCartToken = addLinesResponse.cartLinesAdd.cart.id;
+          if (addLinesResponse.cartLinesAdd?.cart?.id) {
+            finalCartToken = addLinesResponse.cartLinesAdd?.cart?.id;
+          }
         }
 
-        finalCartToken = await updateShopifyBuyerIdentity(
-          finalCartToken,
-          newUser.user.email,
-        );
-        console.log(
-          '🚀 ~ anonymousCartBuyerIdentityUpdate ~ finalCartToken:',
-          finalCartToken,
-          userCartRecord,
-        );
-
-        // 5. Удаляем анонимную корзину из БД, так как товары перенесены
+        const updateShopifyBuyerIdentityCartToken =
+          await updateShopifyBuyerIdentity(finalCartToken, newUser.user.email);
+        if (updateShopifyBuyerIdentityCartToken) {
+          finalCartToken = updateShopifyBuyerIdentityCartToken;
+        }
 
         await tx.cart.update({
           where: { id: userCartRecord.id },
@@ -149,13 +156,14 @@ export const anonymousCartBuyerIdentityUpdate = async ({
         });
         await tx.cart.delete({ where: { id: anonCartRecord.id } });
       } else {
-        // --- СЦЕНАРИЙ ПЕРЕПРИВЯЗКИ (Simple Update) ---
-
-        // 1. Просто обновляем email в анонимной корзине в Shopify
-        finalCartToken = await updateShopifyBuyerIdentity(
-          anonCartRecord.cartToken.split('?')[0],
-          newUser.user.email,
-        );
+        const updateShopifyBuyerIdentityCartToken =
+          await updateShopifyBuyerIdentity(
+            anonCartRecord.cartToken.split('?')[0],
+            newUser.user.email,
+          );
+        if (updateShopifyBuyerIdentityCartToken) {
+          finalCartToken = updateShopifyBuyerIdentityCartToken;
+        }
 
         // 2. Меняем владельца корзины в нашей БД
         await tx.cart.update({

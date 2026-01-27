@@ -11,7 +11,7 @@ const saveContactInfo = async (data: z.infer<typeof contactInfoSchema>) => {
     if (!session) {
       throw new Error('Session not found');
     }
-    const tranaction = await prisma.$transaction(async (tx) => {
+    const transaction = await prisma.$transaction(async (tx) => {
       const user = await tx.user.findUnique({
         where: {
           id: session.user.id,
@@ -47,7 +47,7 @@ const saveContactInfo = async (data: z.infer<typeof contactInfoSchema>) => {
         },
       });
     });
-    return tranaction;
+    return transaction;
   } catch (e) {
     throw new Error(String(e));
   }

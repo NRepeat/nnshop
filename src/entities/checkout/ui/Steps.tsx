@@ -40,9 +40,11 @@ export const Steps = async ({
   locale: string;
 }) => {
   const t = await getTranslations({ locale, namespace: 'CheckoutSteps' });
-  const disablePaymentButton = (slug: string) => {
-    const isPaymentStep = slug === 'payment';
-    return isPaymentStep;
+  const stepOrder = ['info', 'delivery', 'payment', 'success'];
+  const currentIndex = stepOrder.indexOf(slug);
+  const isStepDisabled = (step: string) => {
+    const stepIndex = stepOrder.indexOf(step);
+    return stepIndex > currentIndex;
   };
 
   return (
@@ -54,7 +56,7 @@ export const Steps = async ({
             title={t(steps[step].slug)}
             icon={steps[step].icon}
             isActive={slug === steps[step].slug}
-            disabled={disablePaymentButton(step) || slug === 'success'}
+            disabled={isStepDisabled(step) || slug === 'success'}
           />
           <div className="w-full flex items-center justify-center">
             {index < Object.keys(steps).length - 1 && (

@@ -2,7 +2,7 @@
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 
-const DRAFT_ORDER_COMPLITE_MUTATION = `
+const DRAFT_ORDER_COMPLETE_MUTATION = `
   mutation draftOrderComplete($id: ID!) {
     draftOrderComplete(id: $id) {
       draftOrder {
@@ -35,7 +35,7 @@ export const completeOrder = async (orderId: string) => {
       },
       { id: string }
     >({
-      query: DRAFT_ORDER_COMPLITE_MUTATION,
+      query: DRAFT_ORDER_COMPLETE_MUTATION,
       variables: { id: orderId },
     });
 
@@ -43,12 +43,12 @@ export const completeOrder = async (orderId: string) => {
       throw new Error(orderResponse.draftOrderComplete.userErrors[0].message);
     }
 
-    const complitedOrderId =
+    const completedOrderId =
       orderResponse.draftOrderComplete.draftOrder.order.id;
     return prisma.order.update({
       where: { shopifyDraftOrderId: orderId },
       data: {
-        shopifyOrderId: complitedOrderId,
+        shopifyOrderId: completedOrderId,
         draft: false,
       },
     });

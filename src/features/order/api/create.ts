@@ -74,6 +74,7 @@ const DRAFT_ORDER_UPDATE_MUTATION = `
 
 export async function createDraftOrder(
   completeCheckoutData: Omit<CheckoutData, 'paymentInfo'> | null,
+  locale: string = 'uk',
 ): Promise<{
   success: boolean;
   order?: DrafOrder;
@@ -97,7 +98,7 @@ export async function createDraftOrder(
 
     const result = (await getCart({
       userId: session.user.id,
-      locale: 'uk',
+      locale,
     })) as GetCartQuery | null;
     if (!result) {
       console.error('CART NOT FOUND');

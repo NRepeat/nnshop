@@ -4,10 +4,10 @@ import { getCart } from '@entities/cart/api/get';
 import PaymentForm from './PaymentForm';
 import { getPaymentInfo } from '../api/getPaymentInfo';
 import { headers } from 'next/headers';
-import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
+import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
 
 export default async function Payment({
   draftOrderId,
@@ -29,21 +29,11 @@ export default async function Payment({
 
   let cartAmount = 0;
   let currency = 'UAH';
-  let completeCheckoutData: Omit<CheckoutData, 'paymentInfo'> | null = null;
   let draftOrder = null;
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
-      throw new Error('Session not found');
-    }
-    const sessionCart = await prisma.cart.findFirst({
-      where: {
-        userId: session.user.id,
-        completed: false,
-      },
-    });
-    if (!sessionCart) {
-      throw new Error('Cart not found');
+      redirect('/auth/sign-in');
     }
 
     const cartResult = (await getCart({
@@ -54,6 +44,7 @@ export default async function Payment({
       cartAmount = parseFloat(cartResult.cart.cost.totalAmount.amount);
       currency = cartResult.cart.cost.totalAmount.currencyCode;
     }
+
     draftOrder = await prisma.order.findUnique({
       where: {
         shopifyDraftOrderId: 'gid://shopify/DraftOrder/' + draftOrderId,
@@ -62,13 +53,12 @@ export default async function Payment({
     if (!draftOrder) {
       throw new Error('Draft order not found');
     }
-    console.log('draftOrder', draftOrder);
     if (draftOrder.shopifyOrderId) {
       throw new Error('Order already exists');
     }
   } catch (error) {
     console.error('Error fetching cart data:', error);
-    redirect(`/`);
+    redirect('/');
   }
 
   return (
@@ -87,7 +77,7 @@ export default async function Payment({
         currency={currency}
         liqpayPublicKey={liqpayPublicKey}
         liqpayPrivateKey={liqpayPrivateKey}
-        completeCheckoutData={completeCheckoutData}
+        completeCheckoutData={await getCompleteCheckoutData()}
       />
     </div>
   );

@@ -32,7 +32,6 @@ export default function PaymentMethodButton({
       onClick={() => {
         setValue('paymentMethod', method.id);
         onSelectPaymentMethod(method.id);
-        setValue('paymentProvider', 'liqpay');
       }}
       className={clsx(
         'group relative p-6 rounded-none border border-transparent h-fit w-full',
