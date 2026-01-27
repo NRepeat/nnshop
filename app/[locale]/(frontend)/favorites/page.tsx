@@ -23,7 +23,7 @@ export default async function FavoritesPage({
   params: Promise<{ locale: string }>;
 }) {
   return (
-    <div className="h-svh">
+    <div className="">
       <Suspense fallback={<CollectionGridSkeleton />}>
         <FavoritesPageSession params={params} />
       </Suspense>
@@ -59,7 +59,7 @@ const FavoritesPageSession = async ({
 
   if (favoriteProducts.length === 0) {
     return (
-      <div className="container mx-auto py-10 mt-2 md:mt-10 h-svh">
+      <div className="container mx-auto py-10 mt-2 md:mt-10 min-h-[60vh]">
         <Breadcrumbs
           items={[
             { label: tHeader('home'), href: '/' },

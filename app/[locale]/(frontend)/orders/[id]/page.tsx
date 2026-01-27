@@ -12,7 +12,7 @@ export default async function OrderPage({
 }) {
   return (
     <Suspense>
-      <OrderPageSession params={params} />;
+      <OrderPageSession params={params} />
     </Suspense>
   );
 }
@@ -28,7 +28,6 @@ const OrderPageSession = async ({
   const tOrderPage = await getTranslations({ locale, namespace: 'OrderPage' });
 
   const orderId = `gid://shopify/Order/${id}`;
-
   const order = await getOrder(orderId);
 
   if (!order) {
@@ -46,7 +45,7 @@ const OrderPageSession = async ({
   ];
 
   return (
-    <div className="container mx-auto py-10 mt-2 md:mt-10">
+    <div className="container mx-auto py-10 mt-2 md:mt-10 h-screen">
       <Breadcrumbs items={breadcrumbItems} />
       <OrderDetails order={order} locale={locale} />
     </div>

@@ -41,7 +41,7 @@ const Content = async ({
     namespace: 'Header.cart.drawer',
   });
   return (
-    <SheetContent className="w-full sm:min-w-[500px] font-light ">
+    <SheetContent className="w-full sm:min-w-[500px] font-light " >
       <div className="h-full overflow-hidden flex flex-col">
         <SheetHeader className="pt-6 pb-2 px-4">
           <SheetTitle className="font-sans">{t('title')}</SheetTitle>

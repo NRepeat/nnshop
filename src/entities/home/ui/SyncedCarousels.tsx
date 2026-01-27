@@ -96,7 +96,10 @@ export const SyncedCarousels = ({
                 preview &&
                 preview.asset && (
                   <CarouselItem key={preview._key}>
-                    <Link href={`/collection/${preview.handle?.current}`}>
+                    <Link
+                      href={`/collection/${preview.handle?.current}`}
+                      scroll
+                    >
                       <Image
                         src={urlFor(preview).url()}
                         alt={preview.alt || 'Preview image'}
@@ -152,6 +155,7 @@ export const SyncedCarousels = ({
                             <Link
                               href={`/product/${product.node.handle}`}
                               className="h-full"
+                              scroll
                             >
                               <div className="flex flex-col gap-3 group relative overflow-hidden h-full">
                                 <div className="flex justify-start w-full">

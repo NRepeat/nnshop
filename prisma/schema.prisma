@@ -20,6 +20,7 @@ model User {
   orders              Order[]
   isAnonymous         Boolean?
   cart                Cart[]
+  shopifyToken        String?              @default("")
   contactInformation  ContactInformation?
   deliveryInformation DeliveryInformation?
   paymentInformation  PaymentInformation?
@@ -28,8 +29,6 @@ model User {
   @@unique([email])
   @@map("user")
 }
-
-// === MODELS WITH CASCADING DELETE ===
 
 model ContactInformation {
   id          String @id @default(cuid())
@@ -68,7 +67,6 @@ model PaymentInformation {
   orderId         String
   description     String?
 
-  // ADDED onDelete: Cascade
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @unique
   createdAt DateTime @default(now())
@@ -118,7 +116,7 @@ model Session {
   ipAddress String?
   userAgent String?
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Already set
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@index([userId])
@@ -130,7 +128,7 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade) // Already set
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?

@@ -150,6 +150,14 @@ export type GetCollectionsQueryVariables = StorefrontTypes.Exact<{ [key: string]
 
 export type GetCollectionsQuery = { collections: { edges: Array<{ node: Pick<StorefrontTypes.Collection, 'handle'> }> } };
 
+export type CustomerAccessTokenCreateMutationVariables = StorefrontTypes.Exact<{
+  email: StorefrontTypes.Scalars['String']['input'];
+  password: StorefrontTypes.Scalars['String']['input'];
+}>;
+
+
+export type CustomerAccessTokenCreateMutation = { customerAccessTokenCreate?: StorefrontTypes.Maybe<{ customerAccessToken?: StorefrontTypes.Maybe<Pick<StorefrontTypes.CustomerAccessToken, 'accessToken'>>, customerUserErrors: Array<Pick<StorefrontTypes.CustomerUserError, 'message'>> }> };
+
 export type GetPRoductMetaobjectQueryVariables = StorefrontTypes.Exact<{
   id: StorefrontTypes.Scalars['ID']['input'];
 }>;
@@ -277,6 +285,7 @@ interface GeneratedMutationTypes {
   "#graphql\n  mutation LinkCartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {\n    cartLinesAdd(cartId: $cartId, lines: $lines) {\n      cart { id }\n      userErrors { field message }\n    }\n  }\n": {return: LinkCartLinesAddMutation, variables: LinkCartLinesAddMutationVariables},
   "#graphql\n  mutation LinkCartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {\n    cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {\n      cart { id }\n      userErrors { field message }\n      userErrors{\n        message\n      }\n    }\n  }\n": {return: LinkCartBuyerIdentityUpdateMutation, variables: LinkCartBuyerIdentityUpdateMutationVariables},
   "\n  #graphql\n  mutation CartDeliveryAddressesAdd($id: ID!, $addresses: [CartSelectableAddressInput!]!) {\n    cartDeliveryAddressesAdd(cartId: $id, addresses: $addresses) {\n      userErrors {\n        message\n        code\n        field\n      }\n      warnings {\n        message\n        code\n        target\n      }\n      cart {\n        id\n        delivery {\n          addresses {\n            id\n            selected\n            oneTimeUse\n            address {\n              ... on CartDeliveryAddress {\n                firstName\n                lastName\n                company\n                address1\n                address2\n                city\n                provinceCode\n                zip\n                countryCode\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n": {return: CartDeliveryAddressesAddMutation, variables: CartDeliveryAddressesAddMutationVariables},
+  "#graphql\nmutation customerAccessTokenCreate ($email:String!,$password:String!){\n    customerAccessTokenCreate(input: {email: $email, password: $password}) {\n      customerAccessToken {\n        accessToken\n      }\n      customerUserErrors {\n        message\n      }\n    }\n  }\n": {return: CustomerAccessTokenCreateMutation, variables: CustomerAccessTokenCreateMutationVariables},
 }
 declare module '@shopify/storefront-api-client' {
   type InputMaybe<T> = StorefrontTypes.InputMaybe<T>;

@@ -8,7 +8,13 @@ import { getDeliveryInfo } from '@features/checkout/delivery/api/getDeliveryInfo
 type Props = {
   params: Promise<{ slug: string[]; locale: string }>;
 };
+export async function generateStaticParams() {
+  const pages = ['delivery', 'payment', 'info'];
 
+  return pages.map((page) => ({
+    slug: [page],
+  }));
+}
 export default async function Page(props: Props) {
   const params = await props.params;
   const { slug, locale } = params;

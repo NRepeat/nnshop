@@ -4,68 +4,7 @@ import { Order } from '../model/types';
 const GET_ORDER_BY_ID_QUERY = `
   query orderByIdentifier($id: ID!) {
     order(id: $id) {
-      id
-      name
-      processedAt
-      displayFulfillmentStatus
-      email
-      shippingAddress {
-        firstName
-        lastName
-        address1
-        city
-        zip
-        country
-        phone
-      }
-      billingAddress {
-        firstName
-        lastName
-        address1
-        city
-        zip
-        country
-        phone
-      }
-      lineItems(first: 10) {
-        edges {
-          node {
-            title
-            quantity
-            variant {
-              price
-              title
-            }
-            image {
-              url
-            }
-          }
-        }
-      }
-      subtotalPriceSet {
-        presentmentMoney {
-          amount
-          currencyCode
-        }
-      }
-      totalShippingPriceSet {
-        presentmentMoney {
-          amount
-          currencyCode
-        }
-      }
-      totalTaxSet {
-        presentmentMoney {
-          amount
-          currencyCode
-        }
-      }
-      totalPriceSet {
-        presentmentMoney {
-          amount
-          currencyCode
-        }
-      }
+    id name processedAt displayFulfillmentStatus   lineItems(first: 10) { edges { node { title quantity variant { price title } image { url } } } } subtotalPriceSet { presentmentMoney { amount currencyCode } } totalPriceSet { presentmentMoney { amount currencyCode } }
     }
   }
 `;

@@ -70,7 +70,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
   );
 
   return (
-    <Sheet>
+    <Sheet >
       <SheetTrigger
         className="cursor-pointer  flex justify-center items-center hover:underline hover:text-accent-foreground  rounded-none relative size-9 "
         asChild

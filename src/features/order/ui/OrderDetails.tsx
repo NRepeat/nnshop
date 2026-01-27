@@ -35,15 +35,15 @@ export const OrderDetails = async ({
             <CardHeader>
               <CardTitle>{t('contactInfo')}</CardTitle>
             </CardHeader>
-            <CardContent>
+            {/* <CardContent>
               <p>
                 {order.shippingAddress.firstName}{' '}
                 {order.shippingAddress.lastName}
               </p>
               <p>{order.email}</p>
-            </CardContent>
+            </CardContent> */}
           </Card>
-          <Card className="shadow-none">
+          {/* <Card className="shadow-none">
             <CardHeader>
               <CardTitle>{t('shippingAddress')}</CardTitle>
             </CardHeader>
@@ -59,24 +59,24 @@ export const OrderDetails = async ({
               <p>{order.shippingAddress.country}</p>
               <p>{order.shippingAddress.phone}</p>
             </CardContent>
-          </Card>
+          </Card> */}
           <Card className="shadow-none">
             <CardHeader>
               <CardTitle>{t('payment')}</CardTitle>
             </CardHeader>
-            <CardContent>
+            {/* <CardContent>
               <p>
                 {order.totalPriceSet.presentmentMoney.amount}{' '}
                 {order.totalPriceSet.presentmentMoney.currencyCode}
               </p>
               <p>{new Date(order.processedAt).toLocaleDateString()}</p>
-            </CardContent>
+            </CardContent> */}
           </Card>
           <Card className="shadow-none">
             <CardHeader>
               <CardTitle>{t('billingAddress')}</CardTitle>
             </CardHeader>
-            <CardContent>
+            {/* <CardContent>
               {order.billingAddress ? (
                 <>
                   <p>
@@ -93,7 +93,7 @@ export const OrderDetails = async ({
               ) : (
                 <p>{t('sameAsShipping')}</p>
               )}
-            </CardContent>
+            </CardContent> */}
           </Card>
         </div>
         <div className="grid gap-4">
@@ -132,7 +132,7 @@ export const OrderDetails = async ({
                 ))}
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col gap-2">
+            {/* <CardFooter className="flex flex-col gap-2">
               <div className="flex justify-between w-full">
                 <span>{t('subtotal')}</span>
                 <span>
@@ -161,7 +161,7 @@ export const OrderDetails = async ({
                   {order.totalTaxSet.presentmentMoney.currencyCode} {t('taxes')}
                 </span>
               </div>
-            </CardFooter>
+            </CardFooter> */}
           </Card>
         </div>
       </CardContent>

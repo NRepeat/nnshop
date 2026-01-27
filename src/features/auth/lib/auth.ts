@@ -7,6 +7,7 @@ import { anonymousCartBuyerIdentityUpdate } from '../../../entities/cart/api/ano
 import { prisma } from '../../../shared/lib/prisma';
 import { resend } from '../../../shared/lib/resend';
 import { linkAnonymousDataToUser } from './on-link-account';
+import { createShopifyCustomer } from '@entities/customer/api/create-customer';
 
 const betterAuthSecret = process.env.BETTER_AUTH_SECRET;
 const betterAuthUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -25,14 +26,14 @@ export const auth = betterAuth({
     provider: 'postgresql',
   }),
   session: {
-    expiresIn: 60 * 60 * 24 * 7, 
-    updateAge: 60 * 60 * 24, 
+    expiresIn: 60 * 60 * 24 * 7,
+    updateAge: 60 * 60 * 24,
     cookieCache: {
       enabled: true,
       maxAge: 5 * 60,
     },
   },
-  
+
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
@@ -43,6 +44,25 @@ export const auth = betterAuth({
         subject: 'Reset your password',
         html: `<p>Click <a href="${url}">here</a> to reset your password.</p>`,
       });
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          console.log(
+            `User ${user.email} created, syncing with Shopify...`,
+            user,
+          );
+          // if (!user.isAnonymous) {
+          //   await createShopifyCustomer({
+          //     email: user.email,
+          //     password: user.email,
+          //     firstName: user.name,
+          //   });
+          // }
+        },
+      },
     },
   },
   socialProviders: {
