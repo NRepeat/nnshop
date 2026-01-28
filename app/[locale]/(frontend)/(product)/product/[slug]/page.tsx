@@ -12,10 +12,33 @@ import { notFound } from 'next/navigation';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { Heart } from 'lucide-react';
 import { Button } from '@shared/ui/button';
+import { Metadata } from 'next';
+import { generateProductMetadata } from '@shared/lib/seo/generateMetadata';
+import { generateProductJsonLd } from '@shared/lib/seo/jsonld';
+import { JsonLd } from '@shared/ui/JsonLd';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug, locale } = await params;
+
+  try {
+    const { originProduct: product } = await getProduct({
+      handle: slug,
+      locale,
+    });
+
+    if (!product) {
+      return { title: 'Product Not Found' };
+    }
+
+    return generateProductMetadata(product, locale, slug);
+  } catch {
+    return { title: 'Product Not Found' };
+  }
+}
 
 export async function generateStaticParams() {
   const params = [];
@@ -48,6 +71,7 @@ export default async function ProductPage({ params }: Props) {
   }
   return (
     <>
+      <JsonLd data={generateProductJsonLd(product, locale)} />
       <ProductSessionView handle={handle} locale={locale}>
         <Suspense
           fallback={

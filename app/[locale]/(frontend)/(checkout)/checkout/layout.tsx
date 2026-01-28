@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { CheckoutStepper } from '@entities/checkout/ui/CheckoutStepper';
 import { getCompletedSteps } from '@features/checkout/api/getCompletedSteps';
 import { Skeleton } from '@shared/ui/skeleton';
+import { connection } from 'next/server';
 
 function CheckoutLayoutSkeleton() {
   return (
@@ -59,6 +60,7 @@ async function CheckoutLayoutContent({
   children: React.ReactNode;
   receipt: React.ReactNode;
 }) {
+
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {

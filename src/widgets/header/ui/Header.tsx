@@ -5,13 +5,12 @@ import Navigation, {
 } from '@features/header/navigation/ui/Navigation';
 import { HeaderContent } from '@features/header/ui/HeaderContent';
 import { HeaderContentSkeleton } from '@features/header/ui/HeaderContentSkeleton';
+import { LogoLink } from '@features/header/ui/LogoLink';
 import { sanityFetch } from '@shared/sanity/lib/client';
 import { urlFor } from '@shared/sanity/lib/image';
 import { HEADER_QUERY } from '@shared/sanity/lib/query';
 import { HEADER_QUERYResult } from '@shared/sanity/types';
 import { setRequestLocale } from 'next-intl/server';
-import Image from 'next/image';
-import { Link } from '@shared/i18n/navigation';
 import { Suspense } from 'react';
 
 export type HeaderBarProps = Extract<
@@ -53,19 +52,12 @@ export const Header = async ({
               locale={locale}
               {...headerData?.header}
               childern={
-                <Link href="/" className="flex items-center justify-center">
-                  <div className="flex justify-center w-full items-center">
-                    {headerData?.header.icon?.asset && (
-                      <Image
-                        src={urlFor(headerData?.header.icon?.asset).url()}
-                        width={304}
-                        height={24}
-                        alt="MioMio"
-                        className="w-full h-full max-w-[180px]"
-                      />
-                    )}
-                  </div>
-                </Link>
+                headerData?.header.icon?.asset && (
+                  <LogoLink
+                    iconUrl={urlFor(headerData?.header.icon?.asset).url()}
+                    alt="MioMio"
+                  />
+                )
               }
             ></HeaderContent>
           )}

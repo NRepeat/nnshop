@@ -67,12 +67,10 @@ const GenderSession = async ({
   label: string;
   slug: string;
 }) => {
-  const gender = await cookieFenderGet();
+  const gender = (await cookieFenderGet()) || 'woman';
   return (
-    <>
-      <NavButton gender={gender} slug={slug}>
-        {label as any as string}
-      </NavButton>
-    </>
+    <NavButton gender={gender} slug={slug}>
+      {label}
+    </NavButton>
   );
 };

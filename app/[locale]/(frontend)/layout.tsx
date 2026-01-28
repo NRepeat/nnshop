@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Jost } from 'next/font/google';
 import '../../globals.css';
 import { Providers } from '@/app/providers';
@@ -11,6 +11,8 @@ import { SanityLive } from '@shared/sanity/lib/live';
 import { VisualEditing } from 'next-sanity/visual-editing';
 import { draftMode } from 'next/headers';
 import { Suspense } from 'react';
+import { JsonLd } from '@shared/ui/JsonLd';
+import { generateOrganizationJsonLd } from '@shared/lib/seo/jsonld';
 
 const jostSans = Jost({
   variable: '--font-jost-sans',
@@ -26,8 +28,27 @@ const jostSans = Jost({
   ],
 });
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
+
 export const metadata: Metadata = {
-  title: 'Mio Mio',
+  title: {
+    default: 'Mio Mio',
+    template: '%s | Mio Mio',
+  },
+  description:
+    'Mio Mio - інтернет-магазин взуття та аксесуарів. Широкий вибір стильного взуття для чоловіків та жінок.',
+  metadataBase: new URL(BASE_URL),
+  openGraph: {
+    type: 'website',
+    siteName: 'Mio Mio',
+    locale: 'uk_UA',
+  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#ffffff',
 };
 export async function generateStaticParams() {
   const params = [];
@@ -50,6 +71,13 @@ export default async function RootLayout(props: RootProps) {
   setRequestLocale(locale);
   return (
     <html lang={locale} suppressHydrationWarning>
+      <head>
+        <JsonLd data={generateOrganizationJsonLd()} />
+        <meta
+          name="google-site-verification"
+          content="qD1Qgm9RZihEYdNNxa5cH_88cZEGi-B8-mQcGwJLrAo"
+        />
+      </head>
       <body className={`${jostSans.variable} antialiased`}>
         <Providers>
           <Header locale={locale} />
@@ -73,5 +101,5 @@ export default async function RootLayout(props: RootProps) {
         </Suspense>
       </body>
     </html>
-  )
+  );
 }
