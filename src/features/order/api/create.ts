@@ -89,9 +89,9 @@ export async function createDraftOrder(
         errors: ['Session not found'],
       };
     }
-    const cartId = await prisma.cart.findFirst({
-      where: { userId: session.user.id, completed: false },
-    });
+    // const cartId = await prisma.cart.findFirst({
+    //   where: { userId: session.user.id, completed: false },
+    // });
     const existDraftOrder = await prisma.order.findFirst({
       where: { userId: session.user.id, draft: true },
     });

@@ -39,6 +39,7 @@ interface PaginatedHandlesResponse {
  */
 export const getAllProductHandles = async (
   locale: string,
+  limit?: number, // Optional limit for build time
 ): Promise<string[]> => {
   let allHandles: string[] = [];
   let hasNextPage = true;
@@ -48,7 +49,12 @@ export const getAllProductHandles = async (
     new Promise((resolve) => setTimeout(resolve, ms));
   try {
     while (hasNextPage) {
-      // await sleep(100); // To avoid hitting rate limits
+      // Stop if we've reached the limit
+      if (limit && allHandles.length >= limit) {
+        break;
+      }
+
+      await sleep(200); // Increased delay to avoid hitting rate limits
       const response: PaginatedHandlesResponse = await storefrontClient.request<
         PaginatedHandlesResponse,
         { first: number; after: string | null }
@@ -67,8 +73,8 @@ export const getAllProductHandles = async (
         const handles = productsData.edges.map((edge) => edge.node.handle);
         allHandles.push(...handles);
 
-        // hasNextPage = productsData.pageInfo.hasNextPage;
-        hasNextPage =false
+        hasNextPage = productsData.pageInfo.hasNextPage;
+        // hasNextPage = true;
         cursor = productsData.pageInfo.endCursor;
       } else {
         hasNextPage = false;
@@ -78,5 +84,6 @@ export const getAllProductHandles = async (
     console.error('Failed to fetch all Shopify product handles:', error);
   }
 
-  return allHandles;
+  // Remove duplicates
+  return [...new Set(allHandles)];
 };

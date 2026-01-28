@@ -138,7 +138,7 @@ export async function OrdersPageSession({ params, searchParams }: Props) {
   ];
 
   return (
-    <div className="container mx-auto py-10 h-screen mt-2 md:mt-10">
+    <div className="container mx-auto py-10 min-h-[60vh] my-2 mb-10 md:mt-10">
       <Breadcrumbs items={breadcrumbItems} />
       <h1 className="text-2xl font-bold my-4">{t('title')}</h1>
       <OrderList orders={sortedOrders as any} />
@@ -153,6 +153,3 @@ export default async function OrdersPage({ params, searchParams }: Props) {
   );
 }
 
-// export default async function Page() {
-//   return <></>
-// }

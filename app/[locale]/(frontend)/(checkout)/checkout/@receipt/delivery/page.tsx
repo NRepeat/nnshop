@@ -3,7 +3,12 @@ import { getTranslations } from 'next-intl/server';
 import { User, Truck, CreditCard } from 'lucide-react';
 import { Link } from '@shared/i18n/navigation';
 import getContactInfo from '@features/checkout/contact-info/api/get-contact-info';
-import { OrderSummary, OrderSummarySkeleton } from '@features/checkout/receipt/ui/OrderSummary';
+import {
+  OrderSummary,
+  OrderSummarySkeleton,
+} from '@features/checkout/receipt/ui/OrderSummary';
+import { headers } from 'next/headers';
+import { auth } from '@features/auth/lib/auth';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -22,13 +27,7 @@ function ReceiptSkeleton() {
   );
 }
 
-function EmptyCard({
-  icon,
-  label,
-}: {
-  icon: React.ReactNode;
-  label: string;
-}) {
+function EmptyCard({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
     <div className="flex items-center gap-3 rounded-none border border-dashed border-gray-200 bg-gray-50/50 p-4">
       <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-400">
@@ -46,13 +45,19 @@ function EmptyCard({
 }
 
 async function ContactCard({ locale }: { locale: string }) {
+  const session = await auth.api.getSession({ headers: await headers() });
   const [contactInfo, t] = await Promise.all([
-    getContactInfo(),
+    getContactInfo(session),
     getTranslations({ locale, namespace: 'ReceiptPage' }),
   ]);
 
   if (!contactInfo) {
-    return <EmptyCard icon={<User className="size-5" />} label={t('contact_information')} />;
+    return (
+      <EmptyCard
+        icon={<User className="size-5" />}
+        label={t('contact_information')}
+      />
+    );
   }
 
   return (
@@ -62,8 +67,12 @@ async function ContactCard({ locale }: { locale: string }) {
           <User className="size-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="mb-1 text-xs font-medium text-gray-400">{t('contact_information')}</p>
-          <p className="truncate text-sm text-gray-900">{contactInfo.name} {contactInfo.lastName}</p>
+          <p className="mb-1 text-xs font-medium text-gray-400">
+            {t('contact_information')}
+          </p>
+          <p className="truncate text-sm text-gray-900">
+            {contactInfo.name} {contactInfo.lastName}
+          </p>
           <p className="truncate text-sm text-gray-500">{contactInfo.email}</p>
           <p className="truncate text-sm text-gray-500">{contactInfo.phone}</p>
         </div>
@@ -93,8 +102,14 @@ export default async function DeliveryReceipt(props: Props) {
         <Suspense fallback={<ReceiptSkeleton />}>
           <ContactCard locale={locale} />
         </Suspense>
-        <EmptyCard icon={<Truck className="size-5" />} label={t('delivery_information')} />
-        <EmptyCard icon={<CreditCard className="size-5" />} label={t('payment_information')} />
+        <EmptyCard
+          icon={<Truck className="size-5" />}
+          label={t('delivery_information')}
+        />
+        <EmptyCard
+          icon={<CreditCard className="size-5" />}
+          label={t('payment_information')}
+        />
       </div>
     </>
   );

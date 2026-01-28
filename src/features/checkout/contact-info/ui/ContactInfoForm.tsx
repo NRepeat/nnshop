@@ -172,7 +172,6 @@ export default function ContactInfoForm({
                   <Input
                     placeholder="UA"
                     maxLength={2}
-                    defaultValue={'UA'}
                     value={'UA'}
                     // {...field}
                     className={clsx(

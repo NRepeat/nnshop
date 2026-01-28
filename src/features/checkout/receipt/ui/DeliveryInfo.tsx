@@ -1,11 +1,20 @@
 import { getDeliveryInfo } from '@features/checkout/delivery/api/getDeliveryInfo';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@shared/ui/tooltip';
-import { Link } from '@shared/i18n/navigation';import DeliveryInfo from '@shared/assets/DeliveryInfo';
+import { Link } from '@shared/i18n/navigation';
+import DeliveryInfo from '@shared/assets/DeliveryInfo';
 import { PlaceHolder } from './PlaceHolder';
 import { getTranslations } from 'next-intl/server';
+import { auth } from '@features/auth/lib/auth';
+import { headers } from 'next/headers';
 
-export default async function DeliveryInfoSection({ locale }: { locale: string }) {
-  const deliveryInfo = await getDeliveryInfo();
+export default async function DeliveryInfoSection({
+  locale,
+}: {
+  locale: string;
+}) {
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  const deliveryInfo = await getDeliveryInfo(session);
   const t = await getTranslations({ locale, namespace: 'ReceiptPage' });
   return (
     <>
@@ -26,15 +35,21 @@ export default async function DeliveryInfoSection({ locale }: { locale: string }
                 ) : (
                   <div className="flex flex-col text-start space-y-0.5 min-w-0 w-full">
                     <p className="text-sm text-gray-700 truncate">
-                      <span className="font-medium text-gray-900">{t('address')}: </span>
+                      <span className="font-medium text-gray-900">
+                        {t('address')}:{' '}
+                      </span>
                       {deliveryInfo.address}
                     </p>
                     <p className="text-sm text-gray-700 truncate">
-                      <span className="font-medium text-gray-900">{t('country')}: </span>
+                      <span className="font-medium text-gray-900">
+                        {t('country')}:{' '}
+                      </span>
                       {deliveryInfo.country}
                     </p>
                     <p className="text-sm text-gray-700 truncate">
-                      <span className="font-medium text-gray-900">{t('city')}: </span>
+                      <span className="font-medium text-gray-900">
+                        {t('city')}:{' '}
+                      </span>
                       {deliveryInfo.city}
                     </p>
                   </div>

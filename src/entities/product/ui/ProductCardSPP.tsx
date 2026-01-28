@@ -57,6 +57,7 @@ export const ProductCardSPP = ({
               fill
               sizes="(max-width: 768px) 50vw, 33vw"
               className="object-contain transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
             />
           ) : (
             <div className="flex h-full items-center justify-center bg-muted text-muted-foreground">

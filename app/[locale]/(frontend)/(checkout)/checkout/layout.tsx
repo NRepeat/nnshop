@@ -60,6 +60,7 @@ async function CheckoutLayoutContent({
   children: React.ReactNode;
   receipt: React.ReactNode;
 }) {
+  await connection();
 
   try {
     const session = await auth.api.getSession({ headers: await headers() });

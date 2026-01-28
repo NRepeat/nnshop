@@ -122,7 +122,6 @@ export class StorefrontClient implements ShopifyClient {
       const ver = variables as Record<string, unknown>;
       const response = await this.client.request(modifiedQuery, {
         variables: ver,
-        retries:3
       });
       if (response.errors) {
         console.error(JSON.stringify(response.errors, null, 2));

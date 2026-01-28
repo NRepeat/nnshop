@@ -1,11 +1,20 @@
 import getContactInfo from '@features/checkout/contact-info/api/get-contact-info';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@shared/ui/tooltip';
-import { Link } from '@shared/i18n/navigation';import ContactInfo from '@shared/assets/ContactInfo';
+import { Link } from '@shared/i18n/navigation';
+import ContactInfo from '@shared/assets/ContactInfo';
 import { PlaceHolder } from './PlaceHolder';
 import { getTranslations } from 'next-intl/server';
+import { auth } from '@features/auth/lib/auth';
+import { headers } from 'next/headers';
 
-export default async function ContactInfoSection({ locale }: { locale: string }) {
-  const contactInfo = await getContactInfo();
+export default async function ContactInfoSection({
+  locale,
+}: {
+  locale: string;
+}) {
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  const contactInfo = await getContactInfo(session);
   const t = await getTranslations({ locale, namespace: 'ReceiptPage' });
   return (
     <>
@@ -19,15 +28,21 @@ export default async function ContactInfoSection({ locale }: { locale: string })
                 </div>
                 <div className="flex flex-col text-start space-y-0.5 min-w-0 w-full">
                   <p className="text-sm text-gray-700 truncate">
-                    <span className="font-medium text-gray-900">{t('name')}: </span>
+                    <span className="font-medium text-gray-900">
+                      {t('name')}:{' '}
+                    </span>
                     {contactInfo.name}
                   </p>
                   <p className="text-sm text-gray-700 truncate">
-                    <span className="font-medium text-gray-900">{t('email')}: </span>
+                    <span className="font-medium text-gray-900">
+                      {t('email')}:{' '}
+                    </span>
                     {contactInfo.email}
                   </p>
                   <p className="text-sm text-gray-700 truncate">
-                    <span className="font-medium text-gray-900">{t('phone')}: </span>
+                    <span className="font-medium text-gray-900">
+                      {t('phone')}:{' '}
+                    </span>
                     {contactInfo.phone}
                   </p>
                 </div>

@@ -4,6 +4,8 @@ import { User, Truck, CreditCard } from 'lucide-react';
 import getContactInfo from '@features/checkout/contact-info/api/get-contact-info';
 import { getDeliveryInfo } from '@features/checkout/delivery/api/getDeliveryInfo';
 import { getPaymentInfo } from '@features/checkout/payment/api/getPaymentInfo';
+import { auth } from '@features/auth/lib/auth';
+import { headers } from 'next/headers';
 
 type Props = {
   params: Promise<{ locale: string; orderId: string }>;
@@ -23,8 +25,9 @@ function ReceiptSkeleton() {
 }
 
 async function ContactCard({ locale }: { locale: string }) {
+ const session = await auth.api.getSession({ headers: await headers() });
   const [contactInfo, t] = await Promise.all([
-    getContactInfo(),
+    getContactInfo(session),
     getTranslations({ locale, namespace: 'ReceiptPage' }),
   ]);
 
@@ -36,8 +39,12 @@ async function ContactCard({ locale }: { locale: string }) {
         <User className="size-5" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="mb-1 text-xs font-medium text-gray-400">{t('contact_information')}</p>
-        <p className="truncate text-sm text-gray-900">{contactInfo.name} {contactInfo.lastName}</p>
+        <p className="mb-1 text-xs font-medium text-gray-400">
+          {t('contact_information')}
+        </p>
+        <p className="truncate text-sm text-gray-900">
+          {contactInfo.name} {contactInfo.lastName}
+        </p>
         <p className="truncate text-sm text-gray-500">{contactInfo.email}</p>
         <p className="truncate text-sm text-gray-500">{contactInfo.phone}</p>
       </div>
@@ -46,8 +53,10 @@ async function ContactCard({ locale }: { locale: string }) {
 }
 
 async function DeliveryCard({ locale }: { locale: string }) {
+  const session = await auth.api.getSession({ headers: await headers() });
+
   const [deliveryInfo, t] = await Promise.all([
-    getDeliveryInfo(),
+    getDeliveryInfo(session),
     getTranslations({ locale, namespace: 'ReceiptPage' }),
   ]);
 
@@ -61,14 +70,18 @@ async function DeliveryCard({ locale }: { locale: string }) {
         <Truck className="size-5" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="mb-1 text-xs font-medium text-gray-400">{t('delivery_information')}</p>
+        <p className="mb-1 text-xs font-medium text-gray-400">
+          {t('delivery_information')}
+        </p>
         {isNovaPoshta ? (
           <p className="truncate text-sm text-gray-900">
             {deliveryInfo.novaPoshtaDepartment!.shortName}
           </p>
         ) : (
           <>
-            <p className="truncate text-sm text-gray-900">{deliveryInfo.address}</p>
+            <p className="truncate text-sm text-gray-900">
+              {deliveryInfo.address}
+            </p>
             <p className="truncate text-sm text-gray-500">
               {deliveryInfo.city}, {deliveryInfo.country}
             </p>
@@ -94,8 +107,12 @@ async function PaymentCard({ locale }: { locale: string }) {
         <CreditCard className="size-5" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="mb-1 text-xs font-medium text-gray-400">{tr('payment_information')}</p>
-        <p className="truncate text-sm text-gray-900">{t(paymentInfo.paymentMethod)}</p>
+        <p className="mb-1 text-xs font-medium text-gray-400">
+          {tr('payment_information')}
+        </p>
+        <p className="truncate text-sm text-gray-900">
+          {t(paymentInfo.paymentMethod)}
+        </p>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { client as sanityClient } from '@/shared/sanity/lib/client';
 import { SITEMAP_QUERY } from '@/shared/sanity/lib/query';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { locales } from '@shared/i18n/routing';
+import { connection } from 'next/server';
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ||
@@ -114,6 +115,8 @@ async function getAllCollectionsForSitemap(): Promise<CollectionNode[]> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  await connection();
+
   const sitemapEntries: MetadataRoute.Sitemap = [];
 
   try {

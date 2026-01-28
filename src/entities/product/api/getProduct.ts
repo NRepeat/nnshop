@@ -138,7 +138,11 @@ export const getProduct = async ({
       language: locale.toUpperCase() as StorefrontLanguageCode,
     });
     if (!product.product) {
-      throw new Error('Product not found');
+      console.warn(`Product not found: ${handle}`);
+      return {
+        originProduct: null,
+        alternateHandle: null,
+      };
     }
     const alternateRequest = storefrontClient.request<
       {
@@ -162,7 +166,10 @@ export const getProduct = async ({
       alternateHandle: alternateData.product?.handle,
     };
   } catch (error) {
-    console.error(error);
-    throw new Error('Failed to fetch product');
+    console.error(`Failed to fetch product ${handle}:`, error);
+    return {
+      originProduct: null,
+      alternateHandle: null,
+    };
   }
 };

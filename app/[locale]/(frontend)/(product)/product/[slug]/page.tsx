@@ -16,6 +16,7 @@ import { Metadata } from 'next';
 import { generateProductMetadata } from '@shared/lib/seo/generateMetadata';
 import { generateProductJsonLd } from '@shared/lib/seo/jsonld';
 import { JsonLd } from '@shared/ui/JsonLd';
+import { connection } from 'next/server';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -23,6 +24,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params;
+  const decodedSlug = decodeURIComponent(slug);
 
   try {
     const { originProduct: product } = await getProduct({
@@ -34,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       return { title: 'Product Not Found' };
     }
 
-    return generateProductMetadata(product, locale, slug);
+    return generateProductMetadata(product, locale, decodedSlug);
   } catch {
     return { title: 'Product Not Found' };
   }
@@ -42,11 +44,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export async function generateStaticParams() {
   const params = [];
-
+  const BUILD_TIME_LIMIT = 50; 
   for (const locale of locales) {
-    const allProductsHandlers = await getAllProductHandles(locale);
+    const allProductsHandlers = await getAllProductHandles(locale, BUILD_TIME_LIMIT);
 
-    const localeParams = allProductsHandlers.slice(0, 10).map((handle) => ({
+    const localeParams = allProductsHandlers.map((handle) => ({
       slug: handle,
       locale: locale,
     }));
@@ -58,7 +60,8 @@ export async function generateStaticParams() {
 }
 
 export default async function ProductPage({ params }: Props) {
-  const { slug: handle, locale } = await params;
+  const { slug, locale } = await params;
+  const handle = decodeURIComponent(slug);
 
   const { originProduct: product } = await getProduct({
     handle,
@@ -98,6 +101,9 @@ const ProductSession = async ({
   handle: string;
   product: Product;
 }) => {
+  await connection();
+
+
   const session = await auth.api.getSession({ headers: await headers() });
 
   const isFavorite = await isProductFavorite(handle, session);

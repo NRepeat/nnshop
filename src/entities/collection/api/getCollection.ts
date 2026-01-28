@@ -232,6 +232,11 @@ export const getCollection = async ({
   locale: string;
 }) => {
   'use cache';
+
+  console.log(
+    '🚀 ~ getCollection ~ collection.collection?.id:',
+    decodeURIComponent(handle),
+  );
   const filters: ProductFilter[] = [];
   if (searchParams) {
     const filterDefinitions = await getCollectionFilters({ handle, locale });
@@ -325,7 +330,7 @@ export const getCollection = async ({
     language: locale.toUpperCase() as StorefrontLanguageCode,
   });
   const targetLocale = locale === 'ru' ? 'UK' : 'RU';
-  const alternateRequest = storefrontClient.request<
+  const alternateRequest = await storefrontClient.request<
     {
       collection: { handle: string };
     },
@@ -341,6 +346,6 @@ export const getCollection = async ({
     language: targetLocale as StorefrontLanguageCode,
   });
 
-  const alternateData = await alternateRequest;
+  const alternateData = alternateRequest;
   return { collection, alternateHandle: alternateData.collection?.handle };
 };

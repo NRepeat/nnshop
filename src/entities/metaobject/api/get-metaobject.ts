@@ -29,6 +29,7 @@ export type ProductMEtaobjectType =
 export const getMetaobject = async (
   id: string,
 ): Promise<ProductMEtaobjectType> => {
+  'use cache'
   try {
     const variables: GetPRoductMetaobjectQueryVariables = {
       //@ts-ignore
@@ -46,6 +47,6 @@ export const getMetaobject = async (
     return res.metaobject || null;
   } catch (err) {
     console.error('Error fetching metaobject:', err);
-    throw new Error('Error get metaobjects');
+    return null;
   }
 };

@@ -56,29 +56,28 @@ export default async function Payment({
     if (draftOrder.shopifyOrderId) {
       throw new Error('Order already exists');
     }
+    return (
+      <div className="w-full max-w-4xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            {t('payment_title')}
+          </h1>
+          <p className="text-gray-600">{t('payment_description')}</p>
+        </div>
+
+        <PaymentForm
+          defaultValues={existingPaymentInfo}
+          draftOrder={draftOrder}
+          amount={cartAmount}
+          currency={currency}
+          liqpayPublicKey={liqpayPublicKey}
+          liqpayPrivateKey={liqpayPrivateKey}
+          completeCheckoutData={await getCompleteCheckoutData(session)}
+        />
+      </div>
+    );
   } catch (error) {
     console.error('Error fetching cart data:', error);
     redirect('/');
   }
-
-  return (
-    <div className="w-full max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {t('payment_title')}
-        </h1>
-        <p className="text-gray-600">{t('payment_description')}</p>
-      </div>
-
-      <PaymentForm
-        defaultValues={existingPaymentInfo}
-        draftOrder={draftOrder}
-        amount={cartAmount}
-        currency={currency}
-        liqpayPublicKey={liqpayPublicKey}
-        liqpayPrivateKey={liqpayPrivateKey}
-        completeCheckoutData={await getCompleteCheckoutData()}
-      />
-    </div>
-  );
 }

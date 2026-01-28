@@ -48,16 +48,20 @@ async function getDraftOrderId(): Promise<string | null> {
 
 export default async function PaymentPage(props: Props) {
   const { locale } = await props.params;
+  const session = await auth.api.getSession({ headers: await headers() });
 
-  const deliveryInfo = await getDeliveryInfo();
+  const deliveryInfo = await getDeliveryInfo(session);
   if (!deliveryInfo) {
     redirect('/checkout/delivery');
   }
 
   let draftOrderId = await getDraftOrderId();
   if (!draftOrderId) {
-    const completeCheckoutData = await getCompleteCheckoutData();
-    console.log("🚀 ~ PaymentPage ~ completeCheckoutData:", completeCheckoutData)
+    const completeCheckoutData = await getCompleteCheckoutData(session);
+    console.log(
+      '🚀 ~ PaymentPage ~ completeCheckoutData:',
+      completeCheckoutData,
+    );
     if (!completeCheckoutData) {
       redirect('/checkout/delivery');
     }

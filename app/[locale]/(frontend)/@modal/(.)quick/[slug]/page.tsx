@@ -4,7 +4,6 @@ import {
   getMetaobject,
 } from '@entities/metaobject/api/get-metaobject';
 import { getReletedProducts } from '@entities/product/api/get-related-products';
-import { locales } from '@shared/i18n/routing';
 import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
 import { ProductViewProvider } from '@widgets/product-view/ui/ProductViewProvider';
 
@@ -12,7 +11,6 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { getProduct } from '@entities/product/api/getProduct';
 import { GallerySession } from '@widgets/product-view/ui/GallerySession';
-// import { getAllProductHandles } from '@entities/product/api/getAllProductsHandlers'; // Removed unused import
 import { setRequestLocale } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { auth } from '@features/auth/lib/auth';
@@ -20,26 +18,11 @@ import { isProductFavorite } from '@features/product/api/isProductFavorite';
 import { ProductSessionViewSkeleton } from './ProductSessionViewSkeleton';
 import { Button } from '@shared/ui/button';
 import { Heart } from 'lucide-react';
+import { connection } from 'next/server';
+
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
 };
-// export async function generateStaticParams() {
-//   const handles = [];
-//   for (const locale of locales) {
-//     const allProductsHandlers = await getAllProductHandles(locale);
-//     handles.push(...allProductsHandlers);
-//   }
-//   return handles.map((handle) => ({
-//     slug: [handle],
-//   }));
-// }
-export async function generateStaticParams() {
-  const params = [];
-  for (const locale of locales) {
-    params.push({ locale: locale });
-  }
-  return params;
-}
 
 export default async function ProductQuickViewPage({ params }: Props) {
   return (
@@ -50,8 +33,11 @@ export default async function ProductQuickViewPage({ params }: Props) {
 }
 
 const ProductSessionView = async ({ params }: Props) => {
+  await connection();
+
   try {
     const { locale, slug } = await params;
+    const handle = decodeURIComponent(slug);
     setRequestLocale(locale);
     const { originProduct } = await getProduct({
       handle: slug,

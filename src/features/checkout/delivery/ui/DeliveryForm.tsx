@@ -16,6 +16,7 @@ import DeliveryMethodSelection from './DeliveryMethodSelection';
 import { useTranslations, useLocale } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createDraftOrder } from '@features/order/api/create';
+import { useSession } from '@features/auth/lib/client';
 
 interface DeliveryFormProps {
   defaultValues?: DeliveryInfo | null;
@@ -56,13 +57,15 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
       coordinates: department.coordinates,
     });
   };
-
+  const session = useSession();
   const onSubmit: SubmitHandler<DeliveryInfo> = async (data) => {
     try {
       const result = await saveDeliveryInfo(data);
 
       if (result.success) {
-        const completeCheckoutData = await getCompleteCheckoutData();
+        const completeCheckoutData = await getCompleteCheckoutData(
+          session.data,
+        );
         const draftOrder = await createDraftOrder(completeCheckoutData, locale);
         toast.success(t('deliveryInformationSavedSuccessfully'));
         router.push(

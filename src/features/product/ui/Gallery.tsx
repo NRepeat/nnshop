@@ -121,6 +121,9 @@ const Gallery = ({
                           height={image.height || '400'}
                           className="h-auto w-auto max-h-[55vh] max-w-full"
                           onClick={open}
+                          priority={index === 0}
+                          loading={index === 0 ? 'eager' : 'lazy'}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 40vw"
                         />
                       </div>
                     )}
@@ -173,7 +176,9 @@ const Gallery = ({
                       src={image.url}
                       alt={image.altText || ''}
                       fill
-                      className="object-cover "
+                      className="object-cover"
+                      loading="lazy"
+                      sizes="(max-width: 768px) 33vw, (max-width: 1024px) 33vw, 20vw"
                     />
                   </div>
                 </CarouselItem>

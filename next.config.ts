@@ -24,7 +24,6 @@ const nextConfig: NextConfig = {
     'r665avfiaqptwlw27urowyzo5q.srv.us',
   ],
   images: {
-    unoptimized: true,
     domains: ['cdn.shopify.com'],
     remotePatterns: [
       new URL('https://cdn.shopify.com'),

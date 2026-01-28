@@ -1,12 +1,13 @@
 'use server';
-import { auth } from '@features/auth/lib/auth';
-import { headers } from 'next/headers';
+
 import { DeliveryInfo } from '../model/deliverySchema';
 import { prisma } from '@shared/lib/prisma';
+import { Session, User } from 'better-auth';
 
-export async function getDeliveryInfo(): Promise<DeliveryInfo | null> {
+export async function getDeliveryInfo(
+  session: { session: Session; user: User } | null,
+): Promise<DeliveryInfo | null> {
   try {
-    const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
       return null;
     }

@@ -1,12 +1,13 @@
 'use server';
 
-import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
-import { headers } from 'next/headers';
+import { Session, User } from 'better-auth';
 
-const getContactInfo = async () => {
+
+const getContactInfo = async (
+  session: { session: Session; user: User } | null,
+) => {
   try {
-    const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
       return null;
     }
