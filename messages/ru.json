@@ -514,15 +514,30 @@
     "profile": "Профиль",
     "orders": "Заказы",
     "favorites": "Избранное",
-    "settings": "Настройки"
+    "settings": "Настройки",
+    "signOut": "Выйти"
   },
   "OrderPage": {
     "title": "Мои заказы",
+    "sortBy": "Сортировать",
+    "viewDetails": "Подробнее",
     "list": {
       "order": "Заказ",
       "date": "Дата",
       "fulfillmentStatus": "Статус",
       "total": "Всего"
+    },
+    "status": {
+      "fulfilled": "Выполнен",
+      "unfulfilled": "В обработке",
+      "onHold": "Приостановлен",
+      "partiallyFulfilled": "Частично выполнен"
+    },
+    "timeline": {
+      "ordered": "Заказан",
+      "processing": "Обработка",
+      "shipped": "Отправлен",
+      "delivered": "Доставлен"
     },
     "emptyState": {
       "title": "У вас еще нет заказов",
@@ -536,11 +551,11 @@
     },
     "details": {
       "title": "Детали заказа",
-      "contactInfo": "Контактная информация",
-      "shippingAddress": "Адрес доставки",
+      "contactInfo": "Контакт",
+      "shippingAddress": "Доставка",
       "payment": "Оплата",
       "billingAddress": "Платежный адрес",
-      "summary": "Сводка заказа",
+      "summary": "Итого",
       "items": "Заказанные товары",
       "product": "Товар",
       "quantity": "Количество",

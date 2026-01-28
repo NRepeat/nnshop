@@ -1,13 +1,12 @@
 import { Suspense } from 'react';
+import { getTranslations } from 'next-intl/server';
 import { User, Truck, CreditCard } from 'lucide-react';
 import { Link } from '@shared/i18n/navigation';
-import { getTranslations } from 'next-intl/server';
 import getContactInfo from '@features/checkout/contact-info/api/get-contact-info';
 import { getDeliveryInfo } from '@features/checkout/delivery/api/getDeliveryInfo';
-import { getPaymentInfo } from '@features/checkout/payment/api/getPaymentInfo';
 
 type Props = {
-  params: Promise<{ slug: string[]; locale: string }>;
+  params: Promise<{ locale: string }>;
 };
 
 function ReceiptSkeleton() {
@@ -111,72 +110,19 @@ async function DeliveryCard({ locale }: { locale: string }) {
   );
 }
 
-async function PaymentCard({ locale }: { locale: string }) {
-  const [paymentInfo, t, tr] = await Promise.all([
-    getPaymentInfo(),
-    getTranslations({ locale, namespace: 'PaymentForm' }),
-    getTranslations({ locale, namespace: 'ReceiptPage' }),
-  ]);
-
-  if (!paymentInfo) {
-    return <EmptyCard icon={<CreditCard className="size-5" />} label={tr('payment_information')} />;
-  }
-
-  return (
-    <div className="flex items-center gap-3 rounded-none border border-gray-100 bg-white p-4">
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-green-50 text-green-600">
-        <CreditCard className="size-5" />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="mb-1 text-xs font-medium text-gray-400">{tr('payment_information')}</p>
-        <p className="truncate text-sm text-gray-900">{t(paymentInfo.paymentMethod)}</p>
-      </div>
-    </div>
-  );
-}
-
-export default async function Receipt(props: Props) {
-  const { slug, locale } = await props.params;
-  const step = slug?.[0];
+export default async function PaymentReceipt(props: Props) {
+  const { locale } = await props.params;
   const t = await getTranslations({ locale, namespace: 'ReceiptPage' });
-
-  const showContact = step === 'delivery' || step === 'payment' || step === 'success';
-  const showDelivery = step === 'payment' || step === 'success';
-  const showPayment = step === 'success';
 
   return (
     <div className="hidden md:flex flex-col gap-3">
-      {!step || step === 'info' ? (
-        <>
-          <EmptyCard icon={<User className="size-5" />} label={t('contact_information')} />
-          <EmptyCard icon={<Truck className="size-5" />} label={t('delivery_information')} />
-          <EmptyCard icon={<CreditCard className="size-5" />} label={t('payment_information')} />
-        </>
-      ) : (
-        <>
-          {showContact && (
-            <Suspense fallback={<ReceiptSkeleton />}>
-              <ContactCard locale={locale} />
-            </Suspense>
-          )}
-          {!showDelivery && (
-            <EmptyCard icon={<Truck className="size-5" />} label={t('delivery_information')} />
-          )}
-          {showDelivery && (
-            <Suspense fallback={<ReceiptSkeleton />}>
-              <DeliveryCard locale={locale} />
-            </Suspense>
-          )}
-          {!showPayment && (
-            <EmptyCard icon={<CreditCard className="size-5" />} label={t('payment_information')} />
-          )}
-          {showPayment && (
-            <Suspense fallback={<ReceiptSkeleton />}>
-              <PaymentCard locale={locale} />
-            </Suspense>
-          )}
-        </>
-      )}
+      <Suspense fallback={<ReceiptSkeleton />}>
+        <ContactCard locale={locale} />
+      </Suspense>
+      <Suspense fallback={<ReceiptSkeleton />}>
+        <DeliveryCard locale={locale} />
+      </Suspense>
+      <EmptyCard icon={<CreditCard className="size-5" />} label={t('payment_information')} />
     </div>
   );
 }

@@ -25,7 +25,7 @@ export const Thank = async ({
     throw new Error('Unauthorized');
   }
   return (
-    <div className="flex items-center justify-center dark:bg-gray-900">
+    <div className="flex justify-center dark:bg-gray-900">
       <Card className="w-full max-w-full p-4 sm:p-4 shadow-none">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">{t('title')}</CardTitle>

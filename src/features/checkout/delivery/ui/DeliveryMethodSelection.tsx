@@ -82,7 +82,7 @@ export default function DeliveryMethodSelection() {
               </p>
             </div>
             <FormControl>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-1 gap-4">
                 {deliveryMethods.map((method) => (
                   <Button
                     type="button"
@@ -90,13 +90,13 @@ export default function DeliveryMethodSelection() {
                     variant={field.value !== method.id ? 'outline' : 'default'}
                     onClick={() => field.onChange(method.id)}
                     className={clsx(
-                      'group relative  rounded-none shadow-none p-0 h-16 border border-transparent',
+                      'group relative  rounded-none shadow-none h-fit  border border-transparent',
                       {
                         'border border-gray-200': field.value !== method.id,
                       },
                     )}
                   >
-                    <div className="flex  gap-4 justify-start w-full">
+                    <div className="flex  gap-4 justify-start w-full py-2">
                       <div
                         className={clsx(
                           'flex items-center justify-center w-12 h-12',
@@ -108,7 +108,9 @@ export default function DeliveryMethodSelection() {
                         <h3 className={clsx('font-semibold text-base')}>
                           {t(method.name)}
                         </h3>
-                        <p className={clsx('text-sm')}>{t(method.delivery)}</p>
+                        <p className={clsx('text-sm text-wrap')}>
+                          {t(method.delivery)}
+                        </p>
                       </div>
                     </div>
                   </Button>

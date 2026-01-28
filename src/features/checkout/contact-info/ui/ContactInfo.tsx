@@ -8,7 +8,7 @@ export default async function ContactInfo({ locale }: { locale: string }) {
   const contactInfo = await getContactInfo();
   const user = await getUser();
   return (
-    <div className="space-y-6 container">
+    <div className="space-y-6 ">
       <div className="flex  gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">

@@ -45,7 +45,7 @@ export default function PaymentProviderSelection({
               </p>
             </div>
             <FormControl>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-1 gap-4">
                 {paymentProviders.map((provider) => (
                   <PaymentProviderButton
                     key={provider.id}

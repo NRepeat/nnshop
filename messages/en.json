@@ -496,15 +496,30 @@
     "profile": "Profile",
     "orders": "Orders",
     "favorites": "Favorites",
-    "settings": "Settings"
+    "settings": "Settings",
+    "signOut": "Sign Out"
   },
   "OrderPage": {
     "title": "My Orders",
+    "sortBy": "Sort by",
+    "viewDetails": "View details",
     "list": {
       "order": "Order",
       "date": "Date",
-      "fulfillmentStatus": "Fulfillment Status",
+      "fulfillmentStatus": "Status",
       "total": "Total"
+    },
+    "status": {
+      "fulfilled": "Fulfilled",
+      "unfulfilled": "Processing",
+      "onHold": "On Hold",
+      "partiallyFulfilled": "Partially Fulfilled"
+    },
+    "timeline": {
+      "ordered": "Ordered",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "delivered": "Delivered"
     },
     "emptyState": {
       "title": "You have no orders yet",
@@ -518,11 +533,11 @@
     },
     "details": {
       "title": "Order Details",
-      "contactInfo": "Contact Information",
-      "shippingAddress": "Shipping Address",
+      "contactInfo": "Contact",
+      "shippingAddress": "Shipping",
       "payment": "Payment",
       "billingAddress": "Billing Address",
-      "summary": "Order Summary",
+      "summary": "Summary",
       "items": "Ordered Items",
       "product": "Product",
       "quantity": "Quantity",

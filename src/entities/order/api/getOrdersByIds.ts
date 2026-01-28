@@ -19,6 +19,16 @@ const GET_ORDERS_PAGINATED_BY_ID = `
               currencyCode
             }
           }
+          lineItems(first: 5) {
+            edges {
+              node {
+                title
+                image {
+                  url
+                }
+              }
+            }
+          }
         }
       }
       pageInfo {

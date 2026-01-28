@@ -1,5 +1,5 @@
 import { SheetContent, SheetHeader, SheetTitle } from '@shared/ui/sheet';
-import { Textarea } from '@shared/ui/textarea';
+import { CartNoteTextarea } from './CartNoteTextarea';
 import CartItem from './Item';
 import {
   Accordion,
@@ -80,7 +80,7 @@ const Content = async ({
                 <span className="font-light">{t('order_instraction')}</span>
               </AccordionTrigger>
               <AccordionContent className="w-full px-1 pt-1">
-                <Textarea placeholder={t('order_instraction_placeholder')} />
+                <CartNoteTextarea placeholder={t('order_instraction_placeholder')} />
               </AccordionContent>
             </AccordionItem>
           </Accordion>

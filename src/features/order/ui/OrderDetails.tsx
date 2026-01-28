@@ -4,119 +4,248 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardFooter,
 } from '@shared/ui/card';
 import { Separator } from '@shared/ui/separator';
 import { Order } from '@entities/order/model/types';
 import { getTranslations } from 'next-intl/server';
+import { OrderStatusBadge } from './OrderStatusBadge';
+import { OrderTimeline } from './OrderTimeline';
+import { User, MapPin, CreditCard, Package } from 'lucide-react';
+
+const getDeliveryMethodKey = (method: string): string => {
+  switch (method) {
+    case 'novaPoshta':
+      return 'novaPoshta';
+    case 'ukrPoshta':
+      return 'ukrPoshta';
+    default:
+      return method;
+  }
+};
+
+const getPaymentMethodKey = (method: string): string => {
+  switch (method) {
+    case 'pay-now':
+      return 'payNow';
+    case 'after-delivered':
+      return 'afterDelivered';
+    case 'pay-later':
+      return 'payLater';
+    default:
+      return method;
+  }
+};
+
+type LocalOrderUser = {
+  contactInformation: {
+    name: string;
+    lastName: string;
+    email: string;
+    phone: string;
+  } | null;
+  deliveryInformation: {
+    deliveryMethod: string;
+    country: string | null;
+    address: string | null;
+    apartment: string | null;
+    city: string | null;
+    postalCode: string | null;
+    novaPoshtaDepartment: {
+      shortName: string;
+      city: string | null;
+      street: string | null;
+    } | null;
+  } | null;
+  paymentInformation: {
+    paymentMethod: string;
+    paymentProvider: string;
+    amount: number;
+    currency: string;
+  } | null;
+} | null;
+
+type LocalOrder = {
+  user: LocalOrderUser;
+} | null;
 
 type OrderDetailsProps = {
   order: Order;
+  locale: string;
+  localOrder?: LocalOrder;
 };
 
 export const OrderDetails = async ({
   order,
   locale,
-}: OrderDetailsProps & { locale: string }) => {
+  localOrder,
+}: OrderDetailsProps) => {
   const t = await getTranslations({ locale, namespace: 'OrderPage.details' });
+  const tDelivery = await getTranslations({ locale, namespace: 'DeliveryForm' });
+  const tPayment = await getTranslations({ locale, namespace: 'PaymentForm' });
+
+  const user = localOrder?.user;
+  const contact = user?.contactInformation;
+  const delivery = user?.deliveryInformation;
+  const payment = user?.paymentInformation;
 
   return (
-    <Card className="shadow-sm rounded-none mt-4">
-      <CardHeader>
-        <CardTitle>{t('title')}</CardTitle>
-        <CardDescription>
-          {order.name} - {order.displayFulfillmentStatus}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-4 md:grid-cols-2">
-        <div className="grid gap-4">
-          <Card className="shadow-none">
-            <CardHeader>
-              <CardTitle>{t('contactInfo')}</CardTitle>
-            </CardHeader>
-            {/* <CardContent>
-              <p>
-                {order.shippingAddress.firstName}{' '}
-                {order.shippingAddress.lastName}
+    <div className="mt-4 space-y-6">
+      <Card className="shadow-sm">
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold">{order.name}</h1>
+              <p className="text-sm text-muted-foreground">
+                {new Date(order.processedAt).toLocaleDateString(locale, {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
               </p>
-              <p>{order.email}</p>
-            </CardContent> */}
-          </Card>
-          {/* <Card className="shadow-none">
-            <CardHeader>
-              <CardTitle>{t('shippingAddress')}</CardTitle>
+            </div>
+            <OrderStatusBadge status={order.displayFulfillmentStatus} />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <OrderTimeline status={order.displayFulfillmentStatus} />
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="space-y-6">
+          <Card className="shadow-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <User className="w-4 h-4" />
+                {t('contactInfo')}
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <p>
-                {order.shippingAddress.firstName}{' '}
-                {order.shippingAddress.lastName}
-              </p>
-              <p>{order.shippingAddress.address1}</p>
-              <p>
-                {order.shippingAddress.city}, {order.shippingAddress.zip}
-              </p>
-              <p>{order.shippingAddress.country}</p>
-              <p>{order.shippingAddress.phone}</p>
-            </CardContent>
-          </Card> */}
-          <Card className="shadow-none">
-            <CardHeader>
-              <CardTitle>{t('payment')}</CardTitle>
-            </CardHeader>
-            {/* <CardContent>
-              <p>
-                {order.totalPriceSet.presentmentMoney.amount}{' '}
-                {order.totalPriceSet.presentmentMoney.currencyCode}
-              </p>
-              <p>{new Date(order.processedAt).toLocaleDateString()}</p>
-            </CardContent> */}
-          </Card>
-          <Card className="shadow-none">
-            <CardHeader>
-              <CardTitle>{t('billingAddress')}</CardTitle>
-            </CardHeader>
-            {/* <CardContent>
-              {order.billingAddress ? (
-                <>
-                  <p>
-                    {order.billingAddress.firstName}{' '}
-                    {order.billingAddress.lastName}
+              {contact ? (
+                <div className="space-y-1 text-sm">
+                  <p className="font-medium">
+                    {contact.name} {contact.lastName}
                   </p>
-                  <p>{order.billingAddress.address1}</p>
-                  <p>
-                    {order.billingAddress.city}, {order.billingAddress.zip}
-                  </p>
-                  <p>{order.billingAddress.country}</p>
-                  <p>{order.billingAddress.phone}</p>
-                </>
+                  <p className="text-muted-foreground">{contact.email}</p>
+                  <p className="text-muted-foreground">{contact.phone}</p>
+                </div>
               ) : (
-                <p>{t('sameAsShipping')}</p>
+                <p className="text-sm text-muted-foreground">—</p>
               )}
-            </CardContent> */}
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <MapPin className="w-4 h-4" />
+                {t('shippingAddress')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {delivery ? (
+                <div className="space-y-1 text-sm">
+                  <p className="font-medium">
+                    {tDelivery(getDeliveryMethodKey(delivery.deliveryMethod))}
+                  </p>
+                  {delivery.novaPoshtaDepartment ? (
+                    <>
+                      <p className="text-muted-foreground">
+                        {delivery.novaPoshtaDepartment.shortName}
+                      </p>
+                      {delivery.novaPoshtaDepartment.city && (
+                        <p className="text-muted-foreground">
+                          {delivery.novaPoshtaDepartment.city}
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {delivery.address && (
+                        <p className="text-muted-foreground">
+                          {delivery.address}
+                          {delivery.apartment && `, ${delivery.apartment}`}
+                        </p>
+                      )}
+                      {delivery.city && (
+                        <p className="text-muted-foreground">
+                          {delivery.city}
+                          {delivery.postalCode && `, ${delivery.postalCode}`}
+                        </p>
+                      )}
+                      {delivery.country && (
+                        <p className="text-muted-foreground">{delivery.country}</p>
+                      )}
+                    </>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">—</p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <CreditCard className="w-4 h-4" />
+                {t('payment')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {payment ? (
+                <div className="space-y-1 text-sm">
+                  <p className="font-medium">
+                    {tPayment(getPaymentMethodKey(payment.paymentMethod))}
+                  </p>
+                  {payment.paymentMethod !== 'after-delivered' && (
+                    <p className="text-muted-foreground">
+                      {tPayment(payment.paymentProvider)}
+                    </p>
+                  )}
+                  <p className="text-muted-foreground">
+                    {payment.amount} {payment.currency}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">—</p>
+              )}
+            </CardContent>
           </Card>
         </div>
-        <div className="grid gap-4">
-          <Card className="shadow-none">
-            <CardHeader>
-              <CardTitle>{t('summary')}</CardTitle>
+
+        <div>
+          <Card className="shadow-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Package className="w-4 h-4" />
+                {t('summary')}
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4">
-                {order.lineItems.edges.map(({ node: item }) => (
+              <div className="space-y-4">
+                {order.lineItems.edges.map(({ node: item }, index) => (
                   <div
-                    key={item.title}
-                    className="grid grid-cols-[80px_1fr_auto] items-center gap-4"
+                    key={index}
+                    className="flex items-start gap-4"
                   >
-                    <Image
-                      src={item.image.url}
-                      alt={item.title}
-                      width={80}
-                      height={80}
-                      className="rounded-md"
-                    />
-                    <div>
-                      <p className="font-medium">{item.title}</p>
+                    <div className="relative w-16 h-16 rounded-md overflow-hidden bg-muted shrink-0">
+                      {item.image?.url ? (
+                        <Image
+                          src={item.image.url}
+                          alt={item.title}
+                          fill
+                          className="object-cover"
+                          sizes="64px"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                          ?
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm truncate">{item.title}</p>
                       <p className="text-sm text-muted-foreground">
                         {item.variant.title}
                       </p>
@@ -124,47 +253,36 @@ export const OrderDetails = async ({
                         {t('quantity')}: {item.quantity}
                       </p>
                     </div>
-                    <p className="font-medium">
-                      {item.variant.price.amount}{' '}
-                      {item.variant.price.currencyCode}
+                    <p className="font-medium text-sm shrink-0">
+                      {item.variant.price.amount} {item.variant.price.currencyCode}
                     </p>
                   </div>
                 ))}
               </div>
+
+              <Separator className="my-4" />
+
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t('subtotal')}</span>
+                  <span>
+                    {order.subtotalPriceSet.presentmentMoney.amount}{' '}
+                    {order.subtotalPriceSet.presentmentMoney.currencyCode}
+                  </span>
+                </div>
+                <Separator className="my-2" />
+                <div className="flex justify-between font-medium">
+                  <span>{t('total')}</span>
+                  <span>
+                    {order.totalPriceSet.presentmentMoney.amount}{' '}
+                    {order.totalPriceSet.presentmentMoney.currencyCode}
+                  </span>
+                </div>
+              </div>
             </CardContent>
-            {/* <CardFooter className="flex flex-col gap-2">
-              <div className="flex justify-between w-full">
-                <span>{t('subtotal')}</span>
-                <span>
-                  {order.subtotalPriceSet.presentmentMoney.amount}{' '}
-                  {order.subtotalPriceSet.presentmentMoney.currencyCode}
-                </span>
-              </div>
-              <div className="flex justify-between w-full">
-                <span>{t('shipping')}</span>
-                <span>
-                  {order.totalShippingPriceSet.presentmentMoney.amount}{' '}
-                  {order.totalShippingPriceSet.presentmentMoney.currencyCode}
-                </span>
-              </div>
-              <Separator />
-              <div className="flex justify-between w-full font-medium">
-                <span>{t('total')}</span>
-                <span>
-                  {order.totalPriceSet.presentmentMoney.amount}{' '}
-                  {order.totalPriceSet.presentmentMoney.currencyCode}
-                </span>
-              </div>
-              <div className="flex justify-between w-full text-sm text-muted-foreground">
-                <span>
-                  {t('including')} {order.totalTaxSet.presentmentMoney.amount}{' '}
-                  {order.totalTaxSet.presentmentMoney.currencyCode} {t('taxes')}
-                </span>
-              </div>
-            </CardFooter> */}
           </Card>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

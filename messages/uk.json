@@ -508,15 +508,30 @@
     "profile": "Профіль",
     "orders": "Замовлення",
     "favorites": "Обране",
-    "settings": "Налаштування"
+    "settings": "Налаштування",
+    "signOut": "Вийти"
   },
   "OrderPage": {
     "title": "Мої замовлення",
+    "sortBy": "Сортувати",
+    "viewDetails": "Деталі",
     "list": {
       "order": "Замовлення",
       "date": "Дата",
       "fulfillmentStatus": "Статус",
       "total": "Всього"
+    },
+    "status": {
+      "fulfilled": "Виконано",
+      "unfulfilled": "В обробці",
+      "onHold": "Призупинено",
+      "partiallyFulfilled": "Частково виконано"
+    },
+    "timeline": {
+      "ordered": "Замовлено",
+      "processing": "Обробка",
+      "shipped": "Відправлено",
+      "delivered": "Доставлено"
     },
     "emptyState": {
       "title": "У вас ще немає замовлень",
@@ -530,11 +545,11 @@
     },
     "details": {
       "title": "Деталі замовлення",
-      "contactInfo": "Контактна інформація",
-      "shippingAddress": "Адреса доставки",
+      "contactInfo": "Контакт",
+      "shippingAddress": "Доставка",
       "payment": "Оплата",
       "billingAddress": "Платіжна адреса",
-      "summary": "Зведення замовлення",
+      "summary": "Підсумок",
       "items": "Замовлені товари",
       "product": "Товар",
       "quantity": "Кількість",

@@ -14,7 +14,7 @@ export default async function Delivery({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'CheckoutPage' });
 
   return (
-    <div className="col-span-4 lg:col-span-6 lg:h-fit lg:row-start-2 justify-self-stretch">
+    <div className="">
       <ContainerHeader className="flex justify-between items-center text-[32px]">
         {t('delivery_title')}
       </ContainerHeader>

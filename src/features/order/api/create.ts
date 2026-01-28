@@ -137,6 +137,12 @@ export async function createDraftOrder(
     const input: any = {
       lineItems: lineItems,
     };
+
+    // Add note from cart if present
+    if (cart.note) {
+      input.note = cart.note;
+    }
+
     if (!completeCheckoutData) {
       throw new Error('Checkout data is missing');
     }

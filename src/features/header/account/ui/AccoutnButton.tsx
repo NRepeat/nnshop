@@ -5,10 +5,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@shared/ui/dropdown-menu';
+import { SignOutButton } from './SignOutButton';
 import { User2 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
@@ -60,17 +60,23 @@ export const AccountButton = async ({
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuLabel>{t('myAccount')}</DropdownMenuLabel>
+          <DropdownMenuItem>
+            <Link href="/account/settings" className="font-medium w-full">
+              {t('myAccount')}
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
-            <Link href="/orders">{t('orders')}</Link>
+            <Link href="/orders" className="w-full">{t('orders')}</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link href="/favorites">{t('favorites')}</Link>
+            <Link href="/favorites" className="w-full">{t('favorites')}</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link href="/account/settings">{t('settings')}</Link>
+            <Link href="/account/settings" className="w-full">{t('settings')}</Link>
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <SignOutButton />
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
