@@ -1,5 +1,7 @@
+import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
 import { User, Truck, CreditCard } from 'lucide-react';
+import { OrderSummary, OrderSummarySkeleton } from '@features/checkout/receipt/ui/OrderSummary';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -33,10 +35,23 @@ export default async function InfoReceipt(props: Props) {
   const t = await getTranslations({ locale, namespace: 'ReceiptPage' });
 
   return (
-    <div className="hidden md:flex flex-col gap-3">
-      <EmptyCard icon={<User className="size-5" />} label={t('contact_information')} />
-      <EmptyCard icon={<Truck className="size-5" />} label={t('delivery_information')} />
-      <EmptyCard icon={<CreditCard className="size-5" />} label={t('payment_information')} />
-    </div>
+    <>
+      {/* Mobile: Collapsible Order Summary */}
+      <div className="md:hidden">
+        <Suspense fallback={<OrderSummarySkeleton />}>
+          <OrderSummary locale={locale} collapsible />
+        </Suspense>
+      </div>
+
+      {/* Desktop: Full sidebar */}
+      <div className="hidden md:flex flex-col gap-3">
+        <Suspense fallback={<OrderSummarySkeleton />}>
+          <OrderSummary locale={locale} />
+        </Suspense>
+        <EmptyCard icon={<User className="size-5" />} label={t('contact_information')} />
+        <EmptyCard icon={<Truck className="size-5" />} label={t('delivery_information')} />
+        <EmptyCard icon={<CreditCard className="size-5" />} label={t('payment_information')} />
+      </div>
+    </>
   );
 }

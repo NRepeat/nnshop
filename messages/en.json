@@ -468,7 +468,9 @@
     "continue_shopping": "Continue Shopping",
     "subtotal": "Subtotal",
     "shipping": "Shipping",
-    "tax": "Tax"
+    "tax": "Tax",
+    "items": "items",
+    "calculated_next": "Calculated next"
   },
   "ThankYouPage": {
     "title": "Thank you for your order!",
@@ -589,5 +591,21 @@
       "waist": "Waist (in)",
       "hips": "Hips (in)"
     }
+  },
+  "CartPage": {
+    "title": "Cart",
+    "empty": "Your cart is empty",
+    "continue_shopping": "Continue Shopping",
+    "checkout": "Checkout",
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "total": "Total",
+    "discount_code": "Discount code",
+    "apply": "Apply",
+    "remove": "Remove",
+    "invalid_code": "Invalid discount code",
+    "code_applied": "Discount code applied",
+    "order_note": "Order note",
+    "order_note_placeholder": "Enter your order note"
   }
 }

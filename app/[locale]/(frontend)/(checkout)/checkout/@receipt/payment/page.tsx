@@ -4,6 +4,7 @@ import { User, Truck, CreditCard } from 'lucide-react';
 import { Link } from '@shared/i18n/navigation';
 import getContactInfo from '@features/checkout/contact-info/api/get-contact-info';
 import { getDeliveryInfo } from '@features/checkout/delivery/api/getDeliveryInfo';
+import { OrderSummary, OrderSummarySkeleton } from '@features/checkout/receipt/ui/OrderSummary';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -115,14 +116,27 @@ export default async function PaymentReceipt(props: Props) {
   const t = await getTranslations({ locale, namespace: 'ReceiptPage' });
 
   return (
-    <div className="hidden md:flex flex-col gap-3">
-      <Suspense fallback={<ReceiptSkeleton />}>
-        <ContactCard locale={locale} />
-      </Suspense>
-      <Suspense fallback={<ReceiptSkeleton />}>
-        <DeliveryCard locale={locale} />
-      </Suspense>
-      <EmptyCard icon={<CreditCard className="size-5" />} label={t('payment_information')} />
-    </div>
+    <>
+      {/* Mobile: Collapsible Order Summary */}
+      <div className="md:hidden">
+        <Suspense fallback={<OrderSummarySkeleton />}>
+          <OrderSummary locale={locale} collapsible />
+        </Suspense>
+      </div>
+
+      {/* Desktop: Full sidebar */}
+      <div className="hidden md:flex flex-col gap-3">
+        <Suspense fallback={<OrderSummarySkeleton />}>
+          <OrderSummary locale={locale} />
+        </Suspense>
+        <Suspense fallback={<ReceiptSkeleton />}>
+          <ContactCard locale={locale} />
+        </Suspense>
+        <Suspense fallback={<ReceiptSkeleton />}>
+          <DeliveryCard locale={locale} />
+        </Suspense>
+        <EmptyCard icon={<CreditCard className="size-5" />} label={t('payment_information')} />
+      </div>
+    </>
   );
 }

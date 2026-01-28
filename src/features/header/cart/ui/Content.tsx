@@ -11,6 +11,7 @@ import { Separator } from '@shared/ui/separator';
 import { getTranslations } from 'next-intl/server';
 import { CreateOrderButton } from './CreateOrderButton';
 import getSymbolFromCurrency from 'currency-symbol-map';
+import { DiscountCodeInput } from '@features/cart/ui/DiscountCodeInput';
 
 const Content = async ({
   mockProducts,
@@ -18,6 +19,7 @@ const Content = async ({
   currencySymbol,
   cartId,
   locale,
+  discountCodes,
 }: {
   mockProducts: {
     id: string;
@@ -35,6 +37,7 @@ const Content = async ({
   estimateTotal: number;
   currencySymbol: string;
   locale: string;
+  discountCodes: Array<{ code: string; applicable: boolean }>;
 }) => {
   const t = await getTranslations({
     locale,
@@ -86,6 +89,10 @@ const Content = async ({
           </Accordion>
           <Separator />
         </div>
+        <div className="px-4 py-2">
+          <DiscountCodeInput discountCodes={discountCodes} />
+        </div>
+        <Separator />
         <div className="w-full flex justify-between px-4 py-4">
           {/* <span>{t('estimate_total')}</span> */}
           <span className="">

@@ -68,6 +68,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
     (acc, item) => acc + Number(item.quantity),
     0,
   );
+  const discountCodes = cart?.cart?.discountCodes || [];
 
   return (
     <Sheet >
@@ -90,6 +91,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
         estimateTotal={estimateTotal}
         currencySymbol={currencySymbol}
         cartId={cartId}
+        discountCodes={discountCodes}
       />
     </Sheet>
   );
@@ -103,12 +105,14 @@ const CartWithEmptyState = ({
   currencySymbol,
   cartId,
   locale,
+  discountCodes,
 }: {
   products: any;
   currencySymbol: string;
   estimateTotal: number | undefined;
   cartId: string | undefined;
   locale: string;
+  discountCodes: Array<{ code: string; applicable: boolean }>;
 }) => {
   if (!cartId) {
     return <EmptyState locale={locale} />;
@@ -120,6 +124,7 @@ const CartWithEmptyState = ({
         currencySymbol={currencySymbol}
         cartId={cartId}
         locale={locale}
+        discountCodes={discountCodes}
       />
     );
   }
