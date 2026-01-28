@@ -95,7 +95,7 @@ export const CheckoutStepper = ({ completedSteps }: CheckoutStepperProps) => {
           );
 
           return (
-            <div key={step.key} className="flex flex-col items-center flex-1">
+            <div key={step.key} className="flex flex-col items-center first:items-start last:items-end flex-1 h-12">
               <div className="flex items-center w-full">
                 {index > 0 && (
                   <div

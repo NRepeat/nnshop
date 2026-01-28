@@ -496,9 +496,9 @@
     "continue_shopping": "Продолжить покупки"
   },
   "CheckoutSteps": {
-    "info": "Информация",
-    "delivery": "Доставка",
-    "payment": "Оплата",
+    "info": "Контактная информация",
+    "delivery": "Информация о доставке",
+    "payment": "Информация об оплате",
     "success": "Успех"
   },
   "Footer": {

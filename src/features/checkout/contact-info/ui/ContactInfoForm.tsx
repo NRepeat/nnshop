@@ -159,12 +159,12 @@ export default function ContactInfoForm({
           )}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
           <FormField
             control={form.control}
             name="countryCode"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-1 relative">
+            render={() => (
+              <FormItem className="sm:col-span-1 relative hidden">
                 <FormLabel className="text-sm font-medium">
                   {t('country')}
                 </FormLabel>
@@ -172,7 +172,9 @@ export default function ContactInfoForm({
                   <Input
                     placeholder="UA"
                     maxLength={2}
-                    {...field}
+                    defaultValue={'UA'}
+                    value={'UA'}
+                    // {...field}
                     className={clsx(
                       form.formState.isSubmitted &&
                         form.formState.errors.countryCode &&
