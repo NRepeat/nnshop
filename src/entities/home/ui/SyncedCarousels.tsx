@@ -1,6 +1,5 @@
 'use client';
 
-import { Link } from '@shared/i18n/navigation';
 import { urlFor } from '@shared/sanity/lib/image';
 import {
   Carousel,
@@ -15,6 +14,7 @@ import getSymbolFromCurrency from 'currency-symbol-map';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@shared/ui/button';
+import Link from 'next/link';
 
 type Preview = {
   _key: string;
@@ -87,7 +87,7 @@ export const SyncedCarousels = ({
   }, [api1, api2, onSelect, onInit]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4  md:gap-20 w-full container ">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4  md:gap-6 lg:gap-12 w-full container ">
       <div className="py-8">
         <Carousel opts={{ loop: true }} setApi={setApi1}>
           <CarouselContent>
@@ -155,7 +155,7 @@ export const SyncedCarousels = ({
                             <Link
                               href={`/product/${product.node.handle}`}
                               className="h-full"
-                              scroll
+                              scroll={true}
                             >
                               <div className="flex flex-col gap-3 group relative overflow-hidden h-full">
                                 <div className="flex justify-start w-full">

@@ -10,7 +10,7 @@ export const HeaderOptions = ({ locale }: { locale: string }) => {
   return (
     <div className="col-span-1 flex justify-end gap-1 items-center px-1">
       <SearchSession className="h-full hidden md:block" />
-      <Link href={'/favorites'}>
+      <Link href={'/favorites'} className='hidden md:block'>
         <Button
           variant="ghost"
           size="icon"
@@ -20,7 +20,7 @@ export const HeaderOptions = ({ locale }: { locale: string }) => {
         </Button>
       </Link>
 
-      <AccountButton className="hidden md:flex " locale={locale} />
+      <AccountButton className=" flex " locale={locale} />
       <Suspense
         fallback={
           <Button variant="ghost" size="icon" className="group">

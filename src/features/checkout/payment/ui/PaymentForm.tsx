@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useRouter } from '@shared/i18n/navigation';
@@ -58,8 +58,10 @@ export default function PaymentForm({
   });
   const selectedPaymentMethodValue = form.watch('paymentMethod');
   const selectedProviderValue = form.watch('paymentProvider');
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
+    setIsLoading(true);
     try {
       if (draftOrder && draftOrder.shopifyDraftOrderId) {
         toast.success(t('paymentInformationSaved'));
@@ -90,6 +92,7 @@ export default function PaymentForm({
     } catch (error) {
       console.error('Error saving payment info:', error);
       toast.error(t('errorSavingPaymentInformation'));
+      setIsLoading(false);
     }
   };
 
@@ -157,7 +160,7 @@ export default function PaymentForm({
           <div className="">
             <Button
               className="w-full h-12 bg-green-800"
-              disabled={form.formState.isSubmitting}
+              disabled={isLoading}
               onClick={async () => {
                 await onSubmit({
                   amount: form.getValues('amount'),
@@ -169,7 +172,7 @@ export default function PaymentForm({
                 });
               }}
             >
-              {form.formState.isSubmitting ? (
+              {isLoading ? (
                 <div className="flex items-center gap-3">
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   <span>{t('processingPayment')}</span>

@@ -18,7 +18,9 @@ const MenuSheet = async ({ locale }: { locale: string }) => {
     { label: 'man', menu: meinMenuRequest[1] },
     { label: 'new-arrivals', menu: [] },
   ];
-  return <NavigationSheet meinMenu={meinMenu} title={t('title')} />;
+  return (
+    <NavigationSheet meinMenu={meinMenu} title={t('title')} locale={locale} />
+  );
 };
 
 export default MenuSheet;

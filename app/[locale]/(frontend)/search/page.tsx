@@ -75,7 +75,7 @@ const SearchResultsComponent = async ({
     // Using an absolute URL is important for fetch in Server Components
 
     const apiResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}api/predictive-search`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/predictive-search`,
       {
         method: 'POST',
         body: JSON.stringify({ query }),

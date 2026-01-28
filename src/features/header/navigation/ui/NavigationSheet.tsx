@@ -20,6 +20,7 @@ import { useTranslations } from 'next-intl';
 const NavigationSheet = ({
   meinMenu,
   title,
+  locale,
 }: {
   meinMenu: {
     label: string;
@@ -40,6 +41,7 @@ const NavigationSheet = ({
     }[];
   }[];
   title: string;
+  locale: string;
 }) => {
   const navigate = useRouter();
   const t = useTranslations('NavigationSheet');
@@ -63,15 +65,15 @@ const NavigationSheet = ({
           <SheetTitle className="font-sans">{title}</SheetTitle>
         </SheetHeader>
         <InternalMenu meinMenu={meinMenu} onClose={onClose} />
-        <SheetFooter className="flex justify-between w-full flex-row">
-          <Link
+        <SheetFooter className="flex justify-center w-full flex-row mb-20">
+          {/* <Link
             href={'/account'}
             className="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 pl-4 py-2.5 text-sm font-normal hover:underline"
           >
             {t('accoutn')}
-          </Link>
+          </Link> */}
 
-          <LanguageSwitcher align="end" />
+          {/* <LanguageSwitcher align="center" side='top' locale={locale} /> */}
         </SheetFooter>
       </SheetContent>
     </Sheet>

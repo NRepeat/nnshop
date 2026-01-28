@@ -20,10 +20,12 @@ export function LanguageSwitcher({
   className,
   align,
   locale,
+  side
 }: {
   locale?: string;
   className?: string;
   align?: 'center' | 'start' | 'end' | undefined;
+  side?: "top" | "right" | "bottom" | "left" | undefined
 }) {
   const t = useTranslations('Header.locale');
   const pathname = usePathname();
@@ -56,7 +58,7 @@ export function LanguageSwitcher({
           <span className="sr-only">Switch language</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="rounded-none gap-2" align={align}>
+      <DropdownMenuContent className="rounded-none gap-2" align={align} side={side}>
         <DropdownMenuItem
           className={cn('rounded-none', {
             'bg-gray-200': selectedLocale === 'uk',

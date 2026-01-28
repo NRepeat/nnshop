@@ -68,7 +68,7 @@ export default function LoginForm({
                   setIsLoading(false);
                 }
               })}
-              className="pr-6 md:pr-8 pl-1"
+              className="pr-0 md:pr-8 pl-1"
             >
               <FieldGroup className="gap-6">
                 <div className="flex flex-col items-center gap-2 text-center mb-4">

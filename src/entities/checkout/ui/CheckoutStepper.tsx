@@ -77,7 +77,7 @@ export const CheckoutStepper = ({ completedSteps }: CheckoutStepperProps) => {
           const isActive = step.key === currentStep;
           const isCompleted = isStepCompleted(step.key) || index < currentStepIndex;
           const isAccessible = isStepAccessible(step.key);
-          console.log("🚀 ~ CheckoutStepper ~ isAccessible:", isAccessible,step.key)
+      
 
           const StepIcon = (
             <div

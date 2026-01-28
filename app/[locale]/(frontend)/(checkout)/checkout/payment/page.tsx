@@ -50,7 +50,6 @@ export default async function PaymentPage(props: Props) {
   const { locale } = await props.params;
 
   const deliveryInfo = await getDeliveryInfo();
-  console.log('🚀 ~ PaymentPage ~ deliveryInfo:', deliveryInfo);
   if (!deliveryInfo) {
     redirect('/checkout/delivery');
   }

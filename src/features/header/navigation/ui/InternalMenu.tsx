@@ -40,16 +40,16 @@ export const InternalMenu = ({
             const subId = `sub-${subItem.id || subItem.title}`;
             const hasSubItems = subItem.items && subItem.items.length > 0;
             return (
-              <div key={subId} className="w-full h-full flex flex-col flex-1">
+              <div key={subId} className="w-full h-full flex flex-col flex-1 ">
                 {hasSubItems ? (
                   <AccordionItem
                     value={subItem.title}
                     className="border-none rounded-none py-0"
                   >
-                    <AccordionTrigger className="rounded-none  py-4 font-300  border-t border-muted  hover:underline">
+                    <AccordionTrigger className="rounded-none  py-4 font-300  border-t border-muted  hover:underline text-lg">
                       {subItem.title}
                     </AccordionTrigger>
-                    <AccordionContent className="border-l border-foreground/10 py-4 mb-1 ">
+                    <AccordionContent className=" border-foreground/10 py-4 mb-1 ">
                       {subItem.items.map((subSubItem) => {
                         const subSubId = `subsub-${subSubItem.id || subSubItem.title}`;
                         const hasGrandChildren =
@@ -64,7 +64,7 @@ export const InternalMenu = ({
                               >
                                 <AccordionTrigger
                                   value={subSubId}
-                                  className="pl-4 py-4 text-sm font-normal  hover:underline"
+                                  className="pl-4 py-4  font-normal  hover:underline text-lg"
                                 >
                                   {subSubItem.title}
                                 </AccordionTrigger>
@@ -84,8 +84,8 @@ export const InternalMenu = ({
                                       }}
                                       className="block"
                                     >
-                                      <div className="pl-4  text-sm font-normal text-foreground/80  hover:underline ">
-                                        <p className="border-l border-foreground/10 py-4 pl-3">
+                                      <div className="pl-4  text-base font-normal text-foreground/80  hover:underline ">
+                                        <p className=" border-foreground/10 py-4 pl-3">
                                           {grandChild.title}
                                         </p>
                                       </div>
@@ -100,7 +100,7 @@ export const InternalMenu = ({
                                   e.preventDefault();
                                   onClose(subSubItem.url);
                                 }}
-                                className="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 pl-4 py-4 text-sm font-normal hover:underline"
+                                className="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 pl-4 py-4  font-normal hover:underline text-lg"
                               >
                                 {subSubItem.title}
                               </Link>
