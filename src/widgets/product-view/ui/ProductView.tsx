@@ -24,7 +24,7 @@ export async function ProductView({
   // const isFavorite = await isProductFavorite(product.id, session);
   // console.log('🚀 ~ ProductSessionView ~ isFavorite:', isFavorite);
   return (
-    <div className="container  space-y-16 mt-10">
+    <div className="container  space-y-16 my-10">
       <ProductViewProvider
         favCommponent={children}
         product={product}

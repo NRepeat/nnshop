@@ -27,19 +27,24 @@ const CartSheet = async ({ locale }: { locale: string }) => {
 
   const items = cart?.cart?.lines.edges.map((item) => {
     const product = item.node.merchandise.product;
-    const sale =
-      Number(
-        product.metafields.find((m) => m?.key === 'znizka')?.value || '0',
-      ) || 0;
-    const price = Number(item.node.cost.amountPerQuantity.amount);
+
+    // Get sale percentage from metafield
+    const sale = Number(
+      product.metafields.find((m) => m?.key === 'znizka')?.value || '0',
+    ) || 0;
+
+    // Get original price from cart
+    const originalPrice = Number(item.node.cost.amountPerQuantity.amount);
     const quantity = item.node.quantity;
-    const discountedPrice = price - (price * sale) / 100;
-    const totalPrice = sale > 0 ? discountedPrice * quantity : price * quantity;
+
+    // Calculate discounted price
+    const discountedPrice = sale > 0 ? originalPrice * (1 - sale / 100) : originalPrice;
+    const totalPrice = discountedPrice * quantity;
 
     return {
       id: item.node.id,
       title: product.title,
-      price: item.node.cost.amountPerQuantity.amount,
+      price: originalPrice.toString(),
       handle: product.handle,
       size: item.node.merchandise.selectedOptions.find(
         (option) => option.name === sizeLabel,
@@ -47,7 +52,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
       color: item.node.merchandise.selectedOptions.find(
         (option) => option.name === 'Color',
       )?.value,
-      quantity: item.node.quantity,
+      quantity: quantity,
       totalPrice: totalPrice.toString(),
       image: item.node.merchandise?.image
         ? item.node.merchandise.image.url

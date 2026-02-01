@@ -1,7 +1,5 @@
-import { auth } from '@features/auth/lib/auth';
 import { routing } from '@shared/i18n/routing';
 import createMiddleware from 'next-intl/middleware';
-import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 const handleI18nRouting = createMiddleware(routing);
@@ -16,19 +14,6 @@ export async function proxy(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = `${pathname === '/' ? '' : pathname}/woman`;
     return NextResponse.redirect(url);
-  }
-
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    try {
-      await auth.api.signInAnonymous();
-    } catch (error) {
-      console.error('Failed to sign in anonymously:', error);
-      return NextResponse.redirect(new URL('/login', request.url));
-    }
   }
 
   return handleI18nRouting(request);

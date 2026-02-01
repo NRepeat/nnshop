@@ -9,7 +9,7 @@ export function Providers({ children }: { children: ReactNode }) {
       {/* <Provider> */}
         <NuqsAdapter>
           {children}
-          <Toaster />
+          <Toaster position="top-right" />
         </NuqsAdapter>
       {/* </Provider> */}
     </NextIntlClientProvider>

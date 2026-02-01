@@ -113,13 +113,15 @@ const Gallery = ({
                     height={image.height ?? 0}
                   >
                     {({ ref, open }) => (
-                      <div className="flex shrink justify-center" ref={ref}>
+                      <div
+                        className="relative w-full aspect-square flex items-center justify-center"
+                        ref={ref}
+                      >
                         <Image
                           src={image.url}
                           alt={image.altText || ''}
-                          width={image.width || '400'}
-                          height={image.height || '400'}
-                          className="h-auto w-auto max-h-[55vh] max-w-full"
+                          fill
+                          className="object-contain"
                           onClick={open}
                           fetchPriority={index === 0 ? 'high' : 'auto'}
                           loading={index === 0 ? 'eager' : 'lazy'}

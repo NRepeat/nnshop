@@ -39,13 +39,24 @@ const CartPageSession = async ({
   setRequestLocale(locale);
   const tHeader = await getTranslations({ locale, namespace: 'Header.nav' });
   const t = await getTranslations({ locale, namespace: 'CartPage' });
-  const session = await auth.api.getSession({ headers: await headers() });
+  let session = await auth.api.getSession({ headers: await headers() });
 
   const breadcrumbItems = [
     { label: tHeader('home'), href: '/' },
     { label: t('title'), href: '/cart', isCurrent: true },
   ];
 
+  // Create anonymous session if no session exists
+  if (!session || !session.user) {
+    try {
+      await auth.api.signInAnonymous({ headers: await headers() });
+      session = await auth.api.getSession({ headers: await headers() });
+    } catch (error) {
+      console.error('Failed to create anonymous session:', error);
+    }
+  }
+
+  // If still no session after trying to create one, show empty cart
   if (!session || !session.user) {
     return (
       <div className="container mx-auto py-10 mt-2 md:mt-10 min-h-[60vh]">

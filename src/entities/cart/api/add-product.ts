@@ -10,8 +10,12 @@ import { CART_TAGS } from '@shared/lib/cached-fetch';
 export async function addToCartAction(productVariantId: string) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
+
     if (!session) {
-      throw new Error('Session not found');
+      return {
+        success: false,
+        error: 'No session found. Please refresh the page and try again.'
+      };
     }
 
     const sessionCart = await prisma.cart.findFirst({

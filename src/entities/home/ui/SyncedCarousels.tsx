@@ -179,37 +179,39 @@ export const SyncedCarousels = ({
                                   </p>
                                   <div className="mt-auto">
                                     {product.node.metafield &&
-                                    product.node.metafield.key === 'znizka' ? (
+                                    product.node.metafield.key === 'znizka' &&
+                                    product.node.metafield.value &&
+                                    Number(product.node.metafield.value) > 0 ? (
                                       <div className="flex items-center gap-2 flex-wrap">
                                         <span className="line-through text-gray-500 text-xs">
-                                          {
+                                          {parseFloat(
                                             product.node.priceRange
-                                              .maxVariantPrice.amount
-                                          }{' '}
+                                              ?.maxVariantPrice.amount,
+                                          ).toFixed(0)}{' '}
                                           {getSymbolFromCurrency(
                                             product.node.priceRange
-                                              .maxVariantPrice.currencyCode,
+                                              ?.maxVariantPrice.currencyCode,
                                           ) ||
                                             product.node.priceRange
-                                              .maxVariantPrice.currencyCode}
+                                              ?.maxVariantPrice.currencyCode}
                                         </span>
 
                                         <span className="text-red-600 font-bold text-sm">
                                           {(
                                             product.node.priceRange
-                                              .maxVariantPrice.amount *
+                                              ?.maxVariantPrice.amount *
                                             (1 -
                                               parseFloat(
                                                 product.node.metafield.value,
                                               ) /
                                                 100)
-                                          ).toFixed(2)}{' '}
+                                          ).toFixed(0)}{' '}
                                           {getSymbolFromCurrency(
                                             product.node.priceRange
-                                              .maxVariantPrice.currencyCode,
+                                              ?.maxVariantPrice.currencyCode,
                                           ) ||
                                             product.node.priceRange
-                                              .maxVariantPrice.currencyCode}
+                                              ?.maxVariantPrice.currencyCode}
                                         </span>
 
                                         <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
@@ -218,16 +220,16 @@ export const SyncedCarousels = ({
                                       </div>
                                     ) : (
                                       <span className="font-bold text-sm">
-                                        {
+                                        {parseFloat(
                                           product.node.priceRange
-                                            .maxVariantPrice.amount
-                                        }{' '}
+                                            ?.maxVariantPrice.amount,
+                                        ).toFixed(0)}{' '}
                                         {getSymbolFromCurrency(
                                           product.node.priceRange
-                                            .maxVariantPrice.currencyCode,
+                                            ?.maxVariantPrice.currencyCode,
                                         ) ||
                                           product.node.priceRange
-                                            .maxVariantPrice.currencyCode}
+                                            ?.maxVariantPrice.currencyCode}
                                       </span>
                                     )}
                                   </div>

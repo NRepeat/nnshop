@@ -156,7 +156,7 @@ const OrderPageSession = async ({
   ];
 
   return (
-    <div className="container mx-auto py-10 mt-2 md:mt-10 min-h-screen">
+    <div className="container mx-auto py-10 mt-2  min-h-screen my-2 mb-10 md:mt-10">
       <Breadcrumbs items={breadcrumbItems} />
       <OrderDetails order={order} locale={locale} localOrder={localOrder} />
     </div>

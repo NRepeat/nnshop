@@ -11,13 +11,39 @@ export const linkAnonymousDataToUser = async ({
 }) => {
   try {
     await prisma.$transaction(async (tx) => {
-      // Update ContactInformation
+      // Delete any existing data for the new user to avoid unique constraint violations
+      // We prioritize keeping the anonymous user's data (cart, orders, etc.)
+
+      // First delete NovaPoshtaDepartment (has foreign key to DeliveryInformation)
+      const existingDeliveryInfo = await tx.deliveryInformation.findMany({
+        where: { userId: newUserId },
+        select: { id: true },
+      });
+
+      for (const deliveryInfo of existingDeliveryInfo) {
+        await tx.novaPoshtaDepartment.deleteMany({
+          where: { deliveryInformationId: deliveryInfo.id },
+        });
+      }
+
+      await tx.contactInformation.deleteMany({
+        where: { userId: newUserId },
+      });
+
+      await tx.deliveryInformation.deleteMany({
+        where: { userId: newUserId },
+      });
+
+      await tx.paymentInformation.deleteMany({
+        where: { userId: newUserId },
+      });
+
+      // Now update anonymous user's data to belong to the new user
       await tx.contactInformation.updateMany({
         where: { userId: anonymousUserId },
         data: { userId: newUserId },
       });
 
-      // Update DeliveryInformation
       await tx.deliveryInformation.updateMany({
         where: { userId: anonymousUserId },
         data: { userId: newUserId },

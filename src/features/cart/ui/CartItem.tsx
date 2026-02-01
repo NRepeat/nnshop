@@ -33,9 +33,11 @@ export const CartItem = ({
 }: CartItemProps) => {
   const t = useTranslations('Header.cart.drawer');
   const sale = Number(product.sale);
-  const price = Number(product.price);
-  const discountedPrice = price - (price * sale) / 100;
+  const originalPrice = Number(product.price); // This is the original price from variant
   const symbol = getSymbolFromCurrency(currencySymbol);
+
+  // Calculate discounted price
+  const discountedPrice = sale > 0 ? originalPrice * (1 - sale / 100) : originalPrice;
 
   return (
     <Card className="overflow-hidden">
@@ -77,7 +79,7 @@ export const CartItem = ({
                 {sale > 0 ? (
                   <div className="flex items-center gap-2">
                     <span className="line-through text-muted-foreground">
-                      {price.toFixed(0)}
+                      {originalPrice.toFixed(0)}
                       {symbol}
                     </span>
                     <span className="text-red-500 font-medium">
@@ -90,7 +92,7 @@ export const CartItem = ({
                   </div>
                 ) : (
                   <span className="font-medium">
-                    {price.toFixed(0)}
+                    {originalPrice.toFixed(0)}
                     {symbol}
                   </span>
                 )}

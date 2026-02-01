@@ -24,7 +24,7 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
   );
   const items = products?.map((product, index) => {
     return (
-      <Link href={product.handle} className="h-full" key={index}>
+      <Link href={'/product/' + product.handle} className="h-full" key={index}>
         <div className="flex flex-col gap-3 group relative overflow-hidden h-full">
           <div className="flex justify-start w-full">
             <div className="relative aspect-[1/1] w-full md:max-w-[90%] lg:max-w-95%] ">
@@ -43,10 +43,15 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
               {product.title}
             </p>
             <div className="mt-auto">
-              {product.metafield && product.metafield.key === 'znizka' ? (
+              {product.metafield &&
+              product.metafield.key === 'znizka' &&
+              product.metafield.value &&
+              Number(product.metafield.value) > 0 ? (
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="line-through text-gray-500 text-xs">
-                    {product.priceRange?.maxVariantPrice.amount}{' '}
+                    {parseFloat(
+                      product.priceRange?.maxVariantPrice.amount,
+                    ).toFixed(0)}{' '}
                     {getSymbolFromCurrency(
                       product.priceRange?.maxVariantPrice.currencyCode,
                     ) || product.priceRange?.maxVariantPrice.currencyCode}
@@ -56,7 +61,7 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
                     {(
                       product.priceRange?.maxVariantPrice.amount *
                       (1 - parseFloat(product.metafield.value) / 100)
-                    ).toFixed(2)}{' '}
+                    ).toFixed(0)}{' '}
                     {getSymbolFromCurrency(
                       product.priceRange?.maxVariantPrice.currencyCode,
                     ) || product.priceRange?.maxVariantPrice.currencyCode}
@@ -68,7 +73,9 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
                 </div>
               ) : (
                 <span className="font-bold text-sm">
-                  {product.priceRange?.maxVariantPrice.amount}{' '}
+                  {parseFloat(
+                    product.priceRange?.maxVariantPrice.amount,
+                  ).toFixed(0)}{' '}
                   {getSymbolFromCurrency(
                     product.priceRange?.maxVariantPrice.currencyCode,
                   ) || product.priceRange?.maxVariantPrice.currencyCode}

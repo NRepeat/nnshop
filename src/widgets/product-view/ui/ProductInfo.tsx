@@ -147,7 +147,9 @@ export const ProductInfo = ({
           </Link>
           <div className="flex items-center gap-2">
             <h2 className="text-lg text-gray-800">{product.title}</h2>
-            {atTheFitting === 'true' && <Badge>{t('atTheFitting')}</Badge>}
+            {atTheFitting === 'true' && selectedVariant?.quantityAvailable === 0 && (
+              <Badge>{t('atTheFitting')}</Badge>
+            )}
           </div>
           {selectedVariant?.sku && (
             <p className="text-sm text-gray-500">

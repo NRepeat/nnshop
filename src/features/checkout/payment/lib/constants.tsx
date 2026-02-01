@@ -1,4 +1,4 @@
-import { CreditCard, PackageCheck } from 'lucide-react';
+import { CreditCard, PackageCheck, Building2 } from 'lucide-react';
 import { PaymentInfo } from '../schema/paymentSchema';
 
 export const paymentMethods: {
@@ -8,16 +8,16 @@ export const paymentMethods: {
   icon: React.ReactNode;
 }[] = [
   {
-    id: 'pay-now',
-    name: 'Pay Now',
-    availableMethods: ['liqpay', 'credit-card', 'paypal', 'stripe'],
-    icon: <CreditCard />,
-  },
-  {
     id: 'after-delivered',
     name: 'After Delivered',
     availableMethods: [],
     icon: <PackageCheck />,
+  },
+  {
+    id: 'pay-now',
+    name: 'Pay Now',
+    availableMethods: ['bank-transfer'],
+    icon: <CreditCard />,
   },
   // {
   //   id: 'pay-later',
@@ -33,23 +33,8 @@ export const paymentProviders: {
   icon: React.ReactNode;
 }[] = [
   {
-    id: 'liqpay',
-    name: 'LiqPay',
-    icon: <CreditCard />,
+    id: 'bank-transfer',
+    name: 'Bank Transfer',
+    icon: <Building2 />,
   },
-  // {
-  //   id: 'credit-card',
-  //   name: 'Credit Card',
-  //   icon: <CreditCard />,
-  // },
-  // {
-  //   id: 'paypal',
-  //   name: 'PayPal',
-  //   icon: <CreditCard />,
-  // },
-  // {
-  //   id: 'stripe',
-  //   name: 'Stripe',
-  //   icon: <CreditCard />,
-  // },
 ] as const;

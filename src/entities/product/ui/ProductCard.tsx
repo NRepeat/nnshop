@@ -171,7 +171,8 @@ export const ProductCard = ({
               <div className="mt-auto">
                 {product.metafield &&
                 product.metafield.key === 'znizka' &&
-                Number(product.metafield.value) !== 0 ? (
+                product.metafield.value &&
+                Number(product.metafield.value) > 0 ? (
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="line-through text-gray-500 text-xs">
                       {parseFloat(
@@ -211,15 +212,6 @@ export const ProductCard = ({
           </div>
         }
 
-        {/*{addToCard && (
-            <div className=" w-full mt-1 md:mt-4 flex justify-center px-2">
-              <AddToCartButton
-                product={product}
-                variant="outline"
-                className="w-full   rounded-none mt-2 bg-transparent border shadow-none"
-              />
-            </div>
-          )}*/}
       </CardContent>
     </Card>
   );

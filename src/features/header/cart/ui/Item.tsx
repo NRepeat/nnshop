@@ -24,13 +24,13 @@ const CartItem = ({
   cartId: string;
   itemId: string;
 }) => {
-  //   const sizeOptions = product.options.find(
-  //   (option) => option.name.toLowerCase() === 'Розмір'.toLowerCase(),
-  // )?.values;
   const sale = Number(product.sale);
-  const price = Number(product.price);
-  const discountedPrice = price - (price * sale) / 100;
+  const originalPrice = Number(product.price);
   const t = useTranslations('Header.cart.drawer');
+
+  // Calculate discounted price
+  const discountedPrice = sale > 0 ? originalPrice * (1 - sale / 100) : originalPrice;
+
   return (
     <Card className="p-0 rounded-none shadow-none ">
       <Link href={'/product/' + product.handle} className="flex col-span-1">
@@ -48,28 +48,28 @@ const CartItem = ({
               <p>
                 {sale > 0 ? (
                   <>
-                    <span className="line-through">
-                      {price.toFixed()}
+                    <span className="line-through text-gray-400">
+                      {originalPrice.toFixed()}
                       {getSymbolFromCurrency('UAH')}
                     </span>
                     <span className="text-red-500 ml-2">
                       {discountedPrice.toFixed()}
+                      {getSymbolFromCurrency('UAH')}
                     </span>
                   </>
                 ) : (
-                  price.toFixed()
+                  <>
+                    {originalPrice.toFixed()}
+                    {getSymbolFromCurrency('UAH')}
+                  </>
                 )}
-                {sale > 0}
-                <span className={cn({ 'text-red-500': sale > 0 })}>
-                  {getSymbolFromCurrency('UAH')}{' '}
-                </span>
-                x {product.quantity}
+                {' '}x {product.quantity}
               </p>
              {product.size && <p>{t('sizeLabel')}{product.size}</p>}
             </div>
           </div>
           <div className="col-span-1 flex flex-col justify-center">
-            <p className="justify-items-end text-right  ">
+            <p className={cn('justify-items-end text-right', { 'text-red-500': sale > 0 })}>
               {Number(product.totalPrice).toFixed()}
               {getSymbolFromCurrency('UAH')}
             </p>

@@ -34,41 +34,40 @@ function OrderItemCard({ item, currency }: { item: CartItem; currency: string })
   const currencySymbol = getSymbolFromCurrency(currency) || currency;
 
   return (
-    <div className="flex gap-3 py-3 border-b border-gray-100 last:border-b-0">
+    <div className="flex gap-4 py-3 border-b border-gray-100 last:border-b-0">
       {/* Product Image */}
-      <div className="relative w-16 h-20 flex-shrink-0 bg-gray-50 overflow-hidden">
+      <div className="relative w-20 h-24 flex-shrink-0 bg-white overflow-hidden rounded border border-gray-100">
         {item.image ? (
           <Image
             src={item.image}
             alt={item.title}
             fill
-            className="object-cover"
-            sizes="64px"
+            className="object-contain"
+            sizes="80px"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-300">
             <ShoppingBag className="w-6 h-6" />
           </div>
         )}
-        {/* Quantity badge */}
-        <div className="absolute -top-1 -right-1 w-5 h-5 bg-gray-900 text-white text-xs flex items-center justify-center rounded-full">
-          {item.quantity}
-        </div>
       </div>
 
       {/* Product Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 truncate leading-tight">
+        <p className="text-sm font-medium text-gray-900 line-clamp-2 leading-tight mb-1">
           {item.title}
         </p>
         {item.size && (
-          <p className="text-xs text-gray-500 mt-0.5">
-            {item.size}
+          <p className="text-xs text-gray-500 mb-1">
+            Размер: {item.size}
           </p>
         )}
+        <p className="text-xs text-gray-500 mb-2">
+          Количество: {item.quantity}
+        </p>
 
         {/* Price */}
-        <div className="mt-1.5 flex items-center gap-2">
+        <div className="flex items-center gap-2">
           {item.sale > 0 ? (
             <>
               <span className="text-xs text-gray-400 line-through">
