@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useRouter } from '@shared/i18n/navigation';
@@ -49,8 +49,8 @@ export default function PaymentForm({
     shouldFocusError: false,
     shouldUnregister: false,
     defaultValues: {
-      paymentMethod: defaultValues?.paymentMethod || 'pay-now',
-      paymentProvider: defaultValues?.paymentProvider || 'liqpay',
+      paymentMethod: defaultValues?.paymentMethod || 'after-delivered',
+      paymentProvider: defaultValues?.paymentProvider || 'bank-transfer',
       amount: amount,
       currency: currency || defaultValues?.currency,
       description: defaultValues?.description || 'Order payment',
@@ -58,14 +58,19 @@ export default function PaymentForm({
   });
   const selectedPaymentMethodValue = form.watch('paymentMethod');
   const selectedProviderValue = form.watch('paymentProvider');
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
+    setIsLoading(true);
     try {
       if (draftOrder && draftOrder.shopifyDraftOrderId) {
         toast.success(t('paymentInformationSaved'));
+
+        // For "after-delivered", create unpaid order (payment pending)
         if (data.paymentMethod === 'after-delivered') {
           const completedOrder = await completeOrder(
             draftOrder.shopifyDraftOrderId,
+            true // paymentPending = true for unpaid orders
           );
           await savePaymentInfo(data, completedOrder.id);
           await resetCartSession();
@@ -74,8 +79,18 @@ export default function PaymentForm({
           );
         }
 
+        // For "pay-now", this shouldn't be called directly
+        // Payment should be processed first, then order completed
         if (data.paymentMethod === 'pay-now') {
-          return;
+          const completedOrder = await completeOrder(
+            draftOrder.shopifyDraftOrderId,
+            false // paymentPending = false for paid orders
+          );
+          await savePaymentInfo(data, completedOrder.id);
+          await resetCartSession();
+          return router.push(
+            `/checkout/success/${completedOrder?.shopifyDraftOrderId?.split('/').pop()}`,
+          );
         }
       } else {
         // toast.error(result.message);
@@ -83,6 +98,7 @@ export default function PaymentForm({
     } catch (error) {
       console.error('Error saving payment info:', error);
       toast.error(t('errorSavingPaymentInformation'));
+      setIsLoading(false);
     }
   };
 
@@ -91,7 +107,7 @@ export default function PaymentForm({
       <Form {...form}>
         {form.formState.isSubmitted &&
           Object.keys(form.formState.errors).length > 0 && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-md">
               <h4 className="text-red-800 font-medium text-sm mb-2">
                 {t('pleaseFixErrors')}
               </h4>
@@ -128,66 +144,46 @@ export default function PaymentForm({
           />
         )}
 
-        {selectedPaymentMethodValue === 'pay-now' &&
-          selectedProviderValue === 'liqpay' &&
-          liqpayPublicKey &&
-          liqpayPrivateKey &&
-          draftOrder.shopifyDraftOrderId && (
-            <LiqPayForm
-              liqpayPublicKey={liqpayPublicKey}
-              liqpayPrivateKey={liqpayPrivateKey}
-              shopifyDraftOrderId={draftOrder.shopifyDraftOrderId}
-              amount={amount}
-              currency={form.getValues('currency')}
-              checkoutData={completeCheckoutData}
-            />
-          )}
-
-        {!(
-          selectedPaymentMethodValue === 'pay-now' &&
-          selectedProviderValue === 'liqpay'
-        ) && (
-          <div className="">
-            <Button
-              className="w-full h-12 bg-green-800"
-              disabled={form.formState.isSubmitting}
-              onClick={async () => {
-                await onSubmit({
-                  amount: form.getValues('amount'),
-                  currency: form.getValues('currency'),
-                  orderId: form.getValues('orderId'),
-                  paymentMethod: form.getValues('paymentMethod'),
-                  paymentProvider: form.getValues('paymentProvider'),
-                  description: form.getValues('description'),
-                });
-              }}
-            >
-              {form.formState.isSubmitting ? (
-                <div className="flex items-center gap-3">
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>{t('processingPayment')}</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                    />
-                  </svg>
-                  <span>{t('completePayment')}</span>
-                </div>
-              )}
-            </Button>
-          </div>
-        )}
+        <div className="">
+          <Button
+            className="w-full h-12 bg-green-800"
+            disabled={isLoading}
+            onClick={async () => {
+              await onSubmit({
+                amount: form.getValues('amount'),
+                currency: form.getValues('currency'),
+                orderId: form.getValues('orderId'),
+                paymentMethod: form.getValues('paymentMethod'),
+                paymentProvider: form.getValues('paymentProvider'),
+                description: form.getValues('description'),
+              });
+            }}
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-3">
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <span>{t('processingPayment')}</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                  />
+                </svg>
+                <span>{t('completePayment')}</span>
+              </div>
+            )}
+          </Button>
+        </div>
       </Form>
     </div>
   );

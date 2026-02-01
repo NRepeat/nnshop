@@ -10,8 +10,12 @@ import { CART_TAGS } from '@shared/lib/cached-fetch';
 export async function addToCartAction(productVariantId: string) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
+
     if (!session) {
-      throw new Error('Session not found');
+      return {
+        success: false,
+        error: 'No session found. Please refresh the page and try again.'
+      };
     }
 
     const sessionCart = await prisma.cart.findFirst({
@@ -28,8 +32,8 @@ export async function addToCartAction(productVariantId: string) {
         productVariantId,
       });
       if (result.success) {
-        revalidateTag(CART_TAGS.CART);
-        revalidateTag(CART_TAGS.CART_ITEMS);
+        revalidateTag(CART_TAGS.CART, { expire: 0 });
+        revalidateTag(CART_TAGS.CART_ITEMS, { expire: 0 });
         return { success: true, cart: result.cart };
       }
     } else {
@@ -42,8 +46,8 @@ export async function addToCartAction(productVariantId: string) {
       });
     }
     if (result.success) {
-      revalidateTag(CART_TAGS.CART);
-      revalidateTag(CART_TAGS.CART_ITEMS);
+      revalidateTag(CART_TAGS.CART, { expire: 0 });
+      revalidateTag(CART_TAGS.CART_ITEMS, { expire: 0 });
       return { success: true, cart: result.cart };
     }
 

@@ -18,8 +18,8 @@ export default defineField({
     {
       name: 'url',
       title: 'URL',
-      type: 'url',
-      validation: (Rule) => Rule.required().uri({ scheme: ['http', 'https'] }),
+      type: 'string',
+      // validation: (Rule) => Rule.required().uri({ scheme: ['http', 'https'] }),
     },
     // Open in a new window
     {

@@ -7,3 +7,5 @@ export const routing = defineRouting({
   locales: locales,
   defaultLocale: 'uk',
 });
+
+export const genders:string[] = ['man', 'woman'];

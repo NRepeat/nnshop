@@ -72,5 +72,20 @@ export const blockContentType = defineType({
         },
       ],
     }),
+    defineArrayMember({
+      type: 'hero',
+    }),
+    defineArrayMember({
+      type: 'mainCollectionGrid',
+    }),
+    defineArrayMember({
+      type: 'topic',
+    }),
+    defineArrayMember({
+      type: 'productCarousel',
+    }),
+    defineArrayMember({
+      type: 'collectionsCarousel',
+    }),
   ],
 });

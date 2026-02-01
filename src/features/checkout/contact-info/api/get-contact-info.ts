@@ -1,16 +1,24 @@
-import { auth } from '@features/auth/lib/auth';
+'use server';
+
 import { prisma } from '@shared/lib/prisma';
-import { headers } from 'next/headers';
+import { Session, User } from 'better-auth';
 
-const getContactInfo = async () => {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) {
-    throw new Error('Session not found');
+
+const getContactInfo = async (
+  session: { session: Session; user: User } | null,
+) => {
+  try {
+    if (!session) {
+      return null;
+    }
+
+    const contactInfo = await prisma.contactInformation.findUnique({
+      where: { userId: session.user.id },
+    });
+    return contactInfo;
+  } catch (error) {
+    console.error('Error getting contact info:', error);
+    return null;
   }
-
-  const contactInfo = await prisma.contactInformation.findUnique({
-    where: { userId: session.user.id },
-  });
-  return contactInfo;
 };
 export default getContactInfo;

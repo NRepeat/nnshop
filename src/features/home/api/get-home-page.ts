@@ -1,22 +1,24 @@
 import { normalizeLocaleForSanity } from '@/shared/lib/locale';
 import { sanityFetch } from '@/shared/sanity/lib/client';
-import { HOME_PAGE_QUERY } from '@/shared/sanity/lib/query';
-import { HOME_PAGE_QUERYResult } from '@/shared/sanity/types';
+import { HOME_PAGE } from '@/shared/sanity/lib/query';
 import { Locale } from '@/shared/i18n/routing';
 
 type RouteProps = {
-  params: Promise<{ locale: Locale }>;
+  params: { locale: Locale; gender: string };
 };
 
-export const getPage = async (params: RouteProps['params']) => {
-  const { locale } = await params;
-
+export const getHomePage = async (params: RouteProps['params']) => {
+  const { locale } = params;
   const sanityLocale = await normalizeLocaleForSanity(locale);
+  const page = await sanityFetch({
+    query: HOME_PAGE,
+    params: {
+      language: sanityLocale,
+      slug: params.gender,
+    },
+    tags: [params.gender, 'page'],
+    revalidate: 60,
+  });
 
-  const page = (await sanityFetch({
-    query: HOME_PAGE_QUERY,
-    params: { language: sanityLocale },
-    revalidate: 3600,
-  })) as HOME_PAGE_QUERYResult;
   return page;
 };

@@ -404,9 +404,173 @@ export const PAGE_QUERY =
     }
   }
 }`);
+export const HOME_PAGE =
+  defineQuery(`*[_type == "page" && slug == $slug  && language == $language][0]{
+    ...,
+    "_translations": *[_type == "translation.metadata" && references(^._id)].translations[].value->{
+      title,
+      slug,
+      language
+    },
+    "seo": {
+    "title": coalesce(seo.title, title, ""),
+      "description": coalesce(seo.description,  ""),
+      "image": seo.image,
+      "noIndex": seo.noIndex == true
+     },
+    content[]{
+      ...,
+      _type == "mainCollectionGrid" => {
+           ...,
+           "title":title[$language],
+           "collections": collections[]->{
+             title,
+             "handle": store.slug.current,
+             "id": store.id
+           }
+        },
+        _type == "productCarousel" => {
+             ...,
+             "title":title[$language],
+             "collection": collection->{
+               title,
+               "handle": store.slug.current,
+               "id": store.id
+             }
+          },
+          _type == "splitImage" => {
+               ...,
+               "title":title[$language],
+               "collection": collection->{
+                 title,
+                 "handle": store.slug.current,
+                 "id": store.id
+               }
+            },
+            _type == "features" => {
+              _key,
+              _type,
+              "features": features[] {
+                _key,
+                _type,
+                "title":title[$language],
+                "text":text[$language],
+              }
+            },
+            _type == "collectionsWithPreviews" => {
+              _key,
+              _type,
+              "title":title[$language],
+              "collections": collections[]->{
+                title,
+                "handle": store.slug.current,
+                "id": store.id
+              }
+            }
+    }
+  }`);
 
 export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
-    homePage->{
+    homePageMan->{
+      ...,
+      content[]{
+        ...,
+        _id,
+        _type == "sliderBlock" => {
+          slides[]{
+             ...,
+            _key,
+            link[]{
+             ...,
+             reference->{
+               _id,
+               _type,
+               title,
+               "slug": select(
+                 _type == "product" => store.slug.current,
+                 _type == "collection" => store.slug.current,
+                 _type == "page" => slug.current
+               )
+             }
+           },
+            backgroundImage{
+              asset->{
+                _id,
+                url,
+                metadata{dimensions}
+              }
+            }
+          }
+        },
+        _type == "productCarousel" => {
+          products[]->{
+            _id,
+            store{
+              title,
+              isDeleted,
+              previewImageUrl,
+              priceRange{
+              maxVariantPrice,
+              minVariantPrice
+              },
+              productType
+            }
+          },
+          collection -> {
+            _id,
+            title,
+            store{
+             imageUrl,
+             isDeleted,
+             slug{
+             current
+             },
+             title
+            }
+          }
+        },
+        _type == "collectionsCarousel" => {
+          collections[]->{
+            _id,
+            title,
+            store{
+             imageUrl,
+             isDeleted,
+             slug{
+             current
+             },
+             title
+            }
+          }
+        },
+        _type == "splitImage" => {
+          ...,
+          link[]{
+            ...,
+            reference->{
+              _id,
+              _type,
+              title,
+              "slug": select(
+                _type == "product" => store.slug.current,
+                _type == "collection" => store.slug.current,
+                _type == "page" => slug.current
+              )
+            }
+          }
+        },
+        _type == "faqs" => {
+          ...,
+          faqs[]->{
+            _id,
+            title,
+            body,
+            "text": pt::text(body)
+          }
+        }
+      }
+    },
+    homePageWoman->{
       ...,
       content[]{
         ...,
@@ -538,4 +702,46 @@ export const SITEMAP_QUERY = defineQuery(`
     _updatedAt,
     language
 }
+`);
+
+export const HEADER_QUERY = defineQuery(`
+  *[_type == 'siteSettings'][0]{
+    infoBar {
+      ...,
+      telephone,
+      "text":text[$locale],
+      link {
+        ...,
+        "collectionData": reference-> {
+          title,
+          "handle": store.slug.current,
+          "pageHandle": slug,
+          "id": store.id
+        }
+      }
+    },
+    header {
+      ...,
+      categoryLinks[]{
+        _key,
+        "title": title[$locale],
+        "collectionData": reference-> {
+          title,
+          "slug": store.slug.current,
+          "pageHandle": slug,
+          "id": store.id
+        }
+      },
+      mainCategory[]{
+        _key,
+        "title": title[$locale],
+        "collectionData": reference-> {
+          title,
+          "slug": store.slug.current,
+          "pageHandle": slug,
+          "id": store.id
+        }
+      }
+    }
+  }
 `);

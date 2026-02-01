@@ -7,7 +7,7 @@ export const structure: StructureResolver = (S, context) => {
     (role) => role.name === 'administrator',
   );
   return S.list()
-    .title('Blog')
+    .title('Shop')
     .items([
       S.documentTypeListItem('post').title('Posts'),
       S.documentTypeListItem('category').title('Categories'),

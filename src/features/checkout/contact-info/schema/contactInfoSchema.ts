@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isValidPhone } from '@shared/lib/validation/phone';
 
 export const getContactInfoSchema = (t: (key: string) => string) => {
   return z.object({
@@ -8,7 +9,9 @@ export const getContactInfoSchema = (t: (key: string) => string) => {
     phone: z
       .string()
       .min(1, t('phoneRequired'))
-      .regex(/^\+[1-9]\d{1,14}$/, t('invalidPhoneNumber')),
+      .refine((val) => isValidPhone(val), {
+        message: t('invalidPhoneNumber'),
+      }),
     countryCode: z.string().min(1, t('countryCodeRequired')),
   });
 };

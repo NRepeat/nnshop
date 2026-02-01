@@ -5,7 +5,9 @@ import { nextCookies } from 'better-auth/next-js';
 import { anonymous } from 'better-auth/plugins';
 import { anonymousCartBuyerIdentityUpdate } from '../../../entities/cart/api/anonymous-cart-buyer-identity-update';
 import { prisma } from '../../../shared/lib/prisma';
+import { resend } from '../../../shared/lib/resend';
 import { linkAnonymousDataToUser } from './on-link-account';
+import { createShopifyCustomer } from '@entities/customer/api/create-customer';
 
 const betterAuthSecret = process.env.BETTER_AUTH_SECRET;
 const betterAuthUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -24,27 +26,43 @@ export const auth = betterAuth({
     provider: 'postgresql',
   }),
   session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
-    updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
+    expiresIn: 60 * 60 * 24 * 7,
+    updateAge: 60 * 60 * 24,
     cookieCache: {
       enabled: true,
-      maxAge: 5 * 60, // Cache duration in seconds
+      maxAge: 5 * 60,
     },
   },
+
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
     sendResetPassword: async ({ user, url }) => {
-      // You can implement custom email sending logic here
-      // For now, we'll use console.log - replace with your email service
-      console.log(`Password reset URL for ${user.email}: ${url}`);
-
-      // Example with a hypothetical email service:
-      // await sendEmail({
-      //   to: user.email,
-      //   subject: 'Reset your password',
-      //   html: `<p>Click <a href="${url}">here</a> to reset your password.</p>`
-      // });
+      await resend.emails.send({
+        from: process.env.RESEND_FROM_EMAIL || 'noreply@example.com',
+        to: user.email,
+        subject: 'Reset your password',
+        html: `<p>Click <a href="${url}">here</a> to reset your password.</p>`,
+      });
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          console.log(
+            `User ${user.email} created, syncing with Shopify...`,
+            user,
+          );
+          // if (!user.isAnonymous) {
+          //   await createShopifyCustomer({
+          //     email: user.email,
+          //     password: user.email,
+          //     firstName: user.name,
+          //   });
+          // }
+        },
+      },
     },
   },
   socialProviders: {

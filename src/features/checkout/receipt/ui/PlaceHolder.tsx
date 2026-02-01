@@ -9,16 +9,16 @@ export const PlaceHolder = ({
   toolTipDescription: string;
 }) => {
   return (
-    <div className="flex justify-start p-2.5 w-full  gap-2   ">
+    <div className="flex items-center gap-3 p-3 w-full rounded-md border border-dashed border-gray-200">
       <Tooltip>
-        <TooltipTrigger asChild>{children}</TooltipTrigger>
+        <TooltipTrigger asChild>
+          <div className="shrink-0 text-gray-300">{children}</div>
+        </TooltipTrigger>
         <TooltipContent>
           <p>{toolTipDescription}</p>
         </TooltipContent>
       </Tooltip>
-      <div className="flex flex-col text-start justify-evenly py-4  w-full">
-        <PlaceHolderLine />
-        <PlaceHolderLine />
+      <div className="flex flex-col justify-evenly gap-1.5 w-full">
         <PlaceHolderLine />
         <PlaceHolderLine />
         <PlaceHolderLine />

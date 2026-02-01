@@ -9,11 +9,11 @@ export const pageType = defineType({
   fields: [
     defineField({
       name: 'title',
-      type: 'localizedString',
+      type: 'string',
     }),
     defineField({
       name: 'slug',
-      type: 'slug',
+      type: 'string',
     }),
     defineField({
       name: 'language',
@@ -26,20 +26,10 @@ export const pageType = defineType({
       name: 'content',
       type: 'pageBuilder',
     }),
-    defineField({
-      name: 'mainImage',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
-    }),
+
     defineField({
       name: 'seo',
       type: 'seo',
-    }),
-    defineField({
-      name: 'social',
-      type: 'social',
     }),
   ],
   preview: {
@@ -48,7 +38,7 @@ export const pageType = defineType({
       subtitle: 'slug.current',
     },
     prepare: ({ title, subtitle }) => ({
-      title: title?.en,
+      title: title,
       subtitle,
     }),
   },

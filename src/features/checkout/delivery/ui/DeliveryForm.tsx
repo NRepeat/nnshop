@@ -13,9 +13,10 @@ import { saveDeliveryInfo } from '../api/saveDeliveryInfo';
 import NovaPoshtaForm from './NovaPoshtaForm';
 import UkrPoshtaForm from './UkrPoshtaForm';
 import DeliveryMethodSelection from './DeliveryMethodSelection';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createDraftOrder } from '@features/order/api/create';
+import { useSession } from '@features/auth/lib/client';
 
 interface DeliveryFormProps {
   defaultValues?: DeliveryInfo | null;
@@ -24,6 +25,7 @@ interface DeliveryFormProps {
 export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
   const router = useRouter();
   const t = useTranslations('DeliveryForm');
+  const locale = useLocale();
 
   const deliverySchema = getDeliverySchema(t);
 
@@ -55,17 +57,19 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
       coordinates: department.coordinates,
     });
   };
-
+  const session = useSession();
   const onSubmit: SubmitHandler<DeliveryInfo> = async (data) => {
     try {
       const result = await saveDeliveryInfo(data);
 
       if (result.success) {
-        const completeCheckoutData = await getCompleteCheckoutData();
-        const draftOrder = await createDraftOrder(completeCheckoutData);
+        const completeCheckoutData = await getCompleteCheckoutData(
+          session.data,
+        );
+        const draftOrder = await createDraftOrder(completeCheckoutData, locale);
         toast.success(t('deliveryInformationSavedSuccessfully'));
         router.push(
-          `/checkout/payment/${draftOrder.order?.id.split('/').pop()}`,
+          `/checkout/payment/?order=${draftOrder.order?.id.split('/').pop()}`,
         );
       } else {
         toast.error(result.message);
@@ -83,7 +87,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {form.formState.isSubmitted &&
             Object.keys(form.formState.errors).length > 0 && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="p-4 bg-red-50 border border-red-200 rounded-md">
                 <h4 className="text-red-800 font-medium text-sm mb-2">
                   {t('pleaseFixErrors')}
                 </h4>
@@ -111,7 +115,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
           <div className="">
             <Button
               type="submit"
-              className="w-full rounded-none "
+              className="w-full rounded-md "
               size="lg"
               disabled={form.formState.isSubmitting}
             >

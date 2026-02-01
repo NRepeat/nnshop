@@ -3,7 +3,9 @@ import LoginForm from '@/features/auth/ui/login-form';
 import { SignupForm } from '@/features/auth/ui/signup-form';
 import { localization } from '@/shared/i18n/localization/authView';
 import { AuthView } from '@daveyplate/better-auth-ui';
+// import { AuthView } from '@daveyplate/better-auth-ui';
 import { notFound } from 'next/navigation';
+import { SignOut } from './sign-out';
 
 interface AuthViewRendererProps {
   authView: string;
@@ -28,10 +30,11 @@ export const AuthViewRenderer = ({
     case 'magic-link':
     case 'verify-email':
     case 'account-link':
-    case 'sign-out':
+      case 'sign-out':
       return (
-        <AuthView path={authView} localization={localization(tBetterAuth)} />
-      );
+      <AuthView path={authView} localization={localization(tBetterAuth)} />
+    );
+      return (<SignOut/>)
     default:
       notFound();
   }

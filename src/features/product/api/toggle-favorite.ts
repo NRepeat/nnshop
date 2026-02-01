@@ -1,62 +1,48 @@
 'use server';
-
-import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
-import { headers } from 'next/headers';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
+import { Session, User } from 'better-auth';
 
-export const toggleFavoriteProduct = async (productId: string) => {
-  console.log('toggleFavoriteProduct', productId);
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session || !session.user) {
-    console.error('SESSION NOT FOUND');
-    return {
-      success: false,
-      errors: ['Session not found'],
-    };
-  }
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-  });
-
-  if (!user) {
-    return {
-      success: false,
-      errors: ['User not found'],
-    };
+export const toggleFavoriteProduct = async (
+  productId: string,
+  session: { session: Session; user: User } | null,
+  locale: string,
+  handle?: string,
+) => {
+  if (!session?.user?.id) {
+    return { success: false, error: 'AUTH_REQUIRED' };
   }
 
-  const existingFavorite = await prisma.favoriteProduct.findUnique({
-    where: {
-      userId_productId: {
-        userId: user.id,
-        productId,
-      },
-    },
-  });
+  const userId = session.user.id;
 
-  if (existingFavorite) {
-    await prisma.favoriteProduct.delete({
-      where: {
-        id: existingFavorite.id,
-      },
+  try {
+    const existingFavorite = await prisma.favoriteProduct.findUnique({
+      where: { userId_productId: { userId, productId } },
     });
-    revalidatePath('/favorite');
-    return {
-      success: true,
-      isFavorited: false,
-    };
-  } else {
-    await prisma.favoriteProduct.create({
-      data: {
-        userId: user.id,
-        productId,
-      },
-    });
-    revalidatePath('/favorite');
-    return {
-      success: true,
-      isFavorited: true,
-    };
+
+    let isFavorited: boolean;
+
+    if (existingFavorite) {
+      await prisma.favoriteProduct.delete({
+        where: { id: existingFavorite.id },
+      });
+      isFavorited = false;
+    } else {
+      await prisma.favoriteProduct.create({ data: { userId, productId } });
+      isFavorited = true;
+    }
+
+    revalidateTag('favorites', { expire: 0 });
+    revalidateTag(`favorite-${userId}`, { expire: 0 });
+    revalidateTag(`product-${productId}`, { expire: 0 });
+    revalidatePath(`/${locale}/favorites`, 'page');
+    if (handle) {
+      revalidatePath(`/${locale}/product/${handle}`, 'page');
+    }
+
+    return { success: true, isFavorited };
+  } catch (error) {
+    console.error('TOGGLE_FAVORITE_ERROR:', error);
+    return { success: false, error: 'DB_ERROR' };
   }
 };

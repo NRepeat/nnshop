@@ -25,12 +25,16 @@ export const getSubNavCollections = async ({
 }) => {
   const locale = await getLocale();
 
-  const responce = await storefrontClient.request<GetSubMenuQuery>({
+  const responce = await storefrontClient.request<
+    GetSubMenuQuery,
+    {
+      handle: string;
+    }
+  >({
     query,
     variables: {
       handle: params.slug,
     },
     language: locale.toUpperCase() as StorefrontLanguageCode,
   });
-  console.log(responce);
 };

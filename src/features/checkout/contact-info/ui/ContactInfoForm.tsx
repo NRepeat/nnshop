@@ -70,7 +70,7 @@ export default function ContactInfoForm({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         {form.formState.isSubmitted &&
           Object.keys(form.formState.errors).length > 0 && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-none">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-md">
               <h4 className="text-red-800 font-medium text-sm mb-2">
                 {t('pleaseFixErrors')}
               </h4>
@@ -159,12 +159,12 @@ export default function ContactInfoForm({
           )}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
           <FormField
             control={form.control}
             name="countryCode"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-1 relative">
+            render={() => (
+              <FormItem className="sm:col-span-1 relative hidden">
                 <FormLabel className="text-sm font-medium">
                   {t('country')}
                 </FormLabel>
@@ -172,7 +172,8 @@ export default function ContactInfoForm({
                   <Input
                     placeholder="UA"
                     maxLength={2}
-                    {...field}
+                    value={'UA'}
+                    // {...field}
                     className={clsx(
                       form.formState.isSubmitted &&
                         form.formState.errors.countryCode &&
@@ -213,7 +214,7 @@ export default function ContactInfoForm({
 
         <Button
           type="submit"
-          className="w-full rounded-none"
+          className="w-full rounded-md"
           size="lg"
           disabled={form.formState.isSubmitting}
         >

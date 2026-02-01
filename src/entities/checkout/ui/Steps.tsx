@@ -32,11 +32,19 @@ const steps = {
   },
 };
 
-export const Steps = async ({ slug }: { slug: string }) => {
-  const t = await getTranslations('CheckoutSteps');
-  const disablePaymentButton = (slug: string) => {
-    const isPaymentStep = slug === 'payment';
-    return isPaymentStep;
+export const Steps = async ({
+  slug,
+  locale,
+}: {
+  slug: string;
+  locale: string;
+}) => {
+  const t = await getTranslations({ locale, namespace: 'CheckoutSteps' });
+  const stepOrder = ['info', 'delivery', 'payment', 'success'];
+  const currentIndex = stepOrder.indexOf(slug);
+  const isStepDisabled = (step: string) => {
+    const stepIndex = stepOrder.indexOf(step);
+    return stepIndex > currentIndex;
   };
 
   return (
@@ -48,7 +56,7 @@ export const Steps = async ({ slug }: { slug: string }) => {
             title={t(steps[step].slug)}
             icon={steps[step].icon}
             isActive={slug === steps[step].slug}
-            disabled={disablePaymentButton(step) || slug === 'success'}
+            disabled={isStepDisabled(step) || slug === 'success'}
           />
           <div className="w-full flex items-center justify-center">
             {index < Object.keys(steps).length - 1 && (

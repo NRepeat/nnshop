@@ -6,7 +6,7 @@ import { headers } from 'next/headers';
 const getUser = async () => {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) throw new Error('Unauthorized');
+    if (!session) return null;
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
     });
@@ -14,8 +14,8 @@ const getUser = async () => {
     if (user.isAnonymous) return null;
     return user;
   } catch (error) {
-    console.error(error);
-    throw new Error('Failed to get user');
+    console.error('Error getting user:', error);
+    return null;
   }
 };
 

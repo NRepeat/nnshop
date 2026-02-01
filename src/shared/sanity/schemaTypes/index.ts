@@ -1,14 +1,16 @@
+import { elegantEaseType } from './blocks/elegantEaseType';
+import { productCommentsType } from './blocks/productCommentsType';
 import { type SchemaTypeDefinition } from 'sanity';
 
 import { blockContentType } from './blockContentType';
 import { categoryType } from './categoryType';
 import { postType } from './postType';
 import { authorType } from './authorType';
-import { faqsType } from './blokcs/faqsType';
-import { faqType } from './blokcs/faqType';
-import { featuresType } from './blokcs/featuresType';
-import { heroType } from './blokcs/heroType';
-import { splitImageType } from './blokcs/splitImageType';
+import { faqsType } from './blocks/faqsType';
+import { faqType } from './blocks/faqType';
+import { featuresType } from './blocks/featuresType';
+import { heroType } from './blocks/heroType';
+import { splitImageType } from './blocks/splitImageType';
 import { pageBuilderType } from './pageBuilderType';
 import { pageType } from './pageType';
 import { siteSettingsType } from './siteSettingsType';
@@ -18,17 +20,31 @@ import { socialType } from './socialType';
 import { localeType } from './localeType';
 import simpleBlockContent from './simpleBlockContent';
 import { shopifySchemaTypes } from './shopify/shemas';
-import { productCarousel } from './blokcs/productCarousel';
-import { collectionsCarousel } from './blokcs/collectionsCarouselWithActionButton';
+import { productCarousel } from './blocks/productCarousel';
+import { collectionsCarousel } from './blocks/collectionsCarouselWithActionButton';
 import { localizedString } from './localizedStringType';
 import { localizedText } from './localizedText';
 import { localizedBlockContent } from './localizedBlockContentType';
-import { sliderBlock } from './blokcs/slider';
-import { similarProducts } from './blokcs/similarProducts';
-import { contentPageBlock } from './blokcs/contentPageBlock';
+import { sliderBlock } from './blocks/slider';
+import { similarProducts } from './blocks/similarProducts';
+import { contentPageBlock } from './blocks/contentPageBlock';
+import { mainCollectionGrid } from './blocks/mainCollectionGrid';
+import { topicType } from './blocks/topicType';
+import { productDetailsType } from './blocks/productDetailsType';
+import { heroSlide, heroSlider } from './blocks/heroSlider';
+import { infoBar } from './blocks/info-bar';
+import { headerType } from './headerType';
+import { brandGridBlock } from './blocks/brendGrid';
+import { collectionsWithPreviews } from './blocks/collection-with-images';
+
+// const blocks = [heroSlider, heroSlide, mainCollectionGrid];
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
+    collectionsWithPreviews,
+    brandGridBlock,
+    infoBar,
+    headerType,
     ...shopifySchemaTypes,
     localizedText,
     localizedBlockContent,
@@ -55,5 +71,12 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     splitImageType,
     similarProducts,
     contentPageBlock,
+    topicType,
+    productDetailsType,
+    elegantEaseType,
+    productCommentsType,
+    heroSlide,
+    heroSlider,
+    mainCollectionGrid,
   ],
 };

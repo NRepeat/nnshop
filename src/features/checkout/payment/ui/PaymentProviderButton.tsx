@@ -34,7 +34,7 @@ export default function PaymentProviderButton({
         onSelectPaymentProvider(provider.id);
       }}
       className={clsx(
-        'group relative p-6 rounded-none border border-transparent h-fit w-full',
+        'group relative p-6 rounded-md border border-transparent h-fit w-full transition-all hover:shadow-md',
         {
           'border-gray-200 ': selectedProvider !== provider.id,
         },
@@ -43,7 +43,7 @@ export default function PaymentProviderButton({
       <div className="flex items-center  gap-4">
         <div
           className={clsx(
-            'w-12 h-12 rounded-lg flex items-center justify-center',
+            'w-12 h-12 rounded-md flex items-center justify-center',
             {
               'bg-white/20': selectedProvider === provider.id,
               'bg-[#325039]/10': selectedProvider !== provider.id,
@@ -67,8 +67,11 @@ export default function PaymentProviderButton({
               'text-gray-600': selectedProvider !== provider.id,
             })}
           >
+            {/* @ts-ignore */}
             {provider.id === 'liqpay' && t('liqpayDescription')}
+            {/* @ts-ignore */}
             {provider.id === 'credit-card' && t('creditCardDescription')}
+            {/* @ts-ignore */}
             {provider.id === 'paypal' && t('paypalDescription')}
             {/*{provider.id === 'stripe' && t('stripeDescription')}*/}
           </p>

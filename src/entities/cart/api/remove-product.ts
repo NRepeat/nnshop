@@ -109,9 +109,12 @@ export async function removeProductFromCart(
   lineId: string,
 ): Promise<CreateCartResult> {
   try {
-    const response = await storefrontClient.request<{
-      cartLinesRemove: { cart?: Cart; userErrors: CartUserError[] };
-    }>({
+    const response = await storefrontClient.request<
+      {
+        cartLinesRemove: { cart?: Cart; userErrors: CartUserError[] };
+      },
+      { cartId: string; lineIds: string[] }
+    >({
       query: CART_LINES_REMOVE_MUTATION,
       variables: {
         cartId,
@@ -121,8 +124,6 @@ export async function removeProductFromCart(
 
     const { cartLinesRemove } = response;
 
-    // Check for user errors
-    console.log('errore', cartLinesRemove.userErrors);
     if (cartLinesRemove.userErrors && cartLinesRemove.userErrors.length > 0) {
       return {
         success: false,
@@ -130,7 +131,7 @@ export async function removeProductFromCart(
       };
     }
 
-    revalidateTag(CART_TAGS.CART);
+    revalidateTag(CART_TAGS.CART, { expire: 0 });
 
     return {
       success: true,

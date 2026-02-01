@@ -1,54 +1,50 @@
-import Gallery from '@features/product/ui/Gallery';
-import Description from '@features/product/ui/Description';
-import { Product } from '@shared/types/product/types';
-import { PageBuilder } from '@widgets/page-builder';
-import { ProductVariant } from '@shared/lib/shopify/types/storefront.types';
-import { PAGE_QUERYResult } from '@shared/sanity/types';
-import { isProductFavorite } from '@features/product/api/isProductFavorite';
-import { Suspense } from 'react';
+import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
+import { ProductViewProvider } from './ProductViewProvider';
+import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
+import { getTranslations } from 'next-intl/server';
+import { ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
 
 export async function ProductView({
   product,
-  selectedVariant,
-  content,
-  sanityDocumentId,
-  sanityDocumentType,
+  relatedProducts,
+  boundProducts,
+  locale,
+  attributes,
+  children,
 }: {
-  product: Product;
-  selectedVariant: ProductVariant | undefined;
-  //@ts-ignore
-  content: PAGE_QUERYResult['content'];
-  sanityDocumentId: string;
-  sanityDocumentType: string;
+  product: ShopifyProduct;
+  relatedProducts: ShopifyProduct[];
+  boundProducts: ShopifyProduct[];
+  locale: string;
+  attributes: ProductMEtaobjectType[];
+  children: React.ReactNode;
 }) {
-  if (!product) throw new Error('Product not found');
-  const images =
-    product.images?.edges?.length > 0
-      ? product.images.edges
-      : product.featuredImage
-        ? [{ node: product.featuredImage }]
-        : [];
-  const isFavorite = await isProductFavorite(product.id);
+  const t = await getTranslations({ locale, namespace: 'ProductPage' });
+  // const session = await auth.api.getSession({ headers: await headers() });
+  // const isFavorite = await isProductFavorite(product.id, session);
+  // console.log('🚀 ~ ProductSessionView ~ isFavorite:', isFavorite);
   return (
-    <div className="container mx-auto py-12 space-y-12">
-      {selectedVariant && (
-        <div className="grid grid-cols-1 md:grid-cols-8 gap-12 h-full md:h-screen">
-          <Suspense fallback={<div>Loading...</div>}>
-            <Gallery
-              images={images}
-              productId={product.id}
-              selectedVariant={selectedVariant}
-              isFavorite={isFavorite}
-            />
-          </Suspense>
-          <Description product={product} selectedVariant={selectedVariant} />
+    <div className="container  space-y-16 my-10">
+      <ProductViewProvider
+        favCommponent={children}
+        product={product}
+        boundProducts={boundProducts}
+        attributes={attributes}
+      />
+      {relatedProducts && relatedProducts.length > 0 && (
+        <div className="content-stretch flex flex-col gap-[30px] items-center px-0 py-[30px] relative w-full">
+          <p className="font-sans leading-[26px] not-italic relative shrink-0 text-[20px] text-black text-center w-full">
+            {t('styleWith')}
+          </p>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 mx-auto max-w-5xl py-0 w-full">
+            {relatedProducts.slice(0, 3).map((p) => (
+              <ProductCardSPP product={p} key={p.id} />
+            ))}
+          </div>
         </div>
       )}
-      <PageBuilder
-        content={content}
-        documentId={sanityDocumentId}
-        documentType={sanityDocumentType}
-      />
+
+      {/* <ProductComments /> */}
     </div>
   );
 }

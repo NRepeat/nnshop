@@ -5,8 +5,6 @@ import { isLocalizedString } from '@/shared/sanity/utils/checkLocaliztionType';
 import { notFound } from 'next/navigation';
 import { ImageResponse } from 'next/og';
 
-export const runtime = 'edge';
-
 async function loadGoogleFont(font: string, text: string) {
   const url = `https://fonts.googleapis.com/css2?family=${font}&text=${encodeURIComponent(text)}`;
   const css = await (await fetch(url)).text();
@@ -43,7 +41,9 @@ export async function GET(request: Request) {
   const darkVibrantBackground =
     data?.image?.metadata?.palette?.darkVibrant?.background ?? '#3B82F6';
 
-  const text = isLocalizedString(data.title) ? data.title.en : data.title;
+  const text = isLocalizedString(data.title)
+    ? (data.title as any).en
+    : data.title;
 
   return new ImageResponse(
     <div

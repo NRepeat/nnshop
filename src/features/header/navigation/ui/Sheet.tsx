@@ -1,31 +1,20 @@
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@shared/ui/sheet';
 import { getTranslations } from 'next-intl/server';
-import BurgerIcon from './BurgerIcon';
 import { getMainMenu } from '../api/getMainMenu';
-import { InternalMenu } from './InternalMenu';
+import NavigationSheet from './NavigationSheet';
 
-const NavigationSheet = async () => {
-  const t = await getTranslations('Header.nav.drawer');
-  const meinMenu = await getMainMenu();
+const MenuSheet = async ({ locale }: { locale: string }) => {
+  const t = await getTranslations({
+    locale,
+    namespace: 'Header.nav.drawer',
+  });
+  const items = await getMainMenu({ locale });
+  const meinMenu = items.map((item) => ({
+    label: item.title,
+    menu: [item],
+  }));
   return (
-    <Sheet>
-      <SheetTrigger className="cursor-pointer block md:hidden hover:bg-accent p-2 rounded-lg">
-        <BurgerIcon className="min-h-6 min-w-6" />
-      </SheetTrigger>
-      <SheetContent side="left" className="">
-        <SheetHeader>
-          <SheetTitle>{t('title')}</SheetTitle>
-        </SheetHeader>
-        <InternalMenu meinMenu={meinMenu} />
-      </SheetContent>
-    </Sheet>
+    <NavigationSheet meinMenu={meinMenu} title={t('title')} locale={locale} />
   );
 };
 
-export default NavigationSheet;
+export default MenuSheet;

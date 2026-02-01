@@ -13,7 +13,7 @@ export const productUrl = (productId: number) => {
   if (!SHOPIFY_STORE_ID) {
     return null;
   }
-  return `${storeUrl}/products/${productId}`;
+  return `${storeUrl}/product/${productId}`;
 };
 
 export const productVariantUrl = (
@@ -23,5 +23,5 @@ export const productVariantUrl = (
   if (!SHOPIFY_STORE_ID) {
     return null;
   }
-  return `${storeUrl}/products/${productId}/variants/${productVariantId}`;
+  return `${storeUrl}/product/${productId}/variants/${productVariantId}`;
 };

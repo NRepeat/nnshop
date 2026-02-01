@@ -1,10 +1,46 @@
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
-import { getLocale } from 'next-intl/server';
 import { GetProductByHandleQuery } from '@shared/lib/shopify/types/storefront.generated';
 
-const query = `#graphql
+export const PRODUCT_METAFIELDS_FRAGMENT = `#graphql
+  fragment ProductMetafields on Product {
+    metafields(
+      identifiers: [
+        {key: "recommended_products", namespace: "custom"},
+        {key: "bound-products", namespace: "custom"},
+        {key: "attributes", namespace: "custom"},
+        {key: "znizka", namespace: "custom"},
+        {key: "color", namespace: "custom"},
+        {key: "kolektsiya", namespace: "custom"},
+        {key: "styl", namespace: "custom"},
+        {key: "krayina", namespace: "custom"},
+        {key: "pidoshva", namespace: "custom"},
+        {key: "posadka", namespace: "custom"},
+        {key: "osoblyvosti", namespace: "custom"},
+        {key: "tip", namespace: "custom"},
+        {key: "kategorija", namespace: "custom"},
+        {key: "vysota-pidoshvy", namespace: "custom"},
+        {key: "zastibka", namespace: "custom"},
+        {key: "kabluk", namespace: "custom"},
+        {key: "napovnjuvach", namespace: "custom"},
+        {key: "sostav", namespace: "custom"},
+        {key: "material", namespace: "custom"},
+        {key: "rozmir", namespace: "custom"},
+        {key: "sezon", namespace: "custom"},
+        {key: "pidkladka", namespace: "custom"},
+        {key: "gender", namespace: "custom"}
+      ]
+    ) {
+      id
+      key
+      value
+    }
+  }
+`;
+
+export const GET_PRODUCT_QUERY = `#graphql
   query getProductByHandle($handle: String!, $variant: ID) {
+  
     product(handle: $handle, id: $variant) {
       id
       title
@@ -13,6 +49,7 @@ const query = `#graphql
       descriptionHtml
       vendor
       productType
+      
       priceRange {
         maxVariantPrice {
           amount
@@ -23,17 +60,19 @@ const query = `#graphql
           currencyCode
         }
       }
-      options(first: 10) {
+      options(first: 250) {
         id
         name
         values
       }
-      variants(first: 50) {
+      ...ProductMetafields
+      variants(first: 250) {
         edges {
           node {
             id
             title
             availableForSale
+            sku
             price {
               amount
               currencyCode
@@ -46,6 +85,11 @@ const query = `#graphql
               name
               value
             }
+            metafields(identifiers: {key: "at_the_fitting", namespace: "custom"}) {
+              id
+              key
+              value
+            }
             image {
               url
               altText
@@ -55,7 +99,7 @@ const query = `#graphql
           }
         }
       }
-      images(first: 10) {
+      images(first: 250) {
         edges {
           node {
             url
@@ -73,15 +117,59 @@ const query = `#graphql
       }
     }
   }
+  ${PRODUCT_METAFIELDS_FRAGMENT}
 `;
+export const getProduct = async ({
+  handle,
+  locale,
+}: {
+  handle: string;
+  locale: string;
+}) => {
+  'use cache';
+  try {
+    const targetLocale = locale === 'ru' ? 'UK' : 'RU';
+    const product = await storefrontClient.request<
+      GetProductByHandleQuery,
+      { handle: string }
+    >({
+      query: GET_PRODUCT_QUERY,
+      variables: { handle },
+      language: locale.toUpperCase() as StorefrontLanguageCode,
+    });
+    if (!product.product) {
+      console.warn(`Product not found: ${handle}`);
+      return {
+        originProduct: null,
+        alternateHandle: null,
+      };
+    }
+    const alternateRequest = storefrontClient.request<
+      {
+        product: { handle: string };
+      },
+      { id: string }
+    >({
+      query: `#graphql
+        query getHandleById($id: ID!) {
+          product(id: $id) {
+            handle
+          }
+        }`,
+      variables: { id: product.product.id },
+      language: targetLocale as StorefrontLanguageCode,
+    });
 
-export const getProduct = async ({ handle }: { handle: string }) => {
-  const locale = await getLocale();
-  const product = await storefrontClient.request<GetProductByHandleQuery>({
-    query,
-    variables: { handle },
-    language: locale.toUpperCase() as StorefrontLanguageCode,
-  });
-  if (!product.product) throw new Error('Product not found');
-  return product;
+    const alternateData = await alternateRequest;
+    return {
+      originProduct: product.product,
+      alternateHandle: alternateData.product?.handle,
+    };
+  } catch (error) {
+    console.error(`Failed to fetch product ${handle}:`, error);
+    return {
+      originProduct: null,
+      alternateHandle: null,
+    };
+  }
 };

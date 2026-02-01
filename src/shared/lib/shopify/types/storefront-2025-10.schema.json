@@ -14925,7 +14925,7 @@
       {
         "kind": "ENUM",
         "name": "FilterType",
-        "description": "The type of data that the filter group represents.\n\nFor more information, refer to [Filter products in a collection with the Storefront API]\n(https://shopify.dev/custom-storefronts/products-collections/filter-products).\n",
+        "description": "The type of data that the filter group represents.\n\nFor more information, refer to [Filter products in a collection with the Storefront API]\n(https://shopify.dev/custom-storefronts/product-collections/filter-products).\n",
         "isOneOf": null,
         "fields": null,
         "inputFields": null,
@@ -23992,7 +23992,7 @@
       {
         "kind": "OBJECT",
         "name": "Product",
-        "description": "The `Product` object lets you manage products in a merchant’s store.\n\nProducts are the goods and services that merchants offer to customers.\nThey can include various details such as title, description, price, images, and options such as size or color.\nYou can use [product variants](/docs/api/storefront/latest/objects/ProductVariant)\nto create or update different versions of the same product.\nYou can also add or update product [media](/docs/api/storefront/latest/interfaces/Media).\nProducts can be organized by grouping them into a [collection](/docs/api/storefront/latest/objects/Collection).\n\nLearn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/products-collections).\n",
+        "description": "The `Product` object lets you manage products in a merchant’s store.\n\nProducts are the goods and services that merchants offer to customers.\nThey can include various details such as title, description, price, images, and options such as size or color.\nYou can use [product variants](/docs/api/storefront/latest/objects/ProductVariant)\nto create or update different versions of the same product.\nYou can also add or update product [media](/docs/api/storefront/latest/interfaces/Media).\nProducts can be organized by grouping them into a [collection](/docs/api/storefront/latest/objects/Collection).\n\nLearn more about working with [products and collections](/docs/storefronts/headless/building-with-the-storefront-api/product-collections).\n",
         "isOneOf": null,
         "fields": [
           {
@@ -24139,7 +24139,7 @@
           },
           {
             "name": "compareAtPriceRange",
-            "description": "The [compare-at price range](https://help.shopify.com/manual/products/details/product-pricing/sale-pricing) of the product in the shop's default currency.",
+            "description": "The [compare-at price range](https://help.shopify.com/manual/product/details/product-pricing/sale-pricing) of the product in the shop's default currency.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -24533,7 +24533,7 @@
           },
           {
             "name": "productType",
-            "description": "The [product type](https://help.shopify.com/manual/products/details/product-type)\nthat merchants define.\n",
+            "description": "The [product type](https://help.shopify.com/manual/product/details/product-type)\nthat merchants define.\n",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -27924,7 +27924,7 @@
               },
               {
                 "name": "query",
-                "description": "You can apply one or multiple filters to a query.\n| name | description | acceptable_values | default_value | example_use |\n| ---- | ---- | ---- | ---- | ---- |\n| available_for_sale | Filter by products that have at least one product variant available for sale. |\n| created_at | Filter by the date and time when the product was created. | | | - `created_at:>'2020-10-21T23:39:20Z'`<br/> - `created_at:<now`<br/> - `created_at:<=2024` |\n| product_type | Filter by a comma-separated list of [product types](https://help.shopify.com/en/manual/products/details/product-type). | | | `product_type:snowboard` |\n| tag | Filter products by the product [`tags`](https://shopify.dev/docs/api/storefront/latest/objects/Product#field-tags) field. | | | `tag:my_tag` |\n| tag_not | Filter by products that don't have the specified product [tags](https://shopify.dev/docs/api/storefront/latest/objects/Product#field-tags). | | | `tag_not:my_tag` |\n| title | Filter by the product [`title`](https://shopify.dev/docs/api/storefront/latest/objects/Product#field-title) field. | | | `title:The Minimal Snowboard` |\n| updated_at | Filter by the date and time when the product was last updated. | | | - `updated_at:>'2020-10-21T23:39:20Z'`<br/> - `updated_at:<now`<br/> - `updated_at:<=2024` |\n| variants.price | Filter by the price of the product's variants. |\n| vendor | Filter by the product [`vendor`](https://shopify.dev/docs/api/storefront/latest/objects/Product#field-vendor) field. | | | - `vendor:Snowdevil`<br/> - `vendor:Snowdevil OR vendor:Icedevil` |\nLearn more about [Shopify API search syntax](https://shopify.dev/api/usage/search-syntax).\n",
+                "description": "You can apply one or multiple filters to a query.\n| name | description | acceptable_values | default_value | example_use |\n| ---- | ---- | ---- | ---- | ---- |\n| available_for_sale | Filter by products that have at least one product variant available for sale. |\n| created_at | Filter by the date and time when the product was created. | | | - `created_at:>'2020-10-21T23:39:20Z'`<br/> - `created_at:<now`<br/> - `created_at:<=2024` |\n| product_type | Filter by a comma-separated list of [product types](https://help.shopify.com/en/manual/product/details/product-type). | | | `product_type:snowboard` |\n| tag | Filter products by the product [`tags`](https://shopify.dev/docs/api/storefront/latest/objects/Product#field-tags) field. | | | `tag:my_tag` |\n| tag_not | Filter by products that don't have the specified product [tags](https://shopify.dev/docs/api/storefront/latest/objects/Product#field-tags). | | | `tag_not:my_tag` |\n| title | Filter by the product [`title`](https://shopify.dev/docs/api/storefront/latest/objects/Product#field-title) field. | | | `title:The Minimal Snowboard` |\n| updated_at | Filter by the date and time when the product was last updated. | | | - `updated_at:>'2020-10-21T23:39:20Z'`<br/> - `updated_at:<now`<br/> - `updated_at:<=2024` |\n| variants.price | Filter by the price of the product's variants. |\n| vendor | Filter by the product [`vendor`](https://shopify.dev/docs/api/storefront/latest/objects/Product#field-vendor) field. | | | - `vendor:Snowdevil`<br/> - `vendor:Snowdevil OR vendor:Icedevil` |\nLearn more about [Shopify API search syntax](https://shopify.dev/api/usage/search-syntax).\n",
                 "type": { "kind": "SCALAR", "name": "String", "ofType": null },
                 "defaultValue": null,
                 "isDeprecated": false,

@@ -4,11 +4,16 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const nextConfig: NextConfig = {
   /* config options here */
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+
   logging: {
     fetches: {
       fullUrl: false,
     },
   },
+  cacheComponents: true,
   allowedDevOrigins: [
     'dev.nninc.uk',
     'development.nninc.uk',
@@ -19,10 +24,8 @@ const nextConfig: NextConfig = {
     'r665avfiaqptwlw27urowyzo5q.srv.us',
   ],
   images: {
-    unoptimized: true,
-    domains: ['cdn.shopify.com'],
     remotePatterns: [
-      new URL('https://cdn.shopify.com'),
+      { protocol: 'https', hostname: 'cdn.shopify.com' },
       {
         protocol: 'https',
         hostname: 'cdn.sanity.io',

@@ -5,14 +5,12 @@ export const getPaymentSchema = (t: (key: string) => string) =>
   z.object({
     paymentMethod: z.enum(['pay-now', 'after-delivered', 'pay-later']),
     paymentProvider: z.enum([
-      'liqpay',
-      'credit-card',
-      'paypal',
+      'bank-transfer',
       'after-delivered',
     ]),
     amount: z.number().min(0.01, t('amountMustBeGreaterThanZero')),
-    currency: z.string().default('USD'),
-    orderId: z.string().min(1, t('orderIdIsRequired')),
+    currency: z.string().default('UAH'),
+    orderId: z.string().optional(),
     description: z.string().optional(),
   });
 

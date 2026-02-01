@@ -4,7 +4,10 @@ export const pageBuilderType = defineType({
   name: 'pageBuilder',
   type: 'array',
   of: [
+    defineArrayMember({ type: 'heroSlider' }),
+    defineArrayMember({ type: 'mainCollectionGrid' }),
     defineArrayMember({ type: 'hero' }),
+    defineArrayMember({ type: 'brandGridBlock' }),
     defineArrayMember({ type: 'splitImage' }),
     defineArrayMember({ type: 'features' }),
     defineArrayMember({ type: 'faqs' }),
@@ -13,6 +16,10 @@ export const pageBuilderType = defineType({
     defineArrayMember({ type: 'contentPageBlock' }),
     defineArrayMember({ type: 'collectionsCarousel' }),
     defineArrayMember({ type: 'sliderBlock' }),
+    defineArrayMember({ type: 'productDetails' }),
+    defineArrayMember({ type: 'elegantEase' }),
+    defineArrayMember({ type: 'productComments' }),
+    defineArrayMember({ type: 'collectionsWithPreviews' }),
   ],
   options: {
     insertMenu: {
@@ -21,9 +28,10 @@ export const pageBuilderType = defineType({
           name: 'grid',
           previewImageUrl: (schemaType) => {
             const svgPreviews = [
-              'sliderBlock',
-              'productCarousel',
-              'collectionsCarousel',
+              'heroSlider',
+              // 'sliderBlock',
+              // 'productCarousel',
+              // 'collectionsCarousel',
             ];
             const extension = svgPreviews.includes(schemaType) ? 'svg' : 'png';
             return `/block-previews/${schemaType}.${extension}`;

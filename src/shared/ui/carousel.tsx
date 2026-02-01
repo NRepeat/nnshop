@@ -49,19 +49,20 @@ function Carousel({
   setApi,
   className,
   children,
-  autoplay,
+  plugins,
+
   ...props
 }: React.ComponentProps<'div'> &
   CarouselProps & { autoplay?: { active: boolean; dellay: number } }) {
-  const plagins = autoplay
-    ? [Autoplay({ delay: autoplay.dellay, active: autoplay.active })]
-    : [];
+  // const plagins = autoplay
+  //   ? [Autoplay({ delay: autoplay.dellay, active: autoplay.active }),...props.plugins]
+  //   : [];
   const [carouselRef, api] = useEmblaCarousel(
     {
       ...opts,
       axis: orientation === 'horizontal' ? 'x' : 'y',
     },
-    plagins,
+    plugins,
   );
   const [canScrollPrev, setCanScrollPrev] = React.useState(false);
   const [canScrollNext, setCanScrollNext] = React.useState(false);
@@ -170,7 +171,13 @@ function CarouselPrevious({
   ...props
 }: React.ComponentProps<typeof Button>) {
   const { scrollPrev, canScrollPrev } = useCarousel();
-
+  const handleNextClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    e.stopPropagation();
+    e.preventDefault();
+    scrollPrev();
+  };
   return (
     <Button
       data-slot="carousel-previous"
@@ -184,7 +191,7 @@ function CarouselPrevious({
         className,
       )}
       disabled={!canScrollPrev}
-      onClick={scrollPrev}
+      onClick={handleNextClick}
       {...props}
     >
       <ArrowLeft />
@@ -200,6 +207,13 @@ function CarouselNext({
   ...props
 }: React.ComponentProps<typeof Button>) {
   const { scrollNext, canScrollNext } = useCarousel();
+  const handleNextClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    e.stopPropagation();
+    e.preventDefault();
+    scrollNext();
+  };
 
   return (
     <Button
@@ -214,7 +228,7 @@ function CarouselNext({
         className,
       )}
       disabled={!canScrollNext}
-      onClick={scrollNext}
+      onClick={handleNextClick}
       {...props}
     >
       <ArrowRight />

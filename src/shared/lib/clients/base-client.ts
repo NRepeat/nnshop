@@ -30,10 +30,7 @@ export abstract class BaseShopifyClient implements ShopifyClient {
   protected abstract buildBaseUrl(): string;
   abstract buildHeaders(): Promise<Record<string, string>>;
 
-  async buildBody(
-    query: string,
-    variables: Record<string, unknown> = {},
-  ): Promise<string> {
+  async buildBody<V>(query: string, variables: V): Promise<string> {
     return JSON.stringify({ query, variables });
   }
 
@@ -57,12 +54,12 @@ export abstract class BaseShopifyClient implements ShopifyClient {
     return data;
   }
 
-  async request<T>({
+  async request<T, V>({
     query,
     variables,
   }: {
     query: string;
-    variables: Record<string, unknown>;
+    variables: V;
   }): Promise<T> {
     const response = await fetch(this.baseUrl, {
       method: 'POST',

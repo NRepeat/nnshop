@@ -118,17 +118,30 @@ const linkProduct = async ({
         ? Object.entries(attributes).map(([key, value]) => ({ key, value }))
         : undefined,
     };
-    console.log(cartLineInput);
-    const response = await storefrontClient.request<{
-      cartLinesAdd: { cart?: Cart; userErrors: CartUserError[] };
-    }>({
+    const response = await storefrontClient.request<
+      {
+        cartLinesAdd: { cart?: Cart; userErrors: CartUserError[] };
+      },
+      {
+        cartId: string;
+        lines: {
+          merchandiseId: string;
+          quantity: number;
+          attributes:
+            | {
+                key: string;
+                value: string;
+              }[]
+            | undefined;
+        }[];
+      }
+    >({
       query: CART_LINES_ADD_MUTATION,
       variables: {
         cartId,
         lines: [cartLineInput],
       },
     });
-    console.log(JSON.stringify(response, null, 2));
     const { cartLinesAdd } = response;
 
     if (cartLinesAdd.userErrors && cartLinesAdd.userErrors.length > 0) {

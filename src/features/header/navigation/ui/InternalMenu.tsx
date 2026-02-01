@@ -1,73 +1,138 @@
 'use client';
 import { Maybe } from '@shared/lib/shopify/types/storefront.types';
-import clsx from 'clsx';
-import { ArrowLeftFromLine } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from '@shared/i18n/navigation';
-import { useState } from 'react';
-
+import { Link } from '@shared/i18n/navigation';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@shared/ui/accordion';
 export const InternalMenu = ({
   meinMenu,
+  onClose,
 }: {
   meinMenu: {
-    id: Maybe<string> | undefined;
-    title: string;
-    url: string;
-    items: {
+    label: string;
+    menu: {
       id: Maybe<string> | undefined;
       title: string;
       url: string;
+      items: {
+        id: Maybe<string> | undefined;
+        title: string;
+        url: string;
+        items: {
+          id: Maybe<string> | undefined;
+          title: string;
+          url: string;
+        }[];
+      }[];
     }[];
   }[];
+  onClose: (link: string) => void;
 }) => {
-  const [activeTab, setActiveTab] = useState<undefined | number>();
-  const navigate = useRouter();
-  const handleActiveTab = (index: number) => {
-    if (index === activeTab) {
-      setActiveTab(undefined);
-    } else {
-      setActiveTab(index);
-    }
-  };
-  const menu = meinMenu.map((item, index) => (
-    <div
-      className={clsx(
-        'text-sm py-4 px-4 hover:bg-accent flex justify-between items-center cursor-pointer',
-        {
-          'hidden ': (activeTab || activeTab === 0) && index !== activeTab,
-          'bg-accent': index === activeTab,
-        },
-      )}
-      onClick={() =>
-        item.items.length > 0 ? handleActiveTab(index) : navigate.push(item.url)
-      }
-      key={item.title + index}
-    >
-      {item.title}
-      <ArrowLeftFromLine
-        className={clsx('w-4 h-4', {
-          hidden: !activeTab && index !== activeTab,
-        })}
-      />
-    </div>
-  ));
-  const tabs = meinMenu.map((item, index) => (
-    <div
-      key={item.title + index}
-      className={`text-sm  px-4 flex flex-col ${activeTab === index ? 'block' : 'hidden'}`}
-    >
-      {item.items.length > 0 &&
-        item.items.map((subItem) => (
-          <Link key={subItem.title} href={subItem.url}>
-            <p className="text-sm py-4 px-4 hover:bg-accent">{subItem.title}</p>
-          </Link>
-        ))}
-    </div>
-  ));
+  const tabs = meinMenu
+    .filter((item) => item.menu.length > 0)
+    .map((item) => {
+      return (
+        <div className="flex flex-col">
+          {item.menu.map((subItem) => {
+            const subId = `sub-${subItem.id || subItem.title}`;
+            const hasSubItems = subItem.items && subItem.items.length > 0;
+            return (
+              <div key={subId} className="w-full h-full flex flex-col flex-1 ">
+                {hasSubItems ? (
+                  <AccordionItem
+                    value={subItem.title}
+                    className="border-none py-0"
+                  >
+                    <AccordionTrigger className="py-4 font-300 transition-colors text-lg">
+                      {subItem.title}
+                    </AccordionTrigger>
+                    <AccordionContent className=" border-foreground/10 py-4 mb-1 ">
+                      {subItem.items.map((subSubItem) => {
+                        const subSubId = `subsub-${subSubItem.id || subSubItem.title}`;
+                        const hasGrandChildren =
+                          subSubItem.items && subSubItem.items.length > 0;
+
+                        return (
+                          <div key={subSubId} className="w-full">
+                            {hasGrandChildren ? (
+                              <AccordionItem
+                                value={subSubId}
+                                className="border-none"
+                              >
+                                <AccordionTrigger
+                                  value={subSubId}
+                                  className="pl-4 py-4  font-normal  hover:border-b hover:border-current transition-colors text-lg"
+                                >
+                                  {subSubItem.title}
+                                </AccordionTrigger>
+
+                                <AccordionContent className="">
+                                  {subSubItem.items.map((grandChild) => (
+                                    <Link
+                                      key={grandChild.id || grandChild.title}
+                                      href={grandChild.url}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        console.log(
+                                          'Navigating to:',
+                                          grandChild.url,
+                                        );
+                                        onClose(grandChild.url);
+                                      }}
+                                      className="block"
+                                    >
+                                      <div className="pl-4  text-base font-normal text-foreground/80  hover:border-b hover:border-current transition-colors ">
+                                        <p className=" border-foreground/10 py-4 pl-3">
+                                          {grandChild.title}
+                                        </p>
+                                      </div>
+                                    </Link>
+                                  ))}
+                                </AccordionContent>
+                              </AccordionItem>
+                            ) : (
+                              <Link
+                                href={subSubItem.url}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  onClose(subSubItem.url);
+                                }}
+                                className="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 pl-4 py-4  font-normal hover:border-b hover:border-current transition-colors text-lg"
+                              >
+                                {subSubItem.title}
+                              </Link>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </AccordionContent>
+                  </AccordionItem>
+                ) : (
+                  <Link
+                    href={subItem.url}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onClose(subItem.url);
+                    }}
+                    className="pl-6 py-4 text-sm font-normal  hover:border-b hover:border-current transition-colors"
+                  >
+                    {subItem.title}
+                  </Link>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      );
+    });
   return (
-    <div className="flex flex-col space-y-2">
-      {menu}
-      {tabs}
+    <div className="flex flex-col  px-4 py-8 font-sans h-full flex-1 overflow-y-auto">
+      <Accordion type="multiple" className="w-full  h-full flex-1  pr-1">
+        {tabs}
+      </Accordion>
     </div>
   );
 };

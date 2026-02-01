@@ -8,10 +8,23 @@ export const siteSettingsType = defineType({
   icon: ControlsIcon,
   fields: [
     defineField({
-      name: 'homePage',
-      type: 'reference',
-      to: [{ type: 'page' }],
+      name: 'infoBar',
+      type: 'infoBar',
     }),
+    defineField({
+      name:"header",
+      type:"header"
+    })
+    // defineField({
+    //   name: 'homePageWoman',
+    //   type: 'reference',
+    //   to: [{ type: 'page' }],
+    // }),
+    // defineField({
+    //   name: 'homePageMan',
+    //   type: 'reference',
+    //   to: [{ type: 'page' }],
+    // }),
   ],
   preview: {
     prepare() {

@@ -1,7 +1,6 @@
 'use client';
 
-import { useActionState, useEffect } from 'react';
-import { useFormStatus } from 'react-dom';
+import { useState, useRef } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@shared/ui/button';
 import addToCart from '../api/add-to-cart';
@@ -9,26 +8,36 @@ import { ProductVariant } from '@shared/lib/shopify/types/storefront.types';
 import { Product } from '@shared/types/product/types';
 import { useTranslations } from 'next-intl';
 import clsx from 'clsx';
+import { authClient } from '@features/auth/lib/auth-client';
 
 function SubmitButton({
   variant = 'default',
   disabled,
+  pending,
 }: {
   variant?: string;
   disabled: boolean;
+  pending: boolean;
 }) {
-  const { pending } = useFormStatus();
   const t = useTranslations('ProductPage');
+
+  let buttonText = t('addToCart');
+  if (pending) {
+    buttonText = t('addingToCart');
+  } else if (disabled) {
+    buttonText = t('outOfStock');
+  }
+
   return (
     <Button
       type="submit"
       //@ts-expect-error
       variant={variant}
-      className="w-full h-10 md:h-14 text-md rounded-none"
+      className="w-full h-10 md:h-14 text-md rounded-md"
       disabled={disabled || pending}
       aria-disabled={pending}
     >
-      {pending ? t('addingToCart') : t('addToCart')}
+      {buttonText}
     </Button>
   );
 }
@@ -44,25 +53,75 @@ export function AddToCartButton({
   className?: string;
   variant?: string;
 }) {
-  const [formState, formAction] = useActionState(addToCart, {
-    success: false,
-    message: '',
-  });
-  useEffect(() => {
-    if (formState.message) {
-      if (formState.success) {
-        toast.success(formState.message);
-      } else {
-        toast.error(formState.message);
-      }
-    }
-  }, [formState]);
-  const isProductAvalible = selectedVariant
+  const [isPending, setIsPending] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const t = useTranslations('ProductPage');
+
+  // Check product availability
+  const isProductAvailable = selectedVariant
     ? selectedVariant?.quantityAvailable !== 0
     : //@ts-ignore
       product?.totalInventory !== 0;
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Check if product is available before proceeding
+    if (!isProductAvailable) {
+      toast.error(t('productNotAvailable'));
+      return;
+    }
+
+    setIsPending(true);
+
+    try {
+      // Check if session exists
+      const { data: session } = await authClient.getSession();
+
+      // Create anonymous session if needed
+      if (!session?.user) {
+        const result = await authClient.signIn.anonymous();
+
+        if (!result.data) {
+          toast.error(t('sessionCreationFailed'));
+          setIsPending(false);
+          return;
+        }
+
+        // Wait a bit for cookies to be set
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+
+      // Call the server action directly
+      const variantId = selectedVariant
+        ? selectedVariant.id
+        : product?.variants.edges[0].node.id;
+
+      const formData = new FormData();
+      formData.append('variantId', variantId!);
+
+      const result = await addToCart(null, formData);
+
+      if (result.success) {
+        toast.success(t('addedToCart'));
+      } else {
+        // Show specific error message or generic one
+        const errorMessage =
+          result.message === 'No products available'
+            ? t('productNotAvailable')
+            : result.message || t('failedToAdd');
+        toast.error(errorMessage);
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      toast.error(t('failedToAdd'));
+    } finally {
+      setIsPending(false);
+    }
+  };
+
   return (
-    <form className="w-full" action={formAction}>
+    <form ref={formRef} className="w-full" onSubmit={handleSubmit}>
       <input
         type="hidden"
         name="variantId"
@@ -73,7 +132,11 @@ export function AddToCartButton({
         }
       />
       <div className={clsx('product-form__buttons mt-1 md:mt-4', className)}>
-        <SubmitButton variant={variant} disabled={!isProductAvalible} />
+        <SubmitButton
+          variant={variant}
+          disabled={!isProductAvailable}
+          pending={isPending}
+        />
       </div>
     </form>
   );

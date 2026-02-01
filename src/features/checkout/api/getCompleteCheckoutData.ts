@@ -1,14 +1,14 @@
-import { getContactInfo } from '@entities/checkout/api/getContactInfo';
 import { CheckoutData } from '../schema/checkoutDataSchema';
 import { getDeliveryInfo } from '../delivery/api/getDeliveryInfo';
+import { Session, User } from 'better-auth';
+import getContactInfo from '../contact-info/api/get-contact-info';
 
-export async function getCompleteCheckoutData(): Promise<Omit<
-  CheckoutData,
-  'paymentInfo'
-> | null> {
+export async function getCompleteCheckoutData(
+  session: { session: Session; user: User } | null,
+): Promise<Omit<CheckoutData, 'paymentInfo'> | null> {
   try {
-    const contactInfo = await getContactInfo();
-    const deliveryInfo = await getDeliveryInfo();
+    const contactInfo = await getContactInfo(session);
+    const deliveryInfo = await getDeliveryInfo(session);
 
     if (!contactInfo || !deliveryInfo) {
       return null;

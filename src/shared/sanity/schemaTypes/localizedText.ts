@@ -6,8 +6,8 @@ export const localizedText = defineType({
   type: 'object',
   fields: [
     {
-      name: 'en',
-      title: 'English',
+      name: 'ru',
+      title: 'Russian',
       type: 'text',
       rows: 3,
     },

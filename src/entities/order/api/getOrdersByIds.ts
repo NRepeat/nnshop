@@ -19,6 +19,16 @@ const GET_ORDERS_PAGINATED_BY_ID = `
               currencyCode
             }
           }
+          lineItems(first: 5) {
+            edges {
+              node {
+                title
+                image {
+                  url
+                }
+              }
+            }
+          }
         }
       }
       pageInfo {
@@ -62,7 +72,10 @@ export const fetchAllOrdersByIDs = async (
     while (hasNextPage) {
       try {
         const response: PaginatedOrdersResponse =
-          await adminClient.client.request<PaginatedOrdersResponse>({
+          await adminClient.client.request<
+            PaginatedOrdersResponse,
+            { query: string; first: number; after: string | null }
+          >({
             query: GET_ORDERS_PAGINATED_BY_ID,
             variables: {
               query: searchQuery,

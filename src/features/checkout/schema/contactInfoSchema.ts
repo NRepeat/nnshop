@@ -1,9 +1,17 @@
 import { z } from 'zod';
+import { isValidPhone, formatPhoneE164 } from '@shared/lib/validation/phone';
 
 export function formatPhoneForShopify(
   phone: string,
   countryCode: string,
 ): string {
+  // Try to format using libphonenumber-js first
+  const formatted = formatPhoneE164(phone);
+  if (formatted) {
+    return formatted;
+  }
+
+  // Fallback to manual formatting
   let cleaned = phone.replace(/[^\d+]/g, '');
 
   if (!cleaned.startsWith('+')) {
@@ -40,10 +48,9 @@ export const contactInfoSchema = z.object({
   phone: z
     .string()
     .min(1, 'Phone number is required')
-    .regex(
-      /^[\+]?[0-9\s\-\(\)]{7,20}$/,
-      'Please enter a valid phone number (7-20 digits)',
-    ),
+    .refine((val) => isValidPhone(val), {
+      message: 'Please enter a valid phone number',
+    }),
   countryCode: z
     .string()
     .min(2, 'Country code is required')

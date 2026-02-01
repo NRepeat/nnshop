@@ -27,15 +27,9 @@
     },
     "nav": {
       "home": "Home",
-      "collections": {
-        "title": "Collections",
-        "forMan": {
-          "title": "For Man"
-        },
-        "forWoman": {
-          "title": "For Woman"
-        }
-      },
+      "collections": "Collections",
+      "man": "For Men",
+      "woman": "For Women",
       "new": "New Arrivals",
       "drawer": {
         "title": "Menu",
@@ -51,12 +45,14 @@
         "close": "Close",
         "empty": "Your cart is empty",
         "checkout": "Checkout",
-        "tax_information": "Taxes, discounts and shipping calculated at checkout.",
         "estimate_total": "Estimated total.",
         "order_instraction": "Order special instractions",
         "order_instraction_placeholder": "Type your message here.",
         "product": "Product",
         "total": "Total",
+        "subtotal": "Subtotal",
+        "discount": "Discount",
+        "promo_code": "Promo Code",
         "remove": "Remove",
         "empty_state": {
           "header": "Your cart is empty",
@@ -66,7 +62,10 @@
           "login": "Log in",
           "login_description": " to check out faster.",
           "new_arrivals": "New Arrivals"
-        }
+        },
+        "removeSuccess": "Item removed from cart",
+        "removeError": "Failed to remove item",
+        "sizeLabel": "Size: "
       }
     }
   },
@@ -300,13 +299,51 @@
     "addToCart": "Add to Cart",
     "addingToCart": "Adding to cart...",
     "soldOut": "Sold Out",
+    "outOfStock": "Out of Stock",
+    "addedToCart": "Added to cart successfully!",
+    "failedToAdd": "Failed to add to cart",
+    "sessionCreationFailed": "Failed to create session. Please try again.",
+    "productNotAvailable": "This product is currently unavailable",
     "fromMoWith": "From {price}/mo with",
     "shopPay": "Shop Pay",
     "productCondition": "Product Condition",
     "greatOverallCondition": "Great Overall Condition",
     "conditionDetails": "Great condition with cut tags. Please review all pictures for details.",
     "guaranteedAuthenticity": "Guaranteed Authenticity",
-    "authenticityDetails": "Every item is rigorously authenticated by our experts. All photos are of the actual product you will receive. We are confident in our processes and stand behind the authenticity of each item sold."
+    "authenticityDetails": "Every item is rigorously authenticated by our experts. All photos are of the actual product you will receive. We are confident in our processes and stand behind the authenticity of each item sold.",
+    "shopClothing": "Shop / Clothing",
+    "color": "Color",
+    "productSize": "Product Size:",
+    "size": "Size",
+    "quickOrder": "Quick Order",
+    "sizeChart": "Size Chart",
+    "checkInStoreAvailability": "Check In-Store Availability",
+    "fitDetails": "Fit Details",
+    "fabricationAndCare": "Fabrication & Care",
+    "shippingAndReturns": "Shipping & Returns",
+    "details": "Details",
+    "design": "DESIGN",
+    "airyAndWarm": "Airy & Warm",
+    "airyAndWarmDescription": "Our Alpaca Wool Crewneck Sweater features a bold cable knit design, a comfortable crew neck, and functional side slits, perfect for layering with your go-to pants.",
+    "quality": "QUALITY",
+    "madeInItaly": "Made in Italy",
+    "madeInItalyDescription": "Fashioned by an Italian mill dedicated to renewable fibers, following sustainable environmental and social standards established by Consorzio Promozione Filati (CPF).",
+    "sustainability": "SUSTAINABILITY",
+    "sustainableBabyAlpaca": "Sustainable Baby Alpaca",
+    "sustainableBabyAlpacaDescription": "Made using highest quality Baby Alpaca from Peru (certified mulesing free) and blended with a regenerated polyamide crafted for Cuyana.",
+    "elegantEase": "Elegant Ease",
+    "elegantEaseDescription": "Inspiration for Your Essential Wardrobe",
+    "styleWith": "Style With",
+    "colorLabel": "Color",
+    "sizeLabel": "Size",
+    "shippingAndReturnsContent": "Delivery<br/>We deliver by Nova Poshta with cash on delivery to all working branches.<br/><br/>Free delivery for all fully prepaid orders.<br/>Reservation of your order at the branch with cash on delivery payment - 3 days from the date of arrival.<br/>Courier delivery is possible with prepayment for delivery, which will be deducted from the cash on delivery amount, or with full prepayment for the goods.<br/>Product return<br/>Within 14 days from the date of purchase",
+    "atTheFitting": "At the fitting",
+    "quickOrderDescription": "Quick two-step checkout.",
+    "selectSize": "Select size",
+    "contactInfo": "Contact information",
+    "next": "Next",
+    "back": "Back",
+    "submitOrder": "Submit order"
   },
   "CollectionPage": {
     "explore": "Back to Search",
@@ -317,7 +354,10 @@
       "min": "Min",
       "max": "Max",
       "apply": "Apply",
-      "clear": "Clear"
+      "clear": "Clear",
+      "show": "Show",
+      "hide": "Hide",
+      "priceRange": "Price"
     }
   },
   "CheckoutPage": {
@@ -391,7 +431,8 @@
     "payNow": "Pay Now",
     "afterDelivered": "After Delivered",
     "payLater": "Pay Later",
-    "liqpay": "LiqPay",
+    "bank-transfer": "Bank Transfer",
+    "bankTransfer": "Bank Transfer",
     "credit-card": "Credit Card",
     "paypal": "PayPal",
     "stripe": "Stripe",
@@ -402,7 +443,7 @@
     "orderIdIsRequired": "Order ID is required",
     "choosePaymentMethod": "Choose Payment Method",
     "selectPaymentMethodDescription": "Select when you would like to pay for your order.",
-    "payNowDescription": "Pay immediately with card or online",
+    "payNowDescription": "Pay by bank transfer using our details",
     "afterDeliveredDescription": "Pay after receiving your order",
     "payLaterDescription": "Pay within 30 days",
     "pay-now": "Pay Now",
@@ -410,7 +451,7 @@
     "pay-later": "Pay Later",
     "orderPaymentFor": "Order payment for",
     "choosePaymentProvider": "Choose Payment Provider",
-    "liqpayDescription": "Safe online payments",
+    "bankTransferDescription": "Transfer to our bank account",
     "selectPaymentProviderDescription": "Select the payment provider you would like to use."
   },
   "ReceiptPage": {
@@ -430,7 +471,9 @@
     "continue_shopping": "Continue Shopping",
     "subtotal": "Subtotal",
     "shipping": "Shipping",
-    "tax": "Tax"
+    "tax": "Tax",
+    "items": "items",
+    "calculated_next": "Calculated next"
   },
   "ThankYouPage": {
     "title": "Thank you for your order!",
@@ -458,15 +501,30 @@
     "profile": "Profile",
     "orders": "Orders",
     "favorites": "Favorites",
-    "settings": "Settings"
+    "settings": "Settings",
+    "signOut": "Sign Out"
   },
   "OrderPage": {
     "title": "My Orders",
+    "sortBy": "Sort by",
+    "viewDetails": "View details",
     "list": {
       "order": "Order",
       "date": "Date",
-      "fulfillmentStatus": "Fulfillment Status",
+      "fulfillmentStatus": "Status",
       "total": "Total"
+    },
+    "status": {
+      "fulfilled": "Fulfilled",
+      "unfulfilled": "Processing",
+      "onHold": "On Hold",
+      "partiallyFulfilled": "Partially Fulfilled"
+    },
+    "timeline": {
+      "ordered": "Ordered",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "delivered": "Delivered"
     },
     "emptyState": {
       "title": "You have no orders yet",
@@ -480,11 +538,11 @@
     },
     "details": {
       "title": "Order Details",
-      "contactInfo": "Contact Information",
-      "shippingAddress": "Shipping Address",
+      "contactInfo": "Contact",
+      "shippingAddress": "Shipping",
       "payment": "Payment",
       "billingAddress": "Billing Address",
-      "summary": "Order Summary",
+      "summary": "Summary",
       "items": "Ordered Items",
       "product": "Product",
       "quantity": "Quantity",
@@ -501,5 +559,63 @@
   "FavoritesPage": {
     "title": "Favorites",
     "empty": "You have no favorite products yet."
+  },
+  "BrandsPage": {
+    "title": "Brands",
+    "description": "All available brands in our store",
+    "empty": "No brands found",
+    "products": "products",
+    "product": "product"
+  },
+  "Search": {
+    "placeholder": "Search...",
+    "searchButton": "Search",
+    "results": "{count, plural, one {# result} other {# results} zero {# results}}",
+    "viewAll": "View all",
+    "noResults": "No results found",
+    "tryAgain": "Try searching for something else.",
+    "title": "Search",
+    "loading": "Loading results",
+    "resultsFor": "Results for",
+    "errorFetchingResults": "Error fetching search results."
+  },
+  "ProductCard": {
+    "new": "New",
+    "quickView": "Quick View"
+  },
+  "LoadMore": {
+    "showMore": "Show More"
+  },
+  "SizeChartDialog": {
+    "boots": {
+      "title": "Size chart",
+      "description": "To measure your shoe size:<br/>Place your foot on a sheet of paper.<br/>Draw the outline of the foot on it.<br/>Mark two lines that coincide with the toe and the heel.<br/>Measure the distance between the heel and the longest toe.<br/>Use the measurements you have obtained and compare with the size table to determine your shoe size.",
+      "eu": "EU",
+      "cm": "cm"
+    },
+    "clothes": {
+      "title": "Size chart",
+      "description": "To measure your clothing size, please refer to the chart below.",
+      "size": "Size",
+      "bust": "Bust (in)",
+      "waist": "Waist (in)",
+      "hips": "Hips (in)"
+    }
+  },
+  "CartPage": {
+    "title": "Cart",
+    "empty": "Your cart is empty",
+    "continue_shopping": "Continue Shopping",
+    "checkout": "Checkout",
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "total": "Total",
+    "discount_code": "Discount code",
+    "apply": "Apply",
+    "remove": "Remove",
+    "invalid_code": "Invalid discount code",
+    "code_applied": "Discount code applied",
+    "order_note": "Order note",
+    "order_note_placeholder": "Enter your order note"
   }
 }

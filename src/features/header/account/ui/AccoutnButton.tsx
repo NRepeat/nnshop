@@ -1,70 +1,92 @@
 import { auth } from '@features/auth/lib/auth';
-import Link from 'next/link';
-import { Avatar, AvatarFallback, AvatarImage } from '@shared/ui/avatar';
+import { Link } from '@shared/i18n/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@shared/ui/dropdown-menu';
-import { User } from 'lucide-react';
+import { SignOutButton } from './SignOutButton';
+import { User2 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
+import { Button } from '@shared/ui/button';
+import { cn } from '@shared/lib/utils';
 
-export const AccountButton = async () => {
+const AccountButtonContent = ({ className }: { className: string }) => {
+  return (
+    <Link href={'/auth/sign-in'} scroll={false}>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Account"
+        className={cn(className)}
+      >
+        <User2 />
+      </Button>
+    </Link>
+  );
+};
+
+export const AccountButton = async ({
+  className,
+  locale,
+}: {
+  className?: string;
+  locale: string;
+}) => {
   const headersList = await headers();
-  const t = await getTranslations('AccountButton');
+  const t = await getTranslations({ locale, namespace: 'AccountButton' });
 
   const session = await auth.api.getSession({ headers: headersList });
   if (!session) {
-    return (
-      <Link
-        href={'/auth/sign-in'}
-        className="cursor-pointer block hover:bg-accent p-2 rounded-none"
-      >
-        <User />
-      </Link>
-    );
+    return <AccountButtonContent className={cn(className)} />;
   }
   if (session && session.user?.isAnonymous) {
-    return (
-      <Link
-        href={'/auth/sign-in'}
-        className="cursor-pointer block hover:bg-accent p-2 rounded-none"
-      >
-        <User />
-      </Link>
-    );
+    return <AccountButtonContent className={cn(className)} />;
   }
   return (
     <div className="flex items-center ">
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center cursor-pointer">
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <div className="ml-2 hidden md:block ">
-            <p className="text-sm font-medium leading-none">
-              {session.user.name}
-            </p>
-            {/*<p className="text-sm text-muted-foreground">{session.user.email}</p>*/}
-          </div>
+        <DropdownMenuTrigger
+          asChild
+          className={cn(className, 'flex items-center cursor-pointer')}
+          aria-label="Account menu"
+        >
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Account"
+            className={cn(className)}
+          >
+            <User2 />
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuLabel>{t('myAccount')}</DropdownMenuLabel>
+          <DropdownMenuItem>
+            <Link href="/account/settings" className="font-medium w-full">
+              {t('myAccount')}
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
-            <Link href="/orders">{t('orders')}</Link>
+            <Link href="/orders" className="w-full">
+              {t('orders')}
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link href="/favorites">{t('favorites')}</Link>
+            <Link href="/favorites" className="w-full">
+              {t('favorites')}
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link href="/account/settings">{t('settings')}</Link>
+            <Link href="/account/settings" className="w-full">
+              {t('settings')}
+            </Link>
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <SignOutButton />
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

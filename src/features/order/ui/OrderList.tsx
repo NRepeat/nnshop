@@ -1,16 +1,18 @@
 'use client';
+
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@shared/ui/table';
+import { Link } from '@shared/i18n/navigation';
+import { Button } from '@shared/ui/button';
 import { ArrowUp, ArrowDown } from 'lucide-react';
+import { OrderCard } from './OrderCard';
+
+type LineItem = {
+  title: string;
+  image?: {
+    url: string;
+  };
+};
 
 type Order = {
   id: string;
@@ -23,14 +25,51 @@ type Order = {
       currencyCode: string;
     };
   };
+  lineItems?: {
+    edges: {
+      node: LineItem;
+    }[];
+  };
 };
 
 type OrderListProps = {
   orders: Order[];
 };
 
+type SortButtonProps = {
+  title: string;
+  sortKey: string;
+  sortBy: string | null;
+  order: string | null;
+  createSortLink: (newSortBy: string) => string;
+};
+
+const SortButton = ({
+  title,
+  sortKey,
+  sortBy,
+  order,
+  createSortLink,
+}: SortButtonProps) => {
+  const isActive = sortBy === sortKey;
+
+  return (
+    <Button variant={isActive ? 'default' : 'outline'} size="sm" asChild>
+      <Link href={createSortLink(sortKey)} className="flex items-center gap-1">
+        {title}
+        {isActive && (order === 'asc' ? (
+          <ArrowUp className="h-4 w-4" />
+        ) : (
+          <ArrowDown className="h-4 w-4" />
+        ))}
+      </Link>
+    </Button>
+  );
+};
+
 export const OrderList = ({ orders }: OrderListProps) => {
   const t = useTranslations('OrderPage.list');
+  const tSort = useTranslations('OrderPage');
   const searchParams = useSearchParams();
   const sortBy = searchParams.get('sortBy');
   const order = searchParams.get('order');
@@ -43,60 +82,33 @@ export const OrderList = ({ orders }: OrderListProps) => {
     return `?${params.toString()}`;
   };
 
-  const SortableHeader = ({
-    title,
-    sortKey,
-  }: {
-    title: string;
-    sortKey: string;
-  }) => (
-    <TableHead>
-      <Link href={createSortLink(sortKey)} className="flex items-center gap-1">
-        {title}
-        {sortBy
-          ? sortKey &&
-            (order === 'asc' ? (
-              <ArrowUp className="h-4 w-4" />
-            ) : (
-              <ArrowDown className="h-4 w-4" />
-            ))
-          : null}
-      </Link>
-    </TableHead>
-  );
-
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>{t('order')}</TableHead>
-          <SortableHeader title={t('date')} sortKey="date" />
-          <SortableHeader title={t('fulfillmentStatus')} sortKey="status" />
-          <TableHead className="text-right">{t('total')}</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {orders.map((order) => {
-          const numericId = order.id.split('/').pop();
-          return (
-            <TableRow key={order.id}>
-              <TableCell className="font-medium">
-                <Link href={`/orders/${numericId}`} className="hover:underline">
-                  {order.name}
-                </Link>
-              </TableCell>
-              <TableCell>
-                {new Date(order.createdAt).toLocaleDateString()}
-              </TableCell>
-              <TableCell>{order.displayFulfillmentStatus}</TableCell>
-              <TableCell className="text-right">
-                {order.totalPriceSet.shopMoney.amount}{' '}
-                {order.totalPriceSet.shopMoney.currencyCode}
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+    <div className="space-y-6">
+      <div className="flex flex-wrap gap-2">
+        <span className="text-sm text-muted-foreground self-center mr-2">
+          {tSort('sortBy')}:
+        </span>
+        <SortButton
+          title={t('date')}
+          sortKey="date"
+          sortBy={sortBy}
+          order={order}
+          createSortLink={createSortLink}
+        />
+        <SortButton
+          title={t('fulfillmentStatus')}
+          sortKey="status"
+          sortBy={sortBy}
+          order={order}
+          createSortLink={createSortLink}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {orders.map((order) => (
+          <OrderCard key={order.id} order={order} />
+        ))}
+      </div>
+    </div>
   );
 };

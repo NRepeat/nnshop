@@ -5,10 +5,10 @@ import { getDeliverySchema } from '../delivery/model/deliverySchema';
 import { getContactInfoSchema } from '../contact-info/schema/contactInfoSchema';
 import { getPaymentSchema } from '../payment/schema/paymentSchema';
 
-export const getCheckoutDataSchema = async () => {
-  const tPayment = await getTranslations('PaymentForm');
-  const tContact = await getTranslations('ContactInfoForm');
-  const tDelivery = await getTranslations('DeliveryForm');
+export const getCheckoutDataSchema = async (locale: string) => {
+  const tPayment = await getTranslations({ locale, namespace: 'PaymentForm' });
+  const tContact = await getTranslations({ locale, namespace: 'ContactInfoForm' });
+  const tDelivery = await getTranslations({ locale, namespace: 'DeliveryForm' });
 
   const checkoutDataSchema = z.object({
     contactInfo: getContactInfoSchema(tContact),

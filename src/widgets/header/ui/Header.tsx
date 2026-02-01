@@ -1,31 +1,83 @@
-import { AccountButton } from '@features/header/account/ui/AccoutnButton';
-import CartSheet from '@features/header/cart/ui/Sheet';
-import { LanguageSwitcher } from '@features/header/language-switcher/ui/LanguageSwitcher';
-import Navigation from '@features/header/navigation/ui/Navigation';
-import NavigationSheet from '@features/header/navigation/ui/Sheet';
-import Logo from '@shared/assets/Logo';
-import Link from 'next/link';
+import { AnnouncementBar } from '@entities/announcement-bar/announcement-bar';
+import {
+  CurrentNavigationSession,
+  CurrentNavigationSessionSkilet,
+} from '@features/header/navigation/ui/Navigation';
+import { HeaderContent } from '@features/header/ui/HeaderContent';
+import { HeaderContentSkeleton } from '@features/header/ui/HeaderContentSkeleton';
+import { HeaderOptions } from '@features/header/ui/HeaderOptions';
+import { LogoLink } from '@features/header/ui/LogoLink';
+import { PersistLinkNavigation } from '@features/header/navigation/ui/PersistLinkNavigation';
+import { sanityFetch } from '@shared/sanity/lib/client';
+import { urlFor } from '@shared/sanity/lib/image';
+import { HEADER_QUERY } from '@shared/sanity/lib/query';
+import { HEADER_QUERYResult } from '@shared/sanity/types';
+import { setRequestLocale } from 'next-intl/server';
+import { Suspense } from 'react';
 
-export const Header = async () => {
+export type HeaderBarProps = Extract<
+  NonNullable<HEADER_QUERYResult>['header'],
+  { _type: 'header' }
+> & { locale: string };
+
+export const Header = async ({
+  locale,
+}: {
+  locale: string;
+}) => {
+  const headerData = await sanityFetch({
+    query: HEADER_QUERY,
+    revalidate: 10,
+    params: { locale },
+    tags: ['siteSettings'],
+  });
+  setRequestLocale(locale);
   return (
-    <header className=" sticky top-2   z-20  backdrop-blur-sm bg-card/60 border-card border-2">
-      <div className="grid grid-cols-3  container   ">
-        <div className="flex  justify-start items-center  py-5 ">
-          <NavigationSheet />
-          <Navigation />
+    <>
+      <Suspense fallback={<></>}>
+        {headerData?.infoBar && headerData?.header && (
+          <AnnouncementBar
+            locale={locale}
+            icon={headerData?.header?.icon}
+            categories={{ locale, ...headerData?.header }}
+            {...headerData?.infoBar}
+          />
+        )}
+      </Suspense>
+
+      <header className="sticky top-0 z-30 bg-background md:h-fit flex flex-col items-center">
+        <div className="container w-full">
+          <div className="w-full font-sans text-foreground grid grid-cols-3 text-base py-3">
+            <Suspense fallback={<HeaderContentSkeleton />}>
+              {headerData?.header && (
+                <HeaderContent locale={locale} {...headerData?.header} />
+              )}
+            </Suspense>
+
+            <div className="flex items-center justify-center">
+              {headerData?.header?.icon?.asset && (
+                <LogoLink
+                  iconUrl={urlFor(headerData?.header.icon?.asset).url()}
+                  alt="MioMio"
+                />
+              )}
+            </div>
+
+            <HeaderOptions locale={locale} />
+          </div>
+          {headerData?.header?.mainCategory && (
+            <div className="justify-center w-full items-center flex md:hidden flex-row pb-1">
+              <PersistLinkNavigation locale={locale} {...headerData?.header} />
+            </div>
+          )}
         </div>
-        <div className="justify-items-center justify-center flex  py-5 ">
-          <Link className="flex" href="/">
-            <Logo className="w-10 h-10" />
-          </Link>
+
+        <div className="hidden md:block w-full">
+          <Suspense fallback={<CurrentNavigationSessionSkilet />}>
+            <CurrentNavigationSession />
+          </Suspense>
         </div>
-        <div className="justify-items-end flex gap-4 justify-end items-center  py-5 ">
-          <LanguageSwitcher />
-          <AccountButton />
-          <CartSheet />
-        </div>
-      </div>
-      <div className="w-full bg-black"></div>
-    </header>
+      </header>
+    </>
   );
 };

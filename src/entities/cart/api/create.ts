@@ -139,9 +139,10 @@ const createCart = async (
           }
         : undefined,
     };
-    const response = await storefrontClient.request<{
-      cartCreate: CartCreatePayload;
-    }>({
+    const response = await storefrontClient.request<
+      { cartCreate: CartCreatePayload },
+      { input: CartInput }
+    >({
       query: CART_CREATE_MUTATION,
       variables: {
         input: cartInput,
