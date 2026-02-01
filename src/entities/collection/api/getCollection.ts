@@ -317,9 +317,6 @@ export const getCollection = async ({
   let collection: GetCollectionQuery;
 
   if (isDefaultSort) {
-    // For default sort: fetch ALL products, sort by custom.sort_order metafield,
-    // then slice to the requested page. This is needed because Shopify can't sort
-    // by metafield at the API level, and paginated results would be in wrong order.
     const allEdges: any[] = [];
     let cursor: string | null = null;
     let hasNextPage = true;

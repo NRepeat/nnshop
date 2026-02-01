@@ -30,7 +30,7 @@ export function BrandGrid({
           {barnds.map((brand) => (
             <Link
               key={brand._key}
-              href={`/brands/${brand.handle?.current}`}
+              href={`/brand/${brand.handle?.current}`}
               className="cursor-pointer basis-1/3"
             >
               <div className="group relative flex h-16 w-full max-w-[160px] items-center justify-center transition-all duration-300 hover:opacity-60">
@@ -59,7 +59,7 @@ export function BrandGrid({
                   <div className="flex flex-col gap-y-8">
                     {barnds.slice(i * 2, i * 2 + 2).map((brand) => (
                       <Link
-                        href={`/brands/${brand.handle?.current}`}
+                        href={`/brand/${brand.handle?.current}`}
                         key={brand._key}
                       >
                         <div className="group relative flex h-16 w-full max-w-[160px] items-center justify-center transition-all duration-300 hover:opacity-60 mx-auto">

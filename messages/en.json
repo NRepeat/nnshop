@@ -560,6 +560,13 @@
     "title": "Favorites",
     "empty": "You have no favorite products yet."
   },
+  "BrandsPage": {
+    "title": "Brands",
+    "description": "All available brands in our store",
+    "empty": "No brands found",
+    "products": "products",
+    "product": "product"
+  },
   "Search": {
     "placeholder": "Search...",
     "searchButton": "Search",

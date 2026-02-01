@@ -18,6 +18,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@shared/i18n/navigation';
 import { FavSession } from '@features/header/ui/FavSession';
 import { cn } from '@shared/lib/utils';
+import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 
 type ProductCardProps = {
   product: Product;
@@ -159,7 +160,9 @@ export const ProductCard = ({
         </Link>
         {
           <div className="w-full pt-2 md:pt-1  flex flex-col gap-1 flex-1 md:px-2">
-            <span className="text-md font-bold">{product.vendor}</span>
+            <Link href={`/brand/${vendorToHandle(product.vendor)}`}>
+              <span className="text-md font-bold hover:underline">{product.vendor}</span>
+            </Link>
             <div className="flex flex-col justify-between flex-1">
               <div className=" w-full flex-col  justify-between flex pb-4">
                 <Link href={`/productt/${product.handle}`}>

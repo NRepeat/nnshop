@@ -15,6 +15,7 @@ import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@shared/ui/button';
 import Link from 'next/link';
+import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 
 type Preview = {
   _key: string;
@@ -136,12 +137,12 @@ export const SyncedCarousels = ({
           <CarouselContent className="h-fit">
             {collectionsData.filter(Boolean).map((collection, index) => (
               <CarouselItem key={index}>
-                <div className="w-full flex justify-center">
-                  <p className="text-2xl ">
+                <div className="w-full flex justify-center mb-8">
+                  <h3 className="text-2xl font-medium">
                     {collection?.collection?.collection?.title}
-                  </p>
+                  </h3>
                 </div>
-                <div className="grid grid-cols-3 gap-4 px-5 ">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-6 px-4 md:px-8">
                   {collection?.collection?.collection?.products?.edges
                     ?.slice(0, 3)
                     .map(
@@ -151,91 +152,83 @@ export const SyncedCarousels = ({
                         >['products']['edges'][0],
                       ) =>
                         product && (
-                          <div key={product.node.handle}>
-                            <Link
-                              href={`/product/${product.node.handle}`}
-                              className="h-full"
-                              scroll={true}
-                            >
-                              <div className="flex flex-col gap-3 group relative overflow-hidden h-full">
-                                <div className="flex justify-start w-full">
-                                  <div className="relative aspect-[1/1] w-full ">
-                                    <Image
-                                      src={
-                                        product.node.media.edges[0].node
-                                          .previewImage?.url
-                                      }
-                                      alt={product.node.title}
-                                      fill
-                                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 30vw, 20vw"
-                                      className="object-contain w-full transition-transform duration-300 group-hover:scale-105"
-                                    />
-                                  </div>
-                                </div>
+                          <div key={product.node.handle} className="group">
+                            {/* Image Container */}
+                            <Link href={`/product/${product.node.handle}`} scroll={true}>
+                              <div className="relative w-full aspect-square overflow-hidden bg-gray-50 mb-3">
+                                <Image
+                                  src={product.node.media.edges[0].node.previewImage?.url}
+                                  alt={product.node.title}
+                                  fill
+                                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                />
 
-                                <div className="flex flex-col flex-grow">
-                                  <p className="text-start font-sans text-base group-hover:border-b hover:border-current transition-colors line-clamp-2 min-h-[3rem] mb-1 max-w-[220px]">
-                                    {product.node.title}
-                                  </p>
-                                  <div className="mt-auto">
-                                    {product.node.metafield &&
-                                    product.node.metafield.key === 'znizka' &&
-                                    product.node.metafield.value &&
-                                    Number(product.node.metafield.value) > 0 ? (
-                                      <div className="flex items-center gap-2 flex-wrap">
-                                        <span className="line-through text-gray-500 text-xs">
-                                          {parseFloat(
-                                            product.node.priceRange
-                                              ?.maxVariantPrice.amount,
-                                          ).toFixed(0)}{' '}
-                                          {getSymbolFromCurrency(
-                                            product.node.priceRange
-                                              ?.maxVariantPrice.currencyCode,
-                                          ) ||
-                                            product.node.priceRange
-                                              ?.maxVariantPrice.currencyCode}
-                                        </span>
-
-                                        <span className="text-red-600 font-bold text-sm">
-                                          {(
-                                            product.node.priceRange
-                                              ?.maxVariantPrice.amount *
-                                            (1 -
-                                              parseFloat(
-                                                product.node.metafield.value,
-                                              ) /
-                                                100)
-                                          ).toFixed(0)}{' '}
-                                          {getSymbolFromCurrency(
-                                            product.node.priceRange
-                                              ?.maxVariantPrice.currencyCode,
-                                          ) ||
-                                            product.node.priceRange
-                                              ?.maxVariantPrice.currencyCode}
-                                        </span>
-
-                                        <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
-                                          -{product.node.metafield.value}%
-                                        </span>
-                                      </div>
-                                    ) : (
-                                      <span className="font-bold text-sm">
-                                        {parseFloat(
-                                          product.node.priceRange
-                                            ?.maxVariantPrice.amount,
-                                        ).toFixed(0)}{' '}
-                                        {getSymbolFromCurrency(
-                                          product.node.priceRange
-                                            ?.maxVariantPrice.currencyCode,
-                                        ) ||
-                                          product.node.priceRange
-                                            ?.maxVariantPrice.currencyCode}
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
+                                {/* Discount Badge */}
+                                {product.node.metafield &&
+                                  product.node.metafield.key === 'znizka' &&
+                                  product.node.metafield.value &&
+                                  Number(product.node.metafield.value) > 0 && (
+                                    <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-sm">
+                                      -{product.node.metafield.value}%
+                                    </div>
+                                  )}
                               </div>
                             </Link>
+
+                            {/* Product Info */}
+                            <div className="space-y-1">
+                              {/* Vendor */}
+                              <Link href={`/brand/${vendorToHandle(product.node.vendor)}`}>
+                                <p className="text-xs uppercase tracking-wider text-gray-500 hover:text-gray-700 transition-colors">
+                                  {product.node.vendor}
+                                </p>
+                              </Link>
+
+                              {/* Title */}
+                              <Link href={`/product/${product.node.handle}`}>
+                                <h4 className="text-sm font-medium text-gray-900 line-clamp-2 leading-tight hover:text-gray-700 transition-colors">
+                                  {product.node.title}
+                                </h4>
+                              </Link>
+
+                                {/* Price */}
+                                <div className="flex items-center gap-2 pt-1">
+                                  {product.node.metafield &&
+                                  product.node.metafield.key === 'znizka' &&
+                                  product.node.metafield.value &&
+                                  Number(product.node.metafield.value) > 0 ? (
+                                    <>
+                                      <span className="text-sm font-semibold text-gray-900">
+                                        {(
+                                          product.node.priceRange?.maxVariantPrice.amount *
+                                          (1 - parseFloat(product.node.metafield.value) / 100)
+                                        ).toFixed(0)}{' '}
+                                        {getSymbolFromCurrency(
+                                          product.node.priceRange?.maxVariantPrice.currencyCode,
+                                        ) || product.node.priceRange?.maxVariantPrice.currencyCode}
+                                      </span>
+                                      <span className="text-xs text-gray-400 line-through">
+                                        {parseFloat(
+                                          product.node.priceRange?.maxVariantPrice.amount,
+                                        ).toFixed(0)}{' '}
+                                        {getSymbolFromCurrency(
+                                          product.node.priceRange?.maxVariantPrice.currencyCode,
+                                        ) || product.node.priceRange?.maxVariantPrice.currencyCode}
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <span className="text-sm font-semibold text-gray-900">
+                                      {parseFloat(
+                                        product.node.priceRange?.maxVariantPrice.amount,
+                                      ).toFixed(0)}{' '}
+                                      {getSymbolFromCurrency(
+                                        product.node.priceRange?.maxVariantPrice.currencyCode,
+                                      ) || product.node.priceRange?.maxVariantPrice.currencyCode}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
                           </div>
                         ),
                     )}

@@ -93,6 +93,7 @@ import { compareSizes } from '@shared/lib/sort-sizes';
 import { QuickBuyModal } from '@features/product/quick-buy/ui/QuickBuyModal';
 import { useState } from 'react';
 import { Badge } from '@shared/ui/badge';
+import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 
 export const ProductInfo = ({
   product,
@@ -140,7 +141,7 @@ export const ProductInfo = ({
     <div className="content-stretch flex flex-col gap-[30px] items-start  py-0 relative w-full">
       <div className="flex flex-col gap-8 items-start  w-full max-w-2xl">
         <section className="space-y-2 w-full">
-          <Link href={`/collection/${product.vendor.toLowerCase()}`}>
+          <Link href={`/brand/${vendorToHandle(product.vendor)}`}>
             <h1 className="text-xl font-semibold uppercase tracking-tight">
               {product.vendor}
             </h1>
