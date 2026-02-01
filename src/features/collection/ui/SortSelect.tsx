@@ -48,7 +48,7 @@ export function SortSelect({ defaultValue }: SortSelectProps) {
       onValueChange={handleSortChange}
       disabled={isPending}
     >
-      <SelectTrigger className="w-[160px]  md:w-[160px] min-w-fit rounded-none">
+      <SelectTrigger className="w-[160px]  md:w-[160px] min-w-fit rounded-md">
         <div className="flex items-center gap-x-2">
           <SelectValue placeholder={t('sortBy')} />
           {/*{currentSort === 'price-asc' && <ChevronUpIcon className="size-4" />}
@@ -60,19 +60,19 @@ export function SortSelect({ defaultValue }: SortSelectProps) {
           )}*/}
         </div>
       </SelectTrigger>
-      <SelectContent className="rounded-none">
+      <SelectContent className="rounded-md">
         <SelectGroup>
           <SelectLabel>{t('sortBy')}</SelectLabel>
-          <SelectItem className="rounded-none" value="trending">
+          <SelectItem className="rounded-md" value="trending">
             {t('trending')}
           </SelectItem>
-          <SelectItem className="rounded-none" value="price-asc">
+          <SelectItem className="rounded-md" value="price-asc">
             {t('priceLowToHigh')}
           </SelectItem>
-          <SelectItem className="rounded-none" value="price-desc">
+          <SelectItem className="rounded-md" value="price-desc">
             {t('priceHighToLow')}
           </SelectItem>
-          <SelectItem className="rounded-none" value="created-desc">
+          <SelectItem className="rounded-md" value="created-desc">
             {t('newest')}
           </SelectItem>
         </SelectGroup>

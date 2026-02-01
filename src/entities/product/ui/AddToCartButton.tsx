@@ -33,7 +33,7 @@ function SubmitButton({
       type="submit"
       //@ts-expect-error
       variant={variant}
-      className="w-full h-10 md:h-14 text-md rounded-none"
+      className="w-full h-10 md:h-14 text-md rounded-md"
       disabled={disabled || pending}
       aria-disabled={pending}
     >

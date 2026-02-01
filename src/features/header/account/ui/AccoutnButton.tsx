@@ -17,8 +17,13 @@ import { cn } from '@shared/lib/utils';
 
 const AccountButtonContent = ({ className }: { className: string }) => {
   return (
-    <Link href={'/auth/sign-in'} scroll={false} className="rounded-none">
-      <Button variant="ghost" size="icon" aria-label="Account" className={cn(className)}>
+    <Link href={'/auth/sign-in'} scroll={false}>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Account"
+        className={cn(className)}
+      >
         <User2 />
       </Button>
     </Link>
@@ -46,19 +51,18 @@ export const AccountButton = async ({
     <div className="flex items-center ">
       <DropdownMenu>
         <DropdownMenuTrigger
+          asChild
           className={cn(className, 'flex items-center cursor-pointer')}
           aria-label="Account menu"
         >
-          <Avatar>
-            {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <div className="ml-2 hidden md:block ">
-            <p className="text-sm font-medium leading-none">
-              {session.user.name}
-            </p>
-            {/*<p className="text-sm text-muted-foreground">{session.user.email}</p>*/}
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Account"
+            className={cn(className)}
+          >
+            <User2 />
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem>
@@ -68,13 +72,19 @@ export const AccountButton = async ({
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
-            <Link href="/orders" className="w-full">{t('orders')}</Link>
+            <Link href="/orders" className="w-full">
+              {t('orders')}
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link href="/favorites" className="w-full">{t('favorites')}</Link>
+            <Link href="/favorites" className="w-full">
+              {t('favorites')}
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link href="/account/settings" className="w-full">{t('settings')}</Link>
+            <Link href="/account/settings" className="w-full">
+              {t('settings')}
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <SignOutButton />

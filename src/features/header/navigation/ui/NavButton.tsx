@@ -25,8 +25,8 @@ export const NavButton = ({
   return (
     <Button
       className={cn(
-        'rounded-none w-full cursor-pointer text-nowrap md:text-base font-300 font-sans h-full px-6 text-lg md:px-5 md:py-2',
-        'border-b-2 border-transparent transition-colors duration-200',
+        'w-full cursor-pointer text-nowrap md:text-base font-300 font-sans h-full px-6 text-lg md:px-5 md:py-2',
+        'border-b-2 border-transparent transition-colors duration-200 hover:bg-accent/50',
         {
           'border-b-foreground': isActive,
         },

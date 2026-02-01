@@ -39,7 +39,7 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
           </div>
 
           <div className="flex flex-col flex-grow">
-            <p className="text-start font-sans text-base group-hover:underline line-clamp-2 min-h-[3rem] mb-1">
+            <p className="text-start font-sans text-base group-hover:border-b group-hover:border-current transition-colors line-clamp-2 min-h-[3rem] mb-1">
               {product.title}
             </p>
             <div className="mt-auto">

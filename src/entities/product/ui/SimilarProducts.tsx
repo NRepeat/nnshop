@@ -62,11 +62,11 @@ const SimilarProducts = async ({ collection }: { collection: Collection }) => {
         </CarouselContent>
         <div className="w-full hidden md:flex justify-center gap-4 mt-2">
           <CarouselPrevious
-            className=" rounded-none p-6 hover:bg-card"
+            className=" rounded-full p-6 hover:bg-card"
             variant={'ghost'}
           />
           <CarouselNext
-            className="rounded-none p-6 hover:bg-card"
+            className="rounded-full p-6 hover:bg-card"
             variant={'ghost'}
           />
         </div>

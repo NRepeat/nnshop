@@ -85,7 +85,7 @@ export const OrderCard = ({ order }: OrderCardProps) => {
               )}
             </div>
           )}
-          <div className="mt-3 text-sm text-primary hover:underline">
+          <div className="mt-3 text-sm text-primary hover:border-b hover:border-primary w-fit transition-colors">
             {t('viewDetails')} →
           </div>
         </CardContent>

@@ -115,7 +115,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
           <div className="">
             <Button
               type="submit"
-              className="w-full rounded-none "
+              className="w-full rounded-md "
               size="lg"
               disabled={form.formState.isSubmitting}
             >

@@ -168,7 +168,7 @@ const Gallery = ({
                 >
                   <div
                     className={
-                      'aspect-square relative border rounded-none overflow-hidden ' +
+                      'aspect-square relative border rounded-md overflow-hidden ' +
                       (index === selectedIndex
                         ? 'border-primary'
                         : 'border-transparent opacity-50')

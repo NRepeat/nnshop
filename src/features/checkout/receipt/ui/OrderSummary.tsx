@@ -3,9 +3,15 @@ import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
 import { getCart } from '@entities/cart/api/get';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
-import { ShoppingBag, ChevronDown } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 import getSymbolFromCurrency from 'currency-symbol-map';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@shared/ui/accordion';
 
 interface OrderSummaryProps {
   locale: string;
@@ -27,7 +33,7 @@ interface CartItem {
 }
 
 function formatPrice(price: number): string {
-  return price.toFixed(0);
+  return Math.round(price).toString();
 }
 
 function OrderItemCard({ item, currency }: { item: CartItem; currency: string }) {
@@ -180,21 +186,24 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
 
   if (collapsible) {
     return (
-      <details className="group border border-gray-200 bg-white md:hidden">
-        <summary className="flex items-center justify-between p-4 cursor-pointer list-none">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-100">
-              <ShoppingBag className="size-5 text-gray-600" />
+      <Accordion type="single" collapsible className="border border-gray-200 bg-white md:hidden">
+        <AccordionItem value="order-summary" className="border-none">
+          <AccordionTrigger className="p-4 hover:no-underline">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-100">
+                <ShoppingBag className="size-5 text-gray-600" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-medium text-gray-900">{t('products_title')}</p>
+                <p className="text-xs text-gray-500">{totalQuantity} {t('items')} &bull; {formatPrice(subtotal)}{currencySymbol}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-gray-900">{t('products_title')}</p>
-              <p className="text-xs text-gray-500">{totalQuantity} {t('items')} &bull; {formatPrice(subtotal)}{currencySymbol}</p>
-            </div>
-          </div>
-          <ChevronDown className="w-5 h-5 text-gray-400 transition-transform group-open:rotate-180" />
-        </summary>
-        {content}
-      </details>
+          </AccordionTrigger>
+          <AccordionContent className="pb-0">
+            {content}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     );
   }
 

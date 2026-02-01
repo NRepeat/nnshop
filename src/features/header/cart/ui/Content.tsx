@@ -20,6 +20,9 @@ const Content = async ({
   cartId,
   locale,
   discountCodes,
+  subtotalAmount,
+  totalAmount,
+  discountAmount,
 }: {
   mockProducts: {
     id: string;
@@ -38,6 +41,9 @@ const Content = async ({
   currencySymbol: string;
   locale: string;
   discountCodes: Array<{ code: string; applicable: boolean }>;
+  subtotalAmount: number;
+  totalAmount: number;
+  discountAmount: number;
 }) => {
   const t = await getTranslations({
     locale,
@@ -86,18 +92,39 @@ const Content = async ({
                 <CartNoteTextarea placeholder={t('order_instraction_placeholder')} />
               </AccordionContent>
             </AccordionItem>
+            <AccordionItem value="item-2" defaultChecked={false}>
+              <AccordionTrigger className="w-full">
+                <span className="font-light">{t('promo_code')}</span>
+              </AccordionTrigger>
+              <AccordionContent className="w-full px-1 pt-1">
+                <DiscountCodeInput discountCodes={discountCodes} />
+              </AccordionContent>
+            </AccordionItem>
           </Accordion>
           <Separator />
         </div>
-        <div className="px-4 py-2">
-          <DiscountCodeInput discountCodes={discountCodes} />
-        </div>
-        <Separator />
-        <div className="w-full flex justify-between px-4 py-4">
-          {/* <span>{t('estimate_total')}</span> */}
-          <span className="">
-            {getSymbolFromCurrency(currencySymbol)} {estimateTotal}
-          </span>
+        <div className="w-full flex flex-col gap-2 px-4 py-4">
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{t('subtotal')}</span>
+            <span className="">
+              {getSymbolFromCurrency(currencySymbol)} {subtotalAmount.toFixed(0)}
+            </span>
+          </div>
+          {discountAmount > 0 && (
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{t('discount')}</span>
+              <span className="text-green-600 dark:text-green-400">
+                -{getSymbolFromCurrency(currencySymbol)} {discountAmount.toFixed(0)}
+              </span>
+            </div>
+          )}
+          <Separator />
+          <div className="flex justify-between font-medium">
+            <span>{t('total')}</span>
+            <span className="">
+              {getSymbolFromCurrency(currencySymbol)} {totalAmount.toFixed(0)}
+            </span>
+          </div>
         </div>
         <CreateOrderButton />
       </div>

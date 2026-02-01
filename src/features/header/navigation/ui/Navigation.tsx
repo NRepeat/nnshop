@@ -42,7 +42,16 @@ export const CurrentNavigationSessionSkilet = () => {
 };
 
 const genderSlugMap: Record<string, string[]> = {
-  woman: ['woman', 'women', 'female', 'жен', 'женщин', 'жінк', 'zhinok', 'zhinoch'],
+  woman: [
+    'woman',
+    'women',
+    'female',
+    'жен',
+    'женщин',
+    'жінк',
+    'zhinok',
+    'zhinoch',
+  ],
   man: ['man', 'men', 'male', 'муж', 'мужчин', 'чолов', 'cholovik'],
 };
 
@@ -77,19 +86,19 @@ const Navigation = async ({
           {item.items.map((subItem) => (
             <NavigationMenuItem
               key={subItem.url + subItem.title + gender}
-              className="hover:underline group"
+              className=" border-transparent transition-colors group"
             >
               <NavigationMenuTrigger
                 variant={'ghost'}
-                className="rounded-none cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full has-[>svg]:px-5 px-5 py-2"
+                className="cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full has-[>svg]:px-5 px-5 py-2 hover:bg-accent/50 hover:border-none border-none"
               >
                 {subItem.title}
               </NavigationMenuTrigger>
               <NavigationMenuContent className="flex justify-between !p-0">
-                      {/* <div className="w-full row-span-3 ml-2">
+                {/* <div className="w-full row-span-3 ml-2">
                           <Link
                             href={subItem.url}
-                            className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:underline font-medium"
+                            className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:border-b hover:border-current transition-colors font-medium"
                           >
                             {subItem.title}
                                        {console.log(subItem,"subItem")}
@@ -102,7 +111,7 @@ const Navigation = async ({
                       {/* <li className="w-full row-span-3 ml-2">
                           <Link
                             href={subItem.url}
-                            className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:underline font-medium"
+                            className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:border-b hover:border-current transition-colors font-medium"
                           >
                             {subItem.title}
                           </Link>
@@ -112,12 +121,12 @@ const Navigation = async ({
                           key={child.title + gender}
                           className="w-full row-span-3 ml-2"
                         >
-                            <Link
-                              href={child.url}
-                              className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:underline"
-                            >
-                              {child.title}
-                            </Link>
+                          <Link
+                            href={child.url}
+                            className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:underline  transition-colors"
+                          >
+                            {child.title}
+                          </Link>
                         </li>
                       ))}
                     </ul>
@@ -137,7 +146,7 @@ const Navigation = async ({
           <NavigationMenuLink asChild>
             <Link
               href={item.url}
-              className="inline-block px-4 py-2 text-base font-300 font-sans hover:underline"
+              className="inline-block px-4 py-2 text-base font-300 font-sans hover:border-b border-b border-transparent hover:border-current transition-colors"
             >
               {item.title}
             </Link>

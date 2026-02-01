@@ -32,9 +32,9 @@ const CartItem = ({
   const discountedPrice = sale > 0 ? originalPrice * (1 - sale / 100) : originalPrice;
 
   return (
-    <Card className="p-0 rounded-none shadow-none ">
+    <Card className="p-0 shadow-none">
       <Link href={'/product/' + product.handle} className="flex col-span-1">
-        <CardContent className="grid grid-cols-[1fr_1fr_0.6fr] justify-between   rounded-none shadow-none relative  p-1">
+        <CardContent className="grid grid-cols-[1fr_1fr_0.6fr] justify-between shadow-none relative p-1">
           <Image
             className="w-full h-auto object-cover"
             src={product.image}

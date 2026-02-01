@@ -38,7 +38,7 @@ export const Footer = async ({ locale }: { locale: string }) => {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="hover:underline text-gray-400"
+                    className="hover:border-b hover:border-gray-400 transition-colors text-gray-400"
                   >
                     {link.title}
                   </Link>

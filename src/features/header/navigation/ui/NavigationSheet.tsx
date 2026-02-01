@@ -52,7 +52,7 @@ const NavigationSheet = ({
         className="cursor-pointer   justify-center items-center "
         asChild
       >
-        <Button variant="ghost" size="icon" aria-label="Open menu" className="rounded-none">
+        <Button variant="ghost" size="icon" aria-label="Open menu" className="rounded-md">
           <Menu className="" />
         </Button>
       </SheetTrigger>

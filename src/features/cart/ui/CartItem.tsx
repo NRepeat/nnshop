@@ -61,7 +61,7 @@ export const CartItem = ({
             <div>
               <Link
                 href={`/product/${product.handle}`}
-                className="font-medium text-base hover:underline line-clamp-2"
+                className="font-medium text-base hover:border-b hover:border-current transition-colors line-clamp-2"
               >
                 {product.title}
               </Link>

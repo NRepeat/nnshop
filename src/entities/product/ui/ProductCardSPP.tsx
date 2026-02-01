@@ -69,7 +69,7 @@ export const ProductCardSPP = ({
 
       {/* Инфо-блок */}
       <div className="flex flex-col gap-1 px-1">
-        <Link href={`/product/${product.handle}`} className="hover:underline">
+        <Link href={`/product/${product.handle}`} className="hover:border-b hover:border-current transition-colors">
           <h3 className="line-clamp-2 text-[13px] leading-tight text-black">
             {product.title}
           </h3>

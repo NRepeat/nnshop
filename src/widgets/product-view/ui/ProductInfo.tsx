@@ -188,7 +188,7 @@ export const ProductInfo = ({
                       ? 'default'
                       : 'outline'
                   }
-                  className={cn('rounded-none min-w-[50px] relative', {
+                  className={cn('rounded-md min-w-[50px] relative', {
                     'bg-primary text-white':
                       size.toLowerCase() === s.toLowerCase(),
                   })}
@@ -229,7 +229,7 @@ export const ProductInfo = ({
                 >
                   <div
                     className={cn(
-                      ' border p-1 transition-all rounded-none flex justify-center items-center',
+                      ' border p-1 transition-all rounded-md flex justify-center items-center',
                       c.product === product.handle
                         ? 'border-black'
                         : ' border-gray-200 group-hover:border-gray-300',
@@ -237,7 +237,7 @@ export const ProductInfo = ({
                   >
                     <div
                       className={cn(
-                        'w-8 h-8 rounded-none',
+                        'w-8 h-8 rounded-md',
                         COLOR_MAP[c.name] || 'bg-gray-200',
                       )}
                       title={c.name}
@@ -263,7 +263,7 @@ export const ProductInfo = ({
         />
         <Button
           variant="secondary"
-          className="w-full h-10 md:h-14 text-md rounded-none"
+          className="w-full h-10 md:h-14 text-md rounded-md"
           onClick={() => setQuickBuyOpen(true)}
         >
           {t('quickOrder')}

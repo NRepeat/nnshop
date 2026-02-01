@@ -34,7 +34,7 @@ export default function PaymentProviderButton({
         onSelectPaymentProvider(provider.id);
       }}
       className={clsx(
-        'group relative p-6 rounded-none border border-transparent h-fit w-full',
+        'group relative p-6 rounded-lg border border-transparent h-fit w-full transition-all hover:shadow-md',
         {
           'border-gray-200 ': selectedProvider !== provider.id,
         },

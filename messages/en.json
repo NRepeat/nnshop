@@ -50,6 +50,9 @@
         "order_instraction_placeholder": "Type your message here.",
         "product": "Product",
         "total": "Total",
+        "subtotal": "Subtotal",
+        "discount": "Discount",
+        "promo_code": "Promo Code",
         "remove": "Remove",
         "empty_state": {
           "header": "Your cart is empty",

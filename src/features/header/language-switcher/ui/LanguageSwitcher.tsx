@@ -52,15 +52,15 @@ export function LanguageSwitcher({
       <DropdownMenuTrigger asChild className={className}>
         <Button
           variant="default"
-          className="h-full underline border-b-2 border-foreground bg-foreground hover:border-b-2 hover:border-b-[#e31e24]"
+          className="h-full border-b-2 border-foreground bg-foreground hover:border-b-2 hover:border-b-[#e31e24] transition-colors"
         >
           {parseLocale[selectedLocale as keyof typeof parseLocale]}
           <span className="sr-only">Switch language</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="rounded-none gap-2" align={align} side={side}>
+      <DropdownMenuContent className="rounded-md gap-2" align={align} side={side}>
         <DropdownMenuItem
-          className={cn('rounded-none', {
+          className={cn('rounded-md', {
             'bg-gray-200': selectedLocale === 'uk',
           })}
           onClick={() => changeLocale('uk')}
@@ -68,7 +68,7 @@ export function LanguageSwitcher({
           {t('uk')}
         </DropdownMenuItem>
         <DropdownMenuItem
-          className={cn('rounded-none', {
+          className={cn('rounded-md', {
             'bg-gray-200': selectedLocale === 'ru',
           })}
           onClick={() => changeLocale('ru')}

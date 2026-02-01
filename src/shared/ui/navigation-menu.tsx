@@ -60,7 +60,7 @@ function NavigationMenuItem({
 }
 
 const navigationMenuTriggerStyle = cva(
-  'group hover:underline hover:text-accent-foreground focus:bg-background focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=open]:hover:bg-underline data-[state=open]:text-accent-foreground data-[state=open]:focus:bg-background data-[state=open]:underline  transition-[color,box-shadow]  ',
+  'group  hover:border-accent-foreground hover:text-accent-foreground focus:bg-background focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=open]:border-b data-[state=open]:border-accent-foreground data-[state=open]:text-accent-foreground data-[state=open]:focus:bg-background transition-[color,box-shadow,border]',
 );
 
 function NavigationMenuTrigger({
@@ -117,7 +117,7 @@ function NavigationMenuViewport({
       <NavigationMenuPrimitive.Viewport
         data-slot="navigation-menu-viewport"
         className={cn(
-          'rounded-none origin-top text-popover-foreground overflow-hidden',
+          'origin-top text-popover-foreground overflow-hidden',
           'data-[state=open]:animate-in data-[state=closed]:animate-out',
           'data-[state=closed]:zoom-out-100 data-[state=open]:zoom-in-95',
           'relative',

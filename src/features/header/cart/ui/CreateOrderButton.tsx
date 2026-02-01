@@ -16,7 +16,7 @@ export const CreateOrderButton = () => {
     <div className="w-full flex flex-col justify-between px-4 py-4 space-y-4">
       <span>{t('tax_information')}</span>
       <SheetClose asChild>
-        <Button onClick={handleCreateOrder} className="w-full rounded-none">
+        <Button onClick={handleCreateOrder} className="w-full rounded-md">
           {t('checkout')}
         </Button>
       </SheetClose>

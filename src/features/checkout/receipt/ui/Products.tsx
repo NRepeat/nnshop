@@ -38,7 +38,7 @@
 //       totalTaxAmount: order.totalTaxSet.presentmentMoney,
 //     };
 //     return (
-//       <Card className="w-full shadow-none rounded-none  bg-gray-100 p-0 ">
+//       <Card className="w-full shadow-none rounded-md  bg-gray-100 p-0 ">
 //         <CardHeader className="p-0">
 //           <CardTitle>{t('products_title')}</CardTitle>
 //         </CardHeader>
@@ -51,7 +51,7 @@
 //               >
 //                 <Image
 //                   alt={line.node.title}
-//                   className="rounded-none"
+//                   className="rounded-md"
 //                   height={80}
 //                   src={line.node.image?.url}
 //                   width={80}
@@ -116,7 +116,7 @@
 //     cost = cartData.cart.cost;
 //   }
 //   return (
-//     <Card className="w-full shadow-none rounded-none  bg-gray-100 p-0 ">
+//     <Card className="w-full shadow-none rounded-md  bg-gray-100 p-0 ">
 //       <CardHeader>
 //         <CardTitle>{t('products_title')}</CardTitle>
 //       </CardHeader>
@@ -129,7 +129,7 @@
 //             >
 //               <Image
 //                 alt={line.node.merchandise.product.title}
-//                 className="rounded-none"
+//                 className="rounded-md"
 //                 height={80}
 //                 src={line.node.merchandise.image?.url}
 //                 width={80}

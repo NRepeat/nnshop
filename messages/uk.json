@@ -43,6 +43,9 @@
         "order_instraction_placeholder": "Введіть ваше повідомлення тут.",
         "product": "Продукт",
         "total": "Всього",
+        "subtotal": "Проміжний підсумок",
+        "discount": "Знижка",
+        "promo_code": "Промокод",
         "remove": "Прибрати",
         "empty_state": {
           "header": "Ваш кошик порожній",

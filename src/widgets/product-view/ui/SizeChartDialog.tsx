@@ -14,7 +14,7 @@ import Image from 'next/image';
 const BootsSizeChart = ({ t }: { t: (key: string) => string }) => (
   <div className="flex flex-col gap-6">
     <DialogHeader>
-      <DialogTitle className="text-center text-3xl font-light italic font-serif">
+      <DialogTitle className="text-center text-3xl font-light  font-serif">
         {t('boots.title')}
       </DialogTitle>
     </DialogHeader>

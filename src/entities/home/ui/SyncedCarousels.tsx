@@ -174,7 +174,7 @@ export const SyncedCarousels = ({
                                 </div>
 
                                 <div className="flex flex-col flex-grow">
-                                  <p className="text-start font-sans text-base group-hover:underline line-clamp-2 min-h-[3rem] mb-1 max-w-[220px]">
+                                  <p className="text-start font-sans text-base group-hover:border-b hover:border-current transition-colors line-clamp-2 min-h-[3rem] mb-1 max-w-[220px]">
                                     {product.node.title}
                                   </p>
                                   <div className="mt-auto">

@@ -52,7 +52,7 @@ const TextContentComponent = ({
         variant="link"
         className={`h-auto p-0 text-base uppercase tracking-widest transition-all hover:opacity-70 ${
           mobile ? 'text-white  border-white' : 'text-black  border-black'
-        } rounded-none`}
+        } rounded-md`}
       >
         <Link href={linkUrl.handle}>{linkUrl?.title}</Link>
       </Button>

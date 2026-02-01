@@ -49,11 +49,11 @@ export const ProductCard = ({
   return (
     <Card
       className={clsx(
-        'h-full shadow-none backdrop-blur-sm bg-transparent border border-background  rounded-none cursor-pointer  py-1  group pb-4',
+        'h-full shadow-none backdrop-blur-sm bg-transparent border border-background cursor-pointer py-1 group pb-4',
         className,
       )}
     >
-      <CardContent className="  flex flex-col  rounded-none p-0 md:p-1 border-0 shadow-none h-full justify-between bg-transparent">
+      <CardContent className="flex flex-col p-0 md:p-1 border-0 shadow-none h-full justify-between bg-transparent">
         <Link href={`/product/${product.handle}`}>
           {withCarousel ? (
             <Carousel className="relative" opts={{ align: 'center' }}>
@@ -193,7 +193,7 @@ export const ProductCard = ({
                       ) || product.priceRange?.maxVariantPrice.currencyCode}
                     </span>
 
-                    <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
+                    <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded-md">
                       -{product.metafield.value}%
                     </span>
                   </div>

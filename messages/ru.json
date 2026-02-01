@@ -43,6 +43,9 @@
         "order_instraction_placeholder": "Введите ваше сообщение здесь.",
         "product": "Продукт",
         "total": "Всего",
+        "subtotal": "Подытог",
+        "discount": "Скидка",
+        "promo_code": "Промокод",
         "remove": "Убрать",
         "empty_state": {
           "header": "Ваша корзина пуста",

@@ -75,13 +75,18 @@ const CartSheet = async ({ locale }: { locale: string }) => {
   );
   const discountCodes = cart?.cart?.discountCodes || [];
 
+  // Get subtotal and total from Shopify cart
+  const subtotalAmount = Number(cart?.cart?.cost?.subtotalAmount?.amount || estimateTotal);
+  const totalAmount = Number(cart?.cart?.cost?.totalAmount?.amount || estimateTotal);
+  const discountAmount = subtotalAmount - totalAmount;
+
   return (
     <Sheet >
       <SheetTrigger
-        className="cursor-pointer  flex justify-center items-center hover:underline hover:text-accent-foreground  rounded-none relative size-9 "
+        className="cursor-pointer relative"
         asChild
       >
-        <Button variant="ghost" size="icon" aria-label="Shopping cart" className="rounded-none">
+        <Button variant="ghost" size="icon" aria-label="Shopping cart">
           <ShoppingCart className="h-4 w-4" />
           {mockProducts && mockProducts.length > 0 && (
             <Badge className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums top-0 right-0 absolute">
@@ -97,6 +102,9 @@ const CartSheet = async ({ locale }: { locale: string }) => {
         currencySymbol={currencySymbol}
         cartId={cartId}
         discountCodes={discountCodes}
+        subtotalAmount={subtotalAmount}
+        totalAmount={totalAmount}
+        discountAmount={discountAmount}
       />
     </Sheet>
   );
@@ -111,6 +119,9 @@ const CartWithEmptyState = ({
   cartId,
   locale,
   discountCodes,
+  subtotalAmount,
+  totalAmount,
+  discountAmount,
 }: {
   products: any;
   currencySymbol: string;
@@ -118,6 +129,9 @@ const CartWithEmptyState = ({
   cartId: string | undefined;
   locale: string;
   discountCodes: Array<{ code: string; applicable: boolean }>;
+  subtotalAmount: number;
+  totalAmount: number;
+  discountAmount: number;
 }) => {
   if (!cartId) {
     return <EmptyState locale={locale} />;
@@ -130,6 +144,9 @@ const CartWithEmptyState = ({
         cartId={cartId}
         locale={locale}
         discountCodes={discountCodes}
+        subtotalAmount={subtotalAmount}
+        totalAmount={totalAmount}
+        discountAmount={discountAmount}
       />
     );
   }

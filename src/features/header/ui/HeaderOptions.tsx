@@ -1,4 +1,4 @@
-import { Heart, ShoppingCart } from 'lucide-react';
+import { Heart, ShoppingCart, User2 } from 'lucide-react';
 import CartSheet from '../cart/ui/Sheet';
 import { Button } from '@shared/ui/button';
 import { SearchSession } from '../search/ui/search-session';
@@ -20,12 +20,30 @@ export const HeaderOptions = ({ locale }: { locale: string }) => {
           <Heart />
         </Button>
       </Link>
-      <Suspense>
+      <Suspense
+        fallback={
+          <Suspense>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Account"
+              // className={cn(className)}
+            >
+              <User2 />
+            </Button>
+          </Suspense>
+        }
+      >
         <AccountButton className=" flex " locale={locale} />
       </Suspense>
       <Suspense
         fallback={
-          <Button variant="ghost" size="icon" aria-label="Shopping cart" className="group">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Shopping cart"
+            className="group"
+          >
             <ShoppingCart className="h-4 w-4 group:hover:stroke-white" />
           </Button>
         }

@@ -174,7 +174,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
                       </span>
                       <Link
                         href="/search"
-                        className="underline"
+                        className="border-b border-transparent hover:border-current transition-colors"
                         onClick={() => setIsOpen(false)}
                       >
                         {t('viewAll')}

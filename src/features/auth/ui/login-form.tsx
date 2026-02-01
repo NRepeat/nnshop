@@ -56,7 +56,7 @@ export default function LoginForm({
       className={cn('flex flex-col gap-6 w-full max-w-3xl', className)}
       {...props}
     >
-      <Card className="overflow-hidden p-0 rounded-none shadow-none border-none">
+      <Card className="overflow-hidden p-0 shadow-none border-none">
         <CardContent className="grid p-0 md:grid-cols-2">
           <Form {...form}>
             <form
@@ -92,7 +92,7 @@ export default function LoginForm({
                           autoComplete="email"
                           placeholder={t('emailPlaceholder')}
                           disabled={isLoading}
-                          className="rounded-none"
+                          className="rounded-md"
                         />
                       </FormControl>
                       <FormMessage />
@@ -125,7 +125,7 @@ export default function LoginForm({
                           autoComplete="current-password"
                           placeholder={t('passwordPlaceholder')}
                           disabled={isLoading}
-                          className="rounded-none"
+                          className="rounded-md"
                         />
                       </FormControl>
                       <FormMessage />
@@ -136,7 +136,7 @@ export default function LoginForm({
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full rounded-none h-11"
+                  className="w-full rounded-md h-11"
                 >
                   {isLoading ? t('signingIn') : t('signInButton')}
                 </Button>
@@ -151,7 +151,7 @@ export default function LoginForm({
                   {/* <Button
                     variant="outline"
                     type="button"
-                    className="rounded-none h-11"
+                    className="rounded-md h-11"
                     disabled={isLoading}
                     onClick={async () => {
                       setIsLoading(true);
@@ -168,7 +168,7 @@ export default function LoginForm({
                   <Button
                     variant="outline"
                     type="button"
-                    className="rounded-none h-11"
+                    className="rounded-md h-11"
                     disabled={isLoading}
                     onClick={async () => {
                       setIsLoading(true);
