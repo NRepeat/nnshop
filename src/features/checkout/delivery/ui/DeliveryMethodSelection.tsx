@@ -90,7 +90,7 @@ export default function DeliveryMethodSelection() {
                     variant={field.value !== method.id ? 'outline' : 'default'}
                     onClick={() => field.onChange(method.id)}
                     className={clsx(
-                      'group relative rounded-lg shadow-none h-fit border border-transparent transition-all hover:shadow-md',
+                      'group relative rounded-md shadow-none h-fit border border-transparent transition-all hover:shadow-md',
                       {
                         'border border-gray-200': field.value !== method.id,
                       },

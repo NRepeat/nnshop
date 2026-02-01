@@ -186,11 +186,11 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
 
   if (collapsible) {
     return (
-      <Accordion type="single" collapsible className="border border-gray-200 bg-white md:hidden">
+      <Accordion type="single" collapsible className="border border-gray-200 bg-white md:hidden rounded-md">
         <AccordionItem value="order-summary" className="border-none">
           <AccordionTrigger className="p-4 hover:no-underline">
             <div className="flex items-center gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-100">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-gray-100">
                 <ShoppingBag className="size-5 text-gray-600" />
               </div>
               <div className="text-left">
@@ -208,9 +208,9 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
   }
 
   return (
-    <div className="border border-gray-200 bg-white">
+    <div className="border border-gray-200 bg-white rounded-md">
       <div className="flex items-center gap-3 p-4 border-b border-gray-100">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-100">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-gray-100">
           <ShoppingBag className="size-5 text-gray-600" />
         </div>
         <div>
@@ -227,7 +227,7 @@ export function OrderSummarySkeleton() {
   return (
     <div className="border border-gray-200 bg-white animate-pulse">
       <div className="flex items-center gap-3 p-4 border-b border-gray-100">
-        <div className="w-10 h-10 rounded-lg bg-gray-100" />
+        <div className="w-10 h-10 rounded-md bg-gray-100" />
         <div className="flex-1">
           <div className="h-4 w-20 bg-gray-100 rounded mb-1" />
           <div className="h-3 w-16 bg-gray-100 rounded" />

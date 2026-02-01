@@ -87,7 +87,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {form.formState.isSubmitted &&
             Object.keys(form.formState.errors).length > 0 && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="p-4 bg-red-50 border border-red-200 rounded-md">
                 <h4 className="text-red-800 font-medium text-sm mb-2">
                   {t('pleaseFixErrors')}
                 </h4>

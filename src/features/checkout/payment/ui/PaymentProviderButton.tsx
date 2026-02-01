@@ -34,7 +34,7 @@ export default function PaymentProviderButton({
         onSelectPaymentProvider(provider.id);
       }}
       className={clsx(
-        'group relative p-6 rounded-lg border border-transparent h-fit w-full transition-all hover:shadow-md',
+        'group relative p-6 rounded-md border border-transparent h-fit w-full transition-all hover:shadow-md',
         {
           'border-gray-200 ': selectedProvider !== provider.id,
         },
@@ -43,7 +43,7 @@ export default function PaymentProviderButton({
       <div className="flex items-center  gap-4">
         <div
           className={clsx(
-            'w-12 h-12 rounded-lg flex items-center justify-center',
+            'w-12 h-12 rounded-md flex items-center justify-center',
             {
               'bg-white/20': selectedProvider === provider.id,
               'bg-[#325039]/10': selectedProvider !== provider.id,

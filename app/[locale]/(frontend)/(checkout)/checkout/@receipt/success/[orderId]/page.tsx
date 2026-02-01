@@ -14,7 +14,7 @@ type Props = {
 function ReceiptSkeleton() {
   return (
     <div className="flex items-center gap-3 rounded-none border border-gray-100 bg-white p-4 animate-pulse">
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-100" />
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-gray-100" />
       <div className="flex flex-col gap-2 w-full">
         <div className="h-3 w-24 rounded-full bg-gray-100" />
         <div className="h-3 w-40 rounded-full bg-gray-100" />
@@ -35,7 +35,7 @@ async function ContactCard({ locale }: { locale: string }) {
 
   return (
     <div className="flex items-center gap-3 rounded-none border border-gray-100 bg-white p-4">
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-blue-50 text-blue-600">
         <User className="size-5" />
       </div>
       <div className="min-w-0 flex-1">
@@ -66,7 +66,7 @@ async function DeliveryCard({ locale }: { locale: string }) {
 
   return (
     <div className="flex items-center gap-3 rounded-none border border-gray-100 bg-white p-4">
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-orange-50 text-orange-600">
         <Truck className="size-5" />
       </div>
       <div className="min-w-0 flex-1">
@@ -103,7 +103,7 @@ async function PaymentCard({ locale }: { locale: string }) {
 
   return (
     <div className="flex items-center gap-3 rounded-none border border-gray-100 bg-white p-4">
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-green-50 text-green-600">
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-green-50 text-green-600">
         <CreditCard className="size-5" />
       </div>
       <div className="min-w-0 flex-1">

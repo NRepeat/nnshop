@@ -34,7 +34,7 @@ export default function PaymentMethodButton({
         onSelectPaymentMethod(method.id);
       }}
       className={clsx(
-        'group relative p-6 rounded-lg border border-transparent h-fit w-full transition-all hover:shadow-md',
+        'group relative p-6 rounded-md border border-transparent h-fit w-full transition-all hover:shadow-md',
         {
           'border-gray-200 ': selectedPaymentMethod !== method.id,
         },

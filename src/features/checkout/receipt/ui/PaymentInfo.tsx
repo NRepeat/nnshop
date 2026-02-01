@@ -14,7 +14,7 @@ export default async function PaymentInfoSection({ locale }: { locale: string })
         <Tooltip>
           <TooltipTrigger className="w-full">
             <Link href={'/checkout/payment'} className="w-full">
-              <div className="flex items-center gap-3 p-3 w-full min-h-[72px] bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3 p-3 w-full min-h-[72px] bg-white rounded-md border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="shrink-0 text-gray-400">
                   <PaymentInfo />
                 </div>

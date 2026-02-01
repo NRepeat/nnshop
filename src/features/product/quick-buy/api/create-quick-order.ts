@@ -67,6 +67,11 @@ export async function createQuickOrder(
     const session = await auth.api.getSession({ headers: await headers() });
     const userId = session?.user?.id;
 
+    // Split name into firstName and lastName
+    const nameParts = orderData.name.trim().split(' ');
+    const firstName = nameParts[0] || orderData.name;
+    const lastName = nameParts.slice(1).join(' ') || '';
+
     // Build line item with optional discount
     const lineItem: any = {
       variantId: orderData.variantId,
@@ -87,8 +92,13 @@ export async function createQuickOrder(
       lineItems: [lineItem],
       note: `Быстрый заказ: ${orderData.productTitle}`,
       shippingAddress: {
-        firstName: orderData.name,
+        firstName: firstName,
+        lastName: lastName,
+        address1: 'Быстрый заказ',
+        city: 'Не указан',
+        country: 'UA',
         phone: orderData.phone,
+        zip: '',
       },
       customAttributes: [
         {
@@ -106,6 +116,9 @@ export async function createQuickOrder(
       ],
     };
 
+    // Log the input for debugging
+    console.log('Quick Order - Creating draft order with input:', JSON.stringify(input, null, 2));
+
     // Create draft order in Shopify
     const orderResponse = await adminClient.client.request<
       {
@@ -121,6 +134,8 @@ export async function createQuickOrder(
       query: DRAFT_ORDER_CREATE_MUTATION,
       variables: { input },
     });
+
+    console.log('Quick Order - Shopify response:', JSON.stringify(orderResponse, null, 2));
 
     const { draftOrder, userErrors } = orderResponse.draftOrderCreate;
 
