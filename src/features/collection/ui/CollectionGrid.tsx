@@ -61,7 +61,13 @@ export const CollectionGrid = async ({
 
   const { collection, alternateHandle } = currentData;
   const rawProducts =
-    collection.collection?.products.edges.map((edge) => edge.node) || [];
+    collection.collection?.products.edges
+      .map((edge) => edge.node)
+      .filter(
+        (edge) =>
+          edge.priceRange.minVariantPrice.amount > 0 ||
+          edge.priceRange.maxVariantPrice.amount > 0,
+      ) || [];
 
   const session = await auth.api.getSession({ headers: await headers() });
   const productsWithFav = await Promise.all(
@@ -102,9 +108,7 @@ export const CollectionGrid = async ({
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink>
-                {gender === 'man'
-                  ? t('nav.man')
-                  : t('nav.woman')}
+                {gender === 'man' ? t('nav.man') : t('nav.woman')}
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />

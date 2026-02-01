@@ -91,7 +91,7 @@ export const ProductCard = ({
                   className="group-hover:flex hidden md:hover:flex bg-background/70 rounded-full top-1/2 left-2 absolute"
                 />
                 <div
-                  className={cn('absolute top-2  right-2   group-hover:block', {
+                  className={cn('absolute top-0  right-2   group-hover:block', {
                     hidden: !isFav,
                   })}
                 >
@@ -100,18 +100,6 @@ export const ProductCard = ({
                     productId={product.id}
                     handle={product.handle}
                   />
-                  {/* <Button
-                    size={'icon'}
-                    variant={'ghost'}
-                    className="hover:[&>svg]:stroke-[#e31e24] bg-background/70 rounded-full"
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      await handleAddToFavorites();
-                    }}
-                  >
-                    <Heart className="" />
-                  </Button> */}
                 </div>
                 <div className=" bottom-2  right-2  flex w-full justify-end absolute">
                   <Button
