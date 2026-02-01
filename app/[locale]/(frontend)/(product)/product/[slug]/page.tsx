@@ -50,7 +50,7 @@ export async function generateStaticParams() {
     for (const locale of locales) {
       const allProductsHandlers = await getAllProductHandles(locale);
 
-      const localeParams = allProductsHandlers.map((handle) => ({
+      const localeParams = allProductsHandlers.slice(0, 100).map((handle) => ({
         slug: handle,
         locale: locale,
       }));
