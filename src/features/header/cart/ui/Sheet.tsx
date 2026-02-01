@@ -76,7 +76,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
         className="cursor-pointer  flex justify-center items-center hover:underline hover:text-accent-foreground  rounded-none relative size-9 "
         asChild
       >
-        <Button variant="ghost" size="icon" className="rounded-none">
+        <Button variant="ghost" size="icon" aria-label="Shopping cart" className="rounded-none">
           <ShoppingCart className="h-4 w-4" />
           {mockProducts && mockProducts.length > 0 && (
             <Badge className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums top-0 right-0 absolute">

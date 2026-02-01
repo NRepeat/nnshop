@@ -7,17 +7,11 @@ const MenuSheet = async ({ locale }: { locale: string }) => {
     locale,
     namespace: 'Header.nav.drawer',
   });
-  const controller = new AbortController();
-  const signal = controller.signal;
-  const meinMenuRequest = await Promise.all([
-    getMainMenu({ gender: 'woman', locale, signal }),
-    getMainMenu({ gender: 'man', locale, signal }),
-  ]);
-  const meinMenu = [
-    { label: 'woman', menu: meinMenuRequest[0] },
-    { label: 'man', menu: meinMenuRequest[1] },
-    { label: 'new-arrivals', menu: [] },
-  ];
+  const items = await getMainMenu({ locale });
+  const meinMenu = items.map((item) => ({
+    label: item.title,
+    menu: [item],
+  }));
   return (
     <NavigationSheet meinMenu={meinMenu} title={t('title')} locale={locale} />
   );

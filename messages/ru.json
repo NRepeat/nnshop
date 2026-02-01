@@ -19,15 +19,9 @@
     },
     "nav": {
       "home": "Главная",
-      "collections": {
-        "title": "Коллекции",
-        "forMan": {
-          "title": "Мужчины"
-        },
-        "forWoman": {
-          "title": "Женщины"
-        }
-      },
+      "collections": "Коллекции",
+      "man": "Мужчинам",
+      "woman": "Женщинам",
       "new": "Новинки",
       "drawer": {
         "title": "Меню",

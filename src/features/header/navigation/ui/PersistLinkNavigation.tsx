@@ -1,15 +1,18 @@
 import { NavigationMenuItem } from '@shared/ui/navigation-menu';
-import { Link } from '@shared/i18n/navigation';
 import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';
 import { HeaderBarProps } from '@widgets/header/ui/Header';
 import { NavButton } from './NavButton';
 import { Suspense } from 'react';
 import { cookieFenderGet } from '../api/setCookieGender';
+import { getTranslations } from 'next-intl/server';
+import Link from 'next/link';
 
 export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   const { locale } = props;
+  const t = await getTranslations({ locale, namespace: 'Header.nav' });
+
   const resolveLinks = props.mainCategory?.map(async (category) => {
-    const { collectionData, title } = category;
+    const { collectionData } = category;
 
     let slug = '';
 
@@ -27,7 +30,6 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
     }
 
     return {
-      name: title,
       slug: slug,
     };
   });
@@ -36,27 +38,27 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   return (
     <>
       {links &&
-        links.map((link) => (
-          <NavigationMenuItem key={link.slug} className={`flex p-0`}>
-            <Link href={`/${link.slug}`}>
-              <Suspense
-                fallback={
-                  <NavButton
-                    children={
-                      <div className="h-6 w-20 animate-pulse bg-gray-200 dark:bg-gray-700 rounded"></div>
-                    }
-                    slug={link.slug}
-                  />
-                }
-              >
-                <GenderSession
-                  label={link.name as any as string}
-                  slug={link.slug}
-                />
-              </Suspense>
-            </Link>
-          </NavigationMenuItem>
-        ))}
+        links.map((link) => {
+          const label = t.has(link.slug) ? t(link.slug) : link.slug;
+          return (
+            <NavigationMenuItem key={link.slug} className={`flex p-0`}>
+              <Link href={`/${link.slug}`}>
+                <Suspense
+                  fallback={
+                    <NavButton
+                      children={
+                        <div className="h-6 w-20 animate-pulse bg-gray-200 dark:bg-gray-700 rounded"></div>
+                      }
+                      slug={link.slug}
+                    />
+                  }
+                >
+                  <GenderSession label={label} slug={link.slug} />
+                </Suspense>
+              </Link>
+            </NavigationMenuItem>
+          );
+        })}
     </>
   );
 };

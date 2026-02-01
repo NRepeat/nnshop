@@ -18,7 +18,7 @@ import { cn } from '@shared/lib/utils';
 const AccountButtonContent = ({ className }: { className: string }) => {
   return (
     <Link href={'/auth/sign-in'} scroll={false} className="rounded-none">
-      <Button variant="ghost" size="icon" className={cn(className)}>
+      <Button variant="ghost" size="icon" aria-label="Account" className={cn(className)}>
         <User2 />
       </Button>
     </Link>
@@ -47,9 +47,10 @@ export const AccountButton = async ({
       <DropdownMenu>
         <DropdownMenuTrigger
           className={cn(className, 'flex items-center cursor-pointer')}
+          aria-label="Account menu"
         >
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
+            {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="ml-2 hidden md:block ">

@@ -1,18 +1,14 @@
-import { cookies } from 'next/headers';
-import { Link } from '@shared/i18n/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface LogoLinkProps {
   iconUrl: string;
   alt?: string;
 }
 
-export const LogoLink = async ({ iconUrl, alt = 'Logo' }: LogoLinkProps) => {
-  const cookieStore = await cookies();
-  const gender = cookieStore.get('gender')?.value || 'woman';
-
+export const LogoLink = ({ iconUrl, alt = 'Logo' }: LogoLinkProps) => {
   return (
-    <Link href={`/${gender}`} className="flex items-center justify-center">
+    <Link href={'/'} className="flex items-center justify-center">
       <div className="flex justify-center w-full items-center">
         <Image
           src={iconUrl}

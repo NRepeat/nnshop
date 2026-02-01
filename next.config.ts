@@ -24,9 +24,8 @@ const nextConfig: NextConfig = {
     'r665avfiaqptwlw27urowyzo5q.srv.us',
   ],
   images: {
-    domains: ['cdn.shopify.com'],
     remotePatterns: [
-      new URL('https://cdn.shopify.com'),
+      { protocol: 'https', hostname: 'cdn.shopify.com' },
       {
         protocol: 'https',
         hostname: 'cdn.sanity.io',

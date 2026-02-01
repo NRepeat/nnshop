@@ -1,15 +1,16 @@
+import React from 'react';
 import {
   NavigationMenuContent,
   NavigationMenuItem,
+  NavigationMenuLink,
   NavigationMenuTrigger,
 } from '@shared/ui/navigation-menu';
-import { Button } from '@shared/ui/button';
 import { getMainMenu } from '../api/getMainMenu';
 import { getLocale } from 'next-intl/server';
 import { cookies } from 'next/headers';
-import { Link } from '@shared/i18n/navigation';import { NavigationClient } from './NavigationClient';
+import { Link } from '@shared/i18n/navigation';
+import { NavigationClient } from './NavigationClient';
 import { Skeleton } from '@shared/ui/skeleton';
-import Image from 'next/image';
 
 export const CurrentNavigationSession = async () => {
   const locale = await getLocale();
@@ -40,6 +41,21 @@ export const CurrentNavigationSessionSkilet = () => {
   );
 };
 
+const genderSlugMap: Record<string, string[]> = {
+  woman: ['woman', 'women', 'female', 'жен', 'женщин', 'жінк', 'zhinok', 'zhinoch'],
+  man: ['man', 'men', 'male', 'муж', 'мужчин', 'чолов', 'cholovik'],
+};
+
+function matchesGender(
+  item: { url: string; title: string },
+  gender: string,
+): boolean {
+  const slug = item.url.split('/').pop()?.toLowerCase() || '';
+  const title = item.title.toLowerCase();
+  const slugs = genderSlugMap[gender] || [];
+  return slugs.some((s) => slug.includes(s) || title.includes(s));
+}
+
 const Navigation = async ({
   gender,
   locale,
@@ -47,11 +63,17 @@ const Navigation = async ({
   gender: string;
   locale: string;
 }) => {
-  const meinMenu = await getMainMenu({ gender, locale });
-  const menu = meinMenu.map((item, index) => {
+  const allItems = await getMainMenu({ locale });
+  console.log('🚀 ~ Navigation ~ allItems:', JSON.stringify(allItems, null, 2));
+  const meinMenu = allItems.filter((item) => matchesGender(item, gender));
+
+  // Fallback: if no match found, show first item
+  const items = meinMenu.length > 0 ? meinMenu : allItems.slice(0, 1);
+
+  const menu = items.map((item, index) => {
     if (item.items.length > 0) {
       return (
-        <ul className="bg-transparent flex w-full justify-center" key={index}>
+        <React.Fragment key={index}>
           {item.items.map((subItem) => (
             <NavigationMenuItem
               key={subItem.url + subItem.title + gender}
@@ -59,61 +81,67 @@ const Navigation = async ({
             >
               <NavigationMenuTrigger
                 variant={'ghost'}
-                className="rounded-none  cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full has-[>svg]:px-5  px-5 py-2"
+                className="rounded-none cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full has-[>svg]:px-5 px-5 py-2"
               >
                 {subItem.title}
               </NavigationMenuTrigger>
-              <NavigationMenuContent className="  flex  justify-between ">
-                <div className="flex w-full  pt-7   h-[350px] ">
-                  <div className="container w-full flex justify-between">
-                    <ul className="grid h-fit gap-2 md:w-lg lg:w-3xl md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr] ">
-                      {subItem.items.map((subItem) => (
-                        <li
-                          key={subItem.title + gender}
-                          className="w-full row-span-3 ml-2 "
-                        >
-                          <Button
-                            variant={'ghost'}
-                            className="w-full rounded-none  justify-start bg-transparent hover:underline "
+              <NavigationMenuContent className="flex justify-between !p-0">
+                      {/* <div className="w-full row-span-3 ml-2">
+                          <Link
+                            href={subItem.url}
+                            className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:underline font-medium"
                           >
+                            {subItem.title}
+                                       {console.log(subItem,"subItem")}
+                            asd
+                          </Link>
+                      </div> */}
+                <div className="flex w-full">
+                  <div className="container w-full flex justify-between">
+                    <ul className="grid h-fit gap-2 md:w-lg lg:w-3xl md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr]">
+                      {/* <li className="w-full row-span-3 ml-2">
+                          <Link
+                            href={subItem.url}
+                            className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:underline font-medium"
+                          >
+                            {subItem.title}
+                          </Link>
+                      </li> */}
+                      {subItem.items.map((child) => (
+                        <li
+                          key={child.title + gender}
+                          className="w-full row-span-3 ml-2"
+                        >
                             <Link
-                              href={subItem.url}
-                              className=" text-base font-300 font-sans "
+                              href={child.url}
+                              className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:underline"
                             >
-                              {subItem.title}
+                              {child.title}
                             </Link>
-                          </Button>
                         </li>
                       ))}
                     </ul>
-                    <div className="w-[300px] h-[300px] ">
-                      <Image
-                        src="/auth_image.jpeg"
-                        alt={subItem.title}
-                        width={200}
-                        height={200}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
                   </div>
                 </div>
               </NavigationMenuContent>
             </NavigationMenuItem>
           ))}
-        </ul>
+        </React.Fragment>
       );
     } else {
       return (
         <NavigationMenuItem
           key={item.title}
-          className={` ${index === meinMenu.length - 1 ? 'hidden lg:block' : 'block'}`}
+          className={` ${index === items.length - 1 ? 'hidden lg:block' : 'block'}`}
         >
-          <Button
-            className="w-full rounded-none justify-start bg-transparent hover:underline "
-            variant={'ghost'}
-          >
-            <Link href={'/'}>{item.title}</Link>
-          </Button>
+          <NavigationMenuLink asChild>
+            <Link
+              href={item.url}
+              className="inline-block px-4 py-2 text-base font-300 font-sans hover:underline"
+            >
+              {item.title}
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
       );
     }

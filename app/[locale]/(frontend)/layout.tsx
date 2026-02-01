@@ -72,6 +72,7 @@ export default async function RootLayout(props: RootProps) {
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://cdn.shopify.com" />
         <JsonLd data={generateOrganizationJsonLd()} />
         <meta
           name="google-site-verification"
@@ -82,7 +83,7 @@ export default async function RootLayout(props: RootProps) {
         <Providers>
           <Header locale={locale} />
 
-          {children}
+          <main>{children}</main>
 
           {modal && <div id="modal-slot">{modal}</div>}
           {auth && <div id="auth-slot">{auth}</div>}
@@ -94,11 +95,11 @@ export default async function RootLayout(props: RootProps) {
           <>
             <DisableDraftMode />
             <VisualEditing />
+            <Suspense>
+              <SanityLive />
+            </Suspense>
           </>
         )}
-        <Suspense fallback={<div>Loading...</div>}>
-          <SanityLive />
-        </Suspense>
       </body>
     </html>
   );

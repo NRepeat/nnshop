@@ -27,15 +27,9 @@
     },
     "nav": {
       "home": "Home",
-      "collections": {
-        "title": "Collections",
-        "forMan": {
-          "title": "For Man"
-        },
-        "forWoman": {
-          "title": "For Woman"
-        }
-      },
+      "collections": "Collections",
+      "man": "For Men",
+      "woman": "For Women",
       "new": "New Arrivals",
       "drawer": {
         "title": "Menu",

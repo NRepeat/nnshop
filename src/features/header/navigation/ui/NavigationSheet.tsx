@@ -12,10 +12,7 @@ import { useState } from 'react';
 import { Maybe } from '@shared/lib/shopify/types/storefront.types';
 import { Menu } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Link } from '@shared/i18n/navigation';
-import { LanguageSwitcher } from '@features/header/language-switcher/ui/LanguageSwitcher';
 import { Button } from '@shared/ui/button';
-import { useTranslations } from 'next-intl';
 
 const NavigationSheet = ({
   meinMenu,
@@ -44,7 +41,6 @@ const NavigationSheet = ({
   locale: string;
 }) => {
   const navigate = useRouter();
-  const t = useTranslations('NavigationSheet');
   const [open, setOpen] = useState(false);
   const onClose = (link: string) => {
     setOpen(false);
@@ -56,7 +52,7 @@ const NavigationSheet = ({
         className="cursor-pointer   justify-center items-center "
         asChild
       >
-        <Button variant="ghost" size="icon" className="rounded-none">
+        <Button variant="ghost" size="icon" aria-label="Open menu" className="rounded-none">
           <Menu className="" />
         </Button>
       </SheetTrigger>
@@ -66,14 +62,6 @@ const NavigationSheet = ({
         </SheetHeader>
         <InternalMenu meinMenu={meinMenu} onClose={onClose} />
         <SheetFooter className="flex justify-center w-full flex-row mb-20">
-          {/* <Link
-            href={'/account'}
-            className="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 pl-4 py-2.5 text-sm font-normal hover:underline"
-          >
-            {t('accoutn')}
-          </Link> */}
-
-          {/* <LanguageSwitcher align="center" side='top' locale={locale} /> */}
         </SheetFooter>
       </SheetContent>
     </Sheet>

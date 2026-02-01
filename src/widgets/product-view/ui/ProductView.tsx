@@ -26,25 +26,24 @@ export async function ProductView({
   return (
     <div className="container  space-y-16 mt-10">
       <ProductViewProvider
-        favCommponent={
-          children
-        }
+        favCommponent={children}
         product={product}
         boundProducts={boundProducts}
         attributes={attributes}
       />
-      {/*<ProductDetails locale={locale} product={product} />*/}
-      {/* <ElegantEase locale={locale} /> */}
-      <div className="content-stretch flex flex-col gap-[30px] items-center px-0 py-[30px] relative w-full">
-        <p className="font-sans leading-[26px] not-italic relative shrink-0 text-[20px] text-black text-center w-full">
-          {t('styleWith')}
-        </p>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 mx-auto max-w-5xl py-0 w-full">
-          {relatedProducts.slice(0, 3).map((p) => (
-            <ProductCardSPP product={p} key={p.id} />
-          ))}
+      {relatedProducts && relatedProducts.length > 0 && (
+        <div className="content-stretch flex flex-col gap-[30px] items-center px-0 py-[30px] relative w-full">
+          <p className="font-sans leading-[26px] not-italic relative shrink-0 text-[20px] text-black text-center w-full">
+            {t('styleWith')}
+          </p>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 mx-auto max-w-5xl py-0 w-full">
+            {relatedProducts.slice(0, 3).map((p) => (
+              <ProductCardSPP product={p} key={p.id} />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
       {/* <ProductComments /> */}
     </div>
   );

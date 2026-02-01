@@ -4,7 +4,7 @@ import { Button } from '@shared/ui/button';
 import { SearchSession } from '../search/ui/search-session';
 import { Suspense } from 'react';
 import { AccountButton } from '../account/ui/AccoutnButton';
-import { Link } from '@shared/i18n/navigation';
+import Link from 'next/link';
 
 export const HeaderOptions = ({ locale }: { locale: string }) => {
   return (
@@ -14,6 +14,7 @@ export const HeaderOptions = ({ locale }: { locale: string }) => {
         <Button
           variant="ghost"
           size="icon"
+          aria-label="Favorites"
           className="group hover:[&>svg]:stroke-[#e31e24]"
         >
           <Heart />
@@ -24,7 +25,7 @@ export const HeaderOptions = ({ locale }: { locale: string }) => {
       </Suspense>
       <Suspense
         fallback={
-          <Button variant="ghost" size="icon" className="group">
+          <Button variant="ghost" size="icon" aria-label="Shopping cart" className="group">
             <ShoppingCart className="h-4 w-4 group:hover:stroke-white" />
           </Button>
         }

@@ -103,8 +103,8 @@ export const CollectionGrid = async ({
             <BreadcrumbItem>
               <BreadcrumbLink>
                 {gender === 'man'
-                  ? t('nav.collections.forMan.title')
-                  : t('nav.collections.forWoman.title')}
+                  ? t('nav.man')
+                  : t('nav.woman')}
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />

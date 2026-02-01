@@ -37,12 +37,12 @@ export async function EmptyState({ locale }: { locale: string }) {
             </Button>
           </div>
           <div className="flex flex-col">
-            <Image
-              src="https://justinreed.com/cdn/shop/collections/newbanner_f76641fa-b78e-4159-823c-8ae34cb9c165.jpg?v=1745522913&width=1500"
+            {/* <Image
+              src=""
               alt="Justin Reed"
               width={400}
               height={400}
-            />
+            /> */}
             <Button
               variant="link"
               asChild
