@@ -37,7 +37,8 @@ export async function POST(request: NextRequest) {
         amount: paymentData.amount,
         currency: paymentData.currency,
         paymentMethod: 'pay-now',
-        paymentProvider: 'liqpay',
+        paymentProvider: 'after-delivered',
+        // paymentProvider: 'liqpay',
         description: '',
         orderId: completedOrder.id,
       };

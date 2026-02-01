@@ -67,8 +67,11 @@ export default function PaymentProviderButton({
               'text-gray-600': selectedProvider !== provider.id,
             })}
           >
+            {/* @ts-ignore */}
             {provider.id === 'liqpay' && t('liqpayDescription')}
+            {/* @ts-ignore */}
             {provider.id === 'credit-card' && t('creditCardDescription')}
+            {/* @ts-ignore */}
             {provider.id === 'paypal' && t('paypalDescription')}
             {/*{provider.id === 'stripe' && t('stripeDescription')}*/}
           </p>

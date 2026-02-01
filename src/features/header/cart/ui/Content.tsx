@@ -15,7 +15,6 @@ import { DiscountCodeInput } from '@features/cart/ui/DiscountCodeInput';
 
 const Content = async ({
   mockProducts,
-  estimateTotal,
   currencySymbol,
   cartId,
   locale,

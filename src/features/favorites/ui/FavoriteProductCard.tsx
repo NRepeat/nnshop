@@ -32,7 +32,7 @@ export const FavoriteProductCard = ({ product }: FavoriteProductCardProps) => {
 
   const originalPrice = parseFloat(product.priceRange?.maxVariantPrice.amount);
   const discountedPrice = hasDiscount
-    ? originalPrice * (1 - parseFloat(product.metafield.value) / 100)
+    ? originalPrice * (1 - parseFloat(product.metafield?.value || '0') / 100)
     : originalPrice;
 
   const currencySymbol =
@@ -53,7 +53,7 @@ export const FavoriteProductCard = ({ product }: FavoriteProductCardProps) => {
               key={index}
               className={cn(
                 'object-cover transition-opacity duration-300',
-                currentImageIndex === index ? 'opacity-100' : 'opacity-0'
+                currentImageIndex === index ? 'opacity-100' : 'opacity-0',
               )}
               src={image.url}
               alt={image.altText || product.title}
@@ -65,7 +65,7 @@ export const FavoriteProductCard = ({ product }: FavoriteProductCardProps) => {
           {/* Discount Badge */}
           {hasDiscount && (
             <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-sm">
-              -{product.metafield.value}%
+              -{product.metafield?.value}%
             </div>
           )}
 

@@ -54,9 +54,7 @@ const DRAFT_ORDER_CREATE_MUTATION = `
   }
 `;
 
-export async function createQuickOrder(
-  orderData: QuickOrderInput
-): Promise<{
+export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
   success: boolean;
   orderId?: string;
   orderName?: string;
@@ -117,7 +115,10 @@ export async function createQuickOrder(
     };
 
     // Log the input for debugging
-    console.log('Quick Order - Creating draft order with input:', JSON.stringify(input, null, 2));
+    console.log(
+      'Quick Order - Creating draft order with input:',
+      JSON.stringify(input, null, 2),
+    );
 
     // Create draft order in Shopify
     const orderResponse = await adminClient.client.request<
@@ -135,12 +136,18 @@ export async function createQuickOrder(
       variables: { input },
     });
 
-    console.log('Quick Order - Shopify response:', JSON.stringify(orderResponse, null, 2));
+    console.log(
+      'Quick Order - Shopify response:',
+      JSON.stringify(orderResponse, null, 2),
+    );
 
     const { draftOrder, userErrors } = orderResponse.draftOrderCreate;
 
     if (userErrors.length > 0) {
-      console.error('Quick Order - User Errors:', JSON.stringify(userErrors, null, 2));
+      console.error(
+        'Quick Order - User Errors:',
+        JSON.stringify(userErrors, null, 2),
+      );
       return {
         success: false,
         errors: userErrors.map((error) => error.message),
@@ -154,15 +161,15 @@ export async function createQuickOrder(
         errors: ['Failed to create quick order'],
       };
     }
-
-    // Save to database
-    await prisma.order.create({
-      data: {
-        shopifyDraftOrderId: draftOrder.id,
-        userId: userId || null,
-        draft: true,
-      },
-    });
+    if (userId) {
+      await prisma.order.create({
+        data: {
+          shopifyDraftOrderId: draftOrder.id,
+          userId: userId,
+          draft: true,
+        },
+      });
+    }
 
     return {
       success: true,
@@ -174,9 +181,7 @@ export async function createQuickOrder(
     return {
       success: false,
       errors: [
-        error instanceof Error
-          ? error.message
-          : 'Failed to create quick order',
+        error instanceof Error ? error.message : 'Failed to create quick order',
       ],
     };
   }

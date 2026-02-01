@@ -4,6 +4,7 @@ import { Breadcrumbs } from '@shared/ui/breadcrumbs';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
+import { Product } from '@shared/lib/shopify/types/storefront.types';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -25,9 +26,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     return {
-      title: `${collection.title} - Бренд`,
-      description:
-        collection.description || `Купити продукцію ${collection.title}`,
+      title: `${collection.collection?.title}`,
+      description: collection.collection?.description,
     };
   } catch {
     return { title: 'Brand Not Found' };
@@ -101,7 +101,7 @@ export default async function BrandPage({ params }: Props) {
           {collection.collection.products.edges.map((edge) => (
             <ProductCard
               key={edge.node.id}
-              product={edge.node}
+              product={edge.node as Product}
               withCarousel={false}
             />
           ))}

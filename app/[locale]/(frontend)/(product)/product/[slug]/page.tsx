@@ -42,22 +42,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-// export async function generateStaticParams() {
-//   const params = [];
-//   const BUILD_TIME_LIMIT = 50; 
-//   for (const locale of locales) {
-//     const allProductsHandlers = await getAllProductHandles(locale);
+export async function generateStaticParams() {
+  const params = [];
+  for (const locale of locales) {
+    const allProductsHandlers = await getAllProductHandles(locale);
 
-//     const localeParams = allProductsHandlers.map((handle) => ({
-//       slug: handle,
-//       locale: locale,
-//     }));
+    const localeParams = allProductsHandlers.map((handle) => ({
+      slug: handle,
+      locale: locale,
+    }));
 
-//     params.push(...localeParams);
-//   }
+    params.push(...localeParams);
+  }
 
-//   return params;
-// }
+  return params;
+}
 
 export default async function ProductPage({ params }: Props) {
   const { slug, locale } = await params;

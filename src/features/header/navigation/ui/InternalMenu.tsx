@@ -46,7 +46,7 @@ export const InternalMenu = ({
                     value={subItem.title}
                     className="border-none py-0"
                   >
-                    <AccordionTrigger className="py-4 font-300 border-t border-muted hover:border-b hover:border-current transition-colors text-lg">
+                    <AccordionTrigger className="py-4 font-300 transition-colors text-lg">
                       {subItem.title}
                     </AccordionTrigger>
                     <AccordionContent className=" border-foreground/10 py-4 mb-1 ">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@shared/ui/button';
 import addToCart from '../api/add-to-cart';
@@ -89,7 +89,7 @@ export function AddToCartButton({
         }
 
         // Wait a bit for cookies to be set
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       }
 
       // Call the server action directly
@@ -98,7 +98,7 @@ export function AddToCartButton({
         : product?.variants.edges[0].node.id;
 
       const formData = new FormData();
-      formData.append('variantId', variantId);
+      formData.append('variantId', variantId!);
 
       const result = await addToCart(null, formData);
 
@@ -106,9 +106,10 @@ export function AddToCartButton({
         toast.success(t('addedToCart'));
       } else {
         // Show specific error message or generic one
-        const errorMessage = result.message === 'No products available'
-          ? t('productNotAvailable')
-          : result.message || t('failedToAdd');
+        const errorMessage =
+          result.message === 'No products available'
+            ? t('productNotAvailable')
+            : result.message || t('failedToAdd');
         toast.error(errorMessage);
       }
     } catch (error) {
