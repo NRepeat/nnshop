@@ -14,6 +14,8 @@ export class StorefrontClient implements ShopifyClient {
   private accessToken: string;
   private shopDomain: string;
   private apiVersion: string;
+  private maxRetries = 3;
+  private retryDelay = 1000;
 
   constructor(config: ShopifyClientConfig & { customFetchApi?: typeof fetch }) {
     this.accessToken = config.accessToken!;
@@ -39,6 +41,39 @@ export class StorefrontClient implements ShopifyClient {
     }
     if (!this.apiVersion) {
       throw new Error('API version is required for Storefront API');
+    }
+  }
+
+  private async retryWithBackoff<T>(
+    fn: () => Promise<T>,
+    retries = this.maxRetries,
+  ): Promise<T> {
+    try {
+      return await fn();
+    } catch (error) {
+      if (retries === 0) {
+        throw error;
+      }
+
+      const isRetryableError =
+        error instanceof Error &&
+        (error.message.includes('502') ||
+          error.message.includes('503') ||
+          error.message.includes('Bad Gateway') ||
+          error.message.includes('Service Unavailable') ||
+          error.message.includes('ETIMEDOUT') ||
+          error.message.includes('ECONNRESET'));
+
+      if (!isRetryableError) {
+        throw error;
+      }
+
+      const delay = this.retryDelay * (this.maxRetries - retries + 1);
+      console.log(
+        `Retrying request after ${delay}ms. Retries left: ${retries - 1}`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return this.retryWithBackoff(fn, retries - 1);
     }
   }
 
@@ -110,34 +145,36 @@ export class StorefrontClient implements ShopifyClient {
     language?: StorefrontLanguageCode;
     signal?: AbortSignal;
   }): Promise<T> {
-    try {
-      let modifiedQuery = query;
-      if (language) {
-        modifiedQuery = this.addLanguageContext(
-          query,
-          this.sanitizeLanguage(language),
-        );
-      }
+    return this.retryWithBackoff(async () => {
+      try {
+        let modifiedQuery = query;
+        if (language) {
+          modifiedQuery = this.addLanguageContext(
+            query,
+            this.sanitizeLanguage(language),
+          );
+        }
 
-      const ver = variables as Record<string, unknown>;
-      const response = await this.client.request(modifiedQuery, {
-        variables: ver,
-      });
-      if (response.errors) {
-        console.error(JSON.stringify(response.errors, null, 2));
-        throw new Error(
-          `Storefront API GraphQL: ${JSON.stringify(response.errors)}`,
-        );
-      }
+        const ver = variables as Record<string, unknown>;
+        const response = await this.client.request(modifiedQuery, {
+          variables: ver,
+        });
+        if (response.errors) {
+          console.error(JSON.stringify(response.errors, null, 2));
+          throw new Error(
+            `Storefront API GraphQL: ${JSON.stringify(response.errors)}`,
+          );
+        }
 
-      return response.data as T;
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error);
-        throw new Error(`Storefront API Request Failed: ${error.message}`);
+        return response.data as T;
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error);
+          throw new Error(`Storefront API Request Failed: ${error.message}`);
+        }
+        throw new Error(`Storefront API Request Failed: ${String(error)}`);
       }
-      throw new Error(`Storefront API Request Failed: ${String(error)}`);
-    }
+    });
   }
 
   async requestWithExtensions<T>(

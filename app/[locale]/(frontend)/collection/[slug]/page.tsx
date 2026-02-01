@@ -3,7 +3,7 @@ import { CollectionGridSkeleton } from '@features/collection/ui/CollectionGridSk
 import { locales } from '@shared/i18n/routing';
 import { Suspense } from 'react';
 import { Metadata } from 'next';
-import { getCollection } from '@entities/collection/api/getCollection';
+import { getCollection, getCollectionSlugs } from '@entities/collection/api/getCollection';
 import { generateCollectionMetadata } from '@shared/lib/seo/generateMetadata';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
@@ -29,11 +29,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  const params = [];
-  for (const locale of locales) {
-    params.push({ locale: locale });
+  try {
+    const collectionSlugs = await getCollectionSlugs();
+    const params = [];
+
+    for (const locale of locales) {
+      for (const slug of collectionSlugs) {
+        params.push({ locale, slug });
+      }
+    }
+
+    return params;
+  } catch (error) {
+    console.error('Failed to generate static params for collections:', error);
+    // Fallback to just locales if fetching slugs fails
+    return locales.map(locale => ({ locale, slug: '' }));
   }
-  return params;
 }
 
 export type Props = {

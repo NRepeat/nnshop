@@ -176,27 +176,32 @@ const GET_COLLECTION_SLUGS = `
 
 export const getCollectionSlugs = async () => {
   'use cache'
-  const handles: string[] = [];
+  const handlesSet = new Set<string>();
   const locales: StorefrontLanguageCode[] = ['RU', 'UK'];
+
   try {
-    for (const locale of locales) {
-      const collection = await storefrontClient.request<
-        GetCollectionsHandlesQuery,
-        GetCollectionsHandlesQueryVariables
-      >({
-        query: GET_COLLECTION_SLUGS,
-        language: locale,
-      });
-      if (!collection) {
-        throw new Error();
-      }
-      handles.push(...collection.collections.edges.map((n) => n.node.handle));
+    // Fetch collections from first locale only (handles are the same across locales)
+    const collection = await storefrontClient.request<
+      GetCollectionsHandlesQuery,
+      GetCollectionsHandlesQueryVariables
+    >({
+      query: GET_COLLECTION_SLUGS,
+      language: locales[0],
+    });
+
+    if (!collection) {
+      throw new Error('No collections found');
     }
 
-    return handles;
+    collection.collections.edges.forEach((edge) => {
+      handlesSet.add(edge.node.handle);
+    });
+
+    // Return deduplicated array
+    return Array.from(handlesSet);
   } catch (error) {
-    console.error(error);
-    throw new Error("Can't fetch slugs");
+    console.error('Error fetching collection slugs:', error);
+    throw new Error("Can't fetch collection slugs");
   }
 };
 
