@@ -7,10 +7,10 @@ import getSymbolFromCurrency from 'currency-symbol-map';
 type ProductCarouselGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'productCarousel' }
-> & { locale: string };
+> & { locale: string } & { gender: string };
 
 export const ProductCarousel = async (props: ProductCarouselGridProps) => {
-  const { collection, locale, title } = props;
+  const { collection, locale, title, gender } = props;
   const collectionHandle = collection?.handle;
   if (!collectionHandle) return null;
   const shopifyCollection = await getCollection({
@@ -24,7 +24,11 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
   );
   const items = products?.map((product, index) => {
     return (
-      <Link href={'/product/' + product.handle} className="h-full" key={index}>
+      <Link
+        href={'/product/' + product.handle}
+        className="h-full"
+        key={index}
+      >
         <div className="flex flex-col gap-3 group relative overflow-hidden h-full">
           <div className="flex justify-start w-full">
             <div className="relative aspect-[1/1] w-full md:max-w-[90%] lg:max-w-95%] ">
@@ -95,6 +99,7 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
         <CardCarousel
           items={items}
           scrollable={false}
+          gender={gender}
           className="basis-1/2 md:basis-1/4 ml-4"
         />
       </div>

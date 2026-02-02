@@ -11,6 +11,7 @@ type CardCarouselProps = {
   scrollable?: boolean;
   loop?: boolean;
   className?: string;
+  gender?: string;
 } & WithScrollStateProps;
 
 const CardCarouselBase: React.FC<CardCarouselProps> = ({
@@ -25,6 +26,7 @@ const CardCarouselBase: React.FC<CardCarouselProps> = ({
   thumbWidth = 25,
   loop = false,
   className = '',
+  gender,
 }) => {
   return (
     <div className="w-full  space-y-16 select-none ">

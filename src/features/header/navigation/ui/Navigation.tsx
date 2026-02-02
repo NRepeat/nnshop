@@ -106,10 +106,15 @@ const Navigation = async ({
                             className="w-full row-span-3 ml-2"
                           >
                             <NavigationItemClient
-                              href={child.url}
+                              href={'/' + gender  + child.url}
                               className=""
                             >
-                              <Button variant={'ghost'} className='text-base font-300 font-sans w-full inline-block  hover:underline transition-colors border-none'>{child.title}</Button>
+                              <Button
+                                variant={'ghost'}
+                                className="text-base font-300 font-sans w-full inline-block  hover:underline transition-colors border-none"
+                              >
+                                {child.title}
+                              </Button>
                             </NavigationItemClient>
                           </li>
                         ))}

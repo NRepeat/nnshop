@@ -33,21 +33,33 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
       {content.map((block) => {
         switch (block._type) {
           case 'heroSlider':
-            return <HeroBanner key={block._key} {...block} />;
+            return <HeroBanner key={block._key} {...block} gender={gender} />;
           case 'mainCollectionGrid':
             return (
-              <Suspense key={block._key} fallback={<MainCollectionGridSkeleton />}>
-                <MainCollectionGrid locale={locale} {...block} />
+              <Suspense
+                key={block._key}
+                fallback={<MainCollectionGridSkeleton />}
+              >
+                <MainCollectionGrid
+                  locale={locale}
+                  {...block}
+                  gender={gender}
+                />
               </Suspense>
             );
           case 'productCarousel':
             return (
-              <ProductCarousel key={block._key} locale={locale} {...block} />
+              <ProductCarousel
+                key={block._key}
+                locale={locale}
+                {...block}
+                gender={gender}
+              />
             );
           case 'splitImage':
             return (
               <Suspense key={block._key} fallback={<SplitImageSkeleton />}>
-                <SplitImage locale={locale} {...block} />
+                <SplitImage locale={locale} {...block} gender={gender} />
               </Suspense>
             );
           case 'features':
@@ -57,6 +69,7 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
           case 'collectionsWithPreviews':
             return (
               <PreviewsCollections
+                gender={gender}
                 key={block._key}
                 locale={locale}
                 {...block}

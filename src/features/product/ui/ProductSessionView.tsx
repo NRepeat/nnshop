@@ -13,11 +13,11 @@ import { notFound } from 'next/navigation';
 export const ProductSessionView = async ({
   handle,
   locale,
-  children
+  children,
 }: {
   handle: string;
   locale: string;
-  children:React.ReactNode
+  children: React.ReactNode;
 }) => {
   try {
     const { alternateHandle, originProduct: product } = await getProduct({

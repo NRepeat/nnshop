@@ -5,7 +5,6 @@ import { NavButton } from './NavButton';
 import { Suspense } from 'react';
 import { cookieFenderGet } from '../api/setCookieGender';
 import { getTranslations } from 'next-intl/server';
-import Link from 'next/link';
 
 export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   const { locale, gender } = props;
@@ -42,24 +41,22 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
           const label = t.has(link.slug) ? t(link.slug) : link.slug;
           return (
             <NavigationMenuItem key={link.slug} className={`flex p-0`}>
-              <Link href={`/${link.slug}`}>
-                <Suspense
-                  fallback={
-                    <NavButton
-                      children={
-                        <div className="h-6 w-20 animate-pulse bg-gray-200 dark:bg-gray-700 rounded"></div>
-                      }
-                      slug={link.slug}
-                    />
-                  }
-                >
-                  <GenderSession
-                    label={label}
+              <Suspense
+                fallback={
+                  <NavButton
+                    children={
+                      <div className="h-6 w-20 animate-pulse bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    }
                     slug={link.slug}
-                    gender={gender}
                   />
-                </Suspense>
-              </Link>
+                }
+              >
+                <GenderSession
+                  label={label}
+                  slug={link.slug}
+                  gender={gender}
+                />
+              </Suspense>
             </NavigationMenuItem>
           );
         })}

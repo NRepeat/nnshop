@@ -6,10 +6,10 @@ import { SyncedCarousels } from './SyncedCarousels';
 export type PreviewsCollectionsProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'collectionsWithPreviews' }
-> & { locale: string; buttonText?: string };
+> & { locale: string; buttonText?: string } & { gender: string };
 
 export const PreviewsCollections = async (props: PreviewsCollectionsProps) => {
-  const { collections, previews, locale, title } = props;
+  const { collections, previews, locale, title, gender } = props;
 
   const collectionsDataReq = collections
     ?.map((col) => {
@@ -28,6 +28,7 @@ export const PreviewsCollections = async (props: PreviewsCollectionsProps) => {
   const localizedTitle = getLocalizedString(title ? title[0] : '', locale);
   return (
     <SyncedCarousels
+    gender={gender}
       collectionsData={collectionsData}
       previews={previews}
       title={localizedTitle}

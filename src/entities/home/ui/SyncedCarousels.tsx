@@ -40,11 +40,13 @@ type SyncedCarouselsProps = {
   )[];
   previews: Preview[] | undefined | null;
   title: string | undefined;
+  gender?: string;
 };
 
 export const SyncedCarousels = ({
   collectionsData,
   previews,
+  gender,
 }: SyncedCarouselsProps) => {
   const [api1, setApi1] = useState<CarouselApi>();
   const [api2, setApi2] = useState<CarouselApi>();
@@ -88,7 +90,7 @@ export const SyncedCarousels = ({
   }, [api1, api2, onSelect, onInit]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4  md:gap-6 lg:gap-12 w-full container ">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2  md:gap-4 lg:gap-6 w-full container ">
       <div className="py-8">
         <Carousel opts={{ loop: true }} setApi={setApi1}>
           <CarouselContent>
@@ -98,7 +100,7 @@ export const SyncedCarousels = ({
                 preview.asset && (
                   <CarouselItem key={preview._key}>
                     <Link
-                      href={`/collection/${preview.handle?.current}`}
+                      href={`/${gender}/collection/${preview.handle?.current}`}
                       scroll
                     >
                       <Image
@@ -125,7 +127,7 @@ export const SyncedCarousels = ({
           />
         </Carousel>
       </div>
-      <div className="flex items-center py-8 flex-col">
+      <div className="flex items-center md:py-8 flex-col">
         <Carousel
           opts={{ loop: true }}
           setApi={setApi2}
@@ -142,7 +144,7 @@ export const SyncedCarousels = ({
                     {collection?.collection?.collection?.title}
                   </h3>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-6 px-4 md:px-8">
+                <div className="grid grid-cols-3 md:grid-cols-3 gap-2 ml-2 px-4 md:px-2">
                   {collection?.collection?.collection?.products?.edges
                     ?.slice(0, 3)
                     .map(
@@ -153,18 +155,21 @@ export const SyncedCarousels = ({
                       ) =>
                         product && (
                           <div key={product.node.handle} className="group">
-                            {/* Image Container */}
-                            <Link href={`/product/${product.node.handle}`} scroll={true}>
+                            <Link
+                              href={`/product/${product.node.handle}`}
+                              scroll={true}
+                            >
                               <div className="relative w-full aspect-square overflow-hidden bg-gray-50 mb-3">
                                 <Image
-                                  src={product.node.media.edges[0].node.previewImage?.url}
+                                  src={
+                                    product.node.media.edges[0].node
+                                      .previewImage?.url
+                                  }
                                   alt={product.node.title}
                                   fill
                                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                                 />
-
-                                {/* Discount Badge */}
                                 {product.node.metafield &&
                                   product.node.metafield.key === 'znizka' &&
                                   product.node.metafield.value &&
@@ -179,7 +184,9 @@ export const SyncedCarousels = ({
                             {/* Product Info */}
                             <div className="space-y-1">
                               {/* Vendor */}
-                              <Link href={`/brand/${vendorToHandle(product.node.vendor)}`}>
+                              <Link
+                                href={`/brand/${vendorToHandle(product.node.vendor)}`}
+                              >
                                 <p className="text-xs uppercase tracking-wider text-gray-500 hover:text-gray-700 transition-colors">
                                   {product.node.vendor}
                                 </p>
@@ -192,43 +199,59 @@ export const SyncedCarousels = ({
                                 </h4>
                               </Link>
 
-                                {/* Price */}
-                                <div className="flex items-center gap-2 pt-1">
-                                  {product.node.metafield &&
-                                  product.node.metafield.key === 'znizka' &&
-                                  product.node.metafield.value &&
-                                  Number(product.node.metafield.value) > 0 ? (
-                                    <>
-                                      <span className="text-sm font-semibold text-gray-900">
-                                        {(
-                                          product.node.priceRange?.maxVariantPrice.amount *
-                                          (1 - parseFloat(product.node.metafield.value) / 100)
-                                        ).toFixed(0)}{' '}
-                                        {getSymbolFromCurrency(
-                                          product.node.priceRange?.maxVariantPrice.currencyCode,
-                                        ) || product.node.priceRange?.maxVariantPrice.currencyCode}
-                                      </span>
-                                      <span className="text-xs text-gray-400 line-through">
-                                        {parseFloat(
-                                          product.node.priceRange?.maxVariantPrice.amount,
-                                        ).toFixed(0)}{' '}
-                                        {getSymbolFromCurrency(
-                                          product.node.priceRange?.maxVariantPrice.currencyCode,
-                                        ) || product.node.priceRange?.maxVariantPrice.currencyCode}
-                                      </span>
-                                    </>
-                                  ) : (
+                              {/* Price */}
+                              <div className="flex items-center gap-2 pt-1">
+                                {product.node.metafield &&
+                                product.node.metafield.key === 'znizka' &&
+                                product.node.metafield.value &&
+                                Number(product.node.metafield.value) > 0 ? (
+                                  <>
                                     <span className="text-sm font-semibold text-gray-900">
-                                      {parseFloat(
-                                        product.node.priceRange?.maxVariantPrice.amount,
+                                      {(
+                                        product.node.priceRange?.maxVariantPrice
+                                          .amount *
+                                        (1 -
+                                          parseFloat(
+                                            product.node.metafield.value,
+                                          ) /
+                                            100)
                                       ).toFixed(0)}{' '}
                                       {getSymbolFromCurrency(
-                                        product.node.priceRange?.maxVariantPrice.currencyCode,
-                                      ) || product.node.priceRange?.maxVariantPrice.currencyCode}
+                                        product.node.priceRange?.maxVariantPrice
+                                          .currencyCode,
+                                      ) ||
+                                        product.node.priceRange?.maxVariantPrice
+                                          .currencyCode}
                                     </span>
-                                  )}
-                                </div>
+                                    <span className="text-xs text-gray-400 line-through">
+                                      {parseFloat(
+                                        product.node.priceRange?.maxVariantPrice
+                                          .amount,
+                                      ).toFixed(0)}{' '}
+                                      {getSymbolFromCurrency(
+                                        product.node.priceRange?.maxVariantPrice
+                                          .currencyCode,
+                                      ) ||
+                                        product.node.priceRange?.maxVariantPrice
+                                          .currencyCode}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="text-sm font-semibold text-gray-900">
+                                    {parseFloat(
+                                      product.node.priceRange?.maxVariantPrice
+                                        .amount,
+                                    ).toFixed(0)}{' '}
+                                    {getSymbolFromCurrency(
+                                      product.node.priceRange?.maxVariantPrice
+                                        .currencyCode,
+                                    ) ||
+                                      product.node.priceRange?.maxVariantPrice
+                                        .currencyCode}
+                                  </span>
+                                )}
                               </div>
+                            </div>
                           </div>
                         ),
                     )}

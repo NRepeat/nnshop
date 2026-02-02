@@ -23,19 +23,16 @@ export const CollectionGrid = async ({
   params,
   searchParams,
 }: {
-  params: Promise<{ locale: string; slug: string }>;
+  params: Promise<{ locale: string; slug: string; gender: string }>;
   searchParams: Promise<SearchParams>;
 }) => {
-  const [awaitedParams, awaitedSearchParams, cookieStore, t] =
-    await Promise.all([
-      params,
-      searchParams,
-      cookies(),
-      getTranslations('Header'),
-    ]);
-  const { locale, slug } = awaitedParams;
+  const [awaitedParams, awaitedSearchParams, t] = await Promise.all([
+    params,
+    searchParams,
+    getTranslations('Header'),
+  ]);
+  const { locale, slug, gender } = awaitedParams;
   setRequestLocale(locale);
-  const gender = cookieStore.get('gender')?.value || 'woman';
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
 
   const collectionPromises = [
@@ -136,6 +133,7 @@ export const CollectionGrid = async ({
 
         <div className="flex justify-between gap-8 h-full">
           <ClientGridWrapper
+            gender={gender}
             initialPageInfo={pageInfo as PageInfo}
             // @ts-ignore
             initialProducts={productsWithFav as Product[]}

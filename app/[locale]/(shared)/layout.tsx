@@ -14,11 +14,11 @@ export async function generateStaticParams() {
 interface RootProps {
   children: React.ReactNode;
   params: Promise<{ locale: string; gender: string }>;
-  modal?: React.ReactNode;
+  auth?: React.ReactNode;
 }
 
 export default async function RootLayout(props: RootProps) {
-  const { children, params, modal } = props;
+  const { children, params, auth } = props;
   const { locale, gender } = await params;
 
   setRequestLocale(locale);
@@ -26,7 +26,7 @@ export default async function RootLayout(props: RootProps) {
     <div>
       <Header locale={locale} gender={gender} />
       {children}
-      {modal && <div id="modal-slot">{modal}</div>}
+      {auth && <div id="auth-modal-slot">{auth}</div>}
     </div>
   );
 }

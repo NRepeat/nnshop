@@ -13,7 +13,7 @@ import {
 type SplitGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'splitImage' }
-> & { locale: string };
+> & { locale: string } & { gender: string };
 
 const TextContentComponent = ({
   title,
@@ -61,7 +61,7 @@ const TextContentComponent = ({
 );
 
 export async function SplitImage(props: SplitGridProps) {
-  const { title, image, orientation, collection, locale } = props;
+  const { title, image, orientation, collection, locale, gender } = props;
 
   let linkUrl =
     collection && collection?.id
@@ -89,7 +89,10 @@ export async function SplitImage(props: SplitGridProps) {
         >
           <div className="relative aspect-[4/5] w-full overflow-hidden md:aspect-auto md:h-[600px] md:w-2/3">
             {linkUrl && linkUrl.handle ? (
-              <Link href={linkUrl.handle} className="block h-full w-full">
+              <Link
+                href={'/' + gender + linkUrl.handle}
+                className="block h-full w-full"
+              >
                 {ImageComponent}
               </Link>
             ) : (

@@ -26,6 +26,7 @@ type ProductCardProps = {
   addToCard?: boolean;
   className?: string;
   withCarousel?: boolean;
+  gender: string;
 };
 
 export const ProductCard = ({
@@ -33,6 +34,7 @@ export const ProductCard = ({
   className,
   withCarousel = false,
   isFav,
+  gender,
 }: ProductCardProps) => {
   const t = useTranslations('ProductCard');
   const productImages = [
@@ -157,7 +159,7 @@ export const ProductCard = ({
             </Link>
             <div className="flex flex-col justify-between flex-1">
               <div className=" w-full flex-col  justify-between flex pb-4">
-                <Link href={`/productt/${product.handle}`}>
+                <Link href={`/product/${product.handle}`}>
                   <p className="text-sm md:text-md font-light  text-pretty">
                     {product?.title}
                   </p>

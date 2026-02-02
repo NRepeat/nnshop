@@ -20,7 +20,7 @@ import { connection } from 'next/server';
 import { ProductViewSkeleton } from '@widgets/product-view/ui/ProductViewSkeleton';
 
 type Props = {
-  params: Promise<{ slug: string; locale: string }>;
+  params: Promise<{ slug: string; locale: string; gender: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // }
 
 export default async function ProductPage({ params }: Props) {
-  const { slug, locale } = await params;
+  const { slug, locale, gender } = await params;
   const handle = decodeURIComponent(slug);
   // return <ProductViewSkeleton />;
   const { originProduct: product } = await getProduct({
@@ -81,7 +81,7 @@ export default async function ProductPage({ params }: Props) {
   return (
     <>
       <JsonLd data={generateProductJsonLd(product, locale)} />
-      <ProductSessionView handle={handle} locale={locale}>
+      <ProductSessionView handle={handle} locale={locale} >
         <Suspense
           fallback={
             <Button

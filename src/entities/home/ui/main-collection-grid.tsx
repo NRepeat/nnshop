@@ -6,10 +6,10 @@ import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';
 type MainCollectionGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'mainCollectionGrid' }
-> & { locale: string };
+> & { locale: string } & { gender: string };
 
 export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
-  const { collections, title, locale } = props;
+  const { collections, title, locale, gender } = props;
 
   if (!collections) return null;
 
@@ -38,7 +38,7 @@ export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
           {resolvedCollections.map((col) => (
             <div key={col?.handle}>
               {col && (
-                <Link href={col?.href} key={col?.id}>
+                <Link href={'/' + gender + col?.href} key={col?.id}>
                   <div className="flex flex-col relative group w-[370px] md:w-full group">
                     {col?.image && col?.image.url && (
                       <Image

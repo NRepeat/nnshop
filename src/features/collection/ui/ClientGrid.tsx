@@ -10,8 +10,10 @@ const item = {
 
 export const ClientGrid = ({
   products,
+  gender
 }: {
   products: (Product & { isFav: boolean })[];
+  gender: string;
 }) => {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-1 md:gap-6 h-full">
@@ -27,6 +29,7 @@ export const ClientGrid = ({
             exit="exit"
           >
             <ProductCard
+              gender={gender}
               product={product}
               className=" px-0"
               withCarousel

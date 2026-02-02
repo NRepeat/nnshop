@@ -9,9 +9,11 @@ import { useLocale } from 'next-intl';
 export const ClientGridWrapper = ({
   initialPageInfo,
   initialProducts,
+  gender,
 }: {
   initialProducts: (Product & { isFav: boolean })[];
   initialPageInfo: PageInfo;
+  gender: string;
 }) => {
   const locale = useLocale();
   const [products, setProducts] =
@@ -42,7 +44,10 @@ export const ClientGridWrapper = ({
     <div className="flex h-full w-full justify-between">
       <div className="flex flex-col w-full items-end justify-between">
         <div className="flex flex-col w-full justify-between  pt-0 min-h-screen h-fit">
-          <ClientGrid products={products as (Product & { isFav: boolean })[]} />
+          <ClientGrid
+            products={products as (Product & { isFav: boolean })[]}
+            gender={gender}
+          />
           <div className="w-full items-center">
             <LoadMore
               initialPageInfo={pageInfo}
