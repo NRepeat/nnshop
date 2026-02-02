@@ -13,7 +13,7 @@ import {
 import { FilterSheet } from './FilterSheet';
 import { ActiveFiltersCarousel } from './ActiveFiltersCarousel';
 import { SortSelect } from './SortSelect';
-import { SearchParams } from '~/app/[locale]/(frontend)/collection/[slug]/page';
+import { SearchParams } from '~/app/[locale]/[gender]/(frontend)/collection/[slug]/page';
 import { cookies, headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { PathSync } from '@entities/path-sync/ui/path-sync';

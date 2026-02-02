@@ -1,5 +1,5 @@
 import { AnnouncementBar } from '@entities/announcement-bar/announcement-bar';
-import {
+import Navigation, {
   CurrentNavigationSession,
   CurrentNavigationSessionSkilet,
 } from '@features/header/navigation/ui/Navigation';
@@ -18,9 +18,15 @@ import { Suspense } from 'react';
 export type HeaderBarProps = Extract<
   NonNullable<HEADER_QUERYResult>['header'],
   { _type: 'header' }
-> & { locale: string };
+> & { locale: string; gender?: string };
 
-export const Header = async ({ locale }: { locale: string }) => {
+export const Header = async ({
+  locale,
+  gender,
+}: {
+  locale: string;
+  gender: string;
+}) => {
   const headerData = await sanityFetch({
     query: HEADER_QUERY,
     revalidate: 10,
@@ -56,7 +62,11 @@ export const Header = async ({ locale }: { locale: string }) => {
           <div className="w-full font-sans text-foreground grid grid-cols-3 text-base py-3">
             <Suspense fallback={<HeaderContentSkeleton />}>
               {headerData?.header && (
-                <HeaderContent locale={locale} {...headerData?.header} />
+                <HeaderContent
+                  locale={locale}
+                  {...headerData?.header}
+                  gender={gender}
+                />
               )}
             </Suspense>
 
@@ -78,9 +88,9 @@ export const Header = async ({ locale }: { locale: string }) => {
           )}
         </div>
 
-        <div className="hidden md:block w-full"> 
+        <div className="hidden md:block w-full">
           <Suspense fallback={<CurrentNavigationSessionSkilet />}>
-            <CurrentNavigationSession />
+            <Navigation gender={gender} locale={locale} />
           </Suspense>
         </div>
       </header>

@@ -13,12 +13,12 @@ import { NavigationItemClient } from './NavigationItemClient';
 import { NavigationTriggerClient } from './NavigationTriggerClient';
 import { Button } from '@shared/ui/button';
 
-export const CurrentNavigationSession = async () => {
-  const locale = await getLocale();
-  const cookie = await cookies();
-  const gender = cookie.get('gender')?.value || 'woman';
-  return <Navigation gender={gender} locale={locale} />;
-};
+// export const CurrentNavigationSession = async () => {
+//   const locale = await getLocale();
+//   const cookie = await cookies();
+//   const gender = cookie.get('gender')?.value || 'woman';
+//   return <Navigation gender={gender} locale={locale} />;
+// };
 
 export const CurrentNavigationSessionSkilet = () => {
   const meinMenu = [

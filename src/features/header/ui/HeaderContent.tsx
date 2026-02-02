@@ -8,15 +8,16 @@ type HeaderContentProps = Extract<
   { _type: 'header' }
 > & {
   locale: string;
+  gender?: string;
 };
 
 export const HeaderContent = async (props: HeaderContentProps) => {
-  const { locale, mainCategory } = props;
+  const { locale, mainCategory, gender } = props;
 
   return (
     <>
       <div className="justify-start w-full items-center hidden md:flex flex-row">
-        {mainCategory && <PersistLinkNavigation {...props} />}
+        {mainCategory && <PersistLinkNavigation {...props} gender={gender} />}
       </div>
       <div className="md:hidden flex items-center gap-2">
         <MenuSheet locale={locale} />

@@ -8,7 +8,7 @@ import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 
 export const PersistLinkNavigation = async (props: HeaderBarProps) => {
-  const { locale } = props;
+  const { locale, gender } = props;
   const t = await getTranslations({ locale, namespace: 'Header.nav' });
 
   const resolveLinks = props.mainCategory?.map(async (category) => {
@@ -53,7 +53,11 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
                     />
                   }
                 >
-                  <GenderSession label={label} slug={link.slug} />
+                  <GenderSession
+                    label={label}
+                    slug={link.slug}
+                    gender={gender}
+                  />
                 </Suspense>
               </Link>
             </NavigationMenuItem>
@@ -65,11 +69,12 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
 const GenderSession = async ({
   label,
   slug,
+  gender,
 }: {
   label: string;
   slug: string;
+  gender: string;
 }) => {
-  const gender = (await cookieFenderGet()) || 'woman';
   return (
     <NavButton gender={gender} slug={slug}>
       {label}
