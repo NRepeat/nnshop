@@ -55,7 +55,7 @@ export const ProductCard = ({
       )}
     >
       <CardContent className="flex flex-col p-0 md:p-1 border-0 shadow-none h-full justify-between bg-transparent">
-        <Link href={`/product/${product.handle}`}>
+        <Link href={`/product/${product.handle}`} prefetch>
           {withCarousel ? (
             <Carousel className="relative" opts={{ align: 'center' }}>
               <div className="group relative md:aspect-square w-full overflow-hidden">

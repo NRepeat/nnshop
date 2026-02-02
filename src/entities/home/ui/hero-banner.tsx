@@ -1,7 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { Link } from '@shared/i18n/navigation';import Autoplay from 'embla-carousel-autoplay';
+import { Link } from '@shared/i18n/navigation';
+import Autoplay from 'embla-carousel-autoplay';
 import { Button } from '@shared/ui/button';
 import { Carousel, CarouselContent, CarouselItem } from '@shared/ui/carousel';
 import { urlFor } from '@shared/sanity/lib/image';
@@ -35,6 +36,7 @@ export const HeroBanner = (props: HeroSliderProps) => {
               className="pl-0 relative w-full text-pretty font-light leading-tight tracking-tight text-left text-2xl md:text-4xl"
             >
               <Link
+                prefetch
                 href={slide?.link?.url ?? '/'}
                 className="group relative flex w-full h-full justify-center"
               >

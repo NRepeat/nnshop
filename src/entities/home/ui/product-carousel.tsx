@@ -24,7 +24,7 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
   );
   const items = products?.map((product, index) => {
     return (
-      <Link href={'/product/' + product.handle} className="h-full" key={index}>
+      <Link href={'/product/' + product.handle} className="h-full" key={index} prefetch>
         <div className="flex flex-col gap-3 group relative overflow-hidden h-full">
           <div className="flex justify-start w-full">
             <div className="relative aspect-[1/1] w-full md:max-w-[90%] lg:max-w-95%] ">

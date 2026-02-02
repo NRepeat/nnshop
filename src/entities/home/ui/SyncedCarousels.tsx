@@ -100,6 +100,7 @@ export const SyncedCarousels = ({
                     <Link
                       href={`/collection/${preview.handle?.current}`}
                       scroll
+                      prefetch
                     >
                       <Image
                         src={urlFor(preview).url()}
@@ -156,6 +157,7 @@ export const SyncedCarousels = ({
                             <Link
                               href={`/product/${product.node.handle}`}
                               scroll={true}
+                              prefetch
                             >
                               <div className="relative w-full aspect-square overflow-hidden bg-gray-50 mb-3">
                                 <Image

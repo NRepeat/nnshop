@@ -38,7 +38,7 @@ export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
           {resolvedCollections.map((col) => (
             <div key={col?.handle}>
               {col && (
-                <Link href={col?.href} key={col?.id}>
+                <Link href={col?.href} key={col?.id} prefetch>
                   <div className="flex flex-col relative group w-[370px] md:w-full group">
                     {col?.image && col?.image.url && (
                       <Image

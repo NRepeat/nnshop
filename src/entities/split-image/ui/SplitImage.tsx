@@ -54,7 +54,7 @@ const TextContentComponent = ({
           mobile ? 'text-white  border-white' : 'text-black  border-black'
         } rounded-md`}
       >
-        <Link href={linkUrl.handle}>{linkUrl?.title}</Link>
+        <Link  prefetch href={linkUrl.handle}>{linkUrl?.title}</Link>
       </Button>
     )}
   </div>
@@ -89,7 +89,7 @@ export async function SplitImage(props: SplitGridProps) {
         >
           <div className="relative aspect-[4/5] w-full overflow-hidden md:aspect-auto md:h-[600px] md:w-2/3">
             {linkUrl && linkUrl.handle ? (
-              <Link href={linkUrl.handle} className="block h-full w-full">
+              <Link href={linkUrl.handle} className="block h-full w-full" prefetch>
                 {ImageComponent}
               </Link>
             ) : (

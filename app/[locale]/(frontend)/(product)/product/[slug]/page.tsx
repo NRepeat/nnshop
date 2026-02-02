@@ -1,9 +1,8 @@
-import { getAllProductHandles } from '@entities/product/api/getAllProductsHandlers';
+
 import { auth } from '@features/auth/lib/auth';
 import { FavSession } from '@features/header/ui/FavSession';
 import { isProductFavorite } from '@features/product/api/isProductFavorite';
 import { ProductSessionView } from '@features/product/ui/ProductSessionView';
-import { locales } from '@shared/i18n/routing';
 import { setRequestLocale } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { Suspense } from 'react';
@@ -17,7 +16,7 @@ import { generateProductMetadata } from '@shared/lib/seo/generateMetadata';
 import { generateProductJsonLd } from '@shared/lib/seo/jsonld';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { connection } from 'next/server';
-import { ProductViewSkeleton } from '@widgets/product-view/ui/ProductViewSkeleton';
+
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
