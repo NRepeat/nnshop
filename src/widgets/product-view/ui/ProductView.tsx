@@ -19,6 +19,7 @@ export async function ProductView({
   attributes: ProductMEtaobjectType[];
   children: React.ReactNode;
 }) {
+  console.log("🚀 ~ ProductView ~ relatedProducts:", relatedProducts)
   const t = await getTranslations({ locale, namespace: 'ProductPage' });
   // const session = await auth.api.getSession({ headers: await headers() });
   // const isFavorite = await isProductFavorite(product.id, session);

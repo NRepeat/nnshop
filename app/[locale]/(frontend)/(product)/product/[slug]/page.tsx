@@ -44,27 +44,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export async function generateStaticParams() {
-  try {
-    const params = [];
-    for (const locale of locales) {
-      const allProductsHandlers = await getAllProductHandles(locale);
+// export async function generateStaticParams() {
+//   try {
+//     const params = [];
+//     for (const locale of locales) {
+//       const allProductsHandlers = await getAllProductHandles(locale);
 
-      const localeParams = allProductsHandlers.slice(0, 100).map((handle) => ({
-        slug: handle,
-        locale: locale,
-      }));
+//       const localeParams = allProductsHandlers.slice(0, 100).map((handle) => ({
+//         slug: handle,
+//         locale: locale,
+//       }));
 
-      params.push(...localeParams);
-    }
+//       params.push(...localeParams);
+//     }
 
-    return params;
-  } catch (error) {
-    console.error('Failed to generate static params for products:', error);
-    // Fallback to empty array - pages will be generated on-demand
-    return [];
-  }
-}
+//     return params;
+//   } catch (error) {
+//     console.error('Failed to generate static params for products:', error);
+//     // Fallback to empty array - pages will be generated on-demand
+//     return [];
+//   }
+// }
 
 export default async function ProductPage({ params }: Props) {
   const { slug, locale } = await params;

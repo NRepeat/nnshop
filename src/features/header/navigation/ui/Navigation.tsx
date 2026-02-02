@@ -11,6 +11,8 @@ import { cookies } from 'next/headers';
 import { Link } from '@shared/i18n/navigation';
 import { NavigationClient } from './NavigationClient';
 import { Skeleton } from '@shared/ui/skeleton';
+import { NavigationItemClient } from './NavigationItemClient';
+import { NavigationTriggerClient } from './NavigationTriggerClient';
 
 export const CurrentNavigationSession = async () => {
   const locale = await getLocale();
@@ -83,17 +85,21 @@ const Navigation = async ({
     if (item.items.length > 0) {
       return (
         <React.Fragment key={index}>
-          {item.items.map((subItem) => (
-            <NavigationMenuItem
-              key={subItem.url + subItem.title + gender}
-              className=" border-transparent transition-colors group"
-            >
-              <NavigationMenuTrigger
-                variant={'ghost'}
-                className="cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full has-[>svg]:px-5 px-5 py-2 hover:bg-accent/50 hover:border-none border-none"
+          {item.items.map((subItem) => {
+            // Собираем все URL из подменю для проверки активности
+            const subItemUrls = [
+              subItem.url,
+              ...subItem.items.map((child) => child.url),
+            ];
+
+            return (
+              <NavigationMenuItem
+                key={subItem.url + subItem.title + gender}
+                className=" border-transparent transition-colors group"
               >
-                {subItem.title}
-              </NavigationMenuTrigger>
+                <NavigationTriggerClient urls={subItemUrls}>
+                  {subItem.title}
+                </NavigationTriggerClient>
               <NavigationMenuContent className="flex justify-between !p-0">
                 {/* <div className="w-full row-span-3 ml-2">
                           <Link
@@ -121,20 +127,21 @@ const Navigation = async ({
                           key={child.title + gender}
                           className="w-full row-span-3 ml-2"
                         >
-                          <Link
+                          <NavigationItemClient
                             href={child.url}
-                            className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:underline  transition-colors"
+                            className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:underline transition-colors border-none"
                           >
                             {child.title}
-                          </Link>
+                          </NavigationItemClient>
                         </li>
                       ))}
                     </ul>
                   </div>
                 </div>
               </NavigationMenuContent>
-            </NavigationMenuItem>
-          ))}
+              </NavigationMenuItem>
+            );
+          })}
         </React.Fragment>
       );
     } else {
@@ -144,12 +151,9 @@ const Navigation = async ({
           className={` ${index === items.length - 1 ? 'hidden lg:block' : 'block'}`}
         >
           <NavigationMenuLink asChild>
-            <Link
-              href={item.url}
-              className="inline-block px-4 py-2 text-base font-300 font-sans hover:border-b border-b border-transparent hover:border-current transition-colors"
-            >
+            <NavigationItemClient href={item.url}>
               {item.title}
-            </Link>
+            </NavigationItemClient>
           </NavigationMenuLink>
         </NavigationMenuItem>
       );

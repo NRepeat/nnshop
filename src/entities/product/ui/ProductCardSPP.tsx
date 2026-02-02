@@ -35,14 +35,16 @@ export const ProductCardSPP = ({
     if (link) {
       return (
         <Link
+          prefetch
           href={`/product/${product.handle}`}
           className="block h-full w-full"
+          scroll={true}
         >
           {children}
         </Link>
       );
-    } else { 
-     return <div className="block h-full w-full">{children}</div>;
+    } else {
+      return <div className="block h-full w-full">{children}</div>;
     }
   };
   return (
@@ -69,7 +71,11 @@ export const ProductCardSPP = ({
 
       {/* Инфо-блок */}
       <div className="flex flex-col gap-1 px-1">
-        <Link href={`/product/${product.handle}`} className="hover:border-b hover:border-current transition-colors">
+        <Link
+          href={`/product/${product.handle}`}
+          className="hover:border-b hover:border-current transition-colors"
+          scroll
+        >
           <h3 className="line-clamp-2 text-[13px] leading-tight text-black">
             {product.title}
           </h3>
