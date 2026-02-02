@@ -9,7 +9,7 @@ export const PageContent = async ({
   const { locale, gender } = await params;
 
   return (
-      <div className="flex flex-col">
+      <div className="flex flex-col h-fit min-h-screen">
         <HeroPageBuilder gender={gender} locale={locale} />
       </div>
   );

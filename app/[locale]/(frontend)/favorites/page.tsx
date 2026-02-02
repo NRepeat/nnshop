@@ -23,7 +23,7 @@ export default async function FavoritesPage({
   params: Promise<{ locale: string }>;
 }) {
   return (
-    <div className="container mx-auto py-10 mt-2 md:mt-10">
+    <div className="container  py-10 mt-2 md:mt-10 h-fit min-h-screen ">
       <Suspense fallback={<FavoriteGridSkeleton />}>
         <FavoritesPageSession params={params} />
       </Suspense>
@@ -43,10 +43,10 @@ const FavoritesPageSession = async ({
 
   if (!session || !session.user) {
     return (
-      <div className="container mx-auto py-10 mt-2 md:mt-10">
-        <Empty>
+      <div className=" flex">
+        <Empty className="flex-1 justify-center items-center flex flex-col min-h-screen ">
           <EmptyHeader>
-            <EmptyTitle>{t('empty')}</EmptyTitle>
+            <EmptyTitle className='pb-[25vh]'>{t('empty')}</EmptyTitle>
           </EmptyHeader>
         </Empty>
       </div>
@@ -59,7 +59,7 @@ const FavoritesPageSession = async ({
 
   if (favoriteProducts.length === 0) {
     return (
-      <div className="container mx-auto py-10 mt-2 md:mt-10 min-h-[60vh]">
+      <div className="py-10 mt-2 md:mt-10 min-h-[60vh]">
         <Breadcrumbs
           items={[
             { label: tHeader('home'), href: '/' },

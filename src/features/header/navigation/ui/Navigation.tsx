@@ -32,12 +32,12 @@ export const CurrentNavigationSessionSkilet = () => {
         key={item.title}
         className={` ${index === meinMenu.length - 1 ? 'block' : 'block'}`}
       >
-        <Skeleton className="w-[100px] h-[28px]" />
+        <Skeleton className="w-[100px] h-[30px]" />
       </NavigationMenuItem>
     );
   });
   return (
-    <NavigationClient className="bg-transparent flex container justify-start">
+    <NavigationClient className="bg-transparent flex container justify-start py-1">
       {menu}
     </NavigationClient>
   );

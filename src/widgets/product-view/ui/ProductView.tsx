@@ -21,7 +21,7 @@ export async function ProductView({
 }) {
   const t = await getTranslations({ locale, namespace: 'ProductPage' });
   return (
-    <div className="container  space-y-16 my-10 ">
+    <div className="container  space-y-16 my-10 h-fit min-h-screen">
       <ProductViewProvider
         favCommponent={children}
         product={product}

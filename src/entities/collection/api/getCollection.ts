@@ -322,11 +322,13 @@ export const getCollection = async ({
   let collection: GetCollectionQuery;
 
   if (isDefaultSort) {
+    // For trending/popular sort: fetch all products and sort by sort_order metafield
     const allEdges: any[] = [];
     let cursor: string | null = null;
     let hasNextPage = true;
     let firstBatch: GetCollectionQuery | null = null;
 
+    // Fetch all products from Shopify
     while (hasNextPage) {
       const batch: GetCollectionQuery = await storefrontClient.request<
         GetCollectionQuery,
@@ -368,20 +370,23 @@ export const getCollection = async ({
       return aVal - bVal;
     });
 
+    // Create cursor-to-index mapping
+    const cursorToIndex = new Map<string, number>();
+    allEdges.forEach((edge, index) => {
+      cursorToIndex.set(edge.node.id, index);
+    });
+
     // Determine the page slice
     const pageSize = first || last || 20;
     let startIndex = 0;
 
     if (after) {
-      const afterIndex = allEdges.findIndex(
-        (edge: any) => edge.node.id === after,
-      );
-      startIndex = afterIndex >= 0 ? afterIndex + 1 : 0;
+      // Find the index by cursor (which is actually the product ID)
+      const afterIndex = cursorToIndex.get(after);
+      startIndex = afterIndex !== undefined ? afterIndex + 1 : 0;
     } else if (before) {
-      const beforeIndex = allEdges.findIndex(
-        (edge: any) => edge.node.id === before,
-      );
-      startIndex = beforeIndex >= 0 ? Math.max(0, beforeIndex - pageSize) : 0;
+      const beforeIndex = cursorToIndex.get(before);
+      startIndex = beforeIndex !== undefined ? Math.max(0, beforeIndex - pageSize) : 0;
     }
 
     const slicedEdges = allEdges.slice(startIndex, startIndex + pageSize);

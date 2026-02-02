@@ -66,7 +66,7 @@ export default async function BrandPage({ params }: Props) {
   const productCount = collection.collection.products.edges.length;
 
   return (
-    <div className="container mx-auto py-10 mt-2 md:mt-10">
+    <div className="container  py-10 mt-2 md:mt-10 min-h-screen h-fit">
       <Breadcrumbs items={breadcrumbItems} />
 
       {/* Brand Header */}

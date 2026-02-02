@@ -91,7 +91,7 @@ export function ProductViewProvider({
   return (
     <>
       <ScrollToTop />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12 h-fit min-h-screen">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12 ">
         <Gallery images={images} productId={product.id} handle={product.handle}>
           {favCommponent}
         </Gallery>

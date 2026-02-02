@@ -20,11 +20,7 @@ export type HeaderBarProps = Extract<
   { _type: 'header' }
 > & { locale: string };
 
-export const Header = async ({
-  locale,
-}: {
-  locale: string;
-}) => {
+export const Header = async ({ locale }: { locale: string }) => {
   const headerData = await sanityFetch({
     query: HEADER_QUERY,
     revalidate: 10,
@@ -34,7 +30,17 @@ export const Header = async ({
   setRequestLocale(locale);
   return (
     <>
-      <Suspense fallback={<></>}>
+      <Suspense
+        fallback={
+          <>
+            <div className="w-full bg-foreground py-0.5 h-[50px]">
+              <div className="w-full  justify-center bg-foreground text-background grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 container ">
+                <div className="px-2 md:px-5 items-center  gap-2 w-full justify-start  flex h-full "></div>
+              </div>
+            </div>
+          </>
+        }
+      >
         {headerData?.infoBar && headerData?.header && (
           <AnnouncementBar
             locale={locale}

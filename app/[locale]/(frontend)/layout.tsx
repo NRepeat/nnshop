@@ -13,7 +13,8 @@ import { draftMode } from 'next/headers';
 import { Suspense } from 'react';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { generateOrganizationJsonLd } from '@shared/lib/seo/jsonld';
-
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 const jostSans = Jost({
   variable: '--font-jost-sans',
   subsets: ['latin'],
@@ -101,6 +102,8 @@ export default async function RootLayout(props: RootProps) {
           </>
         )}
       </body>
+      <Analytics />
+      <SpeedInsights />
     </html>
   );
 }

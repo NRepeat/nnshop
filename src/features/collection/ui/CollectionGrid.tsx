@@ -65,9 +65,10 @@ export const CollectionGrid = async ({
       .map((edge) => edge.node)
       .filter(
         (edge) =>
-          edge.priceRange.minVariantPrice.amount > 0 ||
-          edge.priceRange.maxVariantPrice.amount > 0,
+          Number(edge.priceRange.minVariantPrice.amount) > 0 ||
+          Number(edge.priceRange.maxVariantPrice.amount) > 0,
       ) || [];
+  console.log('🚀 ~ CollectionGrid ~ rawProducts:', rawProducts);
 
   const session = await auth.api.getSession({ headers: await headers() });
   const productsWithFav = await Promise.all(
