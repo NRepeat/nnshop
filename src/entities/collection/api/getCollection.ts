@@ -9,6 +9,7 @@ import {
   GetCollectionFiltersQueryVariables,
 } from '@shared/lib/shopify/types/storefront.generated';
 import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
+import { cacheLife } from 'next/cache';
 
 const GetCollectionWithProducts = `#graphql
   query GetCollection(
@@ -175,10 +176,11 @@ const GET_COLLECTION_SLUGS = `
   `;
 
 export const getCollectionSlugs = async () => {
-  'use cache'
+  'use cache';
+  cacheLife('default');
+
   const handlesSet = new Set<string>();
   const locales: StorefrontLanguageCode[] = ['RU', 'UK'];
-
   try {
     // Fetch collections from first locale only (handles are the same across locales)
     const collection = await storefrontClient.request<
@@ -212,7 +214,8 @@ export const getCollectionFilters = async ({
   handle: string;
   locale: string;
 }) => {
-  'use cache'
+  'use cache';
+  cacheLife('default');
   const collection = await storefrontClient.request<
     GetCollectionFiltersQuery,
     GetCollectionFiltersQueryVariables
@@ -242,7 +245,7 @@ export const getCollection = async ({
   locale: string;
 }) => {
   'use cache';
-
+  cacheLife('default');
   if (!locale) {
     throw new Error('getCollection: locale is required');
   }
@@ -251,7 +254,6 @@ export const getCollection = async ({
     throw new Error('getCollection: handle is required');
   }
 
- 
   const filters: ProductFilter[] = [];
   if (searchParams) {
     const filterDefinitions = await getCollectionFilters({ handle, locale });
@@ -365,8 +367,14 @@ export const getCollection = async ({
 
     // Sort all products by sort_order metafield (lower value = higher position)
     allEdges.sort((a: any, b: any) => {
-      const aVal = a.node.sortOrder?.value != null ? parseFloat(a.node.sortOrder.value) : Infinity;
-      const bVal = b.node.sortOrder?.value != null ? parseFloat(b.node.sortOrder.value) : Infinity;
+      const aVal =
+        a.node.sortOrder?.value != null
+          ? parseFloat(a.node.sortOrder.value)
+          : Infinity;
+      const bVal =
+        b.node.sortOrder?.value != null
+          ? parseFloat(b.node.sortOrder.value)
+          : Infinity;
       return aVal - bVal;
     });
 
@@ -386,7 +394,8 @@ export const getCollection = async ({
       startIndex = afterIndex !== undefined ? afterIndex + 1 : 0;
     } else if (before) {
       const beforeIndex = cursorToIndex.get(before);
-      startIndex = beforeIndex !== undefined ? Math.max(0, beforeIndex - pageSize) : 0;
+      startIndex =
+        beforeIndex !== undefined ? Math.max(0, beforeIndex - pageSize) : 0;
     }
 
     const slicedEdges = allEdges.slice(startIndex, startIndex + pageSize);
@@ -397,11 +406,13 @@ export const getCollection = async ({
       collection.collection.products.pageInfo = {
         hasNextPage: startIndex + pageSize < allEdges.length,
         hasPreviousPage: startIndex > 0,
-        endCursor: slicedEdges.length > 0 ? slicedEdges[slicedEdges.length - 1].node.id : null,
+        endCursor:
+          slicedEdges.length > 0
+            ? slicedEdges[slicedEdges.length - 1].node.id
+            : null,
         startCursor: slicedEdges.length > 0 ? slicedEdges[0].node.id : null,
       };
     }
-
   } else {
     collection = await storefrontClient.request<
       GetCollectionQuery,
@@ -453,5 +464,8 @@ export const getCollection = async ({
     language: targetLocale as StorefrontLanguageCode,
   });
 
-  return { collection, alternateHandle: alternateRequest.collection?.handle ?? '' };
+  return {
+    collection,
+    alternateHandle: alternateRequest.collection?.handle ?? '',
+  };
 };

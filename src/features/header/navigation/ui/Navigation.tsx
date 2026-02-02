@@ -3,16 +3,15 @@ import {
   NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
-  NavigationMenuTrigger,
 } from '@shared/ui/navigation-menu';
 import { getMainMenu } from '../api/getMainMenu';
 import { getLocale } from 'next-intl/server';
 import { cookies } from 'next/headers';
-import { Link } from '@shared/i18n/navigation';
 import { NavigationClient } from './NavigationClient';
 import { Skeleton } from '@shared/ui/skeleton';
 import { NavigationItemClient } from './NavigationItemClient';
 import { NavigationTriggerClient } from './NavigationTriggerClient';
+import { Button } from '@shared/ui/button';
 
 export const CurrentNavigationSession = async () => {
   const locale = await getLocale();
@@ -97,18 +96,10 @@ const Navigation = async ({
                 <NavigationTriggerClient urls={subItemUrls}>
                   {subItem.title}
                 </NavigationTriggerClient>
-                <NavigationMenuContent className="flex justify-between ">
+                <NavigationMenuContent className="flex justify-between px-4">
                   <div className="flex w-full">
-                    <div className="container w-full flex justify-between">
-                      <ul className="grid h-fit gap-2 md:w-lg lg:w-3xl md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr]">
-                        {/* <li className="w-full row-span-3 ml-2">
-                          <Link
-                            href={subItem.url}
-                            className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:border-b hover:border-current transition-colors font-medium"
-                          >
-                            {subItem.title}
-                          </Link>
-                      </li> */}
+                    <div className="container w-full flex justify-between min-h-[300px]">
+                      <ul className="grid h-fit gap-2 md:w-lg lg:w-3xl md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr] ">
                         {subItem.items.map((child) => (
                           <li
                             key={child.title + gender}
@@ -116,9 +107,9 @@ const Navigation = async ({
                           >
                             <NavigationItemClient
                               href={child.url}
-                              className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:underline transition-colors border-none"
+                              className=""
                             >
-                              {child.title}
+                              <Button variant={'ghost'} className='text-base font-300 font-sans w-full inline-block  hover:underline transition-colors border-none'>{child.title}</Button>
                             </NavigationItemClient>
                           </li>
                         ))}

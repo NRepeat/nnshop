@@ -19,6 +19,36 @@ const GET_ORDERS_PAGINATED_BY_ID = `
               currencyCode
             }
           }
+          subtotalPriceSet {
+            shopMoney {
+              amount
+              currencyCode
+            }
+          }
+          discountApplications(first: 5) {
+            edges {
+              node {
+                value {
+                  ... on MoneyV2 {
+                    amount
+                    currencyCode
+                  }
+                  ... on PricingPercentageValue {
+                    percentage
+                  }
+                }
+                ... on DiscountCodeApplication {
+                  code
+                }
+                ... on ManualDiscountApplication {
+                  title
+                }
+                ... on ScriptDiscountApplication {
+                  title
+                }
+              }
+            }
+          }
           lineItems(first: 5) {
             edges {
               node {

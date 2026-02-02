@@ -157,6 +157,14 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
   const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
   const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
 
+  // Get discount codes from cart
+  const discountCodes = cart.discountCodes || [];
+  const hasApplicableDiscount = discountCodes.some((d) => d.applicable);
+
+  // Use Shopify's calculated total (already includes all discounts)
+  const totalAmount = Number(cart.cost.totalAmount.amount);
+  const discountAmount = hasApplicableDiscount ? subtotal - totalAmount : 0;
+
   const content = (
     <>
       {/* Items List */}
@@ -172,13 +180,33 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
           <span className="text-gray-500">{t('subtotal')}</span>
           <span className="text-gray-900">{formatPrice(subtotal)}{currencySymbol}</span>
         </div>
+
+        {/* Show discount codes and amount */}
+        {hasApplicableDiscount && (
+          <>
+            <div className="flex justify-between text-sm text-green-600">
+              <div className="flex flex-col gap-1">
+                <span>{t('discount')}</span>
+                {discountCodes
+                  .filter((d) => d.applicable)
+                  .map((discount) => (
+                    <span key={discount.code} className="text-xs font-medium">
+                      {discount.code}
+                    </span>
+                  ))}
+              </div>
+              <span>-{formatPrice(discountAmount)}{currencySymbol}</span>
+            </div>
+          </>
+        )}
+
         <div className="flex justify-between text-sm">
           <span className="text-gray-500">{t('shipping')}</span>
           <span className="text-gray-500 text-xs">{t('calculated_next')}</span>
         </div>
         <div className="flex justify-between text-base font-medium pt-2 border-t border-gray-100">
           <span className="text-gray-900">{t('total')}</span>
-          <span className="text-gray-900">{formatPrice(subtotal)}{currencySymbol}</span>
+          <span className="text-gray-900">{formatPrice(totalAmount)}{currencySymbol}</span>
         </div>
       </div>
     </>
@@ -195,7 +223,7 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
               </div>
               <div className="text-left">
                 <p className="text-sm font-medium text-gray-900">{t('products_title')}</p>
-                <p className="text-xs text-gray-500">{totalQuantity} {t('items')} &bull; {formatPrice(subtotal)}{currencySymbol}</p>
+                <p className="text-xs text-gray-500">{totalQuantity} {t('items')} &bull; {formatPrice(totalAmount)}{currencySymbol}</p>
               </div>
             </div>
           </AccordionTrigger>

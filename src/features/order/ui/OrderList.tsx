@@ -25,6 +25,30 @@ type Order = {
       currencyCode: string;
     };
   };
+  subtotalPriceSet?: {
+    shopMoney: {
+      amount: string;
+      currencyCode: string;
+    };
+  };
+  discountApplications?: {
+    edges: {
+      node: {
+        value:
+          | {
+              __typename: 'MoneyV2';
+              amount: string;
+              currencyCode: string;
+            }
+          | {
+              __typename: 'PricingPercentageValue';
+              percentage: number;
+            };
+        code?: string;
+        title?: string;
+      };
+    }[];
+  };
   lineItems?: {
     edges: {
       node: LineItem;

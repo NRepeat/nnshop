@@ -163,6 +163,38 @@ export async function createDraftOrder(
       input.note = cart.note;
     }
 
+    // Add discount codes from cart if present
+    if (cart.discountCodes && cart.discountCodes.length > 0) {
+      const applicableDiscounts = cart.discountCodes.filter((d) => d.applicable);
+      if (applicableDiscounts.length > 0) {
+        // Calculate discount amount from cart cost
+        const subtotal = parseFloat(cart.cost.subtotalAmount.amount);
+        const total = parseFloat(cart.cost.totalAmount.amount);
+        const discountAmount = subtotal - total;
+
+        // Apply discount to draft order if there's a difference
+        if (discountAmount > 0) {
+          input.appliedDiscount = {
+            valueType: 'FIXED_AMOUNT',
+            value: discountAmount,
+            description: `Discount code: ${applicableDiscounts.map(d => d.code).join(', ')}`,
+            title: applicableDiscounts[0].code,
+          };
+        }
+
+        // Also save discount codes as custom attributes for reference
+        if (!input.customAttributes) {
+          input.customAttributes = [];
+        }
+        applicableDiscounts.forEach((discount, index) => {
+          input.customAttributes.push({
+            key: `discount_code_${index + 1}`,
+            value: discount.code,
+          });
+        });
+      }
+    }
+
     if (!completeCheckoutData) {
       throw new Error('Checkout data is missing');
     }

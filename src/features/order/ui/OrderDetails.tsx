@@ -270,6 +270,35 @@ export const OrderDetails = async ({
                     {order.subtotalPriceSet.presentmentMoney.currencyCode}
                   </span>
                 </div>
+
+                {/* Show discount applications if any */}
+                {order.discountApplications?.edges &&
+                  order.discountApplications.edges.length > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <div className="flex flex-col gap-1">
+                        <span>{t('discount')}</span>
+                        {order.discountApplications.edges.map(({ node }, idx) => {
+                          const code = 'code' in node ? node.code : node.title;
+                          return code ? (
+                            <span key={idx} className="text-xs font-medium">
+                              {code}
+                            </span>
+                          ) : null;
+                        })}
+                      </div>
+                      <span>
+                        {order.discountApplications.edges.map(({ node }) => {
+                          if ('amount' in node.value) {
+                            return `-${node.value.amount} ${node.value.currencyCode}`;
+                          } else if ('percentage' in node.value) {
+                            return `-${node.value.percentage}%`;
+                          }
+                          return null;
+                        })}
+                      </span>
+                    </div>
+                  )}
+
                 <Separator className="my-2" />
                 <div className="flex justify-between font-medium">
                   <span>{t('total')}</span>

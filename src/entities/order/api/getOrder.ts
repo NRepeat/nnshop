@@ -4,7 +4,61 @@ import { Order } from '../model/types';
 const GET_ORDER_BY_ID_QUERY = `
   query orderByIdentifier($id: ID!) {
     order(id: $id) {
-    id name processedAt displayFulfillmentStatus   lineItems(first: 10) { edges { node { title quantity variant { price title } image { url } } } } subtotalPriceSet { presentmentMoney { amount currencyCode } } totalPriceSet { presentmentMoney { amount currencyCode } }
+      id
+      name
+      processedAt
+      displayFulfillmentStatus
+      lineItems(first: 10) {
+        edges {
+          node {
+            title
+            quantity
+            variant {
+              price
+              title
+            }
+            image {
+              url
+            }
+          }
+        }
+      }
+      subtotalPriceSet {
+        presentmentMoney {
+          amount
+          currencyCode
+        }
+      }
+      totalPriceSet {
+        presentmentMoney {
+          amount
+          currencyCode
+        }
+      }
+      discountApplications(first: 10) {
+        edges {
+          node {
+            value {
+              ... on MoneyV2 {
+                amount
+                currencyCode
+              }
+              ... on PricingPercentageValue {
+                percentage
+              }
+            }
+            ... on DiscountCodeApplication {
+              code
+            }
+            ... on ManualDiscountApplication {
+              title
+            }
+            ... on ScriptDiscountApplication {
+              title
+            }
+          }
+        }
+      }
     }
   }
 `;

@@ -27,7 +27,6 @@ export const HeaderOptions = ({ locale }: { locale: string }) => {
               variant="ghost"
               size="icon"
               aria-label="Account"
-              // className={cn(className)}
             >
               <User2 />
             </Button>

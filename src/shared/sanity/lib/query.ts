@@ -689,6 +689,14 @@ export const OG_IMAGE_QUERY = defineQuery(`
     }
   }
 `);
+
+export const SITE_LOGO_QUERY = defineQuery(`
+  *[_type == 'siteSettings'][0]{
+    "logo": header.icon.asset->{
+      url
+    }
+  }
+`);
 export const SITEMAP_QUERY = defineQuery(`
 *[_type in ["page", "post"] && defined(slug.current)] {
     "href": select(

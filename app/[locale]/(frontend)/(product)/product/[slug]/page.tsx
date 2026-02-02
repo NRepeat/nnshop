@@ -17,12 +17,11 @@ import { generateProductMetadata } from '@shared/lib/seo/generateMetadata';
 import { generateProductJsonLd } from '@shared/lib/seo/jsonld';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { connection } from 'next/server';
+import { ProductViewSkeleton } from '@widgets/product-view/ui/ProductViewSkeleton';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
 };
-
-
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params;
@@ -69,7 +68,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProductPage({ params }: Props) {
   const { slug, locale } = await params;
   const handle = decodeURIComponent(slug);
-
+  // return <ProductViewSkeleton />;
   const { originProduct: product } = await getProduct({
     handle,
     locale,
@@ -109,7 +108,6 @@ const ProductSession = async ({
   product: Product;
 }) => {
   await connection();
-
 
   const session = await auth.api.getSession({ headers: await headers() });
 

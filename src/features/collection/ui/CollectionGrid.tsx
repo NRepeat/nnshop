@@ -41,7 +41,7 @@ export const CollectionGrid = async ({
   const collectionPromises = [
     getCollection({
       handle: slug,
-      first: 20,
+      first: 18,
       locale: locale,
       searchParams: awaitedSearchParams,
     }),
@@ -49,7 +49,7 @@ export const CollectionGrid = async ({
 
   if (hasFilters) {
     collectionPromises.push(
-      getCollection({ handle: slug, first: 20, locale: locale }),
+      getCollection({ handle: slug, first: 18, locale: locale }),
     );
   }
 
@@ -68,7 +68,6 @@ export const CollectionGrid = async ({
           Number(edge.priceRange.minVariantPrice.amount) > 0 ||
           Number(edge.priceRange.maxVariantPrice.amount) > 0,
       ) || [];
-  console.log('🚀 ~ CollectionGrid ~ rawProducts:', rawProducts);
 
   const session = await auth.api.getSession({ headers: await headers() });
   const productsWithFav = await Promise.all(
@@ -89,10 +88,6 @@ export const CollectionGrid = async ({
     [locale]: `/collection/${slug}`,
     [targetLocale]: `/collection/${alternateHandle}`,
   };
-
-  // const products = collection.collection?.products.edges.map(
-  //   (edge) => edge.node,
-  // );
   const pageInfo = collection.collection?.products.pageInfo;
 
   return (

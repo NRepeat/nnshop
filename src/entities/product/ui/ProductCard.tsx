@@ -73,7 +73,9 @@ export const ProductCard = ({
                           className="object-contain "
                           src={image.url}
                           alt={image.altText || ''}
-                          loading="lazy"
+                          // loading="lazy"
+                          preload
+                          // priority={index === 0 ? true : undefined}
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           fill
                         />
@@ -149,7 +151,9 @@ export const ProductCard = ({
         {
           <div className="w-full pt-2 md:pt-1  flex flex-col gap-1 flex-1 md:px-2">
             <Link href={`/brand/${vendorToHandle(product.vendor)}`}>
-              <span className="text-md font-bold hover:underline">{product.vendor}</span>
+              <span className="text-md font-bold hover:underline">
+                {product.vendor}
+              </span>
             </Link>
             <div className="flex flex-col justify-between flex-1">
               <div className=" w-full flex-col  justify-between flex pb-4">
@@ -202,7 +206,6 @@ export const ProductCard = ({
             </div>
           </div>
         }
-
       </CardContent>
     </Card>
   );

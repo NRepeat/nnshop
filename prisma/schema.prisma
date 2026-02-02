@@ -74,8 +74,9 @@ model PaymentInformation {
 }
 
 model Cart {
-  id        String @id @default(cuid())
-  cartToken String @unique
+  id            String  @id @default(cuid())
+  cartToken     String  @unique
+  discountCodes Json?
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
