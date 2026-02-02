@@ -26,10 +26,12 @@ export interface ShopifyClient {
     query,
     variables,
     language,
+    cache,
   }: {
     query: string;
     variables?: V;
     language?: StorefrontLanguageCode;
+    cache?: string;
   }): Promise<T>;
   buildHeaders(): Promise<Record<string, string>>;
   buildBody(

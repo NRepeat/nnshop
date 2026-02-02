@@ -15,6 +15,7 @@ model User {
   image               String?
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @default(now()) @updatedAt
+  preferredGender     String?              @default("woman")
   sessions            Session[]
   accounts            Account[]
   orders              Order[]

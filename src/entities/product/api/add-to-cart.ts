@@ -2,6 +2,7 @@
 
 import { addToCartAction } from '@entities/cart/api/add-product';
 import { checkInventoryLevel } from './check-inventory-level';
+import { revalidateTag } from 'next/cache';
 
 async function addToCart(_: any, formData: FormData) {
   try {
@@ -15,11 +16,11 @@ async function addToCart(_: any, formData: FormData) {
       return { success: false, message: 'No products available' };
     }
     const result = await addToCartAction(variantId);
+    revalidateTag('cart', { expire: 0 });
 
     if (!result.success) {
       return { success: false, message: result.error };
     }
-
     return { success: true, message: 'Added to cart' };
   } catch (error) {
     return { success: false, message: String(error) };
