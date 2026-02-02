@@ -52,7 +52,6 @@ const ProductCarousel = async ({
   const productsWithFavStatus = await Promise.all(
     rawProducts.map(async (product) => {
       const isFav = await isProductFavorite(product.id, session);
-      console.log('🚀 ~ ProductCarousel ~ product:', product, isFav);
 
       return {
         ...product,

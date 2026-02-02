@@ -78,7 +78,7 @@ export const Header = async ({ locale }: { locale: string }) => {
           )}
         </div>
 
-        <div className="hidden md:block w-full">
+        <div className="hidden md:block w-full"> 
           <Suspense fallback={<CurrentNavigationSessionSkilet />}>
             <CurrentNavigationSession />
           </Suspense>

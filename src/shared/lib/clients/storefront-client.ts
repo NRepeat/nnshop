@@ -1,8 +1,4 @@
 import {
-  createStorefrontApiClient,
-  StorefrontApiClient,
-} from '@shopify/storefront-api-client';
-import {
   ShopifyClient,
   ShopifyClientConfig,
   GraphQLResponse,
@@ -10,26 +6,20 @@ import {
 } from './types';
 
 export class StorefrontClient implements ShopifyClient {
-  private client: StorefrontApiClient;
   private accessToken: string;
   private shopDomain: string;
   private apiVersion: string;
   private maxRetries = 3;
   private retryDelay = 1000;
+  private apiUrl: string;
 
-  constructor(config: ShopifyClientConfig & { customFetchApi?: typeof fetch }) {
+  constructor(config: ShopifyClientConfig) {
     this.accessToken = config.accessToken!;
     this.shopDomain = config.shopDomain!;
     this.apiVersion = config.apiVersion!;
+    this.apiUrl = `https://${this.shopDomain}/api/${this.apiVersion}/graphql.json`;
 
     this.validateConfig();
-
-    this.client = createStorefrontApiClient({
-      storeDomain: this.shopDomain,
-      apiVersion: this.apiVersion,
-      privateAccessToken: this.accessToken,
-      customFetchApi: config.customFetchApi || fetch,
-    });
   }
 
   private validateConfig(): void {
@@ -80,9 +70,11 @@ export class StorefrontClient implements ShopifyClient {
   async buildHeaders(): Promise<Record<string, string>> {
     return {
       'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': this.accessToken,
+      // 'X-Shopify-Storefront-Access-Token': this.accessToken,
+      'Shopify-Storefront-Private-Token': this.accessToken,
     };
   }
+
   private addLanguageContext(
     query: string,
     language: StorefrontLanguageCode,
@@ -111,6 +103,7 @@ export class StorefrontClient implements ShopifyClient {
 
     return modifiedQuery;
   }
+
   async buildBody(
     query: string,
     variables: Record<string, unknown> = {},
@@ -139,11 +132,17 @@ export class StorefrontClient implements ShopifyClient {
     variables,
     language,
     signal,
+    cache = 'force-cache',
+    revalidate,
+    tags,
   }: {
     query: string;
     variables: V;
     language?: StorefrontLanguageCode;
     signal?: AbortSignal;
+    cache?: RequestCache;
+    revalidate?: number | false;
+    tags?: string[];
   }): Promise<T> {
     return this.retryWithBackoff(async () => {
       try {
@@ -155,21 +154,60 @@ export class StorefrontClient implements ShopifyClient {
           );
         }
 
-        const ver = variables as Record<string, unknown>;
-        const response = await this.client.request(modifiedQuery, {
-          variables: ver,
-        });
-        if (response.errors) {
-          console.error(JSON.stringify(response.errors, null, 2));
+        const headers = await this.buildHeaders();
+        const body = await this.buildBody(modifiedQuery, variables as Record<string, unknown>);
+
+        // Build Next.js fetch options
+        const fetchOptions: RequestInit = {
+          method: 'POST',
+          headers,
+          body,
+          signal,
+          cache,
+        };
+
+        // Add Next.js specific options
+        if (revalidate !== undefined) {
+          (fetchOptions as any).next = {
+            revalidate,
+            tags: tags || [],
+          };
+        } else if (tags && tags.length > 0) {
+          (fetchOptions as any).next = {
+            tags,
+          };
+        }
+
+        const response = await fetch(this.apiUrl, fetchOptions);
+
+        if (!response.ok) {
+          // Detailed error logging for 401
+          const errorText = await response.text();
+          console.error('❌ Shopify API Error:', {
+            status: response.status,
+            statusText: response.statusText,
+            url: this.apiUrl,
+            headers: headers,
+            responseBody: errorText,
+          });
           throw new Error(
-            `Storefront API GraphQL: ${JSON.stringify(response.errors)}`,
+            `HTTP Error: ${response.status} ${response.statusText} - ${errorText}`,
           );
         }
 
-        return response.data as T;
+        const result = await this.parseResponse<T>(response);
+
+        if (result.errors) {
+          console.error('GraphQL Errors:', JSON.stringify(result.errors, null, 2));
+          throw new Error(
+            `Storefront API GraphQL Error: ${JSON.stringify(result.errors)}`,
+          );
+        }
+
+        return result.data as T;
       } catch (error) {
         if (error instanceof Error) {
-          console.error(error);
+          console.error('Storefront API Error:', error);
           throw new Error(`Storefront API Request Failed: ${error.message}`);
         }
         throw new Error(`Storefront API Request Failed: ${String(error)}`);
@@ -180,17 +218,55 @@ export class StorefrontClient implements ShopifyClient {
   async requestWithExtensions<T>(
     query: string,
     variables: Record<string, unknown> = {},
+    options?: {
+      cache?: RequestCache;
+      revalidate?: number | false;
+      tags?: string[];
+    },
   ) {
-    const response = await this.client.request(query, { variables });
-    return {
-      data: response.data as T,
-      errors: response.errors,
-      extensions: response.extensions,
-    };
+    try {
+      const headers = await this.buildHeaders();
+      const body = await this.buildBody(query, variables);
+
+      const fetchOptions: RequestInit = {
+        method: 'POST',
+        headers,
+        body,
+        cache: options?.cache || 'force-cache',
+      };
+
+      // Add Next.js specific options
+      if (options?.revalidate !== undefined || options?.tags) {
+        (fetchOptions as any).next = {
+          ...(options.revalidate !== undefined && { revalidate: options.revalidate }),
+          ...(options.tags && { tags: options.tags }),
+        };
+      }
+
+      const response = await fetch(this.apiUrl, fetchOptions);
+
+      if (!response.ok) {
+        throw new Error(
+          `HTTP Error: ${response.status} ${response.statusText}`,
+        );
+      }
+
+      const result = await response.json();
+
+      return {
+        data: result.data as T,
+        errors: result.errors,
+        extensions: result.extensions,
+      };
+    } catch (error) {
+      console.error('Storefront API Error:', error);
+      throw error;
+    }
   }
 
-  getUnderlyingClient(): StorefrontApiClient {
-    return this.client;
+  // For backward compatibility
+  getUnderlyingClient() {
+    return null;
   }
 
   isConfigured(): boolean {

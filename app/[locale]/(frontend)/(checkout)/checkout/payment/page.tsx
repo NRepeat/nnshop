@@ -58,10 +58,6 @@ export default async function PaymentPage(props: Props) {
   let draftOrderId = await getDraftOrderId();
   if (!draftOrderId) {
     const completeCheckoutData = await getCompleteCheckoutData(session);
-    console.log(
-      '🚀 ~ PaymentPage ~ completeCheckoutData:',
-      completeCheckoutData,
-    );
     if (!completeCheckoutData) {
       redirect('/checkout/delivery');
     }
