@@ -44,15 +44,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   );
 }
 
-export async function generateStaticParams() {
-  const params = [];
-  for (const gender of genders) {
-    for (const locale of locales) {
-      params.push({ locale: locale, gender: gender });
-    }
-  }
-  return params;
-}
+// export async function generateStaticParams() {
+//   const params = [];
+//   for (const gender of genders) {
+//     for (const locale of locales) {
+//       params.push({ locale: locale, gender: gender });
+//     }
+//   }
+//   return params;
+// }
 
 export default async function Page({ params }: Props) {
   return <PageContent params={params} />;
