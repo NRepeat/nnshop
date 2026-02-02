@@ -64,7 +64,7 @@ export const InternalMenu = ({
                               >
                                 <AccordionTrigger
                                   value={subSubId}
-                                  className="pl-4 py-4  font-normal  hover:border-b hover:border-current transition-colors text-lg"
+                                  className="pl-4 py-4  font-normal  text-lg"
                                 >
                                   {subSubItem.title}
                                 </AccordionTrigger>
@@ -100,7 +100,7 @@ export const InternalMenu = ({
                                   e.preventDefault();
                                   onClose(subSubItem.url);
                                 }}
-                                className="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 pl-4 py-4  font-normal hover:border-b hover:border-current transition-colors text-lg"
+                                className="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 pl-4 py-4  font-normal  transition-colors text-lg"
                               >
                                 {subSubItem.title}
                               </Link>
@@ -117,7 +117,7 @@ export const InternalMenu = ({
                       e.preventDefault();
                       onClose(subItem.url);
                     }}
-                    className="pl-6 py-4 text-sm font-normal  hover:border-b hover:border-current transition-colors"
+                    className="pl-6 py-4 text-sm font-normal  hover:border-current transition-colors"
                   >
                     {subItem.title}
                   </Link>

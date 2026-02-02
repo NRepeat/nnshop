@@ -99,7 +99,7 @@ const Gallery = ({
 
   return (
     <PhotoSwipeGallery>
-      <div className="col-span-1 lg:col-span-2 gap-6 flex flex-col  justify-center w-full items-center">
+      <div className="col-span-1 lg:col-span-2 gap-6 flex flex-col   w-full items-center ">
         <div className="max-w-[600px] w-full  flex flex-col gap-2">
           <div className="relative">
             <Carousel setApi={setMainApi}>

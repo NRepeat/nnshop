@@ -75,10 +75,8 @@ const Navigation = async ({
   locale: string;
 }) => {
   const allItems = await getMainMenu({ locale });
-  console.log('🚀 ~ Navigation ~ allItems:', JSON.stringify(allItems, null, 2));
   const meinMenu = allItems.filter((item) => matchesGender(item, gender));
 
-  // Fallback: if no match found, show first item
   const items = meinMenu.length > 0 ? meinMenu : allItems.slice(0, 1);
 
   const menu = items.map((item, index) => {
@@ -86,7 +84,6 @@ const Navigation = async ({
       return (
         <React.Fragment key={index}>
           {item.items.map((subItem) => {
-            // Собираем все URL из подменю для проверки активности
             const subItemUrls = [
               subItem.url,
               ...subItem.items.map((child) => child.url),
@@ -95,26 +92,16 @@ const Navigation = async ({
             return (
               <NavigationMenuItem
                 key={subItem.url + subItem.title + gender}
-                className=" border-transparent transition-colors group"
+                className=" group"
               >
                 <NavigationTriggerClient urls={subItemUrls}>
                   {subItem.title}
                 </NavigationTriggerClient>
-              <NavigationMenuContent className="flex justify-between !p-0">
-                {/* <div className="w-full row-span-3 ml-2">
-                          <Link
-                            href={subItem.url}
-                            className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:border-b hover:border-current transition-colors font-medium"
-                          >
-                            {subItem.title}
-                                       {console.log(subItem,"subItem")}
-                            asd
-                          </Link>
-                      </div> */}
-                <div className="flex w-full">
-                  <div className="container w-full flex justify-between">
-                    <ul className="grid h-fit gap-2 md:w-lg lg:w-3xl md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr]">
-                      {/* <li className="w-full row-span-3 ml-2">
+                <NavigationMenuContent className="flex justify-between ">
+                  <div className="flex w-full">
+                    <div className="container w-full flex justify-between">
+                      <ul className="grid h-fit gap-2 md:w-lg lg:w-3xl md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr]">
+                        {/* <li className="w-full row-span-3 ml-2">
                           <Link
                             href={subItem.url}
                             className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:border-b hover:border-current transition-colors font-medium"
@@ -122,23 +109,23 @@ const Navigation = async ({
                             {subItem.title}
                           </Link>
                       </li> */}
-                      {subItem.items.map((child) => (
-                        <li
-                          key={child.title + gender}
-                          className="w-full row-span-3 ml-2"
-                        >
-                          <NavigationItemClient
-                            href={child.url}
-                            className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:underline transition-colors border-none"
+                        {subItem.items.map((child) => (
+                          <li
+                            key={child.title + gender}
+                            className="w-full row-span-3 ml-2"
                           >
-                            {child.title}
-                          </NavigationItemClient>
-                        </li>
-                      ))}
-                    </ul>
+                            <NavigationItemClient
+                              href={child.url}
+                              className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:underline transition-colors border-none"
+                            >
+                              {child.title}
+                            </NavigationItemClient>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                </div>
-              </NavigationMenuContent>
+                </NavigationMenuContent>
               </NavigationMenuItem>
             );
           })}

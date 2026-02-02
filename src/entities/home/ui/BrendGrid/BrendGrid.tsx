@@ -81,7 +81,7 @@ export function BrandGrid({
             )}
           </CarouselContent>
         </Carousel>
-        <div className="mt-6 flex justify-center">
+        {/* <div className="mt-6 flex justify-center">
           <Button
             asChild
             variant="outline"
@@ -92,7 +92,7 @@ export function BrandGrid({
               <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
-        </div>
+        </div> */}
       </div>
     </section>
   );
