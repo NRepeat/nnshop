@@ -499,66 +499,12 @@ export type LocalizedText = {
   uk?: string;
 };
 
-export type Body = Array<{
-  children?: Array<{
-    marks?: Array<string>;
-    text?: string;
-    _type: 'span';
-    _key: string;
-  }>;
-  style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote';
-  listItem?: 'bullet' | 'number';
-  markDefs?: null;
-  level?: number;
-  _type: 'block';
-  _key: string;
-}>;
-
-export type SeoShopify = {
-  _type: 'seo.shopify';
-  title?: string;
-  description?: string;
-};
-
 export type ModuleCallToAction = {
   _type: 'module.callToAction';
   layout?: 'left' | 'right';
   title?: string;
   body?: string;
-  content?: Array<
-    | {
-        asset?: {
-          _ref: string;
-          _type: 'reference';
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-        };
-        media?: unknown;
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        _type: 'image';
-        _key: string;
-      }
-    | ({
-        _key: string;
-      } & ProductWithVariant)
-  >;
-};
-
-export type ModuleCallout = {
-  _type: 'module.callout';
-  text?: string;
-};
-
-export type ImageCallToAction = {
-  _type: 'imageCallToAction';
-  title?: string;
-};
-
-export type GridItem = {
-  _type: 'gridItem';
-  title?: string;
-  image?: {
+  content?: Array<{
     asset?: {
       _ref: string;
       _type: 'reference';
@@ -569,31 +515,13 @@ export type GridItem = {
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     _type: 'image';
-  };
-  body?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: 'span';
-      _key: string;
-    }>;
-    style?: 'normal';
-    listItem?: never;
-    markDefs?: Array<
-      | ({
-          _key: string;
-        } & AnnotationProduct)
-      | ({
-          _key: string;
-        } & AnnotationLinkEmail)
-      | ({
-          _key: string;
-        } & AnnotationLinkExternal)
-    >;
-    level?: number;
-    _type: 'block';
     _key: string;
   }>;
+};
+
+export type ImageCallToAction = {
+  _type: 'imageCallToAction';
+  title?: string;
 };
 
 export type CollectionGroup = {
@@ -605,57 +533,6 @@ export type CollectionGroup = {
     _weak?: boolean;
     [internalGroqTypeReferenceTo]?: 'collection';
   };
-};
-
-export type ShopifyProductVariant = {
-  _type: 'shopifyProductVariant';
-  createdAt?: string;
-  updatedAt?: string;
-  status?: 'active' | 'archived' | 'draft';
-  isDeleted?: boolean;
-  title?: string;
-  sku?: string;
-  id?: number;
-  gid?: string;
-  productId?: number;
-  productGid?: string;
-  price?: number;
-  compareAtPrice?: number;
-  inventory?: Inventory;
-  option1?: string;
-  option2?: string;
-  option3?: string;
-  previewImageUrl?: string;
-};
-
-export type ShopifyProduct = {
-  _type: 'shopifyProduct';
-  createdAt?: string;
-  updatedAt?: string;
-  status?: 'active' | 'archived' | 'draft';
-  isDeleted?: boolean;
-  title?: string;
-  id?: number;
-  gid?: string;
-  slug?: Slug;
-  descriptionHtml?: string;
-  productType?: string;
-  vendor?: string;
-  tags?: string;
-  priceRange?: PriceRange;
-  previewImageUrl?: string;
-  options?: Array<
-    {
-      _key: string;
-    } & Option
-  >;
-  variants?: Array<{
-    _ref: string;
-    _type: 'reference';
-    _weak?: boolean;
-    _key: string;
-    [internalGroqTypeReferenceTo]?: 'productVariant';
-  }>;
 };
 
 export type CollectionRule = {
@@ -687,110 +564,9 @@ export type ShopifyCollection = {
 
 export type ProxyString = string;
 
-export type Option = {
-  _type: 'option';
-  name?: string;
-  values?: Array<string>;
-};
-
-export type ProductHotspots = Array<
-  {
-    _key: string;
-  } & Spot
->;
-
-export type ProductWithVariant = {
-  _type: 'productWithVariant';
-  product?: {
-    _ref: string;
-    _type: 'reference';
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: 'product';
-  };
-  variant?: {
-    _ref: string;
-    _type: 'reference';
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: 'productVariant';
-  };
-};
-
-export type ProductVariant = {
-  _id: string;
-  _type: 'productVariant';
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  hidden?: string;
-  titleProxy?: ProxyString;
-  store?: ShopifyProductVariant;
-};
-
-export type Inventory = {
-  _type: 'inventory';
-  isAvailable?: boolean;
-  management?: string;
-  policy?: string;
-};
-
-export type Product = {
-  _id: string;
-  _type: 'product';
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  hidden?: string;
-  titleProxy?: ProxyString;
-  slugProxy?: ProxyString;
-  body?: Body;
-  store?: ShopifyProduct;
-  seo?: SeoShopify;
-};
-
-export type PriceRange = {
-  _type: 'priceRange';
-  minVariantPrice?: number;
-  maxVariantPrice?: number;
-};
-
-export type Spot = {
-  _type: 'spot';
-  productWithVariant?: ProductWithVariant;
-  x?: number;
-  y?: number;
-};
-
-export type PlaceholderString = string;
-
-export type ModuleProducts = {
-  _type: 'module.products';
-  modules?: Array<
-    {
-      _key: string;
-    } & ModuleProduct
-  >;
-  layout?: 'card' | 'pill';
-};
-
-export type ModuleProduct = {
-  _type: 'module.product';
-  productWithVariant?: ProductWithVariant;
-};
-
 export type ModuleInstagram = {
   _type: 'module.instagram';
   url?: string;
-};
-
-export type ModuleImages = {
-  _type: 'module.images';
-  modules?: Array<
-    {
-      _key: string;
-    } & ModuleImage
-  >;
-  fullWidth?: boolean;
-  verticalAlign?: 'top' | 'center' | 'bottom';
 };
 
 export type ModuleImage = {
@@ -807,137 +583,21 @@ export type ModuleImage = {
     crop?: SanityImageCrop;
     _type: 'image';
   };
-  variant?:
-    | string
-    | 'caption'
-    | 'callToAction'
-    | 'productHotspots'
-    | 'productTags';
+  variant?: string | 'caption' | 'callToAction';
   caption?: string;
   callToAction?: ImageCallToAction;
-  productHotspots?: ProductHotspots;
-  productTags?: Array<
-    {
-      _key: string;
-    } & ProductWithVariant
-  >;
 };
 
-export type ModuleGrid = {
-  _type: 'module.grid';
-  items?: Array<
-    {
-      _key: string;
-    } & GridItem
-  >;
-};
-
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop';
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-};
-
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot';
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
-};
-
-export type ModuleCollection = {
-  _type: 'module.collection';
-  collection?: {
-    _ref: string;
-    _type: 'reference';
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: 'collection';
-  };
-  showBackground?: boolean;
-};
-
-export type AccordionGroup = {
-  _type: 'accordionGroup';
-  title?: string;
-  body?: AccordionBody;
-};
-
-export type AccordionBody = Array<{
-  children?: Array<{
-    marks?: Array<string>;
-    text?: string;
-    _type: 'span';
-    _key: string;
-  }>;
-  style?: 'normal';
-  listItem?: never;
-  markDefs?: Array<
-    | ({
-        _key: string;
-      } & AnnotationLinkEmail)
-    | ({
-        _key: string;
-      } & AnnotationLinkExternal)
-  >;
-  level?: number;
-  _type: 'block';
-  _key: string;
-}>;
-
-export type ModuleAccordion = {
-  _type: 'module.accordion';
-  groups?: Array<
-    {
-      _key: string;
-    } & AccordionGroup
-  >;
-};
-
-export type HeroPage = {
-  _type: 'hero.page';
-  title?: string;
-  content?: Array<
-    | ({
-        _key: string;
-      } & ProductWithVariant)
-    | ({
-        _key: string;
-      } & ImageWithProductHotspots)
-  >;
+export type ModuleCallout = {
+  _type: 'module.callout';
+  text?: string;
 };
 
 export type HeroCollection = {
   _type: 'hero.collection';
   title?: string;
   description?: string;
-  content?: Array<
-    | ({
-        _key: string;
-      } & ProductWithVariant)
-    | ({
-        _key: string;
-      } & ImageWithProductHotspots)
-  >;
-};
-
-export type NotFoundPage = {
-  _type: 'notFoundPage';
-  title?: string;
-  body?: string;
-  collection?: {
-    _ref: string;
-    _type: 'reference';
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: 'collection';
-  };
-};
-
-export type ImageWithProductHotspots = {
-  _type: 'imageWithProductHotspots';
-  image?: {
+  content?: Array<{
     asset?: {
       _ref: string;
       _type: 'reference';
@@ -948,69 +608,8 @@ export type ImageWithProductHotspots = {
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     _type: 'image';
-  };
-  showHotspots?: boolean;
-  productHotspots?: ProductHotspots;
-};
-
-export type FooterSettings = {
-  _type: 'footerSettings';
-  text?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: 'span';
-      _key: string;
-    }>;
-    style?: 'normal';
-    listItem?: never;
-    markDefs?: null;
-    level?: number;
-    _type: 'block';
     _key: string;
   }>;
-};
-
-export type CustomProductOptionSizeObject = {
-  _type: 'customProductOption.sizeObject';
-  title?: string;
-  width?: number;
-  height?: number;
-};
-
-export type CustomProductOptionSize = {
-  _type: 'customProductOption.size';
-  title?: string;
-  sizes?: Array<
-    {
-      _key: string;
-    } & CustomProductOptionSizeObject
-  >;
-};
-
-export type CustomProductOptionColorObject = {
-  _type: 'customProductOption.colorObject';
-  title?: string;
-  color?: Color;
-};
-
-export type CustomProductOptionColor = {
-  _type: 'customProductOption.color';
-  title?: string;
-  colors?: Array<
-    {
-      _key: string;
-    } & CustomProductOptionColorObject
-  >;
-};
-
-export type Color = {
-  _type: 'color';
-  hex?: string;
-  alpha?: number;
-  hsl?: HslaColor;
-  hsv?: HsvaColor;
-  rgb?: RgbaColor;
 };
 
 export type LinkExternal = {
@@ -1023,30 +622,6 @@ export type LinkExternal = {
 export type LinkInternal = {
   _type: 'linkInternal';
   title?: LocalizedString;
-  reference?:
-    | {
-        _ref: string;
-        _type: 'reference';
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: 'collection';
-      }
-    | {
-        _ref: string;
-        _type: 'reference';
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: 'page';
-      };
-};
-
-export type AnnotationProduct = {
-  _type: 'annotationProduct';
-  productWithVariant?: ProductWithVariant;
-  linkAction?: 'link' | 'addToCart' | 'buyNow';
-  quantity?: number;
-};
-
-export type AnnotationLinkInternal = {
-  _type: 'annotationLinkInternal';
   reference?:
     | {
         _ref: string;
@@ -1100,17 +675,46 @@ export type Collection = {
       } & ModuleInstagram)
   >;
   store?: ShopifyCollection;
+  handles?: {
+    uk?: string;
+    ru?: string;
+  };
+  titles?: {
+    uk?: string;
+    ru?: string;
+  };
+  descriptions?: {
+    uk?: string;
+    ru?: string;
+  };
+  seo?: {
+    title?: {
+      default?: string;
+      uk?: string;
+      ru?: string;
+    };
+    description?: {
+      default?: string;
+      uk?: string;
+      ru?: string;
+    };
+  };
 };
 
-export type AnnotationLinkExternal = {
-  _type: 'annotationLinkExternal';
-  url?: string;
-  newWindow?: boolean;
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop';
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
 };
 
-export type AnnotationLinkEmail = {
-  _type: 'annotationLinkEmail';
-  email?: string;
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot';
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
 };
 
 export type BrandGridBlock = {
@@ -1157,6 +761,15 @@ export type CollectionsWithPreviews = {
     _key: string;
     [internalGroqTypeReferenceTo]?: 'collection';
   }>;
+};
+
+export type Color = {
+  _type: 'color';
+  hex?: string;
+  alpha?: number;
+  hsl?: HslaColor;
+  hsv?: HsvaColor;
+  rgb?: RgbaColor;
 };
 
 export type RgbaColor = {
@@ -1586,58 +1199,24 @@ export type AllSanitySchemaTypes =
   | SliderBlock
   | LocalizedBlockContent
   | LocalizedText
-  | Body
-  | SeoShopify
   | ModuleCallToAction
-  | ModuleCallout
   | ImageCallToAction
-  | GridItem
   | CollectionGroup
-  | ShopifyProductVariant
-  | ShopifyProduct
   | CollectionRule
   | ShopifyCollection
   | ProxyString
-  | Option
-  | ProductHotspots
-  | ProductWithVariant
-  | ProductVariant
-  | Inventory
-  | Product
-  | PriceRange
-  | Spot
-  | PlaceholderString
-  | ModuleProducts
-  | ModuleProduct
   | ModuleInstagram
-  | ModuleImages
   | ModuleImage
-  | ModuleGrid
-  | SanityImageCrop
-  | SanityImageHotspot
-  | ModuleCollection
-  | AccordionGroup
-  | AccordionBody
-  | ModuleAccordion
-  | HeroPage
+  | ModuleCallout
   | HeroCollection
-  | NotFoundPage
-  | ImageWithProductHotspots
-  | FooterSettings
-  | CustomProductOptionSizeObject
-  | CustomProductOptionSize
-  | CustomProductOptionColorObject
-  | CustomProductOptionColor
-  | Color
   | LinkExternal
   | LinkInternal
-  | AnnotationProduct
-  | AnnotationLinkInternal
   | Collection
-  | AnnotationLinkExternal
-  | AnnotationLinkEmail
+  | SanityImageCrop
+  | SanityImageHotspot
   | BrandGridBlock
   | CollectionsWithPreviews
+  | Color
   | RgbaColor
   | HsvaColor
   | HslaColor
@@ -3070,6 +2649,13 @@ export type OG_IMAGE_QUERYResult =
       } | null;
     }
   | null;
+// Variable: SITE_LOGO_QUERY
+// Query: *[_type == 'siteSettings'][0]{    "logo": header.icon.asset->{      url    }  }
+export type SITE_LOGO_QUERYResult = {
+  logo: {
+    url: string | null;
+  } | null;
+} | null;
 // Variable: SITEMAP_QUERY
 // Query: *[_type in ["page", "post"] && defined(slug.current)] {    "href": select(      _type == "page" => "/" + slug.current,      _type == "post" => select(        defined(language) => "/" + language + "/posts/" + slug.current,        "/posts/" + slug.current      ),      slug.current    ),    _updatedAt,    language}
 export type SITEMAP_QUERYResult = Array<{
@@ -3204,6 +2790,7 @@ declare module '@sanity/client' {
     '*[_id == "siteSettings" ][0]{\n    homePageMan->{\n      ...,\n      content[]{\n        ...,\n        _id,\n        _type == "sliderBlock" => {\n          slides[]{\n             ...,\n            _key,\n            link[]{\n             ...,\n             reference->{\n               _id,\n               _type,\n               title,\n               "slug": select(\n                 _type == "product" => store.slug.current,\n                 _type == "collection" => store.slug.current,\n                 _type == "page" => slug.current\n               )\n             }\n           },\n            backgroundImage{\n              asset->{\n                _id,\n                url,\n                metadata{dimensions}\n              }\n            }\n          }\n        },\n        _type == "productCarousel" => {\n          products[]->{\n            _id,\n            store{\n              title,\n              isDeleted,\n              previewImageUrl,\n              priceRange{\n              maxVariantPrice,\n              minVariantPrice\n              },\n              productType\n            }\n          },\n          collection -> {\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "collectionsCarousel" => {\n          collections[]->{\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "splitImage" => {\n          ...,\n          link[]{\n            ...,\n            reference->{\n              _id,\n              _type,\n              title,\n              "slug": select(\n                _type == "product" => store.slug.current,\n                _type == "collection" => store.slug.current,\n                _type == "page" => slug.current\n              )\n            }\n          }\n        },\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        }\n      }\n    },\n    homePageWoman->{\n      ...,\n      content[]{\n        ...,\n        _id,\n        _type == "sliderBlock" => {\n          slides[]{\n             ...,\n            _key,\n            link[]{\n             ...,\n             reference->{\n               _id,\n               _type,\n               title,\n               "slug": select(\n                 _type == "product" => store.slug.current,\n                 _type == "collection" => store.slug.current,\n                 _type == "page" => slug.current\n               )\n             }\n           },\n            backgroundImage{\n              asset->{\n                _id,\n                url,\n                metadata{dimensions}\n              }\n            }\n          }\n        },\n        _type == "productCarousel" => {\n          products[]->{\n            _id,\n            store{\n              title,\n              isDeleted,\n              previewImageUrl,\n              priceRange{\n              maxVariantPrice,\n              minVariantPrice\n              },\n              productType\n            }\n          },\n          collection -> {\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "collectionsCarousel" => {\n          collections[]->{\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "splitImage" => {\n          ...,\n          link[]{\n            ...,\n            reference->{\n              _id,\n              _type,\n              title,\n              "slug": select(\n                _type == "product" => store.slug.current,\n                _type == "collection" => store.slug.current,\n                _type == "page" => slug.current\n              )\n            }\n          }\n        },\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        }\n      }\n    }\n  }': HOME_PAGE_QUERYResult;
     '\n  *[_type == "redirect" && isEnabled == true] {\n      source,\n      destination,\n      permanent\n  }\n': REDIRECTS_QUERYResult;
     '\n  *[_id == $id][0]{\n    title,\n    "image": mainImage.asset->{\n      url,\n      metadata {\n        palette\n      }\n    }\n  }\n': OG_IMAGE_QUERYResult;
+    '\n  *[_type == \'siteSettings\'][0]{\n    "logo": header.icon.asset->{\n      url\n    }\n  }\n': SITE_LOGO_QUERYResult;
     '\n*[_type in ["page", "post"] && defined(slug.current)] {\n    "href": select(\n      _type == "page" => "/" + slug.current,\n      _type == "post" => select(\n        defined(language) => "/" + language + "/posts/" + slug.current,\n        "/posts/" + slug.current\n      ),\n      slug.current\n    ),\n    _updatedAt,\n    language\n}\n': SITEMAP_QUERYResult;
     '\n  *[_type == \'siteSettings\'][0]{\n    infoBar {\n      ...,\n      telephone,\n      "text":text[$locale],\n      link {\n        ...,\n        "collectionData": reference-> {\n          title,\n          "handle": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id\n        }\n      }\n    },\n    header {\n      ...,\n      categoryLinks[]{\n        _key,\n        "title": title[$locale],\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id\n        }\n      },\n      mainCategory[]{\n        _key,\n        "title": title[$locale],\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id\n        }\n      }\n    }\n  }\n': HEADER_QUERYResult;
   }

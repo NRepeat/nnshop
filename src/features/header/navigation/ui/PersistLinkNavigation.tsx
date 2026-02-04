@@ -1,5 +1,5 @@
 import { NavigationMenuItem } from '@shared/ui/navigation-menu';
-import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';
+import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link';
 import { HeaderBarProps } from '@widgets/header/ui/Header';
 import { NavButton } from './NavButton';
 import { Suspense } from 'react';
@@ -11,20 +11,14 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   const { locale } = props;
   const t = await getTranslations({ locale, namespace: 'Header.nav' });
 
-  const resolveLinks = props.mainCategory?.map(async (category) => {
+  const links = props.mainCategory?.map((category) => {
     const { collectionData } = category;
 
     let slug = '';
 
     if (collectionData?.id) {
-      const url = await resolveShopifyLink(
-        'collection',
-        collectionData.id,
-        locale,
-      );
-      if (url && url.handle) {
-        slug = url.handle;
-      }
+      const resolved = resolveCollectionLink(collectionData, locale);
+      slug = resolved.handle || collectionData?.pageHandle || '';
     } else {
       slug = collectionData?.pageHandle || '';
     }
@@ -32,9 +26,7 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
     return {
       slug: slug,
     };
-  });
-
-  const links = resolveLinks ? await Promise.all(resolveLinks) : [];
+  }) || [];
   return (
     <>
       {links &&

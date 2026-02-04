@@ -2,7 +2,7 @@ import { LanguageSwitcherSession } from '@features/header/language-switcher/ui/L
 import { Button } from '@shared/ui/button';
 import { Send } from 'lucide-react';
 import { HEADER_QUERYResult } from '@/shared/sanity/types';
-import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';
+import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link';
 import { HeaderBarProps } from '@widgets/header/ui/Header';
 import { Suspense } from 'react';
 import Link from 'next/link';
@@ -16,17 +16,13 @@ type AnnouncementBarProps = Extract<
   categories: HeaderBarProps | null | undefined;
 };
 
-export const AnnouncementBar = async (props: AnnouncementBarProps) => {
+export const AnnouncementBar = (props: AnnouncementBarProps) => {
   const { telephone, link, locale, text } = props;
   const collectionData = link?.collectionData;
   let resolvedLink = '';
   if (collectionData?.id) {
-    const resolvedLinks = await resolveShopifyLink(
-      'collection',
-      collectionData?.id,
-      locale,
-    );
-    resolvedLink = resolvedLinks?.handle || '';
+    const resolved = resolveCollectionLink(collectionData, locale);
+    resolvedLink = resolved?.handle || '';
   } else {
     resolvedLink = link?.collectionData?.pageHandle || '';
   }

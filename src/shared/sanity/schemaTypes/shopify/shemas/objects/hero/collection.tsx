@@ -27,14 +27,10 @@ export default defineField({
       validation: (Rule) => Rule.max(1),
       of: [
         {
-          name: 'productWithVariant',
-          title: 'Product with variant',
-          type: 'productWithVariant',
-        },
-        {
-          name: 'imageWithProductHotspots',
+          name: 'image',
           title: 'Image',
-          type: 'imageWithProductHotspots',
+          type: 'image',
+          options: { hotspot: true },
         },
       ],
     }),

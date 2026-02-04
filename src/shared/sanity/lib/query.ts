@@ -426,7 +426,10 @@ export const HOME_PAGE =
            "collections": collections[]->{
              title,
              "handle": store.slug.current,
-             "id": store.id
+             "id": store.id,
+             handles,
+             titles,
+             "image": { "url": store.imageUrl }
            }
         },
         _type == "productCarousel" => {
@@ -435,7 +438,9 @@ export const HOME_PAGE =
              "collection": collection->{
                title,
                "handle": store.slug.current,
-               "id": store.id
+               "id": store.id,
+               handles,
+               titles
              }
           },
           _type == "splitImage" => {
@@ -444,7 +449,9 @@ export const HOME_PAGE =
                "collection": collection->{
                  title,
                  "handle": store.slug.current,
-                 "id": store.id
+                 "id": store.id,
+                 handles,
+                 titles
                }
             },
             _type == "features" => {
@@ -464,7 +471,10 @@ export const HOME_PAGE =
               "collections": collections[]->{
                 title,
                 "handle": store.slug.current,
-                "id": store.id
+                "id": store.id,
+                handles,
+                titles,
+                "image": { "url": store.imageUrl }
               }
             }
     }
@@ -724,7 +734,9 @@ export const HEADER_QUERY = defineQuery(`
           title,
           "handle": store.slug.current,
           "pageHandle": slug,
-          "id": store.id
+          "id": store.id,
+          handles,
+          titles
         }
       }
     },
@@ -737,7 +749,9 @@ export const HEADER_QUERY = defineQuery(`
           title,
           "slug": store.slug.current,
           "pageHandle": slug,
-          "id": store.id
+          "id": store.id,
+          handles,
+          titles
         }
       },
       mainCategory[]{
@@ -747,7 +761,9 @@ export const HEADER_QUERY = defineQuery(`
           title,
           "slug": store.slug.current,
           "pageHandle": slug,
-          "id": store.id
+          "id": store.id,
+          handles,
+          titles
         }
       }
     }

@@ -182,7 +182,6 @@ export const getCollectionSlugs = async () => {
   const handlesSet = new Set<string>();
   const locales: StorefrontLanguageCode[] = ['RU', 'UK'];
   try {
-    // Fetch collections from first locale only (handles are the same across locales)
     const collection = await storefrontClient.request<
       GetCollectionsHandlesQuery,
       GetCollectionsHandlesQueryVariables
@@ -199,7 +198,6 @@ export const getCollectionSlugs = async () => {
       handlesSet.add(edge.node.handle);
     });
 
-    // Return deduplicated array
     return Array.from(handlesSet);
   } catch (error) {
     console.error('Error fetching collection slugs:', error);

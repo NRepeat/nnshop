@@ -12,8 +12,8 @@ export const projectId = assertValue(
 );
 
 export const revalidateSecret = assertValue(
-  process.env.SANITY_REVALIDATE_SECRET || 'skTKt4RTZEKHysqXZZARGfBJ',
-  'Missing environment variable: SANITY_REVALIDATE_SECRET',
+  process.env.NEXT_PUBLIC_SANITY_REVALIDATE_SECRET,
+  'Missing environment variable: NEXT_PUBLIC_SANITY_REVALIDATE_SECRET',
 );
 
 export const useCdn = process.env.NODE_ENV === 'production';

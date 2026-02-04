@@ -2,11 +2,7 @@ export const DEFAULT_CURRENCY_CODE = 'UAH';
 
 export const LOCKED_DOCUMENT_TYPES = ['settings', 'home', 'media.tag'];
 
-export const SHOPIFY_DOCUMENT_TYPES = [
-  'product',
-  'productVariant',
-  'collection',
-];
+export const SHOPIFY_DOCUMENT_TYPES = ['collection'];
 
 export const PAGE_REFERENCES = [
   { type: 'collection' },

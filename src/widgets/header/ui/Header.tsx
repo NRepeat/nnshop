@@ -27,6 +27,7 @@ export const Header = async ({ locale }: { locale: string }) => {
     params: { locale },
     tags: ['siteSettings'],
   });
+  console.log("🚀 ~ Header ~ headerData:", headerData)
   setRequestLocale(locale);
   return (
     <>
