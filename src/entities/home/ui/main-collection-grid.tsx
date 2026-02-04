@@ -1,30 +1,28 @@
 import { Link } from '@shared/i18n/navigation';
 import Image from 'next/image';
 import { HOME_PAGEResult } from '@shared/sanity/types';
-import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';
+import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link';
 
 type MainCollectionGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'mainCollectionGrid' }
 > & { locale: string };
 
-export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
+export const MainCollectionGrid = (props: MainCollectionGridProps) => {
   const { collections, title, locale } = props;
 
   if (!collections) return null;
 
-  const resolvedCollections = await Promise.all(
-    collections.map(async (collection) => {
-      const id = collection.id;
-      if (!id) return null;
-      const pathData = await resolveShopifyLink('collection', id, locale);
-      return {
-        ...collection,
-        ...pathData,
-        href: pathData?.handle ? `/collection/${pathData.handle}` : '#',
-      };
-    }),
-  );
+  const resolvedCollections = collections.map((collection) => {
+    const id = collection.id;
+    if (!id) return null;
+    const pathData = resolveCollectionLink(collection, locale);
+    return {
+      ...collection,
+      ...pathData,
+      href: pathData?.handle ? `/collection/${pathData.handle}` : '#',
+    };
+  });
   return (
     <div className="main-collection-grid flex flex-col container">
       <div className="gap-12 flex flex-col py-8">
@@ -38,13 +36,13 @@ export const MainCollectionGrid = async (props: MainCollectionGridProps) => {
           {resolvedCollections.map((col) => (
             <div key={col?.handle}>
               {col && (
-                <Link href={col?.href} key={col?.id}>
+                <Link href={col?.href} key={col?.id} prefetch>
                   <div className="flex flex-col relative group w-[370px] md:w-full group">
                     {col?.image && col?.image.url && (
                       <Image
                         src={col?.image.url}
                         alt={col?.title ?? ''}
-                        className="object-cover w-full transition-transform duration-700 ease-in-out   h-[375px] md:h-[450px] lg:h-[530px] max-h-[530px] group-hover:scale-105"
+                        className="object-contain w-full transition-transform duration-700 ease-in-out   h-[375px] md:h-[450px] lg:h-[530px] max-h-[530px] group-hover:scale-105"
                         width={375}
                         height={598}
                       />

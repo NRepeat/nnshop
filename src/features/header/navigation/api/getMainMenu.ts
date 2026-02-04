@@ -1,6 +1,9 @@
+'use server'
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { GetMainMenuQuery } from '@shared/lib/shopify/types/storefront.generated';
+import { cacheLife } from 'next/cache';
+// import { cacheLife } from 'next/cache';
 const query = `#graphql
   query GetMainMenu {
      menu(handle: "shop-main-menu") {
@@ -34,6 +37,7 @@ export const getMainMenu = async ({
   locale: string;
 }) => {
   'use cache'
+  cacheLife("default")
   const responce = await storefrontClient.request<
     GetMainMenuQuery,
     {

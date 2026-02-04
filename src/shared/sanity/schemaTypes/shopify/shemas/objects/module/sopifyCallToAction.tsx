@@ -65,12 +65,6 @@ export const callToAction = defineField({
           title: 'Image',
           options: { hotspot: true },
         },
-        {
-          name: 'productWithVariant',
-          title: 'Product + Variant',
-          type: 'productWithVariant',
-          validation: (Rule) => Rule.required(),
-        },
       ],
     }),
   ],

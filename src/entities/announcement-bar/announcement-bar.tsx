@@ -2,10 +2,11 @@ import { LanguageSwitcherSession } from '@features/header/language-switcher/ui/L
 import { Button } from '@shared/ui/button';
 import { Send } from 'lucide-react';
 import { HEADER_QUERYResult } from '@/shared/sanity/types';
-import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';
+import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link';
 import { HeaderBarProps } from '@widgets/header/ui/Header';
 import { Suspense } from 'react';
 import Link from 'next/link';
+import { parseLocale } from '@features/header/language-switcher/ui/LanguageSwitcher';
 
 type AnnouncementBarProps = Extract<
   NonNullable<HEADER_QUERYResult>['infoBar'],
@@ -16,17 +17,13 @@ type AnnouncementBarProps = Extract<
   categories: HeaderBarProps | null | undefined;
 };
 
-export const AnnouncementBar = async (props: AnnouncementBarProps) => {
+export const AnnouncementBar = (props: AnnouncementBarProps) => {
   const { telephone, link, locale, text } = props;
   const collectionData = link?.collectionData;
   let resolvedLink = '';
   if (collectionData?.id) {
-    const resolvedLinks = await resolveShopifyLink(
-      'collection',
-      collectionData?.id,
-      locale,
-    );
-    resolvedLink = resolvedLinks?.handle || '';
+    const resolved = resolveCollectionLink(collectionData, locale);
+    resolvedLink = resolved?.handle || '';
   } else {
     resolvedLink = link?.collectionData?.pageHandle || '';
   }
@@ -56,8 +53,11 @@ export const AnnouncementBar = async (props: AnnouncementBarProps) => {
               fallback={
                 <Button
                   variant="default"
-                  className="h-full w-12 animate-pulse bg-gray-200 dark:bg-gray-700"
-                />
+                  className="h-full border-b-2 border-foreground bg-foreground hover:border-b-2 hover:border-b-[#e31e24] transition-colors"
+                >
+                  {parseLocale[locale as keyof typeof parseLocale]}
+                  <span className="sr-only">Switch language</span>
+                </Button>
               }
             >
               <LanguageSwitcherSession className="flex" locale={locale} />

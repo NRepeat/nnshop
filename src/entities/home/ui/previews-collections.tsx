@@ -25,7 +25,12 @@ export const PreviewsCollections = async (props: PreviewsCollectionsProps) => {
     .filter(Boolean);
   if (!collectionsDataReq) return null;
   const collectionsData = await Promise.all(collectionsDataReq);
-  const localizedTitle = getLocalizedString(title ? title[0] : '', locale);
+  // title can be a string (from coalesce), an array, or a localized object
+  const localizedTitle = typeof title === 'string'
+    ? title
+    : Array.isArray(title)
+      ? getLocalizedString(title[0], locale)
+      : getLocalizedString(title, locale);
   return (
     <SyncedCarousels
       collectionsData={collectionsData}

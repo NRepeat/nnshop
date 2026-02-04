@@ -25,6 +25,30 @@ type OrderCardProps = {
         currencyCode: string;
       };
     };
+    subtotalPriceSet?: {
+      shopMoney: {
+        amount: string;
+        currencyCode: string;
+      };
+    };
+    discountApplications?: {
+      edges: {
+        node: {
+          value:
+            | {
+                __typename: 'MoneyV2';
+                amount: string;
+                currencyCode: string;
+              }
+            | {
+                __typename: 'PricingPercentageValue';
+                percentage: number;
+              };
+          code?: string;
+          title?: string;
+        };
+      }[];
+    };
     lineItems?: {
       edges: {
         node: LineItem;
@@ -39,6 +63,15 @@ export const OrderCard = ({ order }: OrderCardProps) => {
   const lineItems = order.lineItems?.edges.slice(0, 4) || [];
   const hasMoreItems = (order.lineItems?.edges.length || 0) > 4;
 
+  // Check if discount was applied
+  const hasDiscount =
+    order.discountApplications?.edges &&
+    order.discountApplications.edges.length > 0;
+  const discountCode = hasDiscount
+    ? order.discountApplications!.edges[0].node.code ||
+      order.discountApplications!.edges[0].node.title
+    : null;
+
   return (
     <Link href={`/orders/${numericId}`}>
       <Card className="h-full transition-all hover:shadow-md hover:border-primary/50 cursor-pointer">
@@ -49,11 +82,32 @@ export const OrderCard = ({ order }: OrderCardProps) => {
           </div>
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>{new Date(order.createdAt).toLocaleDateString()}</span>
-            <span className="font-medium text-foreground">
-              {order.totalPriceSet.shopMoney.amount}{' '}
-              {order.totalPriceSet.shopMoney.currencyCode}
-            </span>
+            <div className="flex flex-col items-end gap-0.5">
+              {hasDiscount && order.subtotalPriceSet ? (
+                <>
+                  <span className="text-xs line-through text-muted-foreground">
+                    {Math.round(Number(order.subtotalPriceSet.shopMoney.amount))}{' '}
+                    {order.subtotalPriceSet.shopMoney.currencyCode}
+                  </span>
+                  <span className="font-medium text-green-600">
+                    {Math.round(Number(order.totalPriceSet.shopMoney.amount))}{' '}
+                    {order.totalPriceSet.shopMoney.currencyCode}
+                  </span>
+                </>
+              ) : (
+                <span className="font-medium text-foreground">
+                  {Math.round(Number(order.totalPriceSet.shopMoney.amount))}{' '}
+                  {order.totalPriceSet.shopMoney.currencyCode}
+                </span>
+              )}
+            </div>
           </div>
+          {hasDiscount && discountCode && (
+            <div className="mt-1 text-xs text-green-600 font-medium flex items-center gap-1">
+              <span>🏷️</span>
+              <span>{discountCode}</span>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           {lineItems.length > 0 && (

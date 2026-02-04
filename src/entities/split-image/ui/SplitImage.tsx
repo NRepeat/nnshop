@@ -4,11 +4,7 @@ import { urlFor } from '@/shared/sanity/lib/image';
 import { HOME_PAGEResult } from '@/shared/sanity/types';
 import { Button } from '@/shared/ui/button';
 import { stegaClean } from 'next-sanity';
-import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';
-import {
-  Image as SanityImage,
-  Maybe,
-} from '@shared/lib/shopify/types/storefront.types';
+import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link';
 
 type SplitGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
@@ -22,10 +18,9 @@ const TextContentComponent = ({
 }: {
   title: string | null;
   linkUrl: {
-    locale: string;
-    title?: string | undefined;
-    handle?: string | undefined;
-    image?: Maybe<Pick<SanityImage, 'url'>> | undefined;
+    title?: string | null;
+    handle?: string | null;
+    image?: { url?: string | null } | null;
   } | null;
   mobile?: boolean;
 }) => (
@@ -54,18 +49,18 @@ const TextContentComponent = ({
           mobile ? 'text-white  border-white' : 'text-black  border-black'
         } rounded-md`}
       >
-        <Link href={linkUrl.handle}>{linkUrl?.title}</Link>
+        <Link  prefetch href={linkUrl.handle}>{linkUrl?.title}</Link>
       </Button>
     )}
   </div>
 );
 
-export async function SplitImage(props: SplitGridProps) {
+export function SplitImage(props: SplitGridProps) {
   const { title, image, orientation, collection, locale } = props;
 
-  let linkUrl =
+  const linkUrl =
     collection && collection?.id
-      ? await resolveShopifyLink('collection', collection?.id, locale)
+      ? resolveCollectionLink(collection, locale)
       : null;
   const ImageComponent = image ? (
     <div className="group relative h-full w-full overflow-hidden bg-gray-100">
@@ -89,7 +84,7 @@ export async function SplitImage(props: SplitGridProps) {
         >
           <div className="relative aspect-[4/5] w-full overflow-hidden md:aspect-auto md:h-[600px] md:w-2/3">
             {linkUrl && linkUrl.handle ? (
-              <Link href={linkUrl.handle} className="block h-full w-full">
+              <Link href={linkUrl.handle} className="block h-full w-full" prefetch>
                 {ImageComponent}
               </Link>
             ) : (

@@ -1,4 +1,3 @@
-// app/[locale]/(frontend)/search/page.tsx
 import { setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
@@ -20,9 +19,7 @@ type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-// This is the static shell of the page
 export default async function SearchPage({ params, searchParams }: Props) {
-  // Await the params promise to get the locale
   const { locale } = await params;
   setRequestLocale(locale);
 
@@ -53,7 +50,7 @@ const SearchResultsComponent = async ({
   );
   if (!query) {
     return (
-      <>
+      <div className="h-fit min-h-screen">
         {pageTitle}
         <Empty>
           <EmptyHeader>
@@ -64,7 +61,7 @@ const SearchResultsComponent = async ({
             <EmptyDescription>{t('tryAgain')}</EmptyDescription>
           </EmptyHeader>
         </Empty>
-      </>
+      </div>
     );
   }
 
@@ -72,7 +69,6 @@ const SearchResultsComponent = async ({
   let errorContent: React.ReactNode | null = null;
 
   try {
-    // Using an absolute URL is important for fetch in Server Components
 
     const apiResponse = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/predictive-search`,
@@ -110,7 +106,7 @@ const SearchResultsComponent = async ({
 
   if (!results || !results.products || results.products.length === 0) {
     return (
-      <>
+      <div className="h-fit min-h-screen">
         {pageTitle}
         <Empty>
           <EmptyHeader>
@@ -121,7 +117,7 @@ const SearchResultsComponent = async ({
             <EmptyDescription>{t('tryAgain')}</EmptyDescription>
           </EmptyHeader>
         </Empty>
-      </>
+      </div>
     );
   }
 

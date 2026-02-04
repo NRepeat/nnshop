@@ -1,5 +1,4 @@
-'use clinet';
-import { Collection, PAGE_QUERYResult } from '@/shared/sanity/types';
+'use client';
 import { Card, CardContent } from '@/shared/ui/card';
 import {
   Carousel,
@@ -8,39 +7,50 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/shared/ui/carousel';
-import { Link } from '@shared/i18n/navigation';import Image from 'next/image';
+import { Link } from '@shared/i18n/navigation';
+import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 import { Locale } from '@/shared/i18n/routing';
 
-type ProductCarouselProps = Extract<
-  NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],
-  { _type: 'collectionsCarousel' }
->;
+type CollectionItem = {
+  _id?: string;
+  title?: string | null;
+  store?: {
+    imageUrl?: string | null;
+    isDeleted?: boolean | null;
+    slug?: { current?: string | null } | null;
+    title?: string | null;
+    gid?: string | null;
+  } | null;
+};
 
 const CollectionsCarousel = (props: {
-  collections:
-    | Omit<Collection, '_createdAt' | '_id' | '_rev' | '_type' | '_updatedAt'>[]
-    | undefined;
-  title: ProductCarouselProps['title'];
-  action_text: ProductCarouselProps['action_text'];
+  collections: CollectionItem[] | null | undefined;
+  title?: string | { [key: string]: string } | null;
+  action_text?: string | { [key: string]: string } | null;
 }) => {
   const { collections, title, action_text } = props;
   const locale = useLocale() as Locale;
   const t = useTranslations('productCarousel');
+
+  // Handle both string (from coalesce) and object (localized) title formats
+  const displayTitle = typeof title === 'string'
+    ? title
+    : title?.[locale] || '';
+  const displayActionText = typeof action_text === 'string'
+    ? action_text
+    : action_text?.[locale] || t('VIEW_ALL');
+
   return (
     <div className="w-full container flex flex-col gap-8 py-1">
       <div className="flex justify-between items-end">
         <h2 className="text-2xl md:text-5xl font-bold">
-          {title ? title[locale as keyof typeof title] : ''}
+          {displayTitle}
         </h2>
         <div className="hidden md:flex items-center">
           <div className="flex h-full justify-end">
             <Link href={`/collection/all`} className="text-md underline">
-              {action_text
-                ? action_text[locale as keyof typeof title]
-                  ? action_text[locale as keyof typeof title]
-                  : t('VIEW_ALL')
-                : t('VIEW_ALL')}
+              {displayActionText || t('VIEW_ALL')}
             </Link>
           </div>
         </div>

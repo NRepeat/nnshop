@@ -15,6 +15,7 @@ model User {
   image               String?
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @default(now()) @updatedAt
+  preferredGender     String?              @default("woman")
   sessions            Session[]
   accounts            Account[]
   orders              Order[]
@@ -74,8 +75,9 @@ model PaymentInformation {
 }
 
 model Cart {
-  id        String @id @default(cuid())
-  cartToken String @unique
+  id            String  @id @default(cuid())
+  cartToken     String  @unique
+  discountCodes Json?
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String

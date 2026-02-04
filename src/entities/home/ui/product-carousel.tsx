@@ -24,7 +24,7 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
   );
   const items = products?.map((product, index) => {
     return (
-      <Link href={'/product/' + product.handle} className="h-full" key={index}>
+      <Link href={'/product/' + product.handle} className="h-full" key={index} prefetch>
         <div className="flex flex-col gap-3 group relative overflow-hidden h-full">
           <div className="flex justify-start w-full">
             <div className="relative aspect-[1/1] w-full md:max-w-[90%] lg:max-w-95%] ">
@@ -33,7 +33,7 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
                 alt={product.title}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 30vw, 20vw"
-                className="object-cover w-full transition-transform duration-300 group-hover:scale-105"
+                className="object-contain w-full transition-transform duration-300 group-hover:scale-105"
               />
             </div>
           </div>

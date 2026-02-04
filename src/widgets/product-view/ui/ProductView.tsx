@@ -20,11 +20,8 @@ export async function ProductView({
   children: React.ReactNode;
 }) {
   const t = await getTranslations({ locale, namespace: 'ProductPage' });
-  // const session = await auth.api.getSession({ headers: await headers() });
-  // const isFavorite = await isProductFavorite(product.id, session);
-  // console.log('🚀 ~ ProductSessionView ~ isFavorite:', isFavorite);
   return (
-    <div className="container  space-y-16 my-10">
+    <div className="container  space-y-16 my-10 h-fit min-h-screen">
       <ProductViewProvider
         favCommponent={children}
         product={product}

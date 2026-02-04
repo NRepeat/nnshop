@@ -15,15 +15,12 @@ const nextConfig: NextConfig = {
   },
   cacheComponents: true,
   allowedDevOrigins: [
-    'dev.nninc.uk',
     'development.nninc.uk',
-    'close-dane-shining.ngrok-free.app',
-    'https://close-dane-shining.ngrok-free.app',
     'http://localhost:3000',
     'http://localhost:3333',
-    'r665avfiaqptwlw27urowyzo5q.srv.us',
   ],
   images: {
+    unoptimized: true,
     remotePatterns: [
       { protocol: 'https', hostname: 'cdn.shopify.com' },
       {

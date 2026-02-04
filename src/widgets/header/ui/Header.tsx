@@ -14,27 +14,36 @@ import { HEADER_QUERY } from '@shared/sanity/lib/query';
 import { HEADER_QUERYResult } from '@shared/sanity/types';
 import { setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export type HeaderBarProps = Extract<
   NonNullable<HEADER_QUERYResult>['header'],
   { _type: 'header' }
 > & { locale: string };
 
-export const Header = async ({
-  locale,
-}: {
-  locale: string;
-}) => {
+export const Header = async ({ locale }: { locale: string }) => {
   const headerData = await sanityFetch({
     query: HEADER_QUERY,
     revalidate: 10,
     params: { locale },
     tags: ['siteSettings'],
   });
+  console.log('🚀 ~ Header ~ headerData:', headerData);
   setRequestLocale(locale);
   return (
     <>
-      <Suspense fallback={<></>}>
+      <Suspense
+        fallback={
+          <>
+            <div className="w-full bg-foreground py-0.5 h-[50px]">
+              <div className="w-full  justify-center bg-foreground text-background grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 container ">
+                <div className="px-2 md:px-5 items-center  gap-2 w-full justify-start  flex h-full "></div>
+              </div>
+            </div>
+          </>
+        }
+      >
         {headerData?.infoBar && headerData?.header && (
           <AnnouncementBar
             locale={locale}
@@ -53,14 +62,32 @@ export const Header = async ({
                 <HeaderContent locale={locale} {...headerData?.header} />
               )}
             </Suspense>
-
             <div className="flex items-center justify-center">
-              {headerData?.header?.icon?.asset && (
-                <LogoLink
-                  iconUrl={urlFor(headerData?.header.icon?.asset).url()}
-                  alt="MioMio"
-                />
-              )}
+              <Suspense
+                fallback={
+                  <Link href={'/'} className="flex items-center justify-center">
+                    <div className="flex justify-center w-full items-center">
+                      {headerData?.header?.icon?.asset && (
+                        <Image
+                          src={urlFor(headerData?.header.icon?.asset).url()}
+                          width={304}
+                          height={24}
+                          alt={'logo'}
+                          className="w-full h-full max-w-[180px]"
+                        />
+                      )}
+                    </div>
+                  </Link>
+                }
+              >
+                {headerData?.header?.icon?.asset && (
+                  <LogoLink
+                    locale={locale}
+                    iconUrl={urlFor(headerData?.header.icon?.asset).url()}
+                    alt="MioMio"
+                  />
+                )}
+              </Suspense>
             </div>
 
             <HeaderOptions locale={locale} />
@@ -74,7 +101,7 @@ export const Header = async ({
 
         <div className="hidden md:block w-full">
           <Suspense fallback={<CurrentNavigationSessionSkilet />}>
-            <CurrentNavigationSession />
+            <CurrentNavigationSession locale={locale} />
           </Suspense>
         </div>
       </header>

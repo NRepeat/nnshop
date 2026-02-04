@@ -21,6 +21,12 @@ export const heroSlide = {
       name: 'link',
       type: 'linkExternal',
     },
+    {
+      name: 'collection',
+      title: 'Collection',
+      type: 'reference',
+      to: [{ type: 'collection' }],
+    },
   ],
 };
 

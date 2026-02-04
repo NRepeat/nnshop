@@ -1,20 +1,17 @@
 'use client';
 import Image from 'next/image';
-import { Link } from '@shared/i18n/navigation';import { urlFor } from '@/shared/sanity/lib/image';
-import { Button } from '@/shared/ui/button';
-import { ArrowRightIcon } from 'lucide-react';
+import { Link } from '@shared/i18n/navigation';
+import { urlFor } from '@/shared/sanity/lib/image';
 import { HOME_PAGEResult } from '@shared/sanity/types';
 import { Carousel, CarouselContent, CarouselItem } from '@shared/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
+import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link';
 
 type BrandGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'brandGridBlock' }
 > & { locale: string; buttonText?: string };
-export function BrandGrid({
-  barnds,
-  buttonText = 'Усі бренди',
-}: BrandGridProps) {
+export function BrandGrid({ barnds, locale }: BrandGridProps) {
   if (!barnds || barnds.length === 0) return null;
 
   return (
@@ -30,7 +27,11 @@ export function BrandGrid({
           {barnds.map((brand) => (
             <Link
               key={brand._key}
-              href={`/brand/${brand.handle?.current}`}
+              href={
+                resolveCollectionLink(brand.collectionData, locale).handle ||
+                brand.collectionData?.handle ||
+                ''
+              }
               className="cursor-pointer basis-1/3"
             >
               <div className="group relative flex h-16 w-full max-w-[160px] items-center justify-center transition-all duration-300 hover:opacity-60">
@@ -81,7 +82,7 @@ export function BrandGrid({
             )}
           </CarouselContent>
         </Carousel>
-        <div className="mt-6 flex justify-center">
+        {/* <div className="mt-6 flex justify-center">
           <Button
             asChild
             variant="outline"
@@ -92,7 +93,7 @@ export function BrandGrid({
               <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
-        </div>
+        </div> */}
       </div>
     </section>
   );

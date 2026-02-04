@@ -3,17 +3,23 @@ import {
   NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
-  NavigationMenuTrigger,
 } from '@shared/ui/navigation-menu';
 import { getMainMenu } from '../api/getMainMenu';
-import { getLocale } from 'next-intl/server';
+import {getTranslations } from 'next-intl/server';
 import { cookies } from 'next/headers';
-import { Link } from '@shared/i18n/navigation';
 import { NavigationClient } from './NavigationClient';
 import { Skeleton } from '@shared/ui/skeleton';
+import { NavigationItemClient } from './NavigationItemClient';
+import { NavigationTriggerClient } from './NavigationTriggerClient';
+import { Button } from '@shared/ui/button';
+import Link from 'next/link';
+import { cn } from '@shared/lib/utils';
 
-export const CurrentNavigationSession = async () => {
-  const locale = await getLocale();
+export const CurrentNavigationSession = async ({
+  locale,
+}: {
+  locale: string;
+}) => {
   const cookie = await cookies();
   const gender = cookie.get('gender')?.value || 'woman';
   return <Navigation gender={gender} locale={locale} />;
@@ -30,12 +36,12 @@ export const CurrentNavigationSessionSkilet = () => {
         key={item.title}
         className={` ${index === meinMenu.length - 1 ? 'block' : 'block'}`}
       >
-        <Skeleton className="w-[100px] h-[28px]" />
+        <Skeleton className="w-[100px] h-[30px]" />
       </NavigationMenuItem>
     );
   });
   return (
-    <NavigationClient className="bg-transparent flex container justify-start">
+    <NavigationClient className="bg-transparent flex container justify-start py-1">
       {menu}
     </NavigationClient>
   );
@@ -73,68 +79,55 @@ const Navigation = async ({
   locale: string;
 }) => {
   const allItems = await getMainMenu({ locale });
-  console.log('🚀 ~ Navigation ~ allItems:', JSON.stringify(allItems, null, 2));
   const meinMenu = allItems.filter((item) => matchesGender(item, gender));
+  const t = await getTranslations({ locale, namespace: 'BrandsPage' });
 
-  // Fallback: if no match found, show first item
   const items = meinMenu.length > 0 ? meinMenu : allItems.slice(0, 1);
 
   const menu = items.map((item, index) => {
     if (item.items.length > 0) {
       return (
         <React.Fragment key={index}>
-          {item.items.map((subItem) => (
-            <NavigationMenuItem
-              key={subItem.url + subItem.title + gender}
-              className=" border-transparent transition-colors group"
-            >
-              <NavigationMenuTrigger
-                variant={'ghost'}
-                className="cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full has-[>svg]:px-5 px-5 py-2 hover:bg-accent/50 hover:border-none border-none"
+          {item.items.map((subItem) => {
+            const subItemUrls = [
+              subItem.url,
+              ...subItem.items.map((child) => child.url),
+            ];
+
+            return (
+              <NavigationMenuItem
+                key={subItem.url + subItem.title + gender}
+                className=" group"
               >
-                {subItem.title}
-              </NavigationMenuTrigger>
-              <NavigationMenuContent className="flex justify-between !p-0">
-                {/* <div className="w-full row-span-3 ml-2">
-                          <Link
-                            href={subItem.url}
-                            className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:border-b hover:border-current transition-colors font-medium"
+                <NavigationTriggerClient urls={subItemUrls}>
+                  {subItem.title}
+                </NavigationTriggerClient>
+                <NavigationMenuContent className="flex justify-between px-4">
+                  <div className="flex w-full">
+                    <div className="container w-full flex justify-between min-h-[300px]">
+                      <ul className="grid h-fit gap-2 md:w-lg lg:w-3xl md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr] ">
+                        {subItem.items.map((child) => (
+                          <li
+                            key={child.title + gender}
+                            className="w-full row-span-3 ml-2"
                           >
-                            {subItem.title}
-                                       {console.log(subItem,"subItem")}
-                            asd
-                          </Link>
-                      </div> */}
-                <div className="flex w-full">
-                  <div className="container w-full flex justify-between">
-                    <ul className="grid h-fit gap-2 md:w-lg lg:w-3xl md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr]">
-                      {/* <li className="w-full row-span-3 ml-2">
-                          <Link
-                            href={subItem.url}
-                            className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:border-b hover:border-current transition-colors font-medium"
-                          >
-                            {subItem.title}
-                          </Link>
-                      </li> */}
-                      {subItem.items.map((child) => (
-                        <li
-                          key={child.title + gender}
-                          className="w-full row-span-3 ml-2"
-                        >
-                          <Link
-                            href={child.url}
-                            className="text-base font-300 font-sans w-full inline-block px-4 py-2 hover:underline  transition-colors"
-                          >
-                            {child.title}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
+                            <NavigationItemClient href={child.url}>
+                              <Button
+                                variant={'ghost'}
+                                className="text-base font-300 font-sans w-full inline-block  hover:underline transition-colors border-none"
+                              >
+                                {child.title}
+                              </Button>
+                            </NavigationItemClient>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                </div>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-          ))}
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            );
+          })}
         </React.Fragment>
       );
     } else {
@@ -144,17 +137,30 @@ const Navigation = async ({
           className={` ${index === items.length - 1 ? 'hidden lg:block' : 'block'}`}
         >
           <NavigationMenuLink asChild>
-            <Link
-              href={item.url}
-              className="inline-block px-4 py-2 text-base font-300 font-sans hover:border-b border-b border-transparent hover:border-current transition-colors"
-            >
+            <NavigationItemClient href={item.url}>
               {item.title}
-            </Link>
+            </NavigationItemClient>
           </NavigationMenuLink>
         </NavigationMenuItem>
       );
     }
   });
-  return <NavigationClient className=" pt-2 w-full">{menu}</NavigationClient>;
+  return (
+    <NavigationClient className=" pt-2 w-full">
+      {menu}
+      <NavigationMenuItem asChild>
+        <Link href="/brands">
+          <Button
+            variant={'ghost'}
+            className={cn(
+              'cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full has-[>svg]:px-5 px-5 py-2 hover:bg-accent/50 border-b border-transparent',
+            )}
+          >
+            {t('title')}
+          </Button>
+        </Link>
+      </NavigationMenuItem>
+    </NavigationClient>
+  );
 };
 export default Navigation;

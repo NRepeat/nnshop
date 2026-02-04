@@ -107,7 +107,125 @@ export default defineType({
       description: 'Collection data from Shopify (read-only)',
       group: 'shopifySync',
     }),
-    // SEO
+    // Localized handles
+    defineField({
+      name: 'handles',
+      title: 'Localized Handles',
+      type: 'object',
+      group: 'shopifySync',
+      readOnly: true,
+      fields: [
+        defineField({
+          name: 'uk',
+          title: 'Ukrainian',
+          type: 'string',
+        }),
+        defineField({
+          name: 'ru',
+          title: 'Russian',
+          type: 'string',
+        }),
+      ],
+    }),
+    // Localized titles
+    defineField({
+      name: 'titles',
+      title: 'Localized Titles',
+      type: 'object',
+      group: 'shopifySync',
+      readOnly: true,
+      fields: [
+        defineField({
+          name: 'uk',
+          title: 'Ukrainian',
+          type: 'string',
+        }),
+        defineField({
+          name: 'ru',
+          title: 'Russian',
+          type: 'string',
+        }),
+      ],
+    }),
+    // Localized descriptions
+    defineField({
+      name: 'descriptions',
+      title: 'Localized Descriptions',
+      type: 'object',
+      group: 'shopifySync',
+      readOnly: true,
+      fields: [
+        defineField({
+          name: 'uk',
+          title: 'Ukrainian',
+          type: 'text',
+          rows: 5,
+        }),
+        defineField({
+          name: 'ru',
+          title: 'Russian',
+          type: 'text',
+          rows: 5,
+        }),
+      ],
+    }),
+    // SEO with translations
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'object',
+      group: 'shopifySync',
+      readOnly: true,
+      fields: [
+        defineField({
+          name: 'title',
+          title: 'Meta Title',
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'default',
+              title: 'Default',
+              type: 'string',
+            }),
+            defineField({
+              name: 'uk',
+              title: 'Ukrainian',
+              type: 'string',
+            }),
+            defineField({
+              name: 'ru',
+              title: 'Russian',
+              type: 'string',
+            }),
+          ],
+        }),
+        defineField({
+          name: 'description',
+          title: 'Meta Description',
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'default',
+              title: 'Default',
+              type: 'text',
+              rows: 3,
+            }),
+            defineField({
+              name: 'uk',
+              title: 'Ukrainian',
+              type: 'text',
+              rows: 3,
+            }),
+            defineField({
+              name: 'ru',
+              title: 'Russian',
+              type: 'text',
+              rows: 3,
+            }),
+          ],
+        }),
+      ],
+    }),
   ],
   orderings: [
     {

@@ -75,10 +75,8 @@ export function AddToCartButton({
     setIsPending(true);
 
     try {
-      // Check if session exists
       const { data: session } = await authClient.getSession();
 
-      // Create anonymous session if needed
       if (!session?.user) {
         const result = await authClient.signIn.anonymous();
 
@@ -88,11 +86,8 @@ export function AddToCartButton({
           return;
         }
 
-        // Wait a bit for cookies to be set
-        await new Promise((resolve) => setTimeout(resolve, 100));
       }
 
-      // Call the server action directly
       const variantId = selectedVariant
         ? selectedVariant.id
         : product?.variants.edges[0].node.id;
@@ -101,7 +96,7 @@ export function AddToCartButton({
       formData.append('variantId', variantId!);
 
       const result = await addToCart(null, formData);
-
+      
       if (result.success) {
         toast.success(t('addedToCart'));
       } else {

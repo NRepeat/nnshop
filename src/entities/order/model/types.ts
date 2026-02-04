@@ -58,4 +58,22 @@ export interface Order {
       currencyCode: string;
     };
   };
+  discountApplications?: {
+    edges: {
+      node: {
+        value:
+          | {
+              __typename: 'MoneyV2';
+              amount: string;
+              currencyCode: string;
+            }
+          | {
+              __typename: 'PricingPercentageValue';
+              percentage: number;
+            };
+        code?: string;
+        title?: string;
+      };
+    }[];
+  };
 }

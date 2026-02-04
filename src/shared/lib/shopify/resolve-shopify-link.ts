@@ -1,25 +1,66 @@
-'use server'
-import { storefrontClient } from './client';
-import { StorefrontLanguageCode } from '../clients/types';
-import { ResolveLinkQuery } from './types/storefront.generated';
-const queries = {
-  collection: {
-    query: `#graphql
-      query ResolveLink($id: ID!) @inContext(language: RU) { collection(id: $id) { handle ,title,image{url} } }`,
-    variables: { id: 'gid://shopify/Collection/' },
-  },
+type LocalizedHandles = {
+  uk?: string | null;
+  ru?: string | null;
+} | null;
+
+type LocalizedTitles = {
+  uk?: string | null;
+  ru?: string | null;
+} | null;
+
+export type CollectionData = {
+  id?: number | null;
+  handle?: string | null;
+  slug?: string | null;
+  title?: string | null;
+  handles?: LocalizedHandles;
+  titles?: LocalizedTitles;
+  pageHandle?: string | null;
+  image?: {
+    url?: string | null;
+  } | null;
 };
 
-export const resolveShopifyLink = async (
-  sybPath: keyof typeof queries,
-  id: number,
-  locale: string,
-) => {
-  const res = (await storefrontClient.request({
-    query: queries[sybPath].query,
-    variables: { id: queries[sybPath].variables.id + id },
-    language: locale.toUpperCase() as StorefrontLanguageCode,
-  })) as ResolveLinkQuery;
+/**
+ * Resolves the localized handle for a collection based on locale.
+ * Uses Sanity data directly instead of making API calls to Shopify.
+ */
+const cleanString = (str: string | null | undefined): string | null => {
+  if (!str) return null;
+  // This regex removes Zero Width Space, Zero Width Non-Joiner, Zero Width Joiner, and BOM
+  return str.replace(/[\u200B-\u200D\uFEFF]/g, '');
+};
 
-  return { ...res.collection, locale };
+export const resolveCollectionLink = (
+  collectionData: CollectionData | null | undefined,
+  locale: string,
+): {
+  handle: string | null;
+  title: string | null;
+  image?: { url?: string | null } | null;
+} => {
+  if (!collectionData) {
+    return { handle: null, title: null };
+  }
+
+  // Get localized handle - fallback to default handle/slug
+  const localeKey = locale as 'uk' | 'ru';
+  const handle =
+    collectionData.handles?.[localeKey] ||
+    collectionData.handle ||
+    collectionData.slug ||
+    null;
+
+  // Get localized title - fallback to default title
+  const title =
+    collectionData.titles?.[localeKey] || collectionData.title || null;
+
+  const cleanedHandle = cleanString(handle);
+  const cleanedTitle = cleanString(title);
+
+  return {
+    handle: cleanedHandle ? '/collection/' + cleanedHandle : null,
+    title: cleanedTitle,
+    image: collectionData.image,
+  };
 };

@@ -146,14 +146,15 @@ export const getCart = async ({
       query: CART_QUERY,
       variables: { id: cartId || sessionCart.cartToken },
       language: locale.toUpperCase() as StorefrontLanguageCode,
+      cache: 'no-store',
     });
+    console.log("🚀 ~ getCart ~ response:", response.cart?.lines.edges)
     if (!response.cart) {
       return null;
     }
-    console.log("🚀 ~ getCart ~ response:", response)
     return response;
   } catch (error) {
-    console.log("🚀 ~ getCart ~ error:", error);
+    console.log('🚀 ~ getCart ~ error:', error);
     // Return null instead of throwing to prevent page crashes
     // This handles cases where Shopify cart was converted to order
     // or network timeouts during navigation

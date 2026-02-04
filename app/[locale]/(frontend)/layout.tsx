@@ -13,7 +13,8 @@ import { draftMode } from 'next/headers';
 import { Suspense } from 'react';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { generateOrganizationJsonLd } from '@shared/lib/seo/jsonld';
-
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 const jostSans = Jost({
   variable: '--font-jost-sans',
   subsets: ['latin'],
@@ -43,6 +44,7 @@ export const metadata: Metadata = {
     siteName: 'Mio Mio',
     locale: 'uk_UA',
   },
+  robots: 'noindex',
 };
 
 export const viewport: Viewport = {
@@ -91,16 +93,18 @@ export default async function RootLayout(props: RootProps) {
             <Footer locale={locale} />
           </Suspense>
         </Providers>
-        {(await draftMode()).isEnabled && (
-          <>
-            <DisableDraftMode />
-            <VisualEditing />
-            <Suspense>
-              <SanityLive />
-            </Suspense>
-          </>
-        )}
       </body>
+      {(await draftMode()).isEnabled && (
+        <>
+          <DisableDraftMode />
+          <VisualEditing />
+          <Suspense>
+            <SanityLive />
+          </Suspense>
+        </>
+      )}
+      <Analytics />
+      <SpeedInsights />
     </html>
   );
 }

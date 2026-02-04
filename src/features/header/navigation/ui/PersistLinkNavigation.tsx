@@ -1,5 +1,5 @@
 import { NavigationMenuItem } from '@shared/ui/navigation-menu';
-import { resolveShopifyLink } from '@shared/lib/shopify/resolve-shopify-link';
+import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link';
 import { HeaderBarProps } from '@widgets/header/ui/Header';
 import { NavButton } from './NavButton';
 import { Suspense } from 'react';
@@ -11,30 +11,23 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   const { locale } = props;
   const t = await getTranslations({ locale, namespace: 'Header.nav' });
 
-  const resolveLinks = props.mainCategory?.map(async (category) => {
-    const { collectionData } = category;
+  const links =
+    props.mainCategory?.map((category) => {
+      const { collectionData } = category;
 
-    let slug = '';
+      let slug = '';
 
-    if (collectionData?.id) {
-      const url = await resolveShopifyLink(
-        'collection',
-        collectionData.id,
-        locale,
-      );
-      if (url && url.handle) {
-        slug = url.handle;
+      if (collectionData?.id) {
+        const resolved = resolveCollectionLink(collectionData, locale);
+        slug = resolved.handle || collectionData?.pageHandle || '';
+      } else {
+        slug = collectionData?.pageHandle || '';
       }
-    } else {
-      slug = collectionData?.pageHandle || '';
-    }
 
-    return {
-      slug: slug,
-    };
-  });
-
-  const links = resolveLinks ? await Promise.all(resolveLinks) : [];
+      return {
+        slug: slug,
+      };
+    }) || [];
   return (
     <>
       {links &&
@@ -42,7 +35,7 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
           const label = t.has(link.slug) ? t(link.slug) : link.slug;
           return (
             <NavigationMenuItem key={link.slug} className={`flex p-0`}>
-              <Link href={`/${link.slug}`}>
+              <Link href={`/${locale}/${link.slug}`}>
                 <Suspense
                   fallback={
                     <NavButton

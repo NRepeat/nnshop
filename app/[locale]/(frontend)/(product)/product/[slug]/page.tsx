@@ -1,9 +1,8 @@
-import { getAllProductHandles } from '@entities/product/api/getAllProductsHandlers';
+
 import { auth } from '@features/auth/lib/auth';
 import { FavSession } from '@features/header/ui/FavSession';
 import { isProductFavorite } from '@features/product/api/isProductFavorite';
 import { ProductSessionView } from '@features/product/ui/ProductSessionView';
-import { locales } from '@shared/i18n/routing';
 import { setRequestLocale } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { Suspense } from 'react';
@@ -18,11 +17,10 @@ import { generateProductJsonLd } from '@shared/lib/seo/jsonld';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { connection } from 'next/server';
 
+
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
 };
-
-
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params;
@@ -44,32 +42,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export async function generateStaticParams() {
-  try {
-    const params = [];
-    for (const locale of locales) {
-      const allProductsHandlers = await getAllProductHandles(locale);
+// export async function generateStaticParams() {
+//   try {
+//     const params = [];
+//     for (const locale of locales) {
+//       const allProductsHandlers = await getAllProductHandles(locale);
 
-      const localeParams = allProductsHandlers.slice(0, 100).map((handle) => ({
-        slug: handle,
-        locale: locale,
-      }));
+//       const localeParams = allProductsHandlers.slice(0, 100).map((handle) => ({
+//         slug: handle,
+//         locale: locale,
+//       }));
 
-      params.push(...localeParams);
-    }
+//       params.push(...localeParams);
+//     }
 
-    return params;
-  } catch (error) {
-    console.error('Failed to generate static params for products:', error);
-    // Fallback to empty array - pages will be generated on-demand
-    return [];
-  }
-}
+//     return params;
+//   } catch (error) {
+//     console.error('Failed to generate static params for products:', error);
+//     // Fallback to empty array - pages will be generated on-demand
+//     return [];
+//   }
+// }
 
 export default async function ProductPage({ params }: Props) {
   const { slug, locale } = await params;
   const handle = decodeURIComponent(slug);
-
+  // return <ProductViewSkeleton />;
   const { originProduct: product } = await getProduct({
     handle,
     locale,
@@ -109,7 +107,6 @@ const ProductSession = async ({
   product: Product;
 }) => {
   await connection();
-
 
   const session = await auth.api.getSession({ headers: await headers() });
 

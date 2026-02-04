@@ -141,6 +141,18 @@ export async function applyDiscountCode(code: string): Promise<{
       (d) => d.code.toUpperCase() === code.toUpperCase()
     );
 
+    // Save discount codes to local database
+    const allDiscountCodes = response.cartDiscountCodesUpdate.cart?.discountCodes || [];
+    await prisma.cart.update({
+      where: { id: sessionCart.id },
+      data: {
+        discountCodes: allDiscountCodes.map((d) => ({
+          code: d.code,
+          applicable: d.applicable,
+        })),
+      },
+    });
+
     revalidateTag(CART_TAGS.CART, { expire: 0 });
 
     return {
@@ -204,6 +216,18 @@ export async function removeDiscountCode(code: string): Promise<{
         error: response.cartDiscountCodesUpdate.userErrors[0].message,
       };
     }
+
+    // Update discount codes in local database
+    const allDiscountCodes = response.cartDiscountCodesUpdate.cart?.discountCodes || [];
+    await prisma.cart.update({
+      where: { id: sessionCart.id },
+      data: {
+        discountCodes: allDiscountCodes.map((d) => ({
+          code: d.code,
+          applicable: d.applicable,
+        })),
+      },
+    });
 
     revalidateTag(CART_TAGS.CART, { expire: 0 });
     return { success: true };

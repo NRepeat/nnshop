@@ -280,7 +280,7 @@ export const PAGE_QUERY =
             ...,
             _type == "link" => {
               ...,
-              "href": @.href,
+              "href": string(@.href)
             }
           }
         },
@@ -290,7 +290,7 @@ export const PAGE_QUERY =
             ...,
             _type == "link" => {
               ...,
-              "href": @.href,
+              "href": string(@.href)
             }
           }
         }
@@ -422,29 +422,36 @@ export const HOME_PAGE =
       ...,
       _type == "mainCollectionGrid" => {
            ...,
-           "title":title[$language],
+           "title": coalesce(title[$language], title.uk, title.ru),
            "collections": collections[]->{
              title,
              "handle": store.slug.current,
-             "id": store.id
+             "id": store.id,
+             handles,
+             titles,
+             "image": { "url": store.imageUrl }
            }
         },
         _type == "productCarousel" => {
              ...,
-             "title":title[$language],
+             "title": coalesce(title[$language], title.uk, title.ru),
              "collection": collection->{
                title,
                "handle": store.slug.current,
-               "id": store.id
+               "id": store.id,
+               handles,
+               titles
              }
           },
           _type == "splitImage" => {
                ...,
-               "title":title[$language],
+               "title": coalesce(title[$language], title.uk, title.ru),
                "collection": collection->{
                  title,
                  "handle": store.slug.current,
-                 "id": store.id
+                 "id": store.id,
+                 handles,
+                 titles
                }
             },
             _type == "features" => {
@@ -453,18 +460,83 @@ export const HOME_PAGE =
               "features": features[] {
                 _key,
                 _type,
-                "title":title[$language],
-                "text":text[$language],
+                "title": coalesce(title[$language], title.uk, title.ru),
+                "text": coalesce(text[$language], text.uk, text.ru),
               }
             },
             _type == "collectionsWithPreviews" => {
               _key,
               _type,
-              "title":title[$language],
+              "title": coalesce(title[$language], title.uk, title.ru),
               "collections": collections[]->{
                 title,
                 "handle": store.slug.current,
-                "id": store.id
+                "id": store.id,
+                handles,
+                titles,
+                "image": { "url": store.imageUrl }
+              }
+            },
+        _type == "brandGridBlock" => {
+  ...,
+  "title": coalesce(title[$language], title.uk, title.ru),
+  "barnds": barnds[]{
+      ...,
+    "collectionData": collection-> {
+       title,
+                "handle": store.slug.current,
+                "id": store.id,
+                handles,
+                titles,
+                "image": { "url": store.imageUrl }
+        }
+  }
+},
+            _type == "collectionsCarousel" => {
+              ...,
+              "title": coalesce(title[$language], title.uk, title.ru),
+              "action_text": coalesce(action_text[$language], action_text.uk, action_text.ru),
+               "collections": collections[]->{
+             title,
+             "handle": store.slug.current,
+             "id": store.id,
+             handles,
+             titles,
+             "image": { "url": store.imageUrl }
+           }
+            },
+            _type == "sliderBlock" => {
+              ...,
+              slides[]{
+                ...,
+                "title": coalesce(title[$language], title.uk, title.ru),
+                backgroundImage{
+                  asset->{
+                    _id,
+                    url,
+                    metadata{dimensions}
+                  }
+                }
+              }
+            },
+            _type == "faqs" => {
+              ...,
+              faqs[]->{
+                _id,
+                title,
+                body,
+                "text": pt::text(body)
+              }
+            },
+            _type == "similarProducts" => {
+              ...,
+              collection->{
+                 title,
+          "slug": store.slug.current,
+          "pageHandle": slug,
+          "id": store.id,
+          handles,
+          titles
               }
             }
     }
@@ -689,6 +761,14 @@ export const OG_IMAGE_QUERY = defineQuery(`
     }
   }
 `);
+
+export const SITE_LOGO_QUERY = defineQuery(`
+  *[_type == 'siteSettings'][0]{
+    "logo": header.icon.asset->{
+      url
+    }
+  }
+`);
 export const SITEMAP_QUERY = defineQuery(`
 *[_type in ["page", "post"] && defined(slug.current)] {
     "href": select(
@@ -709,14 +789,16 @@ export const HEADER_QUERY = defineQuery(`
     infoBar {
       ...,
       telephone,
-      "text":text[$locale],
+      "text": coalesce(text[$locale], text.uk, text.ru, ""),
       link {
         ...,
         "collectionData": reference-> {
           title,
           "handle": store.slug.current,
           "pageHandle": slug,
-          "id": store.id
+          "id": store.id,
+          handles,
+          titles
         }
       }
     },
@@ -724,22 +806,26 @@ export const HEADER_QUERY = defineQuery(`
       ...,
       categoryLinks[]{
         _key,
-        "title": title[$locale],
+        "title": coalesce(title[$locale], title.uk, title.ru, ""),
         "collectionData": reference-> {
           title,
           "slug": store.slug.current,
           "pageHandle": slug,
-          "id": store.id
+          "id": store.id,
+          handles,
+          titles
         }
       },
       mainCategory[]{
         _key,
-        "title": title[$locale],
+        "title": coalesce(title[$locale], title.uk, title.ru, ""),
         "collectionData": reference-> {
           title,
           "slug": store.slug.current,
           "pageHandle": slug,
-          "id": store.id
+          "id": store.id,
+          handles,
+          titles
         }
       }
     }
