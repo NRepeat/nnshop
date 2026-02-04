@@ -5,13 +5,15 @@ import {
   NavigationMenuLink,
 } from '@shared/ui/navigation-menu';
 import { getMainMenu } from '../api/getMainMenu';
-import { getLocale } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import { NavigationClient } from './NavigationClient';
 import { Skeleton } from '@shared/ui/skeleton';
 import { NavigationItemClient } from './NavigationItemClient';
 import { NavigationTriggerClient } from './NavigationTriggerClient';
 import { Button } from '@shared/ui/button';
+import Link from 'next/link';
+import { cn } from '@shared/lib/utils';
 
 export const CurrentNavigationSession = async () => {
   const locale = await getLocale();
@@ -75,6 +77,7 @@ const Navigation = async ({
 }) => {
   const allItems = await getMainMenu({ locale });
   const meinMenu = allItems.filter((item) => matchesGender(item, gender));
+  const t = await getTranslations({ locale, namespace: 'BrandsPage' });
 
   const items = meinMenu.length > 0 ? meinMenu : allItems.slice(0, 1);
 
@@ -105,7 +108,7 @@ const Navigation = async ({
                             key={child.title + gender}
                             className="w-full row-span-3 ml-2"
                           >
-                            <NavigationItemClient href={child.url} >
+                            <NavigationItemClient href={child.url}>
                               <Button
                                 variant={'ghost'}
                                 className="text-base font-300 font-sans w-full inline-block  hover:underline transition-colors border-none"
@@ -139,6 +142,22 @@ const Navigation = async ({
       );
     }
   });
-  return <NavigationClient className=" pt-2 w-full">{menu}</NavigationClient>;
+  return (
+    <NavigationClient className=" pt-2 w-full">
+      {menu}
+      <NavigationMenuItem asChild>
+        <Link href="/brands">
+          <Button
+            variant={'ghost'}
+            className={cn(
+              'cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full has-[>svg]:px-5 px-5 py-2 hover:bg-accent/50 border-b border-transparent',
+            )}
+          >
+            {t('title')}
+          </Button>
+        </Link>
+      </NavigationMenuItem>
+    </NavigationClient>
+  );
 };
 export default Navigation;
