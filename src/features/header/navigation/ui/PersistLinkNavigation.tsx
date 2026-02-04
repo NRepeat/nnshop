@@ -9,6 +9,7 @@ import Link from 'next/link';
 
 export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   const { locale } = props;
+  console.log("🚀 ~ PersistLinkNavigation ~ props:", props)
   const t = await getTranslations({ locale, namespace: 'Header.nav' });
 
   const links = props.mainCategory?.map((category) => {
@@ -27,6 +28,7 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
       slug: slug,
     };
   }) || [];
+  console.log("🚀 ~ PersistLinkNavigation ~ links:", links)
   return (
     <>
       {links &&

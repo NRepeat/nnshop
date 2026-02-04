@@ -80,12 +80,12 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
             return <Hero key={block._key} {...block} />;
 
           case 'faqs':
-            return <FAQs key={block._key} {...block} />;
+            return <FAQs key={block._key} {...(block as any)} />;
 
           case 'similarProducts':
             return block.collection ? (
               <Suspense key={block._key} fallback={<div className="h-96 animate-pulse bg-gray-100" />}>
-                <SimilarProducts collection={block.collection} />
+                <SimilarProducts collection={block.collection as any} />
               </Suspense>
             ) : null;
 
@@ -93,14 +93,14 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
             return (
               <CollectionsCarousel
                 key={block._key}
-                collections={block.collections}
-                title={block.title}
-                action_text={block.action_text}
+                collections={block.collections as any}
+                title={block.title as any}
+                action_text={block.action_text as any}
               />
             );
 
           case 'sliderBlock':
-            return <HeroSwiper key={block._key} {...block} />;
+            return <HeroSwiper key={block._key} {...(block as any)} />;
 
           case 'elegantEase':
             return <ElegantEase key={block._key} />;

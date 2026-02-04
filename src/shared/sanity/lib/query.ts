@@ -422,7 +422,7 @@ export const HOME_PAGE =
       ...,
       _type == "mainCollectionGrid" => {
            ...,
-           "title":title[$language],
+           "title": coalesce(title[$language], title.uk, title.ru),
            "collections": collections[]->{
              title,
              "handle": store.slug.current,
@@ -434,7 +434,7 @@ export const HOME_PAGE =
         },
         _type == "productCarousel" => {
              ...,
-             "title":title[$language],
+             "title": coalesce(title[$language], title.uk, title.ru),
              "collection": collection->{
                title,
                "handle": store.slug.current,
@@ -445,7 +445,7 @@ export const HOME_PAGE =
           },
           _type == "splitImage" => {
                ...,
-               "title":title[$language],
+               "title": coalesce(title[$language], title.uk, title.ru),
                "collection": collection->{
                  title,
                  "handle": store.slug.current,
@@ -460,14 +460,14 @@ export const HOME_PAGE =
               "features": features[] {
                 _key,
                 _type,
-                "title":title[$language],
-                "text":text[$language],
+                "title": coalesce(title[$language], title.uk, title.ru),
+                "text": coalesce(text[$language], text.uk, text.ru),
               }
             },
             _type == "collectionsWithPreviews" => {
               _key,
               _type,
-              "title":title[$language],
+              "title": coalesce(title[$language], title.uk, title.ru),
               "collections": collections[]->{
                 title,
                 "handle": store.slug.current,
@@ -475,6 +475,66 @@ export const HOME_PAGE =
                 handles,
                 titles,
                 "image": { "url": store.imageUrl }
+              }
+            },
+            _type == "brandGridBlock" => {
+              ...,
+              "title": coalesce(title[$language], title.uk, title.ru)
+            },
+            _type == "collectionsCarousel" => {
+              ...,
+              "title": coalesce(title[$language], title.uk, title.ru),
+              "action_text": coalesce(action_text[$language], action_text.uk, action_text.ru),
+              collections[]->{
+                _id,
+                title,
+                store{
+                  imageUrl,
+                  isDeleted,
+                  slug{
+                    current
+                  },
+                  title,
+                  gid
+                }
+              }
+            },
+            _type == "sliderBlock" => {
+              ...,
+              slides[]{
+                ...,
+                "title": coalesce(title[$language], title.uk, title.ru),
+                backgroundImage{
+                  asset->{
+                    _id,
+                    url,
+                    metadata{dimensions}
+                  }
+                }
+              }
+            },
+            _type == "faqs" => {
+              ...,
+              faqs[]->{
+                _id,
+                title,
+                body,
+                "text": pt::text(body)
+              }
+            },
+            _type == "similarProducts" => {
+              ...,
+              collection->{
+                _id,
+                title,
+                store{
+                  imageUrl,
+                  isDeleted,
+                  slug{
+                    current
+                  },
+                  title
+                }
               }
             }
     }
@@ -727,7 +787,7 @@ export const HEADER_QUERY = defineQuery(`
     infoBar {
       ...,
       telephone,
-      "text":text[$locale],
+      "text": coalesce(text[$locale], text.uk, text.ru, ""),
       link {
         ...,
         "collectionData": reference-> {
@@ -744,7 +804,7 @@ export const HEADER_QUERY = defineQuery(`
       ...,
       categoryLinks[]{
         _key,
-        "title": title[$locale],
+        "title": coalesce(title[$locale], title.uk, title.ru, ""),
         "collectionData": reference-> {
           title,
           "slug": store.slug.current,
@@ -756,7 +816,7 @@ export const HEADER_QUERY = defineQuery(`
       },
       mainCategory[]{
         _key,
-        "title": title[$locale],
+        "title": coalesce(title[$locale], title.uk, title.ru, ""),
         "collectionData": reference-> {
           title,
           "slug": store.slug.current,
