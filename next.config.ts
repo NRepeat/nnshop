@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
     'development.nninc.uk',
     'http://localhost:3000',
     'http://localhost:3333',
+    "miomio.com.ua",
+    "www.miomio.com.ua",
+    'https://www.miomio.com.ua'
   ],
   images: {
     unoptimized: true,
