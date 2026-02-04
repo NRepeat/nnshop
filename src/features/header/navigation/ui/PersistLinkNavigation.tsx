@@ -9,26 +9,25 @@ import Link from 'next/link';
 
 export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   const { locale } = props;
-  console.log("🚀 ~ PersistLinkNavigation ~ props:", props)
   const t = await getTranslations({ locale, namespace: 'Header.nav' });
 
-  const links = props.mainCategory?.map((category) => {
-    const { collectionData } = category;
+  const links =
+    props.mainCategory?.map((category) => {
+      const { collectionData } = category;
 
-    let slug = '';
+      let slug = '';
 
-    if (collectionData?.id) {
-      const resolved = resolveCollectionLink(collectionData, locale);
-      slug = resolved.handle || collectionData?.pageHandle || '';
-    } else {
-      slug = collectionData?.pageHandle || '';
-    }
+      if (collectionData?.id) {
+        const resolved = resolveCollectionLink(collectionData, locale);
+        slug = resolved.handle || collectionData?.pageHandle || '';
+      } else {
+        slug = collectionData?.pageHandle || '';
+      }
 
-    return {
-      slug: slug,
-    };
-  }) || [];
-  console.log("🚀 ~ PersistLinkNavigation ~ links:", links)
+      return {
+        slug: slug,
+      };
+    }) || [];
   return (
     <>
       {links &&
@@ -36,7 +35,7 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
           const label = t.has(link.slug) ? t(link.slug) : link.slug;
           return (
             <NavigationMenuItem key={link.slug} className={`flex p-0`}>
-              <Link href={`/${link.slug}`}>
+              <Link href={`/${locale}/${link.slug}`}>
                 <Suspense
                   fallback={
                     <NavButton

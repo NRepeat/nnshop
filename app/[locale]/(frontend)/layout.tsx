@@ -93,16 +93,16 @@ export default async function RootLayout(props: RootProps) {
             <Footer locale={locale} />
           </Suspense>
         </Providers>
-        {(await draftMode()).isEnabled && (
-          <>
-            <DisableDraftMode />
-            <VisualEditing />
-            <Suspense>
-              <SanityLive />
-            </Suspense>
-          </>
-        )}
       </body>
+      {(await draftMode()).isEnabled && (
+        <>
+          <DisableDraftMode />
+          <VisualEditing />
+          <Suspense>
+            <SanityLive />
+          </Suspense>
+        </>
+      )}
       <Analytics />
       <SpeedInsights />
     </html>

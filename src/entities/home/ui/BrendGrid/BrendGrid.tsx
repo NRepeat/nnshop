@@ -12,7 +12,6 @@ type BrandGridProps = Extract<
   { _type: 'brandGridBlock' }
 > & { locale: string; buttonText?: string };
 export function BrandGrid({ barnds, locale }: BrandGridProps) {
-  console.log('🚀 ~ BrandGrid ~ barnds:', barnds);
   if (!barnds || barnds.length === 0) return null;
 
   return (

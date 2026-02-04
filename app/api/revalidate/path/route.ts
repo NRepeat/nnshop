@@ -56,6 +56,11 @@ export async function POST(req: NextRequest) {
       revalidatedTags.push(`${body.type}:${body.slug}`);
     }
 
+    console.log(
+      '🚀 ~ POST ~    revalidatedPaths',
+      revalidatedTags,
+      revalidatedTags,
+    );
     return NextResponse.json({
       status: 200,
       revalidated: true,
