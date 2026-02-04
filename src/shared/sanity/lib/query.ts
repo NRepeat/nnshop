@@ -280,7 +280,7 @@ export const PAGE_QUERY =
             ...,
             _type == "link" => {
               ...,
-              "href": @.href,
+              "href": string(@.href)
             }
           }
         },
@@ -290,7 +290,7 @@ export const PAGE_QUERY =
             ...,
             _type == "link" => {
               ...,
-              "href": @.href,
+              "href": string(@.href)
             }
           }
         }
@@ -477,27 +477,33 @@ export const HOME_PAGE =
                 "image": { "url": store.imageUrl }
               }
             },
-            _type == "brandGridBlock" => {
-              ...,
-              "title": coalesce(title[$language], title.uk, title.ru)
-            },
+        _type == "brandGridBlock" => {
+  ...,
+  "title": coalesce(title[$language], title.uk, title.ru),
+  "barnds": barnds[]{
+      ...,
+    "collectionData": collection-> {
+       title,
+                "handle": store.slug.current,
+                "id": store.id,
+                handles,
+                titles,
+                "image": { "url": store.imageUrl }
+        }
+  }
+},
             _type == "collectionsCarousel" => {
               ...,
               "title": coalesce(title[$language], title.uk, title.ru),
               "action_text": coalesce(action_text[$language], action_text.uk, action_text.ru),
-              collections[]->{
-                _id,
-                title,
-                store{
-                  imageUrl,
-                  isDeleted,
-                  slug{
-                    current
-                  },
-                  title,
-                  gid
-                }
-              }
+               "collections": collections[]->{
+             title,
+             "handle": store.slug.current,
+             "id": store.id,
+             handles,
+             titles,
+             "image": { "url": store.imageUrl }
+           }
             },
             _type == "sliderBlock" => {
               ...,
@@ -525,16 +531,12 @@ export const HOME_PAGE =
             _type == "similarProducts" => {
               ...,
               collection->{
-                _id,
-                title,
-                store{
-                  imageUrl,
-                  isDeleted,
-                  slug{
-                    current
-                  },
-                  title
-                }
+                 title,
+          "slug": store.slug.current,
+          "pageHandle": slug,
+          "id": store.id,
+          handles,
+          titles
               }
             }
     }

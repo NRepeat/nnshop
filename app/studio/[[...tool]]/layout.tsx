@@ -13,9 +13,9 @@ export default async function RootLayout({
 }) {
   return (
     <html lang={'en'} suppressHydrationWarning>
-      <body>
-        <Suspense>{children}</Suspense>
-      </body>
+      <Suspense>
+        <body>{children}</body>
+      </Suspense>
     </html>
   );
 }

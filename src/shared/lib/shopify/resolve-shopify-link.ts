@@ -25,10 +25,20 @@ export type CollectionData = {
  * Resolves the localized handle for a collection based on locale.
  * Uses Sanity data directly instead of making API calls to Shopify.
  */
+const cleanString = (str: string | null | undefined): string | null => {
+  if (!str) return null;
+  // This regex removes Zero Width Space, Zero Width Non-Joiner, Zero Width Joiner, and BOM
+  return str.replace(/[\u200B-\u200D\uFEFF]/g, '');
+};
+
 export const resolveCollectionLink = (
   collectionData: CollectionData | null | undefined,
   locale: string,
-): { handle: string | null; title: string | null; image?: { url?: string | null } | null } => {
+): {
+  handle: string | null;
+  title: string | null;
+  image?: { url?: string | null } | null;
+} => {
   if (!collectionData) {
     return { handle: null, title: null };
   }
@@ -43,13 +53,14 @@ export const resolveCollectionLink = (
 
   // Get localized title - fallback to default title
   const title =
-    collectionData.titles?.[localeKey] ||
-    collectionData.title ||
-    null;
+    collectionData.titles?.[localeKey] || collectionData.title || null;
+
+  const cleanedHandle = cleanString(handle);
+  const cleanedTitle = cleanString(title);
 
   return {
-    handle,
-    title,
+    handle: cleanedHandle ? '/collection/' + cleanedHandle : null,
+    title: cleanedTitle,
     image: collectionData.image,
   };
 };

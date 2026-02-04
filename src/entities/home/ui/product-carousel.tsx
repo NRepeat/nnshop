@@ -33,7 +33,7 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
                 alt={product.title}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 30vw, 20vw"
-                className="object-cover w-full transition-transform duration-300 group-hover:scale-105"
+                className="object-contain w-full transition-transform duration-300 group-hover:scale-105"
               />
             </div>
           </div>

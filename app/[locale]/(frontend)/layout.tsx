@@ -44,6 +44,7 @@ export const metadata: Metadata = {
     siteName: 'Mio Mio',
     locale: 'uk_UA',
   },
+  robots: 'noindex',
 };
 
 export const viewport: Viewport = {

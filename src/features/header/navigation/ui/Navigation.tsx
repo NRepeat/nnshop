@@ -5,7 +5,7 @@ import {
   NavigationMenuLink,
 } from '@shared/ui/navigation-menu';
 import { getMainMenu } from '../api/getMainMenu';
-import { getLocale, getTranslations } from 'next-intl/server';
+import {getTranslations } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import { NavigationClient } from './NavigationClient';
 import { Skeleton } from '@shared/ui/skeleton';
@@ -15,8 +15,11 @@ import { Button } from '@shared/ui/button';
 import Link from 'next/link';
 import { cn } from '@shared/lib/utils';
 
-export const CurrentNavigationSession = async () => {
-  const locale = await getLocale();
+export const CurrentNavigationSession = async ({
+  locale,
+}: {
+  locale: string;
+}) => {
   const cookie = await cookies();
   const gender = cookie.get('gender')?.value || 'woman';
   return <Navigation gender={gender} locale={locale} />;

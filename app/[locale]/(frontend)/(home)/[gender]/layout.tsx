@@ -1,4 +1,3 @@
-import { genders, locales } from '@shared/i18n/routing';
 import { setRequestLocale } from 'next-intl/server';
 
 // export async function generateStaticParams() {

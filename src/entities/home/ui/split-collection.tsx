@@ -26,7 +26,7 @@ export const SplitCollection = () => {
                 <Image
                   src={collection.image}
                   alt={collection.label}
-                  className="object-cover w-full max-h-[598px]"
+                  className="object-contain w-full max-h-[598px]"
                   width={375}
                   height={598}
                 />

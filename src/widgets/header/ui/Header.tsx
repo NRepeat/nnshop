@@ -14,6 +14,8 @@ import { HEADER_QUERY } from '@shared/sanity/lib/query';
 import { HEADER_QUERYResult } from '@shared/sanity/types';
 import { setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export type HeaderBarProps = Extract<
   NonNullable<HEADER_QUERYResult>['header'],
@@ -27,7 +29,7 @@ export const Header = async ({ locale }: { locale: string }) => {
     params: { locale },
     tags: ['siteSettings'],
   });
-  console.log("🚀 ~ Header ~ headerData:", headerData)
+  console.log('🚀 ~ Header ~ headerData:', headerData);
   setRequestLocale(locale);
   return (
     <>
@@ -60,14 +62,32 @@ export const Header = async ({ locale }: { locale: string }) => {
                 <HeaderContent locale={locale} {...headerData?.header} />
               )}
             </Suspense>
-
             <div className="flex items-center justify-center">
-              {headerData?.header?.icon?.asset && (
-                <LogoLink
-                  iconUrl={urlFor(headerData?.header.icon?.asset).url()}
-                  alt="MioMio"
-                />
-              )}
+              <Suspense
+                fallback={
+                  <Link href={'/'} className="flex items-center justify-center">
+                    <div className="flex justify-center w-full items-center">
+                      {headerData?.header?.icon?.asset && (
+                        <Image
+                          src={urlFor(headerData?.header.icon?.asset).url()}
+                          width={304}
+                          height={24}
+                          alt={'logo'}
+                          className="w-full h-full max-w-[180px]"
+                        />
+                      )}
+                    </div>
+                  </Link>
+                }
+              >
+                {headerData?.header?.icon?.asset && (
+                  <LogoLink
+                    locale={locale}
+                    iconUrl={urlFor(headerData?.header.icon?.asset).url()}
+                    alt="MioMio"
+                  />
+                )}
+              </Suspense>
             </div>
 
             <HeaderOptions locale={locale} />
@@ -79,9 +99,9 @@ export const Header = async ({ locale }: { locale: string }) => {
           )}
         </div>
 
-        <div className="hidden md:block w-full"> 
+        <div className="hidden md:block w-full">
           <Suspense fallback={<CurrentNavigationSessionSkilet />}>
-            <CurrentNavigationSession />
+            <CurrentNavigationSession locale={locale} />
           </Suspense>
         </div>
       </header>

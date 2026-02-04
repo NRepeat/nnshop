@@ -24,6 +24,12 @@ export const brandGridBlock = defineType({
               type: 'slug',
               name: 'handle',
             }),
+            {
+              name: 'collection',
+              title: 'Collection',
+              type: 'reference',
+              to: [{ type: 'collection' }],
+            },
           ],
         }),
       ],

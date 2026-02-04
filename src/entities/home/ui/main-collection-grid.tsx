@@ -42,7 +42,7 @@ export const MainCollectionGrid = (props: MainCollectionGridProps) => {
                       <Image
                         src={col?.image.url}
                         alt={col?.title ?? ''}
-                        className="object-cover w-full transition-transform duration-700 ease-in-out   h-[375px] md:h-[450px] lg:h-[530px] max-h-[530px] group-hover:scale-105"
+                        className="object-contain w-full transition-transform duration-700 ease-in-out   h-[375px] md:h-[450px] lg:h-[530px] max-h-[530px] group-hover:scale-105"
                         width={375}
                         height={598}
                       />
