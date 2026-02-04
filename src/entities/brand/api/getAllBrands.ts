@@ -1,5 +1,9 @@
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
+import {
+  GetAllProductsQuery,
+  GetAllProductsQueryVariables,
+} from '@shared/lib/shopify/types/storefront.generated';
 
 const GET_ALL_BRANDS_QUERY = `#graphql
   query GetAllProducts($first: Int!, $after: String) {
@@ -18,13 +22,6 @@ const GET_ALL_BRANDS_QUERY = `#graphql
   }
 `;
 
-type ProductEdge = {
-  node: {
-    vendor: string;
-    id: string;
-  };
-};
-
 export async function getAllBrands(locale: string = 'uk') {
   try {
     const brands = new Set<string>();
@@ -33,22 +30,17 @@ export async function getAllBrands(locale: string = 'uk') {
 
     // Fetch all products to get unique vendors
     while (hasNextPage && brands.size < 500) {
-      const response = await storefrontClient.request<{
-        products: {
-          edges: ProductEdge[];
-          pageInfo: {
-            hasNextPage: boolean;
-            endCursor: string;
-          };
-        };
-      }>({
+      const response = (await storefrontClient.request<
+        GetAllProductsQuery,
+        GetAllProductsQueryVariables
+      >({
         query: GET_ALL_BRANDS_QUERY,
         variables: {
           first: 250,
           after: cursor,
         },
         language: locale.toUpperCase() as StorefrontLanguageCode,
-      });
+      })) as GetAllProductsQuery;
 
       response.products.edges.forEach((edge) => {
         if (edge.node.vendor) {
@@ -57,7 +49,7 @@ export async function getAllBrands(locale: string = 'uk') {
       });
 
       hasNextPage = response.products.pageInfo.hasNextPage;
-      cursor = response.products.pageInfo.endCursor;
+      cursor = response.products.pageInfo.endCursor as string;
     }
 
     // Convert Set to sorted array

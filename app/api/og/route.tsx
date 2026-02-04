@@ -59,12 +59,12 @@ export async function GET(request: Request) {
     >
       {/* Logo in top right corner */}
       {logoUrl && (
-        <div tw="absolute top-8 right-8 flex items-center justify-center bg-white rounded-full p-4 shadow-lg">
+        <div tw="absolute top-8 right-8 flex items-center justify-center   p-4 shadow-lg">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={logoUrl}
             alt="Logo"
-            tw="w-20 h-20"
+            tw="w-40 h-20"
             style={{
               objectFit: 'contain',
             }}
