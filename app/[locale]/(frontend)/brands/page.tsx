@@ -81,7 +81,11 @@ export default async function BrandsPage({ params }: Props) {
       ) : (
         <div className="space-y-10">
           {letters.map((letter) => (
-            <div key={letter} id={`letter-${letter}`}>
+            <div
+              key={letter}
+              id={`letter-${letter}`}
+              className="scroll-mt-[125px] scroll-smooth"
+            >
               <h2 className="text-2xl font-bold mb-4">{letter}</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-2">
                 {groupedBrands[letter].map((brand) => (

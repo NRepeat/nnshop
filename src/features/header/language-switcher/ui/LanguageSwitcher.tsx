@@ -12,7 +12,7 @@ import { usePathname, useRouter } from '@shared/i18n/navigation';
 import { useEffect, useState } from 'react';
 import { cn } from '@shared/lib/utils';
 import { usePathStore } from '@/shared/store/use-path-store';
-const parseLocale = {
+export const parseLocale = {
   ru: 'РУС',
   uk: 'УКР',
 };
@@ -20,12 +20,12 @@ export function LanguageSwitcher({
   className,
   align,
   locale,
-  side
+  side,
 }: {
   locale?: string;
   className?: string;
   align?: 'center' | 'start' | 'end' | undefined;
-  side?: "top" | "right" | "bottom" | "left" | undefined
+  side?: 'top' | 'right' | 'bottom' | 'left' | undefined;
 }) {
   const t = useTranslations('Header.locale');
   const pathname = usePathname();
@@ -58,7 +58,11 @@ export function LanguageSwitcher({
           <span className="sr-only">Switch language</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="rounded-md gap-2" align={align} side={side}>
+      <DropdownMenuContent
+        className="rounded-md gap-2"
+        align={align}
+        side={side}
+      >
         <DropdownMenuItem
           className={cn('rounded-md', {
             'bg-gray-200': selectedLocale === 'uk',

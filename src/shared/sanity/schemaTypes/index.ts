@@ -1,6 +1,8 @@
 import { elegantEaseType } from './blocks/elegantEaseType';
 import { productCommentsType } from './blocks/productCommentsType';
 import { type SchemaTypeDefinition } from 'sanity';
+import { contentBlocksType } from './contentBlocksType';
+import { blockCatalogType } from './blockCatalogType';
 
 import { blockContentType } from './blockContentType';
 import { categoryType } from './categoryType';
@@ -41,6 +43,10 @@ import { collectionsWithPreviews } from './blocks/collection-with-images';
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
+    // Reusable block types
+    contentBlocksType,
+    blockCatalogType,
+
     collectionsWithPreviews,
     brandGridBlock,
     infoBar,

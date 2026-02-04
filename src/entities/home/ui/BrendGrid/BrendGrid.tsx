@@ -1,8 +1,6 @@
 'use client';
 import Image from 'next/image';
 import { Link } from '@shared/i18n/navigation';import { urlFor } from '@/shared/sanity/lib/image';
-import { Button } from '@/shared/ui/button';
-import { ArrowRightIcon } from 'lucide-react';
 import { HOME_PAGEResult } from '@shared/sanity/types';
 import { Carousel, CarouselContent, CarouselItem } from '@shared/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';

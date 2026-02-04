@@ -6,6 +6,7 @@ import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link'
 import { HeaderBarProps } from '@widgets/header/ui/Header';
 import { Suspense } from 'react';
 import Link from 'next/link';
+import { parseLocale } from '@features/header/language-switcher/ui/LanguageSwitcher';
 
 type AnnouncementBarProps = Extract<
   NonNullable<HEADER_QUERYResult>['infoBar'],
@@ -52,8 +53,11 @@ export const AnnouncementBar = (props: AnnouncementBarProps) => {
               fallback={
                 <Button
                   variant="default"
-                  className="h-full w-12 animate-pulse bg-gray-200 dark:bg-gray-700"
-                />
+                  className="h-full border-b-2 border-foreground bg-foreground hover:border-b-2 hover:border-b-[#e31e24] transition-colors"
+                >
+                  {parseLocale[locale as keyof typeof parseLocale]}
+                  <span className="sr-only">Switch language</span>
+                </Button>
               }
             >
               <LanguageSwitcherSession className="flex" locale={locale} />

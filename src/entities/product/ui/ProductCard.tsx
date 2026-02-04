@@ -54,7 +54,7 @@ export const ProductCard = ({
         className,
       )}
     >
-      <CardContent className="flex flex-col p-0 md:p-1 border-0 shadow-none h-full justify-between bg-transparent">
+      <CardContent className="flex flex-col p-0 md:p-1 border-0 shadow-none h-full gap-4 bg-transparent">
         <Link href={`/product/${product.handle}`} prefetch>
           {withCarousel ? (
             <Carousel className="relative" opts={{ align: 'center' }}>
@@ -149,7 +149,7 @@ export const ProductCard = ({
           )}
         </Link>
         {
-          <div className="w-full pt-2 md:pt-1  flex flex-col gap-1 flex-1 md:px-2">
+          <div className="w-full pt-2 md:pt-1  flex flex-col gap-1 flex-1 md:px-2 max-h-fit">
             <Link href={`/brand/${vendorToHandle(product.vendor)}`}>
               <span className="text-md font-bold hover:underline">
                 {product.vendor}

@@ -3,15 +3,22 @@ import { createClient } from 'next-sanity';
 import { apiVersion, dataset, projectId } from '../env';
 import { QueryParams } from 'sanity';
 
+const studioUrl =
+  process.env.NEXT_PUBLIC_BASE_URL
+    ? `${process.env.NEXT_PUBLIC_BASE_URL}/studio`
+    : typeof window !== 'undefined'
+      ? `${window.location.origin}/studio`
+      : '/studio';
+
 export const client = createClient({
   projectId,
   dataset,
   stega: {
-    enabled: true,
-    studioUrl: process.env.NEXT_PUBLIC_BASE_URL + '/studio',
+    enabled: process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_SANITY_STEGA_ENABLED === 'true',
+    studioUrl,
   },
   apiVersion,
-  useCdn: true,
+  useCdn: process.env.NODE_ENV === 'production',
 });
 
 export async function sanityFetch<const QueryString extends string>({
