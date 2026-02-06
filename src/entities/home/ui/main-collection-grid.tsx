@@ -21,6 +21,7 @@ export const MainCollectionGrid = (props: MainCollectionGridProps) => {
       href: pathData?.handle ?? '#',
     };
   });
+  console.log(collections,"resolvedCollections")
   return (
     <div className="main-collection-grid flex flex-col container">
       <div className="gap-12 flex flex-col py-8">
@@ -32,16 +33,15 @@ export const MainCollectionGrid = (props: MainCollectionGridProps) => {
 
         <div className="flex flex-col gap-5 md:grid md:grid-cols-3 items-center">
           {resolvedCollections.map((col) => (
-            <div key={col.handle ?? col.id}>
+            <div key={col.handle ?? col.id} className='w-full'>
               <Link href={col.href} prefetch>
-                <div className="flex flex-col relative group w-[370px] md:w-full group">
+                <div className="flex flex-col relative group w-[370px] aspect-3/4 md:w-full group">
                   {col.image && col.image.url && (
                     <Image
                       src={col.image.url}
                       alt={col.title ?? ''}
                       className="object-contain w-full transition-transform duration-700 ease-in-out h-[375px] md:h-[450px] lg:h-[530px] max-h-[530px] group-hover:scale-105"
-                      width={375}
-                      height={598}
+                      fill
                     />
                   )}
                   <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-black opacity-20 group-hover:scale-105 transition-transform duration-700 ease-in-out"></div>

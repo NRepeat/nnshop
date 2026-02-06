@@ -91,7 +91,7 @@ export const SyncedCarousels = ({
     <div className="grid grid-cols-1 md:grid-cols-2 gap-2  md:gap-4 lg:gap-6 w-full container ">
       <div className="py-8">
         <Carousel opts={{ loop: true }} setApi={setApi1}>
-          <CarouselContent>
+          <CarouselContent className='[&>div]:-ml-0'>
             {previews?.map(
               (preview) =>
                 preview &&
@@ -159,7 +159,7 @@ export const SyncedCarousels = ({
                               scroll={true}
                               prefetch
                             >
-                              <div className="relative w-full aspect-square overflow-hidden bg-gray-50 mb-3">
+                              <div className="relative w-full aspect-square overflow-hidden bg-background mb-3">
                                 <Image
                                   src={
                                     product.node.media.edges[0].node
@@ -170,14 +170,14 @@ export const SyncedCarousels = ({
                                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                                   className="object-contain transition-transform duration-300 group-hover:scale-105"
                                 />
-                                {product.node.metafield &&
+                                {/* {product.node.metafield &&
                                   product.node.metafield.key === 'znizka' &&
                                   product.node.metafield.value &&
                                   Number(product.node.metafield.value) > 0 && (
                                     <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-sm">
                                       -{product.node.metafield.value}%
                                     </div>
-                                  )}
+                                  )} */}
                               </div>
                             </Link>
 

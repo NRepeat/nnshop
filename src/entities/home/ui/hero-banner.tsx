@@ -80,7 +80,7 @@ export const HeroBanner = (props: HeroSliderProps) => {
 
                 <div className="absolute bottom-12 left-6 md:bottom-20 md:left-16 z-10 max-w-[80%] flex flex-col gap-6">
                   {slide.description && (
-                    <h2 className="text-white text-3xl md:text-5xl lg:text-6xl font-medium tracking-tight drop-shadow-lg">
+                    <h2 className="text-white text-3xl md:text-4xl lg:text-4xl font-medium tracking-tight drop-shadow-lg">
                       {slide.description}
                     </h2>
                   )}
