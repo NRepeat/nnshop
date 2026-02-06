@@ -32,7 +32,7 @@ export const MainCollectionGrid = (props: MainCollectionGridProps) => {
 
         <div className="flex flex-col gap-5 md:grid md:grid-cols-3 items-center">
           {resolvedCollections.map((col) => (
-            <div key={col.handle ?? col._key}>
+            <div key={col.handle ?? col.id}>
               <Link href={col.href} prefetch>
                 <div className="flex flex-col relative group w-[370px] md:w-full group">
                   {col.image && col.image.url && (
