@@ -3,31 +3,10 @@ import {
   Product as ShopifyProduct,
 } from '@shared/lib/shopify/types/storefront.types';
 import { AddToCartButton } from '@entities/product/ui/AddToCartButton';
+import { COLOR_MAP } from '@widgets/product-view/ui/collors';
+import { cn } from '@shared/lib/utils';
 
-export const colorMap: { [key: string]: string } = {
-  Бежевий: 'bg-[#F5F5DC]',
-  Блакитний: 'bg-[#87CEEB]',
-  Бордовий: 'bg-[#800000]',
-  Бронзовий: 'bg-[#CD7F32]',
-  Білий: 'bg-[#FFFFFF]',
-  Жовтий: 'bg-[#FFFF00]',
-  Зелений: 'bg-[#008000]',
-  Золото: 'bg-[#FFD700]',
-  Коричневий: 'bg-[#A52A2A]',
-  "М'ятний": 'bg-[#98FF98]',
-  Мультиколор: 'bg-gradient-to-r from-red-500 to-blue-500',
-  Помаранчевий: 'bg-[#FFA500]',
-  Пітон: 'bg-gray-500',
-  Рожевий: 'bg-[#FFC0CB]',
-  Рудий: 'bg-[#D2691E]',
-  Синій: 'bg-[#0000FF]',
-  Срібло: 'bg-[#C0C0C0]',
-  Сірий: 'bg-[#808080]',
-  Фіолетовий: 'bg-[#8A2BE2]',
-  Хакі: 'bg-[#F0E68C]',
-  Червоний: 'bg-[#FF0000]',
-  Чорний: 'bg-[#000000]',
-};
+
 
 export const ProductInfo = ({
   product,
@@ -73,8 +52,10 @@ export const ProductInfo = ({
           colorOptions.map((color: string) => (
             <div className="relative shrink-0 size-[32px]" key={color}>
               <div
-                className="absolute inset-[10%]"
-                style={{ backgroundColor: colorMap[color] }}
+                className={cn(
+                        'absolute inset-[10%]',
+                        COLOR_MAP[color] || 'bg-gray-200',
+                      )}
               ></div>
               <div className="absolute inset-[-1.56%]">
                 <img

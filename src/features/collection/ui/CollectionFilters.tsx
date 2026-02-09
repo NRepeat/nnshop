@@ -20,6 +20,7 @@ type Props = {
 
 export function CollectionFilters({ filters, initialFilters }: Props) {
   const t = useTranslations('CollectionPage');
+  console.log(filters,"filters")
   const sortedFilters = useMemo(() => {
     const getOrder = (label: string) => {
       if (label === 'Цена' || label === 'Ціна' || label === 'Price') return 1;
@@ -34,7 +35,7 @@ export function CollectionFilters({ filters, initialFilters }: Props) {
         }
         return {
           ...filter,
-          values: filter.values.filter((value) => value.count > 0),
+          // values: filter.values.filter((value) => value.count > 0),
         };
       })
       .filter((filter) => {

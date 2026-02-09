@@ -6,12 +6,13 @@ import {
   FilterValue,
 } from '@shared/lib/shopify/types/storefront.types';
 import { cn } from '@shared/lib/utils';
+import { COLOR_MAP } from '@widgets/product-view/ui/collors';
 
 type Props = {
   filter: Filter;
 };
 
-import { colorMap } from './colorMap';
+
 
 export function NuqsColorFilter({ filter }: Props) {
   const filterKey = filter.id.split('.').pop() || filter.id;
@@ -52,7 +53,7 @@ export function NuqsColorFilter({ filter }: Props) {
                     'border-muted': value.count === 0,
                     'ring-2 ring-offset-2 ring-primary': isChecked,
                   },
-                  colorMap[value.label] || 'bg-gray-200',
+                  COLOR_MAP[value.label] || 'bg-gray-200',
                 )}
               ></span>
               <span>

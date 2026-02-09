@@ -9,6 +9,7 @@
 
 import { fetchAllOrdersByIDs } from '@entities/order/api/getOrdersByIds';
 import { auth } from '@features/auth/lib/auth';
+import authShopifyCustomer from '@features/auth/lib/shopify/customer-auth';
 import { OrderEmptyState } from '@features/order/ui/EmptyState';
 import { OrderList } from '@features/order/ui/OrderList';
 import { locales } from '@shared/i18n/routing';
@@ -73,8 +74,10 @@ export async function OrdersPageSession({ params, searchParams }: Props) {
   const { locale } = await params;
   const t = await getTranslations('OrderPage');
   const tHeader = await getTranslations('Header.nav');
-
+  
   const headersList = await headers();
+  const clientCustomer = await authShopifyCustomer(headersList)
+  console.log(clientCustomer,"clientCustomer")
   const session = await auth.api.getSession({ headers: headersList });
 
   if (!session || session.user?.isAnonymous) {

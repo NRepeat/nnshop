@@ -120,7 +120,7 @@ export const ProductInfo = ({
 
   const sale =
     product.metafields.find((m) => m?.key === 'znizka')?.value || '0';
-
+  const sku = product.variants.edges[0].node.sku
   const atTheFitting = selectedVariant?.metafields.find(
     (m) => m?.key === 'at_the_fitting',
   )?.value;
@@ -153,9 +153,9 @@ export const ProductInfo = ({
                 <Badge>{t('atTheFitting')}</Badge>
               )}
           </div>
-          {selectedVariant?.sku && (
+          {sku && (
             <p className="text-sm text-gray-500">
-              Артикул: {selectedVariant.sku}
+              {t('sku')}: {sku}
             </p>
           )}
           <ProductPrice
@@ -190,8 +190,8 @@ export const ProductInfo = ({
                       ? 'default'
                       : 'outline'
                   }
-                  className={cn('rounded-md min-w-[56px] h-11 text-sm font-medium relative', {
-                    'bg-primary text-white ring-2 ring-offset-1 ring-primary':
+                  className={cn('rounded-md min-w-[56px] h-11 text-sm font-medium relative border-primary border', {
+                    'bg-primary text-white ring-2 ring-offset-1 ring-primary ':
                       size.toLowerCase() === s.toLowerCase(),
                   })}
                   onClick={() => setSize(s.toLowerCase())}

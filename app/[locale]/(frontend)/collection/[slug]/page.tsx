@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { getCollection, getCollectionSlugs } from '@entities/collection/api/getCollection';
 import { generateCollectionMetadata } from '@shared/lib/seo/generateMetadata';
+import { setRequestLocale } from 'next-intl/server';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -53,6 +54,9 @@ export type Props = {
 };
 
 export default async function CollectionPage({ params, searchParams }: Props) {
+  const {locale} = await params
+  setRequestLocale(locale);
+ 
   return (
     <div className="container ">
       <Suspense fallback={<CollectionGridSkeleton />}>

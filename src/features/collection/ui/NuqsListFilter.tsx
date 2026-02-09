@@ -46,7 +46,7 @@ export function NuqsListFilter({ filter }: Props) {
     >
       <ul className="space-y-2">
         {[...filter.values]
-          .sort((a, b) => a.label.localeCompare(b.label))
+          // .sort((a, b) => a.label.localeCompare(b.label))
           .map((value) => {
             const isChecked = selectedValues.includes(value.label);
             const isChanging = changingFilter === value.label;

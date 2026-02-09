@@ -14,17 +14,19 @@ function SubmitButton({
   variant = 'default',
   disabled,
   pending,
+  isProductAvailable,
 }: {
   variant?: string;
   disabled: boolean;
   pending: boolean;
+  isProductAvailable: boolean;
 }) {
   const t = useTranslations('ProductPage');
 
   let buttonText = t('addToCart');
   if (pending) {
     buttonText = t('addingToCart');
-  } else if (disabled) {
+  } else if (isProductAvailable) {
     buttonText = t('outOfStock');
   }
 
@@ -65,7 +67,10 @@ export function AddToCartButton({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    if (isProductAvailable && !selectedVariant) {
+      toast.warning(t('variantNotSelected')+"!",{style:{justifyContent:"center",backgroundColor:"#FFF4E5",color:"#B98900",border:"1px solid #FFCC47"}});
+      return
+    }
     // Check if product is available before proceeding
     if (!isProductAvailable) {
       toast.error(t('productNotAvailable'));
@@ -85,7 +90,6 @@ export function AddToCartButton({
           setIsPending(false);
           return;
         }
-
       }
 
       const variantId = selectedVariant
@@ -96,7 +100,7 @@ export function AddToCartButton({
       formData.append('variantId', variantId!);
 
       const result = await addToCart(null, formData);
-      
+
       if (result.success) {
         toast.success(t('addedToCart'));
       } else {
@@ -130,6 +134,7 @@ export function AddToCartButton({
         <SubmitButton
           variant={variant}
           disabled={!isProductAvailable}
+          isProductAvailable={!isProductAvailable}
           pending={isPending}
         />
       </div>

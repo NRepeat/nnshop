@@ -176,10 +176,10 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
 
       {/* Totals */}
       <div className="border-t border-gray-200 mt-2 pt-3 px-4 pb-4 space-y-2">
-        <div className="flex justify-between text-sm">
+        {/* <div className="flex justify-between text-sm">
           <span className="text-gray-500">{t('subtotal')}</span>
           <span className="text-gray-900">{formatPrice(subtotal)}{currencySymbol}</span>
-        </div>
+        </div> */}
 
         {/* Show discount codes and amount */}
         {hasApplicableDiscount && (

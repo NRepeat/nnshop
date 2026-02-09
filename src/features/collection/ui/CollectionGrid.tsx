@@ -34,7 +34,6 @@ export const CollectionGrid = async ({
       getTranslations('Header'),
     ]);
   const { locale, slug } = awaitedParams;
-  setRequestLocale(locale);
   const gender = cookieStore.get('gender')?.value || 'woman';
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
 
@@ -82,7 +81,7 @@ export const CollectionGrid = async ({
   const initialFilters = hasFilters
     ? initialData?.collection?.collection?.products.filters
     : collection.collection?.products.filters;
-
+  console.log(initialFilters,"initialFilters")
   const targetLocale = locale === 'ru' ? 'uk' : 'ru';
   const paths = {
     [locale]: `/collection/${slug}`,

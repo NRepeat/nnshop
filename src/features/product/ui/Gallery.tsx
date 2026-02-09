@@ -38,8 +38,6 @@ const Gallery = ({
   const onThumbClick = useCallback(
     (index: number) => {
       mainApi?.scrollTo(index);
-      setSelectedIndex(index);
-      // onSelect(mainApi);
     },
     [mainApi],
   );
@@ -50,47 +48,30 @@ const Gallery = ({
     },
     [secApi],
   );
-  const onSelect = useCallback(
-    (api: CarouselApi) => {
-      if (!api) return;
-      if (mainApi && secApi) {
-        if (api === mainApi) {
-          setSelectedIndex(mainApi.selectedScrollSnap());
-          if (
-            mainApi.selectedScrollSnap() === 1 &&
-            secApi.selectedScrollSnap() === 1
-          ) {
-            secApi.scrollTo(0);
-            setSelectedDotIndex(0);
-          } else {
-            secApi.scrollTo(mainApi.selectedScrollSnap());
-            setSelectedDotIndex(secApi.selectedScrollSnap());
-          }
-        } else {
-          const index = secApi.selectedScrollSnap();
-          mainApi.scrollTo(index);
-          setSelectedDotIndex(secApi.selectedScrollSnap());
-        }
-      }
-    },
-    [secApi, mainApi],
-  );
+  const onSelect = useCallback(() => {
+    if (!mainApi || !secApi) return;
+    const selected = mainApi.selectedScrollSnap();
+    setSelectedIndex(selected);
+
+    // Scroll thumbnail carousel so the active thumb is visible
+    const thumbsInView = secApi.slidesInView();
+    if (!thumbsInView.includes(selected)) {
+      secApi.scrollTo(selected);
+    }
+    setSelectedDotIndex(secApi.selectedScrollSnap());
+  }, [secApi, mainApi]);
   useEffect(() => {
     if (mainApi) {
       mainApi.on('select', onSelect);
+      // Sync initial state
+      onSelect();
     }
     if (secApi) {
-      // secApi.on('select', onSelect);
-      // secApi.on('reInit', onSelect);
       onInit(secApi);
     }
 
     return () => {
       if (mainApi) mainApi.off('select', onSelect);
-      if (secApi) {
-        secApi.off('select', onSelect);
-        secApi.off('reInit', onSelect);
-      }
     };
   }, [mainApi, secApi, onSelect, onInit]);
 

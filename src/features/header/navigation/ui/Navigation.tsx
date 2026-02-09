@@ -89,6 +89,7 @@ const Navigation = async ({
 }) => {
   const allItems = await getMainMenu({ locale });
   const meinMenu = allItems.filter((item) => matchesGender(item, gender));
+  console.log(meinMenu,"meinMenu",gender,locale)
   const t = await getTranslations({ locale, namespace: 'BrandsPage' });
 
   const items = meinMenu.length > 0 ? meinMenu : allItems.slice(0, 1);
