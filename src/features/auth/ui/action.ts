@@ -82,6 +82,7 @@ export const onGoogleSignIn = async () => {
   try {
     await client.signIn.social({
       provider: 'google',
+      callbackURL: '/',
     });
   } catch (error) {
     console.error('Google sign in error:', error);
@@ -167,6 +168,7 @@ export const createGoogleSignInHandler = (tErrors: (key: string) => string) => {
     try {
       await client.signIn.social({
         provider: 'google',
+        callbackURL: '/',
       });
     } catch (error) {
       console.error('Google sign in error:', error);

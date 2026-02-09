@@ -346,12 +346,25 @@
     "elegantEaseDescription": "Вдохновение для вашего основного гардероба",
     "styleWith": "Может понравиться",
     "atTheFitting": "На примерке",
-    "quickOrderDescription": "Быстрое оформление заказа в два шага.",
+    "quickOrderDescription": "Введите номер телефона и мы перезвоним Вам для обсуждения деталей заказа",
     "selectSize": "Выберите размер",
     "contactInfo": "Контактная информация",
     "next": "Далее",
     "back": "Назад",
-    "submitOrder": "Оформить заказ"
+    "submitOrder": "Оформить заказ",
+    "nameLabel": "Имя",
+    "phoneLabel": "Телефон",
+    "namePlaceholder": "Ваше имя",
+    "phonePlaceholder": "+380...",
+    "submitting": "Отправка...",
+    "orderSuccess": "Заказ №{orderName} успешно создан. Мы свяжемся с вами в ближайшее время.",
+    "orderError": "Не удалось создать заказ",
+    "orderSuccessTitle": "Заказ успешно оформлен!",
+    "orderSuccessMessage": "Мы свяжемся с вами в ближайшее время",
+    "sizeNotFound": "Не удалось найти выбранный размер",
+    "productUnavailable": "Товар недоступен",
+    "nameValidation": "Имя должно содержать не менее 2 символов.",
+    "phoneValidation": "Введите корректный номер телефона."
   },
   "CollectionPage": {
     "noProducts": "Ничего не найдено",
@@ -585,7 +598,10 @@
     "description": "Все доступные бренды в нашем магазине",
     "empty": "Бренды не найдены",
     "products": "товаров",
-    "product": "товар"
+    "product": "товар",
+    "topBrands": "TOP BRANDS",
+    "collections": "Коллекции",
+    "allBrands": "Все бренды"
   },
   "Search": {
     "placeholder": "Поиск...",

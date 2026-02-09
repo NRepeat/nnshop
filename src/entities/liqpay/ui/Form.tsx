@@ -5,7 +5,7 @@ import LiqPay from '../model';
 interface LiqpayProps {
   publicKey: string;
   privateKey: string;
-  shopifyDraftOrderId: string;
+  shopifyOrderId: string;
   amount: string;
   action: string;
   description?: string;
@@ -28,7 +28,7 @@ interface LiqpayProps {
 export default function Liqpay({
   publicKey,
   privateKey,
-  shopifyDraftOrderId,
+  shopifyOrderId,
   amount,
   action,
   description = 'Order payment',
@@ -81,9 +81,9 @@ export default function Liqpay({
     amount: amount,
     currency: currency,
     description: enhancedDescription,
-    order_id: shopifyDraftOrderId,
+    order_id: shopifyOrderId,
     server_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/liqpay/callback`,
-    result_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/success/liqpay/${shopifyDraftOrderId.split('/').pop()}`,
+    result_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/success/liqpay/${shopifyOrderId.split('/').pop()}`,
     language: language,
   });
 

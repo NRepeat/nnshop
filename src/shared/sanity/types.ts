@@ -326,6 +326,17 @@ export type SiteSettings = {
   _rev: string;
   infoBar?: InfoBar;
   header?: Header;
+  brandsNavigation?: BrandsNavigation;
+};
+
+export type BrandsNavigation = {
+  _type: 'brandsNavigation';
+  topBrands?: Array<string>;
+  collections?: Array<
+    {
+      _key: string;
+    } & LinkInternal
+  >;
 };
 
 export type Header = {
@@ -1259,6 +1270,7 @@ export type AllSanitySchemaTypes =
   | PageBuilder
   | Seo
   | SiteSettings
+  | BrandsNavigation
   | Header
   | InfoBar
   | Category
@@ -2865,7 +2877,7 @@ export type SITEMAP_QUERYResult = Array<{
   language: string | null;
 }>;
 // Variable: HEADER_QUERY
-// Query: *[_type == 'siteSettings'][0]{    infoBar {      ...,      telephone,      "text": coalesce(text[$locale], text.uk, text.ru, ""),      link {        ...,        "collectionData": reference-> {          title,          "handle": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    },    header {      ...,      categoryLinks[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      },      mainCategory[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    }  }
+// Query: *[_type == 'siteSettings'][0]{    infoBar {      ...,      telephone,      "text": coalesce(text[$locale], text.uk, text.ru, ""),      link {        ...,        "collectionData": reference-> {          title,          "handle": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    },    header {      ...,      categoryLinks[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      },      mainCategory[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    },    brandsNavigation {      topBrands,      collections[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    }  }
 export type HEADER_QUERYResult = {
   infoBar: {
     _type: 'infoBar';
@@ -3005,6 +3017,44 @@ export type HEADER_QUERYResult = {
       _type: 'image';
     };
   } | null;
+  brandsNavigation: {
+    topBrands: Array<string> | null;
+    collections: Array<{
+      _key: string;
+      title:
+        | Array<{
+            _type: 'localizedString';
+            ru?: string;
+            uk?: string;
+          }>
+        | string
+        | '';
+      collectionData:
+        | {
+            title: string | null;
+            slug: null;
+            pageHandle: string | null;
+            id: null;
+            handles: null;
+            titles: null;
+          }
+        | {
+            title: null;
+            slug: string | null;
+            pageHandle: null;
+            id: number | null;
+            handles: {
+              uk?: string;
+              ru?: string;
+            } | null;
+            titles: {
+              uk?: string;
+              ru?: string;
+            } | null;
+          }
+        | null;
+    }> | null;
+  } | null;
 } | null;
 
 // Query TypeMap
@@ -3032,6 +3082,6 @@ declare module '@sanity/client' {
     '\n  *[_id == $id][0]{\n    title,\n    "image": mainImage.asset->{\n      url,\n      metadata {\n        palette\n      }\n    }\n  }\n': OG_IMAGE_QUERYResult;
     '\n  *[_type == \'siteSettings\'][0]{\n    "logo": header.icon.asset->{\n      url\n    }\n  }\n': SITE_LOGO_QUERYResult;
     '\n*[_type in ["page", "post"] && defined(slug.current)] {\n    "href": select(\n      _type == "page" => "/" + slug.current,\n      _type == "post" => select(\n        defined(language) => "/" + language + "/posts/" + slug.current,\n        "/posts/" + slug.current\n      ),\n      slug.current\n    ),\n    _updatedAt,\n    language\n}\n': SITEMAP_QUERYResult;
-    '\n  *[_type == \'siteSettings\'][0]{\n    infoBar {\n      ...,\n      telephone,\n      "text": coalesce(text[$locale], text.uk, text.ru, ""),\n      link {\n        ...,\n        "collectionData": reference-> {\n          title,\n          "handle": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    header {\n      ...,\n      categoryLinks[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      },\n      mainCategory[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    }\n  }\n': HEADER_QUERYResult;
+    '\n  *[_type == \'siteSettings\'][0]{\n    infoBar {\n      ...,\n      telephone,\n      "text": coalesce(text[$locale], text.uk, text.ru, ""),\n      link {\n        ...,\n        "collectionData": reference-> {\n          title,\n          "handle": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    header {\n      ...,\n      categoryLinks[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      },\n      mainCategory[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    brandsNavigation {\n      topBrands,\n      collections[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    }\n  }\n': HEADER_QUERYResult;
   }
 }

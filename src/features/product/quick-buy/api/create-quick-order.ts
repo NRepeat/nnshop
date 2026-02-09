@@ -12,12 +12,19 @@ type QuickOrderInput = {
   phone: string;
   productTitle: string;
   discountPercentage?: number;
+  price: string;
+  currencyCode: string;
 };
 
-type DraftOrder = {
+type OrderResult = {
   id: string;
   name: string;
-  totalPrice: string;
+  totalPriceSet: {
+    shopMoney: {
+      amount: string;
+      currencyCode: string;
+    };
+  };
   lineItems: {
     edges: {
       node: {
@@ -29,13 +36,18 @@ type DraftOrder = {
   };
 };
 
-const DRAFT_ORDER_CREATE_MUTATION = `
-  mutation draftOrderCreate($input: DraftOrderInput!) {
-    draftOrderCreate(input: $input) {
-      draftOrder {
+const ORDER_CREATE_MUTATION = `
+  mutation orderCreate($order: OrderCreateOrderInput!, $options: OrderCreateOptionsInput) {
+    orderCreate(order: $order, options: $options) {
+      order {
         id
         name
-        totalPrice
+        totalPriceSet {
+          shopMoney {
+            amount
+            currencyCode
+          }
+        }
         lineItems(first: 10) {
           edges {
             node {
@@ -70,24 +82,29 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
     const firstName = nameParts[0] || orderData.name;
     const lastName = nameParts.slice(1).join(' ') || '';
 
-    // Build line item with optional discount
+    // Calculate price with optional discount
+    const originalPrice = parseFloat(orderData.price);
+    let finalPrice = originalPrice;
+    if (orderData.discountPercentage && orderData.discountPercentage > 0) {
+      finalPrice = originalPrice * (1 - orderData.discountPercentage / 100);
+    }
+
     const lineItem: any = {
       variantId: orderData.variantId,
       quantity: orderData.quantity,
+      priceSet: {
+        shopMoney: {
+          amount: finalPrice.toFixed(2),
+          currencyCode: orderData.currencyCode,
+        },
+      },
     };
 
-    // Apply discount if exists
-    if (orderData.discountPercentage && orderData.discountPercentage > 0) {
-      lineItem.appliedDiscount = {
-        valueType: 'PERCENTAGE',
-        value: parseFloat(orderData.discountPercentage.toString()),
-        description: `${orderData.discountPercentage}% discount`,
-      };
-    }
-
-    // Build draft order input
-    const input: any = {
+    // Build order input
+    const order: any = {
       lineItems: [lineItem],
+      currency: orderData.currencyCode,
+      financialStatus: 'PENDING',
       note: `Быстрый заказ: ${orderData.productTitle}`,
       shippingAddress: {
         firstName: firstName,
@@ -116,24 +133,28 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
 
     // Log the input for debugging
     console.log(
-      'Quick Order - Creating draft order with input:',
-      JSON.stringify(input, null, 2),
+      'Quick Order - Creating order with input:',
+      JSON.stringify(order, null, 2),
     );
 
-    // Create draft order in Shopify
+    // Create order in Shopify
     const orderResponse = await adminClient.client.request<
       {
-        draftOrderCreate: {
-          draftOrder: DraftOrder | null;
+        orderCreate: {
+          order: OrderResult | null;
           userErrors: Array<{ field: string; message: string }>;
         };
       },
       {
-        input: any;
+        order: any;
+        options: { sendReceipt: boolean };
       }
     >({
-      query: DRAFT_ORDER_CREATE_MUTATION,
-      variables: { input },
+      query: ORDER_CREATE_MUTATION,
+      variables: {
+        order,
+        options: { sendReceipt: false },
+      },
     });
 
     console.log(
@@ -141,7 +162,7 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
       JSON.stringify(orderResponse, null, 2),
     );
 
-    const { draftOrder, userErrors } = orderResponse.draftOrderCreate;
+    const { order: createdOrder, userErrors } = orderResponse.orderCreate;
 
     if (userErrors.length > 0) {
       console.error(
@@ -154,8 +175,8 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
       };
     }
 
-    if (!draftOrder) {
-      console.error('Quick Order - No draft order returned');
+    if (!createdOrder) {
+      console.error('Quick Order - No order returned');
       return {
         success: false,
         errors: ['Failed to create quick order'],
@@ -164,17 +185,17 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
     if (userId) {
       await prisma.order.create({
         data: {
-          shopifyDraftOrderId: draftOrder.id,
+          shopifyOrderId: createdOrder.id,
           userId: userId,
-          draft: true,
+          draft: false,
         },
       });
     }
 
     return {
       success: true,
-      orderId: draftOrder.id,
-      orderName: draftOrder.name,
+      orderId: createdOrder.id,
+      orderName: createdOrder.name,
     };
   } catch (error) {
     console.error('Quick Order - Error:', error);

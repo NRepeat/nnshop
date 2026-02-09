@@ -11,11 +11,9 @@ import { headers } from 'next/headers';
 
 const CartSheet = async ({ locale }: { locale: string }) => {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) {
-    return null;
-  }
+
   const cart = (await getCart({
-    userId: session.user.id,
+    userId: session?.user.id,
     locale,
   })) as GetCartQuery | null;
   const cartId = cart?.cart?.id;

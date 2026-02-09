@@ -1832,6 +1832,62 @@
           "name": "header"
         },
         "optional": true
+      },
+      "brandsNavigation": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "brandsNavigation"
+        },
+        "optional": true
+      }
+    }
+  },
+  {
+    "name": "brandsNavigation",
+    "type": "type",
+    "value": {
+      "type": "object",
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "brandsNavigation"
+          }
+        },
+        "topBrands": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "array",
+            "of": {
+              "type": "string"
+            }
+          },
+          "optional": true
+        },
+        "collections": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "array",
+            "of": {
+              "type": "object",
+              "attributes": {
+                "_key": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              },
+              "rest": {
+                "type": "inline",
+                "name": "linkInternal"
+              }
+            }
+          },
+          "optional": true
+        }
       }
     }
   },

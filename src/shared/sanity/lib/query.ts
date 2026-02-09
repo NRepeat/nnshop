@@ -828,6 +828,21 @@ export const HEADER_QUERY = defineQuery(`
           titles
         }
       }
+    },
+    brandsNavigation {
+      topBrands,
+      collections[]{
+        _key,
+        "title": coalesce(title[$locale], title.uk, title.ru, ""),
+        "collectionData": reference-> {
+          title,
+          "slug": store.slug.current,
+          "pageHandle": slug,
+          "id": store.id,
+          handles,
+          titles
+        }
+      }
     }
   }
 `);

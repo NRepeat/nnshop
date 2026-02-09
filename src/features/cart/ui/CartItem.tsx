@@ -69,7 +69,7 @@ export const CartItem = ({
               <div className="mt-2 space-y-1 text-sm text-muted-foreground">
                 {product.size && (
                   <p>
-                    {t('sizeLabel')} {product.size}
+                    {t('sizeLabel')} {product.size} × {product.quantity}
                   </p>
                 )}
                 {product.color && <p>Color: {product.color}</p>}
@@ -99,12 +99,7 @@ export const CartItem = ({
               </div>
             </div>
 
-            <div className="flex items-center justify-between mt-4">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">
-                  x {product.quantity}
-                </span>
-              </div>
+            <div className="flex items-center justify-end mt-4">
               <div className="flex items-center gap-4">
                 <span className={cn('font-medium', { 'text-red-500': sale > 0 })}>
                   {Number(product.totalPrice).toFixed(0)}

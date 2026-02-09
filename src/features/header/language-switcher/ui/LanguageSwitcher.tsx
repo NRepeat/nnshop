@@ -52,7 +52,7 @@ export function LanguageSwitcher({
       <DropdownMenuTrigger asChild className={className}>
         <Button
           variant="default"
-          className="h-full border-b-2 border-foreground bg-foreground hover:border-b-2 hover:border-b-[#e31e24] transition-colors"
+          className="h-full border-b-2 border-foreground bg-foreground hover:border-b-2 hover:border-b-foreground transition-colors"
         >
           {parseLocale[selectedLocale as keyof typeof parseLocale]}
           <span className="sr-only">Switch language</span>

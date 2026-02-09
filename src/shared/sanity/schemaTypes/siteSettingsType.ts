@@ -12,8 +12,14 @@ export const siteSettingsType = defineType({
       type: 'infoBar',
     }),
     defineField({
-      name:"header",
-      type:"header"
+      name: 'header',
+      type: 'header',
+    }),
+    defineField({
+      name: 'brandsNavigation',
+      title: 'Brands Navigation',
+      description: 'Configure the brands dropdown in the navigation bar.',
+      type: 'brandsNavigation',
     })
     // defineField({
     //   name: 'homePageWoman',

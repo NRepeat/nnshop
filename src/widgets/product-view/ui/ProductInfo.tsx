@@ -190,8 +190,8 @@ export const ProductInfo = ({
                       ? 'default'
                       : 'outline'
                   }
-                  className={cn('rounded-md min-w-[50px] relative', {
-                    'bg-primary text-white':
+                  className={cn('rounded-md min-w-[56px] h-11 text-sm font-medium relative', {
+                    'bg-primary text-white ring-2 ring-offset-1 ring-primary':
                       size.toLowerCase() === s.toLowerCase(),
                   })}
                   onClick={() => setSize(s.toLowerCase())}

@@ -7,7 +7,7 @@ import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { headers } from 'next/headers';
 import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
-import { createDraftOrder } from '@features/order/api/create';
+import { createOrder } from '@features/order/api/create';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -29,20 +29,20 @@ function PaymentFormSkeleton() {
   );
 }
 
-async function getDraftOrderId(): Promise<string | null> {
+async function getOrderId(): Promise<string | null> {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) return null;
 
-  const draftOrder = await prisma.order.findFirst({
+  const order = await prisma.order.findFirst({
     where: {
       userId: session.user.id,
-      draft: true,
+      draft: false,
     },
   });
+  console.log(order,"order")
+  if (!order?.shopifyOrderId) return null;
 
-  if (!draftOrder?.shopifyDraftOrderId) return null;
-
-  const match = draftOrder.shopifyDraftOrderId.match(/DraftOrder\/(\d+)/);
+  const match = order.shopifyOrderId.match(/Order\/(\d+)/);
   return match ? match[1] : null;
 }
 
@@ -55,26 +55,27 @@ export default async function PaymentPage(props: Props) {
     redirect('/checkout/delivery');
   }
 
-  let draftOrderId = await getDraftOrderId();
-  if (!draftOrderId) {
+  let orderId = await getOrderId();
+  if (!orderId) {
     const completeCheckoutData = await getCompleteCheckoutData(session);
     if (!completeCheckoutData) {
       redirect('/checkout/delivery');
     }
-    const draftOrder = await createDraftOrder(completeCheckoutData, locale);
-    if (!draftOrder) {
-      throw new Error("Can't create druft order");
+    const orderResult = await createOrder(completeCheckoutData, locale);
+    if (!orderResult) {
+      throw new Error("Can't create order");
     }
-    if (draftOrder.success && draftOrder.order?.id) {
-      draftOrderId = draftOrder.order?.id;
+    if (orderResult.success && orderResult.order?.id) {
+      const match = orderResult.order.id.match(/Order\/(\d+)/);
+      orderId = match ? match[1] : null;
     }
   }
-  if (!draftOrderId) {
+  if (!orderId) {
     redirect('/checkout/delivery');
   }
   return (
     <Suspense fallback={<PaymentFormSkeleton />}>
-      <Payment draftOrderId={draftOrderId} locale={locale} />
+      <Payment draftOrderId={orderId} locale={locale} />
     </Suspense>
   );
 }
