@@ -44,7 +44,7 @@ export function NuqsButtonFilter({
     : [...filter.values].sort((a, b) => a.label.localeCompare(b.label));
 
   return (
-    <div className="grid grid-cols-3 gap-2 ">
+    <div className="grid grid-cols-4 gap-2 ">
       {sortedValues.map((value) => {
         const isSelected = selectedValues.includes(value.label);
         return (

@@ -190,7 +190,7 @@ const Navigation = async ({
           <div className="flex w-full">
             <div className="container w-full flex py-5 gap-8">
               {/* КОЛЕКЦІЇ column */}
-              <div className="shrink-0 min-w-[140px]">
+              {/* <div className="shrink-0 min-w-[140px]">
                 <h3 className="text-xs font-bold uppercase tracking-wider underline mb-3">
                   {t('collections')}
                 </h3>
@@ -206,7 +206,7 @@ const Navigation = async ({
                     </li>
                   ))}
                 </ul>
-              </div>
+              </div> */}
 
               {/* TOP BRANDS columns */}
               <div className="flex-1">

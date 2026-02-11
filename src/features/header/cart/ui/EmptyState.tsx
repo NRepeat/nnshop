@@ -23,18 +23,15 @@ export async function EmptyState({ locale }: { locale: string }) {
       </SheetHeader>
       <Empty>
         <EmptyHeader>
-          {/*<EmptyMedia variant="icon">
-            <IconFolderCode />
-          </EmptyMedia>*/}
           <EmptyTitle>{t('header')}</EmptyTitle>
           <EmptyDescription>{t('description')}</EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
           <div className="flex gap-2">
             <Button className="rounded-full">{t('continue_shopping')}</Button>
-            <Button variant="outline" className="rounded-full">
+            {/* <Button variant="outline" className="rounded-full">
               {t('login')}
-            </Button>
+            </Button> */}
           </div>
           <div className="flex flex-col">
             {/* <Image
@@ -43,7 +40,7 @@ export async function EmptyState({ locale }: { locale: string }) {
               width={400}
               height={400}
             /> */}
-            <Button
+            {/* <Button
               variant="link"
               asChild
               className="text-muted-foreground"
@@ -52,7 +49,7 @@ export async function EmptyState({ locale }: { locale: string }) {
               <a href="#">
                 {t('new_arrivals')} <ArrowUpRightIcon />
               </a>
-            </Button>
+            </Button> */}
           </div>
         </EmptyContent>
       </Empty>

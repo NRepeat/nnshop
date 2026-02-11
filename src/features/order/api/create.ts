@@ -78,26 +78,34 @@ export async function createOrder(
     }
 
     // Prevent duplicate orders on page refresh (5-minute window)
-    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-    const recentOrder = await prisma.order.findFirst({
-      where: {
-        userId: session.user.id,
-        draft: false,
-        createdAt: { gte: fiveMinutesAgo },
-      },
-      orderBy: { createdAt: 'desc' },
+    // Only deduplicate if the user's cart is still active (not completed/reset)
+    const activeCart = await prisma.cart.findFirst({
+      where: { userId: session.user.id, completed: false },
     });
 
-    if (recentOrder?.shopifyOrderId) {
-      return {
-        success: true,
-        order: {
-          id: recentOrder.shopifyOrderId,
-          name: recentOrder.orderName || '',
-          totalPriceSet: { shopMoney: { amount: '0', currencyCode: 'UAH' } },
-          lineItems: { edges: [] },
+    if (activeCart) {
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+      const recentOrder = await prisma.order.findFirst({
+        where: {
+          userId: session.user.id,
+          draft: false,
+          createdAt: { gte: fiveMinutesAgo },
         },
-      };
+        orderBy: { createdAt: 'desc' },
+      });
+
+      if (recentOrder?.shopifyOrderId) {
+        console.log('[createOrder] Returning existing order (dedup):', recentOrder.orderName);
+        return {
+          success: true,
+          order: {
+            id: recentOrder.shopifyOrderId,
+            name: recentOrder.orderName || '',
+            totalPriceSet: { shopMoney: { amount: '0', currencyCode: 'UAH' } },
+            lineItems: { edges: [] },
+          },
+        };
+      }
     }
 
     const result = (await getCart({
