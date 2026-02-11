@@ -9,12 +9,10 @@ export const GallerySession = async ({
   isFavorite: boolean;
 }) => {
   return (
-    <>
-      <FavSession
-        fav={isFavorite}
-        handle={product.handle}
-        productId={product.id}
-      />
-    </>
+    <FavSession
+      fav={isFavorite}
+      handle={product.handle}
+      productId={product.id}
+    />
   );
 };

@@ -56,6 +56,7 @@ export const contactInfoSchema = z.object({
     .min(2, 'Country code is required')
     .max(2, 'Country code must be 2 characters')
     .default('UA'),
+  preferViber: z.boolean().default(false),
 });
 
 export type ContactInfo = z.infer<typeof contactInfoSchema>;

@@ -128,6 +128,19 @@
       "tryAgain": "спробуйте знову",
       "backToSignIn": "Повернутися до входу"
     },
+    "resetPassword": {
+      "title": "Скинути пароль",
+      "description": "Введіть новий пароль для вашого акаунта",
+      "newPassword": "Новий пароль",
+      "newPasswordPlaceholder": "Новий пароль",
+      "confirmPassword": "Підтвердіть пароль",
+      "confirmPasswordPlaceholder": "Підтвердіть пароль",
+      "saveButton": "Зберегти новий пароль",
+      "saving": "Зберігаємо...",
+      "backToSignIn": "Повернутися до входу",
+      "invalidToken": "Посилання для скидання пароля недійсне або прострочене",
+      "success": "Пароль успішно змінено"
+    },
     "common": {
       "email": "Електронна пошта",
       "password": "Пароль",
@@ -154,16 +167,17 @@
       "nameRequired": "Ім'я обов'язкове",
       "signInFailed": "Помилка входу",
       "signUpFailed": "Помилка реєстрації",
+      "userAlreadyExists": "Користувач з цією поштою вже існує. Будь ласка, увійдіть.",
       "resetPasswordFailed": "Не вдалося надіслати лист для скидання",
       "unexpectedError": "Сталася неочікувана помилка",
-      "tooManyRequests": "Занадто багато запитів. Будь ласка, спробуйте пізніше.",
+      "tooManyRequests": "Занадто багато запитів, спробуйте пізніше",
       "googleSignInFailed": "Помилка входу через Google",
       "shopifySignInFailed": "Помилка входу через Shopify"
     },
     "success": {
       "welcomeBack": "Ласкаво просимо назад!",
       "accountCreated": "Акаунт успішно створено!",
-      "passwordResetSent": "Лист для скидання пароля надіслано! Перевірте свою поштову скриньку."
+      "passwordResetSent": "Лист для скидання пароля надіслано"
     }
   },
   "Settings": {
@@ -419,13 +433,14 @@
     "continueToDelivery": "Перейти до доставки",
     "invalidPhoneNumber": "Невірний номер телефону",
     "nameRequired": "Ім'я є обов'язковим",
-    "nameCyrillicOnly": "Ім'я має бути кирилицею (українською або російською)",
+    "nameCyrillicOnly": "Ім'я має бути кирилицею",
     "lastNameRequired": "Прізвище є обов'язковим",
-    "lastNameCyrillicOnly": "Прізвище має бути кирилицею (українською або російською)",
+    "lastNameCyrillicOnly": "Прізвище має бути кирилицею",
     "invalidEmail": "Невірна адреса електронної пошти",
     "emailLatinOnly": "Email повинен містити лише латинські символи",
     "phoneRequired": "Телефон є обов'язковим",
-    "countryCodeRequired": "Код країни є обов'язковим"
+    "countryCodeRequired": "Код країни є обов'язковим",
+    "preferViber": "Не телефонуйте мені, надішліть повідомлення у Viber"
   },
   "DeliveryForm": {
     "pleaseFixErrors": "Будь ласка, виправте наступні помилки:",
@@ -461,8 +476,8 @@
   "PaymentForm": {
     "pleaseFixErrors": "Будь ласка, виправте наступні помилки:",
     "errorSavingPaymentInformation": "Під час збереження платіжної інформації сталася помилка.",
-    "payNow": "Оплатити зараз",
-    "afterDelivered": "Після доставки",
+    "payNow": "Оплатити одразу",
+    "afterDelivered": "Оплата при доставці",
     "payLater": "Оплатити пізніше",
     "bank-transfer": "За реквізитами",
     "bankTransfer": "За реквізитами",
@@ -470,18 +485,20 @@
     "paypal": "PayPal",
     "stripe": "Stripe",
     "processingPayment": "Обробка платежу...",
-    "completePayment": "Завершити платіж",
+    "completePayment": "Оформити замовлення",
     "paymentInformationSaved": "Платіжну інформацію успішно збережено!",
     "amountMustBeGreaterThanZero": "Сума повинна бути більше 0",
     "orderIdIsRequired": "Потрібен ID замовлення",
     "choosePaymentMethod": "Виберіть спосіб оплати",
     "selectPaymentMethodDescription": "Виберіть, коли ви бажаєте оплатити замовлення.",
-    "payNowDescription": "Оплатити за реквізитами банку",
+    "payNowDescription": "Оплата на банківські реквізити",
     "afterDeliveredDescription": "Оплатити після отримання замовлення",
+    "afterDeliveredNote": "Комісія Нової пошти за послугу накладеного платежу 20грн +2% від вартості товару",
     "payLaterDescription": "Оплатити протягом 30 днів",
-    "pay-now": "Оплатити зараз",
-    "after-delivered": "Після доставки",
+    "pay-now": "Оплатити одразу",
+    "after-delivered": "Оплата при доставці",
     "pay-later": "Оплатити пізніше",
+    "managerConfirmationNotice": "Очікуйте на підтвердження замовлення менеджером з 10:00 до 18:00",
     "orderPaymentFor": "Оплата замовлення",
     "choosePaymentProvider": "Виберіть платіжну систему",
     "selectPaymentProviderDescription": "Виберіть бажаний спосіб оплати для безпечної обробки.",
@@ -502,7 +519,7 @@
     "delivery_information": "Інформація про доставку",
     "payment_method": "Спосіб оплати",
     "payment_information": "Інформація про оплату",
-    "products_title": "Продукти",
+    "products_title": "Товари",
     "total": "Всього",
     "continue_shopping": "Продовжити покупки",
     "subtotal": "Підсумок",
@@ -510,7 +527,9 @@
     "shipping": "Доставка",
     "tax": "Податок",
     "items": "товарів",
-    "calculated_next": "Розраховується далі"
+    "calculated_next": "Розраховується далі",
+    "size_label": "Розмір",
+    "quantity_label": "Кількість"
   },
   "ThankYouPage": {
     "title": "Дякуємо за ваше замовлення!",

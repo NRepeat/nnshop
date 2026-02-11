@@ -77,22 +77,28 @@ export async function createOrder(
       };
     }
 
-    // If an order already exists (not draft), skip creation and return it
-    // const existingOrder = await prisma.order.findFirst({
-    //   where: { userId: session.user.id, draft: false },
-    // });
+    // Prevent duplicate orders on page refresh (5-minute window)
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    const recentOrder = await prisma.order.findFirst({
+      where: {
+        userId: session.user.id,
+        draft: false,
+        createdAt: { gte: fiveMinutesAgo },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
 
-    // if (existingOrder?.shopifyOrderId) {
-    //   return {
-    //     success: true,
-    //     order: {
-    //       id: existingOrder.shopifyOrderId,
-    //       name: '',
-    //       totalPriceSet: { shopMoney: { amount: '0', currencyCode: 'UAH' } },
-    //       lineItems: { edges: [] },
-    //     },
-    //   };
-    // }
+    if (recentOrder?.shopifyOrderId) {
+      return {
+        success: true,
+        order: {
+          id: recentOrder.shopifyOrderId,
+          name: recentOrder.orderName || '',
+          totalPriceSet: { shopMoney: { amount: '0', currencyCode: 'UAH' } },
+          lineItems: { edges: [] },
+        },
+      };
+    }
 
     const result = (await getCart({
       userId: session.user.id,
@@ -276,6 +282,7 @@ export async function createOrder(
     await prisma.order.create({
       data: {
         shopifyOrderId: createdOrder.id,
+        orderName: createdOrder.name,
         userId: session.user.id,
         draft: false,
       },

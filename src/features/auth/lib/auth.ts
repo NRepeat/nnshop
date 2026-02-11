@@ -5,7 +5,7 @@ import { nextCookies } from 'better-auth/next-js';
 import { anonymous } from 'better-auth/plugins';
 import { anonymousCartBuyerIdentityUpdate } from '../../../entities/cart/api/anonymous-cart-buyer-identity-update';
 import { prisma } from '../../../shared/lib/prisma';
-import { resend } from '../../../shared/lib/resend';
+import { sendEvent } from '../../../shared/lib/mailer';
 import { linkAnonymousDataToUser } from './on-link-account';
 import { createShopifyCustomer } from '@entities/customer/api/create-customer';
 
@@ -38,11 +38,13 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: false,
     sendResetPassword: async ({ user, url }) => {
-      await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL || 'noreply@example.com',
-        to: user.email,
-        subject: 'Reset your password',
-        html: `<p>Click <a href="${url}">here</a> to reset your password.</p>`,
+      await sendEvent({
+        eventTypeKey: 'password_reset',
+        keyValue: user.email,
+        params: {
+          EmailAddress: user.email,
+          resetLink: url,
+        },
       });
     },
   },
@@ -50,17 +52,12 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (user) => {
-          console.log(
-            `User ${user.email} created, syncing with Shopify...`,
-            user,
-          );
-          // if (!user.isAnonymous) {
-          //   await createShopifyCustomer({
-          //     email: user.email,
-          //     password: user.email,
-          //     firstName: user.name,
-          //   });
-          // }
+          console.log('[databaseHooks] User created:', {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            isAnonymous: (user as any).isAnonymous,
+          });
         },
       },
     },
@@ -84,13 +81,29 @@ export const auth = betterAuth({
     anonymous({
       emailDomainName: 'gmail.com',
       onLinkAccount: async ({ anonymousUser, newUser }) => {
-        await Promise.all([
-          anonymousCartBuyerIdentityUpdate({ anonymousUser, newUser }),
-          linkAnonymousDataToUser({
-            anonymousUserId: anonymousUser.user.id,
-            newUserId: newUser.user.id,
-          }),
-        ]);
+        console.log('[onLinkAccount] START', {
+          anonymousUserId: anonymousUser.user.id,
+          newUserId: newUser.user.id,
+          newUserEmail: newUser.user.email,
+        });
+        try {
+          const results = await Promise.allSettled([
+            anonymousCartBuyerIdentityUpdate({ anonymousUser, newUser }),
+            linkAnonymousDataToUser({
+              anonymousUserId: anonymousUser.user.id,
+              newUserId: newUser.user.id,
+            }),
+          ]);
+          console.log('[onLinkAccount] RESULTS', {
+            cartUpdate: results[0].status,
+            cartUpdateReason: results[0].status === 'rejected' ? results[0].reason?.message : undefined,
+            dataLink: results[1].status,
+            dataLinkReason: results[1].status === 'rejected' ? results[1].reason?.message : undefined,
+          });
+          console.log('[onLinkAccount] DONE');
+        } catch (error) {
+          console.error('[onLinkAccount] ERROR:', error);
+        }
       },
     }),
     nextCookies(),

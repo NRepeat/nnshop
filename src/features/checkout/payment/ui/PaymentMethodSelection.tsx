@@ -47,11 +47,7 @@ export default function PaymentMethodSelection({
               </p>
             </div>
             <FormControl>
-              <div
-                className={clsx(
-                  `grid grid-cols-1 gap-4 lg:grid-cols-${paymentMethods.length}`,
-                )}
-              >
+              <div className="flex flex-col gap-3">
                 {paymentMethods.map((method) => (
                   <PaymentMethodButton
                     key={method.id}

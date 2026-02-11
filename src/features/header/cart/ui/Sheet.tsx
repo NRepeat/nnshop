@@ -12,10 +12,12 @@ import { headers } from 'next/headers';
 const CartSheet = async ({ locale }: { locale: string }) => {
   const session = await auth.api.getSession({ headers: await headers() });
 
-  const cart = (await getCart({
-    userId: session?.user.id,
-    locale,
-  })) as GetCartQuery | null;
+  const cart = session?.user?.id
+    ? ((await getCart({
+        userId: session.user.id,
+        locale,
+      })) as GetCartQuery | null)
+    : null;
   const cartId = cart?.cart?.id;
   const sizeLabel = {
     uk: 'Розмір',

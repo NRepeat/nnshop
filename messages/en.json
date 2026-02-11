@@ -146,6 +146,7 @@
       "nameRequired": "Name is required",
       "signInFailed": "Sign in failed",
       "signUpFailed": "Sign up failed",
+      "userAlreadyExists": "A user with this email already exists. Please sign in instead.",
       "resetPasswordFailed": "Failed to send reset email",
       "unexpectedError": "An unexpected error occurred",
       "tooManyRequests": "Too many requests. Please try again later.",

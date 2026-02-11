@@ -186,6 +186,7 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
       await prisma.order.create({
         data: {
           shopifyOrderId: createdOrder.id,
+          orderName: createdOrder.name,
           userId: userId,
           draft: false,
         },

@@ -66,8 +66,8 @@ export default function PaymentForm({
         toast.success(t('paymentInformationSaved'));
         await savePaymentInfo(data, draftOrder.id);
         await resetCartSession();
-        const orderId = draftOrder.shopifyOrderId.split('/').pop();
-        return router.push(`/checkout/success/${orderId}`);
+        const orderName = (draftOrder.orderName || draftOrder.shopifyOrderId.split('/').pop() || '').replace('#', '');
+        return router.push(`/checkout/success/${encodeURIComponent(orderName)}`);
       } else {
         // toast.error(result.message);
       }
@@ -120,9 +120,9 @@ export default function PaymentForm({
           />
         )}
 
-        <div className="">
+        <div className="space-y-3">
           <Button
-            className="w-full h-12 bg-green-800"
+            className="w-full h-12 bg-green-800 rounded-md"
             disabled={isLoading}
             onClick={async () => {
               await onSubmit({
@@ -159,6 +159,9 @@ export default function PaymentForm({
               </div>
             )}
           </Button>
+          <p className="text-xs text-center text-muted-foreground">
+            {t('managerConfirmationNotice')}
+          </p>
         </div>
       </Form>
     </div>

@@ -32,12 +32,13 @@ model User {
 }
 
 model ContactInformation {
-  id          String @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   lastName    String
   email       String
   phone       String
   countryCode String
+  preferViber Boolean @default(false)
 
   // ADDED onDelete: Cascade
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -89,6 +90,7 @@ model Order {
   id                  String  @id @default(cuid())
   shopifyOrderId      String? @unique
   shopifyDraftOrderId String? @unique
+  orderName           String?
   draft               Boolean @default(false)
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

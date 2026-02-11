@@ -128,6 +128,19 @@
       "tryAgain": "попробуйте снова",
       "backToSignIn": "Вернуться ко входу"
     },
+    "resetPassword": {
+      "title": "Сбросить пароль",
+      "description": "Введите новый пароль для вашего аккаунта",
+      "newPassword": "Новый пароль",
+      "newPasswordPlaceholder": "Новый пароль",
+      "confirmPassword": "Подтвердите пароль",
+      "confirmPasswordPlaceholder": "Подтвердите пароль",
+      "saveButton": "Сохранить новый пароль",
+      "saving": "Сохраняем...",
+      "backToSignIn": "Вернуться ко входу",
+      "invalidToken": "Ссылка для сброса пароля недействительна или просрочена",
+      "success": "Пароль успешно изменён"
+    },
     "common": {
       "email": "Электронная почта",
       "password": "Пароль",
@@ -154,16 +167,17 @@
       "nameRequired": "Имя обязательно",
       "signInFailed": "Ошибка входа",
       "signUpFailed": "Ошибка регистрации",
+      "userAlreadyExists": "Пользователь с этой почтой уже существует. Пожалуйста, войдите.",
       "resetPasswordFailed": "Не удалось отправить письмо для сброса",
       "unexpectedError": "Произошла непредвиденная ошибка",
-      "tooManyRequests": "Слишком много запросов. Пожалуйста, попробуйте позже.",
+      "tooManyRequests": "Слишком много запросов, попробуйте позже",
       "googleSignInFailed": "Ошибка входа через Google",
       "shopifySignInFailed": "Ошибка входа через Shopify"
     },
     "success": {
       "welcomeBack": "С возвращением!",
       "accountCreated": "Аккаунт успешно создан!",
-      "passwordResetSent": "Письмо для сброса пароля отправлено! Проверьте свой почтовый ящик."
+      "passwordResetSent": "Письмо для сброса пароля отправлено"
     }
   },
   "Settings": {
@@ -419,13 +433,14 @@
     "continueToDelivery": "Перейти к доставке",
     "invalidPhoneNumber": "Неверный номер телефона",
     "nameRequired": "Имя обязательно",
-    "nameCyrillicOnly": "Имя должно быть на кириллице (украинском или русском)",
+    "nameCyrillicOnly": "Имя должно быть кириллицей",
     "lastNameRequired": "Фамилия обязательна",
-    "lastNameCyrillicOnly": "Фамилия должна быть на кириллице (украинском или русском)",
+    "lastNameCyrillicOnly": "Фамилия должна быть кириллицей",
     "invalidEmail": "Неверный адрес электронной почты",
     "emailLatinOnly": "Email должен содержать только латинские символы",
     "phoneRequired": "Телефон обязателен",
-    "countryCodeRequired": "Код страны обязателен"
+    "countryCodeRequired": "Код страны обязателен",
+    "preferViber": "Не звоните мне, отправьте сообщение в Viber"
   },
   "DeliveryForm": {
     "pleaseFixErrors": "Пожалуйста, исправьте следующие ошибки:",
@@ -461,8 +476,8 @@
   "PaymentForm": {
     "pleaseFixErrors": "Пожалуйста, исправьте следующие ошибки:",
     "errorSavingPaymentInformation": "При сохранении платежной информации произошла ошибка.",
-    "payNow": "Оплатить сейчас",
-    "afterDelivered": "После доставки",
+    "payNow": "Оплатить сразу",
+    "afterDelivered": "Оплата при доставке",
     "payLater": "Оплатить позже",
     "bank-transfer": "По реквизитам",
     "bankTransfer": "По реквизитам",
@@ -470,18 +485,20 @@
     "paypal": "PayPal",
     "stripe": "Stripe",
     "processingPayment": "Обработка платежа...",
-    "completePayment": "Завершить платеж",
+    "completePayment": "Оформить заказ",
     "paymentInformationSaved": "Платежная информация успешно сохранена!",
     "amountMustBeGreaterThanZero": "Сумма должна быть больше 0",
     "orderIdIsRequired": "Требуется ID заказа",
     "choosePaymentMethod": "Выберите способ оплаты",
     "selectPaymentMethodDescription": "Выберите, когда вы хотите оплатить заказ.",
-    "payNowDescription": "Оплатить по реквизитам банка",
+    "payNowDescription": "Оплата на банковские реквизиты",
     "afterDeliveredDescription": "Оплатить после получения заказа",
+    "afterDeliveredNote": "Комиссия Новой почты за услугу наложенного платежа 20грн +2% от стоимости товара",
     "payLaterDescription": "Оплатить в течение 30 дней",
-    "pay-now": "Оплатить сейчас",
-    "after-delivered": "После доставки",
+    "pay-now": "Оплатить сразу",
+    "after-delivered": "Оплата при доставке",
     "pay-later": "Оплатить позже",
+    "managerConfirmationNotice": "Ожидайте подтверждение заказа менеджером с 10:00 до 18:00",
     "orderPaymentFor": "Оплата заказа",
     "choosePaymentProvider": "Выберите платежную систему",
     "selectPaymentProviderDescription": "Выберите желаемый способ оплаты для безопасной обработки.",
@@ -502,7 +519,7 @@
     "delivery_information": "Информация о доставке",
     "payment_method": "Способ оплаты",
     "payment_information": "Информация об оплате",
-    "products_title": "Продукты",
+    "products_title": "Товары",
     "total": "Всего",
     "continue_shopping": "Продолжить покупки",
     "subtotal": "Подитог",
@@ -510,7 +527,9 @@
     "shipping": "Доставка",
     "tax": "Налог",
     "items": "товаров",
-    "calculated_next": "Рассчитывается далее"
+    "calculated_next": "Рассчитывается далее",
+    "size_label": "Размер",
+    "quantity_label": "Количество"
   },
   "ThankYouPage": {
     "title": "Спасибо за ваш заказ!",

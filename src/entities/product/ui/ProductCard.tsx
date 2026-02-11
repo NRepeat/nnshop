@@ -35,6 +35,27 @@ export const ProductCard = ({
   isFav,
 }: ProductCardProps) => {
   const t = useTranslations('ProductCard');
+
+  const availableSizes = (() => {
+    const sizeOption = product.options?.find((opt) =>
+      ['size', 'розмір', 'размер'].includes(opt.name.toLowerCase()),
+    );
+    if (!sizeOption) return [];
+
+    const sizeOptionIndex = product.options?.indexOf(sizeOption) ?? 0;
+
+    const availableValues = new Set(
+      product.variants?.edges
+        ?.filter((v) => v.node.availableForSale)
+        .map((v) => v.node.selectedOptions?.[sizeOptionIndex]?.value)
+        .filter(Boolean),
+    );
+
+    return sizeOption.optionValues
+      ?.map((v) => v.name)
+      .filter((name) => availableValues.has(name)) ?? [];
+  })();
+
   const productImages = [
     ...product?.media.edges.map((variant) => ({
       url: variant.node.previewImage?.url || '',
@@ -103,10 +124,22 @@ export const ProductCard = ({
                     handle={product.handle}
                   />
                 </div>
-                <div className=" bottom-2  right-2  flex w-full justify-end absolute">
+                {availableSizes.length > 0 && (
+                  <div className="absolute bottom-0 left-2 px-2 py-1.5 hidden group-hover:flex flex-col gap-1 bg-background/70 rounded-md">
+                    {availableSizes.map((size) => (
+                      <span
+                        key={size}
+                        className="text-[10px] md:text-xs px-2 py-0.5  border rounded text-center"
+                      >
+                        {size}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div className=" bottom-0 left-2  flex w-full justify-end absolute rounded-md">
                   <Button
                     variant={'ghost'}
-                    className="group-hover:flex hidden bg-background/70 rounded-full"
+                    className="group-hover:flex hidden bg-background/70 rounded-md"
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
@@ -132,10 +165,22 @@ export const ProductCard = ({
                   fill
                 />
               </div>
+              {availableSizes.length > 0 && (
+                <div className="absolute bottom-0 left-2 px-2 py-1.5 hidden group-hover:flex flex-col gap-1">
+                  {availableSizes.map((size) => (
+                    <span
+                      key={size}
+                      className="text-[10px] md:text-xs px-1.5 py-0.5 border rounded text-center"
+                    >
+                      {size}
+                    </span>
+                  ))}
+                </div>
+              )}
               <div className=" bottom-2 left-1/2 -translate-x-1/2 hidden group-hover:block absolute">
                 <Button
                   variant={'ghost'}
-                  className="bg-background/70 rounded-full"
+                  className="bg-background/70 rounded-md"
                   onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
@@ -148,13 +193,17 @@ export const ProductCard = ({
             </div>
           )}
         </Link>
-        {
           <div className="w-full pt-2 md:pt-1  flex flex-col gap-1 flex-1 md:px-2 max-h-fit">
             <Link href={`/brand/${vendorToHandle(product.vendor)}`}>
               <span className="text-md font-bold hover:underline">
                 {product.vendor}
               </span>
             </Link>
+            {product.productType && (
+              <span className="text-xs text-muted-foreground">
+                {product.productType}
+              </span>
+            )}
             <div className="flex flex-col justify-between flex-1">
               <div className=" w-full flex-col  justify-between flex pb-4">
                 <Link href={`/productt/${product.handle}`}>
@@ -205,7 +254,6 @@ export const ProductCard = ({
               </div>
             </div>
           </div>
-        }
       </CardContent>
     </Card>
   );

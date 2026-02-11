@@ -153,10 +153,14 @@ export const getCart = async ({
     }
     return response;
   } catch (error) {
-    console.log('🚀 ~ getCart ~ error:', error);
+    // Silently ignore AbortError — expected during Next.js navigation
+    const isAbort =
+      error instanceof DOMException && error.name === 'AbortError' ||
+      error instanceof Error && error.name === 'AbortError';
+    if (!isAbort) {
+      console.log('🚀 ~ getCart ~ error:', error);
+    }
     // Return null instead of throwing to prevent page crashes
-    // This handles cases where Shopify cart was converted to order
-    // or network timeouts during navigation
     return null;
   }
 };

@@ -29,7 +29,7 @@ function ReceiptSkeleton() {
 
 function EmptyCard({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-none border border-dashed border-gray-200 bg-gray-50/50 p-4">
+    <div className="flex items-center gap-3 rounded-md border border-dashed border-gray-200 bg-gray-50/50 p-4">
       <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-400">
         {icon}
       </div>
@@ -62,7 +62,7 @@ async function ContactCard({ locale }: { locale: string }) {
 
   return (
     <Link href="/checkout/info" className="group block">
-      <div className="flex items-center gap-3 rounded-none border border-gray-100 bg-white p-4 transition-all group-hover:border-gray-300 group-hover:shadow-sm">
+      <div className=" flex items-center gap-3 rounded-md border border-gray-100 bg-white p-4 transition-all group-hover:border-gray-300 group-hover:shadow-sm">
         <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-blue-50 text-blue-600">
           <User className="size-5" />
         </div>
@@ -102,7 +102,7 @@ async function DeliveryCard({ locale }: { locale: string }) {
 
   return (
     <Link href="/checkout/delivery" className="group block">
-      <div className="flex items-center gap-3 rounded-none border border-gray-100 bg-white p-4 transition-all group-hover:border-gray-300 group-hover:shadow-sm">
+      <div className="rounded-md flex items-center gap-3  border border-gray-100 bg-white p-4 transition-all group-hover:border-gray-300 group-hover:shadow-sm">
         <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-orange-50 text-orange-600">
           <Truck className="size-5" />
         </div>

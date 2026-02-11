@@ -45,7 +45,6 @@ const PRODUCT_TYPE_MAP: Record<string, SizeChartCategory> = {
   мокасины: 'shoes',
   сандалии: 'shoes',
   босоножки: 'shoes',
-  "чоловіче взуття":'shoes',
   'сабо и мюли': 'shoes',
   'балетки и мокасины': 'shoes',
   'шлепанцы и вьетнамки': 'shoes',

@@ -45,25 +45,6 @@ const CartItem = ({
           <div className="flex flex-col gap-1.5 col-span-1 ml-4  items-center text-base justify-center">
             <div className="flex flex-col gap-1">
               <p className="text-pretty ">{product.title}</p>
-              <p>
-                {sale > 0 ? (
-                  <>
-                    <span className="line-through text-gray-400">
-                      {originalPrice.toFixed()}
-                      {getSymbolFromCurrency('UAH')}
-                    </span>
-                    <span className="text-red-500 ml-2">
-                      {discountedPrice.toFixed()}
-                      {getSymbolFromCurrency('UAH')}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    {originalPrice.toFixed()}
-                    {getSymbolFromCurrency('UAH')}
-                  </>
-                )}
-              </p>
              {product.size && <p>{t('sizeLabel')}{product.size} × {product.quantity}</p>}
             </div>
           </div>

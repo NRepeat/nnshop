@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
 import { toast } from 'sonner';
 import { useRouter } from '@shared/i18n/navigation';
 import { DeliveryInfo, getDeliverySchema } from '../model/deliverySchema';
@@ -13,10 +12,8 @@ import { saveDeliveryInfo } from '../api/saveDeliveryInfo';
 import NovaPoshtaForm from './NovaPoshtaForm';
 import UkrPoshtaForm from './UkrPoshtaForm';
 import DeliveryMethodSelection from './DeliveryMethodSelection';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createOrder } from '@features/order/api/create';
-import { useSession } from '@features/auth/lib/client';
 
 interface DeliveryFormProps {
   defaultValues?: DeliveryInfo | null;
@@ -25,7 +22,6 @@ interface DeliveryFormProps {
 export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
   const router = useRouter();
   const t = useTranslations('DeliveryForm');
-  const locale = useLocale();
 
   const deliverySchema = getDeliverySchema(t);
 
@@ -57,21 +53,13 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
       coordinates: department.coordinates,
     });
   };
-  const session = useSession();
   const onSubmit: SubmitHandler<DeliveryInfo> = async (data) => {
     try {
       const result = await saveDeliveryInfo(data);
 
       if (result.success) {
-        const completeCheckoutData = await getCompleteCheckoutData(
-          session.data,
-        );
-        console.log(completeCheckoutData,"completeCheckoutData")
-        const orderResult = await createOrder(completeCheckoutData, locale);
         toast.success(t('deliveryInformationSavedSuccessfully'));
-        router.push(
-          `/checkout/payment/?order=${orderResult.order?.id.split('/').pop()}`,
-        );
+        router.push('/checkout/payment');
       } else {
         toast.error(result.message);
       }
