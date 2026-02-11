@@ -8,11 +8,11 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
 
-  logging: {
-    fetches: {
-      fullUrl: false,
-    },
-  },
+  // logging: {
+  //   fetches: {
+  //     fullUrl: false,
+  //   },
+  // },
   cacheComponents: true,
   allowedDevOrigins: [
     'development.nninc.uk',
@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
     'http://localhost:3333',
     "miomio.com.ua",
     "www.miomio.com.ua",
+    "nmactunel.nninc.uk",
     'https://www.miomio.com.ua'
   ],
   images: {

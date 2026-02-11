@@ -40,14 +40,15 @@ export const isValidPhone = (phone: string) => {
   }
 };
 
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: 'Имя должно содержать не менее 2 символов.',
-  }),
-  phone: z.string().refine(isValidPhone, {
-    message: 'Введите корректный номер телефона.',
-  }),
-});
+const createFormSchema = (t: (key: string) => string) =>
+  z.object({
+    name: z.string().min(2, {
+      message: t('nameValidation'),
+    }),
+    phone: z.string().refine(isValidPhone, {
+      message: t('phoneValidation'),
+    }),
+  });
 
 interface QuickBuyModalProps {
   product: ShopifyProduct;
@@ -63,7 +64,8 @@ export const QuickBuyModal = ({
   sizeOptions,
 }: QuickBuyModalProps) => {
   const t = useTranslations('ProductPage');
- 
+  const formSchema = createFormSchema(t);
+
   const hasSizes = sizeOptions && sizeOptions.length > 0;
 
   const [step, setStep] = useState(hasSizes ? 1 : 2);
@@ -71,7 +73,7 @@ export const QuickBuyModal = ({
   const [isPending, startTransition] = useTransition();
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<z.infer<ReturnType<typeof createFormSchema>>>({
     resolver: zodResolver(formSchema),
     mode: 'onChange',
     defaultValues: {
@@ -101,7 +103,7 @@ export const QuickBuyModal = ({
     setStep(1);
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<ReturnType<typeof createFormSchema>>) => {
     // Find the selected variant
     let variantId: string;
 
@@ -115,7 +117,7 @@ export const QuickBuyModal = ({
       )?.node;
 
       if (!variant) {
-        toast.error('Не удалось найти выбранный размер');
+        toast.error(t('sizeNotFound'));
         return;
       }
       variantId = variant.id;
@@ -123,7 +125,7 @@ export const QuickBuyModal = ({
       // No sizes, use first available variant
       const variant = product.variants.edges[0]?.node;
       if (!variant) {
-        toast.error('Товар недоступен');
+        toast.error(t('productUnavailable'));
         return;
       }
       variantId = variant.id;
@@ -134,6 +136,20 @@ export const QuickBuyModal = ({
       product.metafields.find((m) => m?.key === 'znizka')?.value || '0'
     ) || 0;
 
+    // Get the variant to extract price
+    const selectedVariant = hasSizes && selectedSize
+      ? product.variants.edges.find((edge) =>
+          edge.node.selectedOptions.some(
+            (option) =>
+              option.name.toLowerCase() === 'розмір' &&
+              option.value.toLowerCase() === selectedSize.toLowerCase()
+          )
+        )?.node
+      : product.variants.edges[0]?.node;
+
+    const variantPrice = selectedVariant?.price?.amount || '0';
+    const variantCurrency = selectedVariant?.price?.currencyCode || 'UAH';
+
     startTransition(async () => {
       const result = await createQuickOrder({
         variantId,
@@ -142,16 +158,18 @@ export const QuickBuyModal = ({
         phone: values.phone,
         productTitle: product.title,
         discountPercentage: discountPercentage > 0 ? discountPercentage : undefined,
+        price: variantPrice,
+        currencyCode: variantCurrency,
       });
 
       if (result.success) {
         setIsSuccess(true);
-        toast.success(`Заказ №${result.orderName} успешно создан. Мы свяжемся с вами в ближайшее время.`);
+        toast.success(t('orderSuccess', { orderName: result.orderName }));
         setTimeout(() => {
           onOpenChange(false);
         }, 2000);
       } else {
-        toast.error(result.errors?.[0] || 'Не удалось создать заказ');
+        toast.error(result.errors?.[0] || t('orderError'));
       }
     });
   };
@@ -170,10 +188,10 @@ export const QuickBuyModal = ({
           <div className="flex flex-col items-center justify-center py-8 gap-4">
             <CheckCircle2 className="h-16 w-16 text-green-500" />
             <p className="text-center text-lg font-medium">
-              Заказ успешно оформлен!
+              {t('orderSuccessTitle')}
             </p>
             <p className="text-center text-sm text-muted-foreground">
-              Мы свяжемся с вами в ближайшее время
+              {t('orderSuccessMessage')}
             </p>
           </div>
         )}
@@ -218,12 +236,12 @@ export const QuickBuyModal = ({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Имя</FormLabel>
+                    <FormLabel>{t('nameLabel')}</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Ваше имя" 
+                      <Input
+                        placeholder={t('namePlaceholder')}
                         autoComplete="name"
-                        {...field} 
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -235,13 +253,13 @@ export const QuickBuyModal = ({
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Телефон</FormLabel>
+                    <FormLabel>{t('phoneLabel')}</FormLabel>
                     <FormControl>
-                      <Input 
+                      <Input
                         type="tel"
-                        placeholder="+380..." 
+                        placeholder={t('phonePlaceholder')}
                         autoComplete="tel"
-                        {...field} 
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -274,7 +292,7 @@ export const QuickBuyModal = ({
                   {isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Отправка...
+                      {t('submitting')}
                     </>
                   ) : (
                     t('submitOrder')

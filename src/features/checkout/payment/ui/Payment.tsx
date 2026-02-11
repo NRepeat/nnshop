@@ -47,14 +47,14 @@ export default async function Payment({
 
     draftOrder = await prisma.order.findUnique({
       where: {
-        shopifyDraftOrderId: 'gid://shopify/DraftOrder/' + draftOrderId,
+        shopifyOrderId: 'gid://shopify/Order/' + draftOrderId,
       },
     });
     if (!draftOrder) {
-      throw new Error('Draft order not found');
+      throw new Error('Order not found');
     }
-    if (draftOrder.shopifyOrderId) {
-      throw new Error('Order already exists');
+    if (!draftOrder.shopifyOrderId) {
+      throw new Error('Order ID missing');
     }
     return (
       <div className="w-full max-w-4xl mx-auto">

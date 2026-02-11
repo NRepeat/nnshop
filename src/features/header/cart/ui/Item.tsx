@@ -63,9 +63,8 @@ const CartItem = ({
                     {getSymbolFromCurrency('UAH')}
                   </>
                 )}
-                {' '}x {product.quantity}
               </p>
-             {product.size && <p>{t('sizeLabel')}{product.size}</p>}
+             {product.size && <p>{t('sizeLabel')}{product.size} × {product.quantity}</p>}
             </div>
           </div>
           <div className="col-span-1 flex flex-col justify-center">

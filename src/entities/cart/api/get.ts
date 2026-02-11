@@ -148,7 +148,6 @@ export const getCart = async ({
       language: locale.toUpperCase() as StorefrontLanguageCode,
       cache: 'no-store',
     });
-    console.log("🚀 ~ getCart ~ response:", response.cart?.lines.edges)
     if (!response.cart) {
       return null;
     }

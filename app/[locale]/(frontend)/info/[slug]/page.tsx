@@ -5,6 +5,8 @@ import { setRequestLocale } from 'next-intl/server';
 import { locales } from '@shared/i18n/routing';
 import { Metadata } from 'next';
 import { generatePageMetadata } from '@shared/lib/seo/generateMetadata';
+import { PortableText, type PortableTextBlock } from 'next-sanity';
+import { components } from '@/shared/sanity/components/portableText';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -75,8 +77,19 @@ export default async function InfoPage({ params }: Props) {
     revalidate: 3600,
   });
   return (
-    <article className=" container prose md:prose-lg lg:prose-xl mb-10">
-      <div>Page Builder is deprecated</div>
+    <article className="container prose md:prose-lg lg:prose-xl mb-10 h-fit min-h-screen">
+      {pageContent?.content?.map((block) => {
+        if (block._type !== 'contentPageBlock') return null;
+        const body = block.body as Record<string, PortableTextBlock[] | null> | undefined;
+        if (!body) return null;
+        const value = body[sanityLocale] ?? body.uk;
+        if (!value) return null;
+        return (
+          <div key={block._key}>
+            <PortableText value={value} components={components} />
+          </div>
+        );
+      })}
     </article>
   );
 }

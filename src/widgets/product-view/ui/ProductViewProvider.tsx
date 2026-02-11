@@ -32,61 +32,37 @@ export function ProductViewProvider({
     (option) => option.name.toLowerCase() === 'Розмір'.toLowerCase(),
   )?.values;
 
-  const sortedSizeOptions = sizeOptions?.sort((a, b) => {
-    const sizeOrder = ['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl'];
-    const aIsNumeric = !isNaN(Number(a));
-    const bIsNumeric = !isNaN(Number(b));
 
-    if (aIsNumeric && bIsNumeric) {
-      return Number(a) - Number(b);
-    }
 
-    if (!aIsNumeric && !bIsNumeric) {
-      return (
-        sizeOrder.indexOf(a.toLowerCase()) - sizeOrder.indexOf(b.toLowerCase())
-      );
-    }
 
-    return aIsNumeric ? -1 : 1;
-  });
+  const [size, setSize] = useQueryState('size');
+  let selectedVariant = undefined;
 
-  const firstAvailableSize = sortedSizeOptions?.find((s) => {
-    const variant = product.variants.edges.find((edge) =>
-      edge.node.selectedOptions.some(
+  if (size) {
+    selectedVariant = product.variants.edges.find((edge) => {
+      const variant = edge.node;
+      console.log(variant.selectedOptions,"selectedOptions")
+      const sizeMatch = variant.selectedOptions.find(
         (option) =>
-          option.name.toLowerCase() === 'розмір' &&
-          option.value.toLowerCase() === s.toLowerCase(),
-      ),
-    )?.node;
-    return variant?.availableForSale;
-  });
-
-  const [size, setSize] = useQueryState('size', {
-    defaultValue: firstAvailableSize?.toLowerCase() || '',
-  });
-  const selectedVariant = product.variants.edges.find((edge) => {
-    const variant = edge.node;
-
-    const sizeMatch = variant.selectedOptions.find(
-      (option) =>
-        option.name.toLowerCase() === 'Розмір'.toLowerCase() &&
-        option.value.toLowerCase() === (size ?? ''),
-    );
-    return sizeMatch;
-  })?.node;
-  if (!selectedVariant) {
-    const firstAvailableVariant = product.variants.edges.find(
-      (edge) => edge.node.availableForSale,
-    )?.node;
-    if (firstAvailableVariant) {
-      const sizeOption = firstAvailableVariant.selectedOptions.find(
-        (option) => option.name.toLowerCase() === 'розмір',
+          option.name.toLowerCase() === 'Розмір'.toLowerCase() &&
+          option.value.toLowerCase() === (size ?? ''),
       );
-      if (sizeOption) {
-        setSize(sizeOption.value.toLowerCase());
-      }
-    }
+      return sizeMatch;
+    })?.node;
   }
+  // if (!selectedVariant) {
+  //   const firstAvailableVariant = product.variants.edges.find(
+  //     (edge) => edge.node.availableForSale,
+  //   )?.node;
+  //   if (firstAvailableVariant) {
+  //     const sizeOption = firstAvailableVariant.selectedOptions.find(
+  //       (option) => option.name.toLowerCase() === 'розмір',
+  //     );
+  //     if (sizeOption) {
+  //       setSize(sizeOption.value.toLowerCase());
+  //     }
+  //   }
+  // }
 
   return (
     <>

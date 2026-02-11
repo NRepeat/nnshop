@@ -316,6 +316,7 @@
     "productSize": "Product Size:",
     "size": "Size",
     "quickOrder": "Quick Order",
+    "sku": "SKU",
     "sizeChart": "Size Chart",
     "checkInStoreAvailability": "Check In-Store Availability",
     "fitDetails": "Fit Details",
@@ -389,8 +390,11 @@
     "continueToDelivery": "Continue to Delivery",
     "invalidPhoneNumber": "Invalid phone number",
     "nameRequired": "Name is required",
+    "nameCyrillicOnly": "Name must be in Cyrillic (Ukrainian or Russian)",
     "lastNameRequired": "Last name is required",
+    "lastNameCyrillicOnly": "Last name must be in Cyrillic (Ukrainian or Russian)",
     "invalidEmail": "Invalid email address",
+    "emailLatinOnly": "Email must contain only Latin characters",
     "phoneRequired": "Phone is required",
     "countryCodeRequired": "Country code is required"
   },
@@ -589,19 +593,19 @@
     "showMore": "Show More"
   },
   "SizeChartDialog": {
-    "boots": {
-      "title": "Size chart",
+    "shoes": {
+      "title": "Shoe size chart",
       "description": "To measure your shoe size:<br/>Place your foot on a sheet of paper.<br/>Draw the outline of the foot on it.<br/>Mark two lines that coincide with the toe and the heel.<br/>Measure the distance between the heel and the longest toe.<br/>Use the measurements you have obtained and compare with the size table to determine your shoe size.",
       "eu": "EU",
       "cm": "cm"
     },
-    "clothes": {
-      "title": "Size chart",
-      "description": "To measure your clothing size, please refer to the chart below.",
+    "clothing": {
+      "title": "Clothing size chart",
+      "description": "To measure your clothing size, please refer to the chart below. All measurements are in centimeters.",
       "size": "Size",
-      "bust": "Bust (in)",
-      "waist": "Waist (in)",
-      "hips": "Hips (in)"
+      "bust": "Bust (cm)",
+      "waist": "Waist (cm)",
+      "hips": "Hips (cm)"
     }
   },
   "CartPage": {

@@ -38,6 +38,7 @@ import { infoBar } from './blocks/info-bar';
 import { headerType } from './headerType';
 import { brandGridBlock } from './blocks/brendGrid';
 import { collectionsWithPreviews } from './blocks/collection-with-images';
+import { brandsNavigation } from './blocks/brandsNavigation';
 
 // const blocks = [heroSlider, heroSlide, mainCollectionGrid];
 
@@ -48,6 +49,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     blockCatalogType,
 
     collectionsWithPreviews,
+    brandsNavigation,
     brandGridBlock,
     infoBar,
     headerType,

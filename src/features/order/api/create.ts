@@ -8,10 +8,15 @@ import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { formatPhoneForShopify } from '@features/checkout/schema/contactInfoSchema';
 
-type DrafOrder = {
+type OrderResult = {
   id: string;
   name: string;
-  totalPrice: number;
+  totalPriceSet: {
+    shopMoney: {
+      amount: string;
+      currencyCode: string;
+    };
+  };
   lineItems: {
     edges: {
       node: {
@@ -23,13 +28,18 @@ type DrafOrder = {
   };
 };
 
-const DRAFT_ORDER_CREATE_MUTATION = `
-  mutation draftOrderCreate($input: DraftOrderInput!) {
-    draftOrderCreate(input: $input) {
-      draftOrder {
+const ORDER_CREATE_MUTATION = `
+  mutation orderCreate($order: OrderCreateOrderInput!, $options: OrderCreateOptionsInput) {
+    orderCreate(order: $order, options: $options) {
+      order {
         id
         name
-        totalPrice
+        totalPriceSet {
+          shopMoney {
+            amount
+            currencyCode
+          }
+        }
         lineItems(first: 10) {
           edges {
             node {
@@ -48,37 +58,13 @@ const DRAFT_ORDER_CREATE_MUTATION = `
   }
 `;
 
-const DRAFT_ORDER_UPDATE_MUTATION = `
-  mutation draftOrderUpdate($id: ID!, $input: DraftOrderInput!) {
-    draftOrderUpdate(id: $id, input: $input) {
-      draftOrder {
-        id
-        name
-        totalPrice
-        lineItems(first: 10) {
-          edges {
-            node {
-              id
-              title
-              quantity
-            }
-          }
-        }
-      }
-      userErrors {
-        field
-        message
-      }
-    }
-  }
-`;
-
-export async function createDraftOrder(
+export async function createOrder(
   completeCheckoutData: Omit<CheckoutData, 'paymentInfo'> | null,
   locale: string = 'uk',
+  sendReceipt: boolean = false,
 ): Promise<{
   success: boolean;
-  order?: DrafOrder;
+  order?: OrderResult;
   errors?: string[];
 }> {
   try {
@@ -90,12 +76,23 @@ export async function createDraftOrder(
         errors: ['Session not found'],
       };
     }
-    // const cartId = await prisma.cart.findFirst({
-    //   where: { userId: session.user.id, completed: false },
+
+    // If an order already exists (not draft), skip creation and return it
+    // const existingOrder = await prisma.order.findFirst({
+    //   where: { userId: session.user.id, draft: false },
     // });
-    const existDraftOrder = await prisma.order.findFirst({
-      where: { userId: session.user.id, draft: true },
-    });
+
+    // if (existingOrder?.shopifyOrderId) {
+    //   return {
+    //     success: true,
+    //     order: {
+    //       id: existingOrder.shopifyOrderId,
+    //       name: '',
+    //       totalPriceSet: { shopMoney: { amount: '0', currencyCode: 'UAH' } },
+    //       lineItems: { edges: [] },
+    //     },
+    //   };
+    // }
 
     const result = (await getCart({
       userId: session.user.id,
@@ -123,6 +120,9 @@ export async function createDraftOrder(
         errors: ['Cart has no items'],
       };
     }
+
+    const currencyCode = cart.cost.totalAmount.currencyCode || 'UAH';
+
     const lineItems = cart.lines.edges
       .map((edge: any) => {
         const lineItem = edge.node;
@@ -131,6 +131,7 @@ export async function createDraftOrder(
         }
 
         const product = lineItem.merchandise.product;
+        const amountPerQuantity = parseFloat(lineItem.cost.amountPerQuantity.amount);
 
         // Get discount percentage from metafield
         const sale = Number(
@@ -142,52 +143,49 @@ export async function createDraftOrder(
           quantity: lineItem.quantity,
         };
 
-        // Apply discount if exists
+        // Apply discount via priceSet if exists
         if (sale > 0) {
-          item.appliedDiscount = {
-            valueType: 'PERCENTAGE',
-            value: parseFloat(sale.toString()),
-            description: `${sale}% discount`,
+          const discountedPrice = amountPerQuantity * (1 - sale / 100);
+          item.priceSet = {
+            shopMoney: {
+              amount: discountedPrice.toFixed(2),
+              currencyCode,
+            },
+          };
+        } else {
+          item.priceSet = {
+            shopMoney: {
+              amount: amountPerQuantity.toFixed(2),
+              currencyCode,
+            },
           };
         }
 
         return item;
       })
       .filter((item) => item !== null);
-    const input: any = {
+
+    const order: any = {
       lineItems: lineItems,
+      currency: currencyCode,
+      financialStatus: 'PENDING',
     };
 
     // Add note from cart if present
     if (cart.note) {
-      input.note = cart.note;
+      order.note = cart.note;
     }
 
     // Add discount codes from cart if present
     if (cart.discountCodes && cart.discountCodes.length > 0) {
       const applicableDiscounts = cart.discountCodes.filter((d) => d.applicable);
       if (applicableDiscounts.length > 0) {
-        // Calculate discount amount from cart cost
-        const subtotal = parseFloat(cart.cost.subtotalAmount.amount);
-        const total = parseFloat(cart.cost.totalAmount.amount);
-        const discountAmount = subtotal - total;
-
-        // Apply discount to draft order if there's a difference
-        if (discountAmount > 0) {
-          input.appliedDiscount = {
-            valueType: 'FIXED_AMOUNT',
-            value: discountAmount,
-            description: `Discount code: ${applicableDiscounts.map(d => d.code).join(', ')}`,
-            title: applicableDiscounts[0].code,
-          };
-        }
-
-        // Also save discount codes as custom attributes for reference
-        if (!input.customAttributes) {
-          input.customAttributes = [];
+        // Save discount codes as custom attributes for reference
+        if (!order.customAttributes) {
+          order.customAttributes = [];
         }
         applicableDiscounts.forEach((discount, index) => {
-          input.customAttributes.push({
+          order.customAttributes.push({
             key: `discount_code_${index + 1}`,
             value: discount.code,
           });
@@ -199,7 +197,7 @@ export async function createDraftOrder(
       throw new Error('Checkout data is missing');
     }
     if (completeCheckoutData.contactInfo.email) {
-      input.email = completeCheckoutData.contactInfo.email;
+      order.email = completeCheckoutData.contactInfo.email;
     }
 
     // Format phone number for Shopify (E.164 format)
@@ -211,7 +209,7 @@ export async function createDraftOrder(
       : '';
 
     if (formattedPhone) {
-      input.phone = formattedPhone;
+      order.phone = formattedPhone;
     }
 
     const selectedDelivery = cart.delivery.addresses.find(
@@ -227,52 +225,29 @@ export async function createDraftOrder(
       zip: selectedDelivery?.zip || '',
       address2: selectedDelivery?.address2 || undefined,
     };
-    input.shippingAddress = shippingAddress;
+    order.shippingAddress = shippingAddress;
 
-    let draftOrder: DrafOrder | null = null;
-    let userErrors: Array<{ field: string; message: string }> = [];
+    const orderResponse = await adminClient.client.request<
+      {
+        orderCreate: {
+          order: OrderResult | null;
+          userErrors: Array<{ field: string; message: string }>;
+        };
+      },
+      {
+        order: any;
+        options: { sendReceipt: boolean };
+      }
+    >({
+      query: ORDER_CREATE_MUTATION,
+      variables: {
+        order,
+        options: { sendReceipt },
+      },
+    });
 
-    if (existDraftOrder?.shopifyDraftOrderId) {
-      const variables = {
-        id: existDraftOrder.shopifyDraftOrderId,
-        input: input,
-      };
-      const orderResponse = await adminClient.client.request<
-        {
-          draftOrderUpdate: {
-            draftOrder: DrafOrder | null;
-            userErrors: Array<{ field: string; message: string }>;
-          };
-        },
-        {
-          id: string;
-          input: any;
-        }
-      >({
-        query: DRAFT_ORDER_UPDATE_MUTATION,
-        variables,
-      });
-
-      draftOrder = orderResponse.draftOrderUpdate.draftOrder;
-      userErrors = orderResponse.draftOrderUpdate.userErrors;
-    } else {
-      const orderResponse = await adminClient.client.request<
-        {
-          draftOrderCreate: {
-            draftOrder: DrafOrder | null;
-            userErrors: Array<{ field: string; message: string }>;
-          };
-        },
-        {
-          input: any;
-        }
-      >({
-        query: DRAFT_ORDER_CREATE_MUTATION,
-        variables: { input },
-      });
-      draftOrder = orderResponse.draftOrderCreate.draftOrder;
-      userErrors = orderResponse.draftOrderCreate.userErrors;
-    }
+    const createdOrder = orderResponse.orderCreate.order;
+    const userErrors = orderResponse.orderCreate.userErrors;
 
     if (userErrors.length > 0) {
       console.error(' ADMIN API USER ERRORS:', JSON.stringify(userErrors, null, 2));
@@ -285,44 +260,46 @@ export async function createDraftOrder(
       };
     }
 
-    if (!draftOrder) {
-      console.error(' NO DRAFT ORDER RETURNED FROM ADMIN API');
+    if (!createdOrder) {
+      console.error(' NO ORDER RETURNED FROM ADMIN API');
       return {
         success: false,
-        errors: ['Failed to create/update draft order - no order returned'],
+        errors: ['Failed to create order - no order returned'],
       };
     }
 
-    if (!existDraftOrder) {
-      await prisma.order.create({
-        data: {
-          shopifyDraftOrderId: draftOrder.id,
-          userId: session.user.id,
-          draft: true,
-        },
-      });
-    }
+    // Delete any existing draft orders for this user
+    await prisma.order.deleteMany({
+      where: { userId: session.user.id, draft: true },
+    });
+
+    await prisma.order.create({
+      data: {
+        shopifyOrderId: createdOrder.id,
+        userId: session.user.id,
+        draft: false,
+      },
+    });
 
     return {
       success: true,
-      order: draftOrder,
+      order: createdOrder,
     };
   } catch (error) {
     console.error(
-      ' ERROR CREATING/UPDATING DRAFT ORDER WITH ADMIN API:',
+      ' ERROR CREATING ORDER WITH ADMIN API:',
       error,
     );
     console.error(' ERROR DETAILS:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      cartId: '', // Consider adding cartId here for better debugging
     });
     return {
       success: false,
       errors: [
         error instanceof Error
           ? error.message
-          : 'Failed to create/update draft order with Admin API',
+          : 'Failed to create order with Admin API',
       ],
     };
   }

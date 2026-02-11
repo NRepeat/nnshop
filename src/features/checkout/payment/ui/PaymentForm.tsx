@@ -15,7 +15,6 @@ import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { paymentMethods, paymentProviders } from '../lib/constants';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
-import { completeOrder } from '../api/completeOrder';
 import resetCartSession from '@features/cart/api/resetCartSession';
 import { Order } from '~/generated/prisma/client';
 
@@ -63,35 +62,12 @@ export default function PaymentForm({
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
     setIsLoading(true);
     try {
-      if (draftOrder && draftOrder.shopifyDraftOrderId) {
+      if (draftOrder && draftOrder.shopifyOrderId) {
         toast.success(t('paymentInformationSaved'));
-
-        // For "after-delivered", create unpaid order (payment pending)
-        if (data.paymentMethod === 'after-delivered') {
-          const completedOrder = await completeOrder(
-            draftOrder.shopifyDraftOrderId,
-            true // paymentPending = true for unpaid orders
-          );
-          await savePaymentInfo(data, completedOrder.id);
-          await resetCartSession();
-          return router.push(
-            `/checkout/success/${completedOrder?.shopifyDraftOrderId?.split('/').pop()}`,
-          );
-        }
-
-        // For "pay-now", this shouldn't be called directly
-        // Payment should be processed first, then order completed
-        if (data.paymentMethod === 'pay-now') {
-          const completedOrder = await completeOrder(
-            draftOrder.shopifyDraftOrderId,
-            false // paymentPending = false for paid orders
-          );
-          await savePaymentInfo(data, completedOrder.id);
-          await resetCartSession();
-          return router.push(
-            `/checkout/success/${completedOrder?.shopifyDraftOrderId?.split('/').pop()}`,
-          );
-        }
+        await savePaymentInfo(data, draftOrder.id);
+        await resetCartSession();
+        const orderId = draftOrder.shopifyOrderId.split('/').pop();
+        return router.push(`/checkout/success/${orderId}`);
       } else {
         // toast.error(result.message);
       }

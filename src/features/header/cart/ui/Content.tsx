@@ -103,12 +103,12 @@ const Content = async ({
           <Separator />
         </div>
         <div className="w-full flex flex-col gap-2 px-4 py-4">
-          <div className="flex justify-between text-sm">
+          {/* <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">{t('subtotal')}</span>
             <span className="">
               {getSymbolFromCurrency(currencySymbol)} {subtotalAmount.toFixed(0)}
             </span>
-          </div>
+          </div> */}
           {discountAmount > 0 && (
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('discount')}</span>

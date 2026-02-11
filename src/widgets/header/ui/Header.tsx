@@ -100,7 +100,10 @@ export const Header = async ({ locale }: { locale: string }) => {
 
         <div className="hidden md:block w-full">
           <Suspense fallback={<CurrentNavigationSessionSkilet />}>
-            <CurrentNavigationSession locale={locale} />
+            <CurrentNavigationSession
+              locale={locale}
+              brandsNavigation={headerData?.brandsNavigation}
+            />
           </Suspense>
         </div>
       </header>
