@@ -120,7 +120,7 @@ export const ProductInfo = ({
 
   const sale =
     product.metafields.find((m) => m?.key === 'znizka')?.value || '0';
-  const sku = product.variants.edges[0].node.sku
+  const sku = product.variants.edges[0].node.sku;
   const atTheFitting = selectedVariant?.metafields.find(
     (m) => m?.key === 'at_the_fitting',
   )?.value;
@@ -190,10 +190,13 @@ export const ProductInfo = ({
                       ? 'default'
                       : 'outline'
                   }
-                  className={cn('rounded-md min-w-[56px] h-11 text-sm font-medium relative border-primary border', {
-                    'bg-primary text-white ring-2 ring-offset-1 ring-primary ':
-                      size.toLowerCase() === s.toLowerCase(),
-                  })}
+                  className={cn(
+                    'rounded-md min-w-[56px] h-11 text-sm font-medium relative border-primary border',
+                    {
+                      'bg-primary text-white ring-2 ring-offset-1 ring-primary ':
+                        size.toLowerCase() === s.toLowerCase(),
+                    },
+                  )}
                   onClick={() => setSize(s.toLowerCase())}
                   disabled={!availableForSale}
                 >
@@ -259,11 +262,20 @@ export const ProductInfo = ({
         />
       )}
       <div className="flex gap-4 flex-nowrap flex-col w-full">
-        <AddToCartButton
-          product={product}
-          variant="default"
-          selectedVariant={selectedVariant}
-        />
+        {sortedSizeOptions && sortedSizeOptions.length > 0 ? (
+          <AddToCartButton
+            product={product}
+            variant="default"
+            selectedVariant={selectedVariant}
+          />
+        ) : (
+          <AddToCartButton
+            product={product}
+            variant="default"
+            selectedVariant={product.variants.edges[0].node}
+          />
+        )}
+
         <Button
           variant="secondary"
           className="w-full h-10 md:h-14 text-md rounded-md"
