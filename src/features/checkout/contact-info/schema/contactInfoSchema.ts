@@ -4,6 +4,15 @@ import { isValidPhone } from '@shared/lib/validation/phone';
 const CYRILLIC_NAME_REGEX = /^[а-яА-ЯёЁіІїЇєЄґҐ'\-\s]+$/;
 const LATIN_EMAIL_REGEX = /^[a-zA-Z0-9._%+\-@]+$/;
 
+export type ContactInfoFormData = {
+  name: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  countryCode: string;
+  preferViber: boolean;
+};
+
 export const getContactInfoSchema = (t: (key: string) => string) => {
   return z.object({
     name: z
@@ -26,5 +35,6 @@ export const getContactInfoSchema = (t: (key: string) => string) => {
         message: t('invalidPhoneNumber'),
       }),
     countryCode: z.string().min(1, t('countryCodeRequired')),
+    preferViber: z.boolean().default(false),
   });
 };

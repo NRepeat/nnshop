@@ -29,13 +29,7 @@ import z from 'zod';
 import { toast } from 'sonner';
 import { authClient } from '../lib/auth-client';
 
-const forgotPasswordSchema = z.object({
-  email: z.email({
-    message: 'Please enter a valid email address.',
-  }),
-});
-
-type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+type ForgotPasswordFormData = { email: string };
 
 export function ForgotPasswordForm({
   className,
@@ -45,6 +39,14 @@ export function ForgotPasswordForm({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const t = useTranslations('Auth.forgotPassword');
   const tCommon = useTranslations('Auth.common');
+  const tErrors = useTranslations('Auth.errors');
+  const tSuccess = useTranslations('Auth.success');
+
+  const forgotPasswordSchema = z.object({
+    email: z.email({
+      message: tErrors('emailInvalid'),
+    }),
+  });
 
   const form = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -58,19 +60,19 @@ export function ForgotPasswordForm({
     try {
       const result = await authClient.requestPasswordReset({
         email: data.email!,
-        redirectTo: '/reset-password',
+        redirectTo: '/auth/reset-password',
       });
 
       if (result.error) {
-        toast.error(result.error.message || 'Failed to send reset email');
+        toast.error(tErrors('resetPasswordFailed'));
         return;
       }
 
       setIsSubmitted(true);
-      toast.success('Password reset email sent! Please check your inbox.');
+      toast.success(tSuccess('passwordResetSent'));
     } catch (error) {
       console.error('Forgot password error:', error);
-      toast.error('An unexpected error occurred');
+      toast.error(tErrors('unexpectedError'));
     } finally {
       setIsLoading(false);
     }
@@ -133,11 +135,11 @@ export function ForgotPasswordForm({
             </div>
             <div className="bg-muted relative hidden md:block">
               <Image
-                src="/placeholder.svg"
+                src="/auth_image.jpeg"
                 alt="Image"
-                width={800}
-                height={500}
-                className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+                fill
+                priority
+                className="absolute inset-0 h-full w-full object-cover grayscale contrast-125"
               />
             </div>
           </CardContent>
@@ -161,7 +163,7 @@ export function ForgotPasswordForm({
               <FieldGroup>
                 <div className="flex flex-col items-center gap-2 text-center">
                   <h1 className="text-2xl font-bold">{t('title')}</h1>
-                  <p className="text-muted-foreground text-balance">
+                  <p className="text-muted-foreground text-sm">
                     {t('description')}
                   </p>
                 </div>
@@ -207,11 +209,11 @@ export function ForgotPasswordForm({
 
           <div className="bg-muted relative hidden md:block">
             <Image
-              src="/placeholder.svg"
+              src="/auth_image.jpeg"
               alt="Image"
-              width={800}
-              height={500}
-              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+              fill
+              priority
+              className="absolute inset-0 h-full w-full object-cover grayscale contrast-125"
             />
           </div>
         </CardContent>

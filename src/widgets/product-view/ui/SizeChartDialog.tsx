@@ -45,7 +45,6 @@ const PRODUCT_TYPE_MAP: Record<string, SizeChartCategory> = {
   мокасины: 'shoes',
   сандалии: 'shoes',
   босоножки: 'shoes',
-  "чоловіче взуття":'shoes',
   'сабо и мюли': 'shoes',
   'балетки и мокасины': 'shoes',
   'шлепанцы и вьетнамки': 'shoes',
@@ -105,7 +104,7 @@ const ShoesSizeChart = ({ t }: { t: (key: string) => string }) => (
       <div className='flex'>
       {/* @ts-ignore */}
         <div dangerouslySetInnerHTML={{ __html: t.raw('shoes.description') }} />
-        <div className=" flex  flex-col items-center justify-center border border-black p-8 aspect-square md:aspect-auto h-full max-h-[250px]">
+        <div className="hidden md:flex  flex-col items-center justify-center border border-black p-8 aspect-square md:aspect-auto h-full max-h-[250px]">
           <Image
             src="https://www.agl.com/static/version1767785856/frontend/GDL/agl-noshop/en_US/images/size_guide.gif"
             width={280}

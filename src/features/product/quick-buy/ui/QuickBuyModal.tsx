@@ -164,7 +164,7 @@ export const QuickBuyModal = ({
 
       if (result.success) {
         setIsSuccess(true);
-        toast.success(t('orderSuccess', { orderName: result.orderName }));
+        toast.success(t('orderSuccess', { orderName: result.orderName || '' }));
         setTimeout(() => {
           onOpenChange(false);
         }, 2000);

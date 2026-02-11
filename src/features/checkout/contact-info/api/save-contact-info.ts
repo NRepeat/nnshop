@@ -34,6 +34,7 @@ const saveContactInfo = async (data: z.infer<typeof contactInfoSchema>) => {
                 lastName: data.lastName,
                 name: data.name,
                 phone: data.phone,
+                preferViber: data.preferViber || false,
               },
               create: {
                 countryCode: data.countryCode,
@@ -41,6 +42,7 @@ const saveContactInfo = async (data: z.infer<typeof contactInfoSchema>) => {
                 lastName: data.lastName,
                 name: data.name,
                 phone: data.phone,
+                preferViber: data.preferViber || false,
               },
             },
           },

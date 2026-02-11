@@ -30,6 +30,8 @@ interface CartItem {
   sale: number;
   size?: string;
   color?: string;
+  sizeLabel: string;
+  quantityLabel: string;
 }
 
 function formatPrice(price: number): string {
@@ -64,13 +66,10 @@ function OrderItemCard({ item, currency }: { item: CartItem; currency: string })
           {item.title}
         </p>
         {item.size && (
-          <p className="text-xs text-gray-500 mb-1">
-            Размер: {item.size}
+          <p className="text-xs text-gray-500 mb-2">
+            {item.sizeLabel}: {item.size} &times; {item.quantity}
           </p>
         )}
-        <p className="text-xs text-gray-500 mb-2">
-          Количество: {item.quantity}
-        </p>
 
         {/* Price */}
         <div className="flex items-center gap-2">
@@ -93,7 +92,7 @@ function OrderItemCard({ item, currency }: { item: CartItem; currency: string })
 
       {/* Total Price */}
       <div className="flex-shrink-0 text-right">
-        <p className={`text-sm font-medium ${item.sale > 0 ? 'text-red-600' : 'text-gray-900'}`}>
+        <p className={`text-sm font-medium ${item.sale > 0 ? 'text-gray-900' : 'text-gray-900'}`}>
           {formatPrice(item.totalPrice)}{currencySymbol}
         </p>
       </div>
@@ -150,6 +149,8 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
       sale,
       size: sizeOption?.value,
       color: colorOption?.value,
+      sizeLabel: t('size_label'),
+      quantityLabel: t('quantity_label'),
     };
   });
 
@@ -223,7 +224,7 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
               </div>
               <div className="text-left">
                 <p className="text-sm font-medium text-gray-900">{t('products_title')}</p>
-                <p className="text-xs text-gray-500">{totalQuantity} {t('items')} &bull; {formatPrice(totalAmount)}{currencySymbol}</p>
+                <p className="text-xs text-gray-500">{formatPrice(totalAmount)}{currencySymbol}</p>
               </div>
             </div>
           </AccordionTrigger>
@@ -243,7 +244,6 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
         </div>
         <div>
           <p className="text-sm font-medium text-gray-900">{t('products_title')}</p>
-          <p className="text-xs text-gray-500">{totalQuantity} {t('items')}</p>
         </div>
       </div>
       {content}

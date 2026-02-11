@@ -124,7 +124,7 @@ export const createSignInHandler = (
       });
 
       if (result.error) {
-        toast.error(result.error.message || tErrors('signInFailed'));
+        toast.error(tErrors('signInFailed'));
         return;
       }
 
@@ -150,7 +150,12 @@ export const createSignUpHandler = (
       });
 
       if (result.error) {
-        toast.error(result.error.message || tErrors('signUpFailed'));
+        const code = result.error.code;
+        if (code === 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL') {
+          toast.error(tErrors('userAlreadyExists'));
+        } else {
+          toast.error(result.error.message || tErrors('signUpFailed'));
+        }
         return;
       }
 

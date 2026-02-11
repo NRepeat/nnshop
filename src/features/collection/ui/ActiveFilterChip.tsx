@@ -27,7 +27,7 @@ export function ActiveFilterChip({ filterKey, filterValue }: Props) {
 
   return (
     <div className="flex items-center justify-center gap-1 rounded-full border border-muted-foreground pl-3 py-1 basis-auto">
-      <span className="text-sm font-medium">{filterValue}</span>
+      <span className="text-sm font-medium">{decodeURIComponent(filterValue)}</span>
       <Button
         variant={'link'}
         size={'icon'}

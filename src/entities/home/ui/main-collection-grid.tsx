@@ -21,7 +21,6 @@ export const MainCollectionGrid = (props: MainCollectionGridProps) => {
       href: pathData?.handle ?? '#',
     };
   });
-  console.log(collections,"resolvedCollections")
   return (
     <div className="main-collection-grid flex flex-col container">
       <div className="gap-12 flex flex-col py-8">

@@ -9,16 +9,17 @@ export const linkAnonymousDataToUser = async ({
   anonymousUserId: string;
   newUserId: string;
 }) => {
+  console.log('[linkAnonymousData] START', { anonymousUserId, newUserId });
   try {
     await prisma.$transaction(async (tx) => {
-      // Delete any existing data for the new user to avoid unique constraint violations
-      // We prioritize keeping the anonymous user's data (cart, orders, etc.)
+      console.log('[linkAnonymousData] Transaction started');
 
-      // First delete NovaPoshtaDepartment (has foreign key to DeliveryInformation)
+      // Delete any existing data for the new user to avoid unique constraint violations
       const existingDeliveryInfo = await tx.deliveryInformation.findMany({
         where: { userId: newUserId },
         select: { id: true },
       });
+      console.log('[linkAnonymousData] Existing delivery info for new user:', existingDeliveryInfo.length);
 
       for (const deliveryInfo of existingDeliveryInfo) {
         await tx.novaPoshtaDepartment.deleteMany({
@@ -26,46 +27,56 @@ export const linkAnonymousDataToUser = async ({
         });
       }
 
-      await tx.contactInformation.deleteMany({
+      const deletedContact = await tx.contactInformation.deleteMany({
         where: { userId: newUserId },
       });
+      console.log('[linkAnonymousData] Deleted contact info:', deletedContact.count);
 
-      await tx.deliveryInformation.deleteMany({
+      const deletedDelivery = await tx.deliveryInformation.deleteMany({
         where: { userId: newUserId },
       });
+      console.log('[linkAnonymousData] Deleted delivery info:', deletedDelivery.count);
 
-      await tx.paymentInformation.deleteMany({
+      const deletedPayment = await tx.paymentInformation.deleteMany({
         where: { userId: newUserId },
       });
+      console.log('[linkAnonymousData] Deleted payment info:', deletedPayment.count);
 
       // Now update anonymous user's data to belong to the new user
-      await tx.contactInformation.updateMany({
+      const updatedContact = await tx.contactInformation.updateMany({
         where: { userId: anonymousUserId },
         data: { userId: newUserId },
       });
+      console.log('[linkAnonymousData] Updated contact info:', updatedContact.count);
 
-      await tx.deliveryInformation.updateMany({
+      const updatedDelivery = await tx.deliveryInformation.updateMany({
         where: { userId: anonymousUserId },
         data: { userId: newUserId },
       });
+      console.log('[linkAnonymousData] Updated delivery info:', updatedDelivery.count);
 
-      await tx.paymentInformation.updateMany({
+      const updatedPayment = await tx.paymentInformation.updateMany({
         where: { userId: anonymousUserId },
         data: { userId: newUserId },
       });
+      console.log('[linkAnonymousData] Updated payment info:', updatedPayment.count);
 
-      await tx.order.updateMany({
+      const updatedOrders = await tx.order.updateMany({
         where: { userId: anonymousUserId },
         data: { userId: newUserId },
       });
+      console.log('[linkAnonymousData] Updated orders:', updatedOrders.count);
 
-      await tx.favoriteProduct.updateMany({
+      const updatedFavorites = await tx.favoriteProduct.updateMany({
         where: { userId: anonymousUserId },
         data: { userId: newUserId },
       });
+      console.log('[linkAnonymousData] Updated favorites:', updatedFavorites.count);
+
+      console.log('[linkAnonymousData] Transaction complete');
     });
+    console.log('[linkAnonymousData] DONE');
   } catch (error) {
-    console.error('Error linking anonymous data to user:', error);
-    throw new Error('An error occurred while linking anonymous data.');
+    console.error('[linkAnonymousData] ERROR:', error);
   }
 };

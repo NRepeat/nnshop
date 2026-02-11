@@ -196,12 +196,12 @@ const Navigation = async ({
                 </h3>
                 <ul className="space-y-1.5">
                   {collections.map((col) => (
-                    <li key={col.title}>
+                    <li key={String(col.title)}>
                       <Link
                         href={col.url}
                         className="text-sm hover:underline transition-colors"
                       >
-                        {col.title}
+                        {String(col.title)}
                       </Link>
                     </li>
                   ))}

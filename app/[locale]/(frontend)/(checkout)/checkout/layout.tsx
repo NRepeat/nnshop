@@ -40,7 +40,7 @@ function ReceiptSkeleton() {
   return (
     <div className="hidden md:flex flex-col gap-3">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="flex items-center gap-3 rounded-none border border-gray-100 bg-white p-4 animate-pulse">
+        <div key={i} className="rounded-md flex items-center gap-3  border border-gray-100 bg-white p-4 animate-pulse">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-gray-100" />
           <div className="flex flex-col gap-2 w-full">
             <div className="h-3 w-24 rounded-full bg-gray-100" />

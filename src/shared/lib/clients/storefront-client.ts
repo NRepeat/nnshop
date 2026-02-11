@@ -45,6 +45,14 @@ export class StorefrontClient implements ShopifyClient {
         throw error;
       }
 
+      // Never retry aborted requests (e.g. Next.js navigation cancellation)
+      if (
+        error instanceof DOMException && error.name === 'AbortError' ||
+        error instanceof Error && error.name === 'AbortError'
+      ) {
+        throw error;
+      }
+
       const isRetryableError =
         error instanceof Error &&
         (error.message.includes('502') ||
@@ -206,6 +214,13 @@ export class StorefrontClient implements ShopifyClient {
 
         return result.data as T;
       } catch (error) {
+        // Don't wrap or log AbortError — it's expected during navigation
+        if (
+          error instanceof DOMException && error.name === 'AbortError' ||
+          error instanceof Error && error.name === 'AbortError'
+        ) {
+          throw error;
+        }
         if (error instanceof Error) {
           console.error('Storefront API Error:', error);
           throw new Error(`Storefront API Request Failed: ${error.message}`);
