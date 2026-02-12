@@ -1,5 +1,4 @@
 import { auth } from '@features/auth/lib/auth';
-import { prisma } from '@shared/lib/prisma';
 import { getCart } from '@entities/cart/api/get';
 import PaymentForm from './PaymentForm';
 import { getPaymentInfo } from '../api/getPaymentInfo';
@@ -10,10 +9,8 @@ import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
 
 export default async function Payment({
-  draftOrderId,
   locale,
 }: {
-  draftOrderId: string;
   locale: string;
 }) {
   const t = await getTranslations({ locale, namespace: 'CheckoutPage' });
@@ -29,7 +26,6 @@ export default async function Payment({
 
   let cartAmount = 0;
   let currency = 'UAH';
-  let draftOrder = null;
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
@@ -40,22 +36,30 @@ export default async function Payment({
       userId: session.user.id,
       locale,
     })) as GetCartQuery | null;
-    if (cartResult && cartResult.cart?.cost?.totalAmount) {
-      cartAmount = parseFloat(cartResult.cart.cost.totalAmount.amount);
+    if (cartResult && cartResult.cart) {
       currency = cartResult.cart.cost.totalAmount.currencyCode;
+      // Calculate total with znizka metafield discount applied
+      // Shopify cart total doesn't include znizka, so calculate locally
+      const lines = cartResult.cart.lines.edges;
+      let localTotal = 0;
+      for (const edge of lines) {
+        const line = edge.node;
+        const price = Number(line.cost.amountPerQuantity.amount);
+        const sale = Number(
+          line.merchandise.product.metafields?.find((m: any) => m?.key === 'znizka')?.value || '0'
+        ) || 0;
+        const discountedPrice = sale > 0 ? price * (1 - sale / 100) : price;
+        localTotal += discountedPrice * line.quantity;
+      }
+      // Also subtract any cart discount code discounts
+      const shopifySubtotal = Number(cartResult.cart.cost.subtotalAmount?.amount || 0);
+      const shopifyTotal = Number(cartResult.cart.cost.totalAmount.amount);
+      const codeDiscount = shopifySubtotal > shopifyTotal ? shopifySubtotal - shopifyTotal : 0;
+      cartAmount = localTotal - codeDiscount;
     }
 
-    draftOrder = await prisma.order.findUnique({
-      where: {
-        shopifyOrderId: 'gid://shopify/Order/' + draftOrderId,
-      },
-    });
-    if (!draftOrder) {
-      throw new Error('Order not found');
-    }
-    if (!draftOrder.shopifyOrderId) {
-      throw new Error('Order ID missing');
-    }
+    const completeCheckoutData = await getCompleteCheckoutData(session);
+
     return (
       <div className="w-full max-w-4xl mx-auto">
         <div className="mb-8">
@@ -67,12 +71,12 @@ export default async function Payment({
 
         <PaymentForm
           defaultValues={existingPaymentInfo}
-          draftOrder={draftOrder}
           amount={cartAmount}
           currency={currency}
+          locale={locale}
           liqpayPublicKey={liqpayPublicKey}
           liqpayPrivateKey={liqpayPrivateKey}
-          completeCheckoutData={await getCompleteCheckoutData(session)}
+          completeCheckoutData={completeCheckoutData}
         />
       </div>
     );

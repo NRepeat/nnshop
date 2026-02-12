@@ -147,13 +147,13 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
       },
       {
         order: any;
-        options: { sendReceipt: boolean };
+        options: { sendReceipt: boolean; inventoryBehaviour: string };
       }
     >({
       query: ORDER_CREATE_MUTATION,
       variables: {
         order,
-        options: { sendReceipt: false },
+        options: { sendReceipt: false, inventoryBehaviour: 'DECREMENT_IGNORING_POLICY' },
       },
     });
 

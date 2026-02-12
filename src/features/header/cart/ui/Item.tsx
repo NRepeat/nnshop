@@ -50,7 +50,7 @@ const CartItem = ({
           </div>
           <div className="col-span-1 flex flex-col justify-center">
             <p className={cn('justify-items-end text-right', { 'text-red-500': sale > 0 })}>
-              {Number(product.totalPrice).toFixed()}
+              {Math.round(Number(product.totalPrice)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
               {getSymbolFromCurrency('UAH')}
             </p>
             <div className="absolute top-0 right-0 mr-1 mt-1 z-10">

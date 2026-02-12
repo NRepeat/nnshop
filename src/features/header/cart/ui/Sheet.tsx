@@ -75,10 +75,17 @@ const CartSheet = async ({ locale }: { locale: string }) => {
   );
   const discountCodes = cart?.cart?.discountCodes || [];
 
-  // Get subtotal and total from Shopify cart
-  const subtotalAmount = Number(cart?.cart?.cost?.subtotalAmount?.amount || estimateTotal);
-  const totalAmount = Number(cart?.cart?.cost?.totalAmount?.amount || estimateTotal);
-  const discountAmount = subtotalAmount - totalAmount;
+  // Calculate totals with znizka discount applied
+  // Shopify cart doesn't know about znizka metafield, so we use locally calculated estimateTotal
+  const shopifySubtotal = Number(cart?.cart?.cost?.subtotalAmount?.amount || 0);
+  const shopifyTotal = Number(cart?.cart?.cost?.totalAmount?.amount || 0);
+  // Discount from cart discount codes (not znizka)
+  const codeDiscount = shopifySubtotal > shopifyTotal ? shopifySubtotal - shopifyTotal : 0;
+  // subtotalAmount = locally calculated total with znizka applied
+  const subtotalAmount = estimateTotal || 0;
+  // Final total = znizka-applied subtotal minus any cart discount code discounts
+  const totalAmount = subtotalAmount - codeDiscount;
+  const discountAmount = codeDiscount;
 
   return (
     <Sheet >

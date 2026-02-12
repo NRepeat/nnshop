@@ -16,13 +16,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { paymentMethods, paymentProviders } from '../lib/constants';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import resetCartSession from '@features/cart/api/resetCartSession';
-import { Order } from '~/generated/prisma/client';
+import { createOrder } from '@features/order/api/create';
 
 interface PaymentFormProps {
   defaultValues?: PaymentInfo | null;
-  draftOrder: Order;
   amount: number;
   currency?: string;
+  locale: string;
   liqpayPublicKey?: string;
   liqpayPrivateKey?: string;
   completeCheckoutData: Omit<CheckoutData, 'paymentInfo'> | null;
@@ -30,9 +30,9 @@ interface PaymentFormProps {
 
 export default function PaymentForm({
   defaultValues,
-  draftOrder,
   amount,
   currency = 'UAH',
+  locale,
   liqpayPublicKey,
   liqpayPrivateKey,
   completeCheckoutData,
@@ -62,17 +62,35 @@ export default function PaymentForm({
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
     setIsLoading(true);
     try {
-      if (draftOrder && draftOrder.shopifyOrderId) {
-        toast.success(t('paymentInformationSaved'));
-        await savePaymentInfo(data, draftOrder.id);
-        await resetCartSession();
-        const orderName = (draftOrder.orderName || draftOrder.shopifyOrderId.split('/').pop() || '').replace('#', '');
-        return router.push(`/checkout/success/${encodeURIComponent(orderName)}`);
-      } else {
-        // toast.error(result.message);
+      // 1. Create the Shopify order
+      const orderResult = await createOrder(
+        completeCheckoutData,
+        locale,
+        false,
+        data.paymentMethod,
+      );
+
+      if (!orderResult.success || !orderResult.order) {
+        toast.error(orderResult.errors?.[0] || t('errorSavingPaymentInformation'));
+        setIsLoading(false);
+        return;
       }
+
+      const createdOrder = orderResult.order;
+      const orderName = (createdOrder.name || createdOrder.id.split('/').pop() || '').replace('#', '');
+
+      // 2. Save payment info (need to find the DB order by shopifyOrderId)
+      // The createOrder function already saved it to DB, find it
+      await savePaymentInfo(data, createdOrder.id);
+
+      // 3. Reset the cart
+      await resetCartSession();
+
+      // 4. Redirect to success page
+      toast.success(t('paymentInformationSaved'));
+      router.push(`/checkout/success/${encodeURIComponent(orderName)}`);
     } catch (error) {
-      console.error('Error saving payment info:', error);
+      console.error('Error completing order:', error);
       toast.error(t('errorSavingPaymentInformation'));
       setIsLoading(false);
     }

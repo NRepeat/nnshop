@@ -48,7 +48,7 @@ export const CurrentNavigationSessionSkilet = () => {
     );
   });
   return (
-    <NavigationClient className="bg-transparent flex container justify-start py-1">
+    <NavigationClient className="bg-transparent flex  justify-start p-2">
       {menu}
     </NavigationClient>
   );

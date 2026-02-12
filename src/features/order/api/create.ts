@@ -62,6 +62,7 @@ export async function createOrder(
   completeCheckoutData: Omit<CheckoutData, 'paymentInfo'> | null,
   locale: string = 'uk',
   sendReceipt: boolean = false,
+  paymentMethod?: string,
 ): Promise<{
   success: boolean;
   order?: OrderResult;
@@ -75,37 +76,6 @@ export async function createOrder(
         success: false,
         errors: ['Session not found'],
       };
-    }
-
-    // Prevent duplicate orders on page refresh (5-minute window)
-    // Only deduplicate if the user's cart is still active (not completed/reset)
-    const activeCart = await prisma.cart.findFirst({
-      where: { userId: session.user.id, completed: false },
-    });
-
-    if (activeCart) {
-      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-      const recentOrder = await prisma.order.findFirst({
-        where: {
-          userId: session.user.id,
-          draft: false,
-          createdAt: { gte: fiveMinutesAgo },
-        },
-        orderBy: { createdAt: 'desc' },
-      });
-
-      if (recentOrder?.shopifyOrderId) {
-        console.log('[createOrder] Returning existing order (dedup):', recentOrder.orderName);
-        return {
-          success: true,
-          order: {
-            id: recentOrder.shopifyOrderId,
-            name: recentOrder.orderName || '',
-            totalPriceSet: { shopMoney: { amount: '0', currencyCode: 'UAH' } },
-            lineItems: { edges: [] },
-          },
-        };
-      }
     }
 
     const result = (await getCart({
@@ -145,12 +115,16 @@ export async function createOrder(
         }
 
         const product = lineItem.merchandise.product;
-        const amountPerQuantity = parseFloat(lineItem.cost.amountPerQuantity.amount);
+        const amountPerQuantity = parseFloat(
+          lineItem.cost.amountPerQuantity.amount,
+        );
 
         // Get discount percentage from metafield
-        const sale = Number(
-          product.metafields?.find((m: any) => m?.key === 'znizka')?.value || '0'
-        ) || 0;
+        const sale =
+          Number(
+            product.metafields?.find((m: any) => m?.key === 'znizka')?.value ||
+              '0',
+          ) || 0;
 
         const item: any = {
           variantId: lineItem.merchandise.id,
@@ -185,14 +159,11 @@ export async function createOrder(
       financialStatus: 'PENDING',
     };
 
-    // Add note from cart if present
-    if (cart.note) {
-      order.note = cart.note;
-    }
-
     // Add discount codes from cart if present
     if (cart.discountCodes && cart.discountCodes.length > 0) {
-      const applicableDiscounts = cart.discountCodes.filter((d) => d.applicable);
+      const applicableDiscounts = cart.discountCodes.filter(
+        (d) => d.applicable,
+      );
       if (applicableDiscounts.length > 0) {
         // Save discount codes as custom attributes for reference
         if (!order.customAttributes) {
@@ -218,7 +189,7 @@ export async function createOrder(
     const formattedPhone = completeCheckoutData.contactInfo.phone
       ? formatPhoneForShopify(
           completeCheckoutData.contactInfo.phone,
-          completeCheckoutData.contactInfo.countryCode
+          completeCheckoutData.contactInfo.countryCode,
         )
       : '';
 
@@ -241,6 +212,28 @@ export async function createOrder(
     };
     order.shippingAddress = shippingAddress;
 
+    // Build order note
+    const noteLines: string[] = [];
+    if (cart.note) {
+      noteLines.push(cart.note);
+    }
+
+    if (paymentMethod) {
+      const paymentLabel =
+        paymentMethod === 'after-delivered'
+          ? 'Оплата при отриманні'
+          : paymentMethod === 'pay-now'
+            ? 'За реквізитами'
+            : paymentMethod;
+      noteLines.push(`Метод оплати: ${paymentLabel}`);
+    }
+    if (completeCheckoutData.contactInfo.preferViber) {
+      noteLines.push('⚠️ Не телефонуйте, надішліть повідомлення у Viber');
+    }
+    if (noteLines.length > 0) {
+      order.note = noteLines.join('\n');
+    }
+
     const orderResponse = await adminClient.client.request<
       {
         orderCreate: {
@@ -250,13 +243,16 @@ export async function createOrder(
       },
       {
         order: any;
-        options: { sendReceipt: boolean };
+        options: { sendReceipt: boolean; inventoryBehaviour: string };
       }
     >({
       query: ORDER_CREATE_MUTATION,
       variables: {
         order,
-        options: { sendReceipt },
+        options: {
+          sendReceipt,
+          inventoryBehaviour: 'DECREMENT_IGNORING_POLICY',
+        },
       },
     });
 
@@ -264,8 +260,11 @@ export async function createOrder(
     const userErrors = orderResponse.orderCreate.userErrors;
 
     if (userErrors.length > 0) {
-      console.error(' ADMIN API USER ERRORS:', JSON.stringify(userErrors, null, 2));
-      userErrors.forEach(error => {
+      console.error(
+        ' ADMIN API USER ERRORS:',
+        JSON.stringify(userErrors, null, 2),
+      );
+      userErrors.forEach((error) => {
         console.error(`Field: ${error.field}, Message: ${error.message}`);
       });
       return {
@@ -295,16 +294,14 @@ export async function createOrder(
         draft: false,
       },
     });
+    console.log('[createOrder] Order saved:', createdOrder.name);
 
     return {
       success: true,
       order: createdOrder,
     };
   } catch (error) {
-    console.error(
-      ' ERROR CREATING ORDER WITH ADMIN API:',
-      error,
-    );
+    console.error(' ERROR CREATING ORDER WITH ADMIN API:', error);
     console.error(' ERROR DETAILS:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,

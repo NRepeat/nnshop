@@ -35,7 +35,7 @@ interface CartItem {
 }
 
 function formatPrice(price: number): string {
-  return Math.round(price).toString();
+  return Math.round(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 }
 
 function OrderItemCard({ item, currency }: { item: CartItem; currency: string }) {
@@ -162,9 +162,15 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
   const discountCodes = cart.discountCodes || [];
   const hasApplicableDiscount = discountCodes.some((d) => d.applicable);
 
-  // Use Shopify's calculated total (already includes all discounts)
-  const totalAmount = Number(cart.cost.totalAmount.amount);
-  const discountAmount = hasApplicableDiscount ? subtotal - totalAmount : 0;
+  // Shopify's total doesn't include znizka metafield discount, so use locally calculated subtotal
+  // Only apply Shopify's discount code reductions on top
+  const shopifySubtotal = Number(cart.cost.subtotalAmount.amount);
+  const shopifyTotal = Number(cart.cost.totalAmount.amount);
+  const codeDiscount = hasApplicableDiscount && shopifySubtotal > shopifyTotal
+    ? shopifySubtotal - shopifyTotal
+    : 0;
+  const totalAmount = subtotal - codeDiscount;
+  const discountAmount = codeDiscount;
 
   const content = (
     <>

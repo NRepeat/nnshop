@@ -107,7 +107,7 @@ const Content = async ({
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('discount')}</span>
               <span className="text-green-600 dark:text-green-400">
-                -{getSymbolFromCurrency(currencySymbol)} {discountAmount.toFixed(0)}
+                -{getSymbolFromCurrency(currencySymbol)} {Math.round(discountAmount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
               </span>
             </div>
           )}
@@ -115,7 +115,7 @@ const Content = async ({
           <div className="flex justify-between font-medium">
             <span>{t('total')}</span>
             <span className="">
-              {getSymbolFromCurrency(currencySymbol)} {totalAmount.toFixed(0)}
+              {getSymbolFromCurrency(currencySymbol)} {Math.round(totalAmount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
             </span>
           </div>
         </div>

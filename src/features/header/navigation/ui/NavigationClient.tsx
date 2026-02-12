@@ -21,7 +21,7 @@ export const NavigationClient = ({
     >
       <NavigationMenuList
       
-        className={cn(className, 'container flex items-center justify-center grid-cols-3 md:grid-cols-3 w-full pt-0 py-2')}
+        className={cn(className, ' flex items-center justify-center grid-cols-3 md:grid-cols-3 w-full pt-0 py-2')}
       >
         {children}
       </NavigationMenuList>
