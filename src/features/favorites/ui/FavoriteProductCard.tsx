@@ -41,8 +41,8 @@ export const FavoriteProductCard = ({ product }: FavoriteProductCardProps) => {
 
   return (
     <div className="group relative">
+      {/* Image Container */}
       <Link href={`/product/${product.handle}`}>
-        {/* Image Container */}
         <div
           className="relative w-full aspect-square overflow-hidden bg-gray-50 mb-3"
           onMouseEnter={() => setCurrentImageIndex(1 % productImages.length)}
@@ -78,40 +78,42 @@ export const FavoriteProductCard = ({ product }: FavoriteProductCardProps) => {
             />
           </div>
         </div>
+      </Link>
 
-        {/* Product Info */}
-        <div className="space-y-1">
-          {/* Vendor */}
-          <Link href={`/brand/${vendorToHandle(product.vendor)}`}>
-            <p className="text-xs uppercase tracking-wider text-gray-500 hover:text-gray-700 transition-colors">
-              {product.vendor}
-            </p>
-          </Link>
+      {/* Product Info */}
+      <div className="space-y-1">
+        {/* Vendor */}
+        <Link href={`/brand/${vendorToHandle(product.vendor)}`}>
+          <p className="text-xs uppercase tracking-wider text-gray-500 hover:text-gray-700 transition-colors">
+            {product.vendor}
+          </p>
+        </Link>
 
-          {/* Title */}
-          <h3 className="text-sm font-medium text-gray-900 line-clamp-2 leading-tight">
+        {/* Title */}
+        <Link href={`/product/${product.handle}`}>
+          <h3 className="text-sm font-medium text-gray-900 line-clamp-2 leading-tight hover:text-gray-700 transition-colors">
             {product.title}
           </h3>
+        </Link>
 
-          {/* Price */}
-          <div className="flex items-center gap-2 pt-1">
-            {hasDiscount ? (
-              <>
-                <span className="text-sm font-semibold text-gray-900">
-                  {discountedPrice.toFixed(0)} {currencySymbol}
-                </span>
-                <span className="text-xs text-gray-400 line-through">
-                  {originalPrice.toFixed(0)} {currencySymbol}
-                </span>
-              </>
-            ) : (
+        {/* Price */}
+        <div className="flex items-center gap-2 pt-1">
+          {hasDiscount ? (
+            <>
               <span className="text-sm font-semibold text-gray-900">
+                {discountedPrice.toFixed(0)} {currencySymbol}
+              </span>
+              <span className="text-xs text-gray-400 line-through">
                 {originalPrice.toFixed(0)} {currencySymbol}
               </span>
-            )}
-          </div>
+            </>
+          ) : (
+            <span className="text-sm font-semibold text-gray-900">
+              {originalPrice.toFixed(0)} {currencySymbol}
+            </span>
+          )}
         </div>
-      </Link>
+      </div>
     </div>
   );
 };

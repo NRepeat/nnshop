@@ -26,12 +26,11 @@ export const CollectionGrid = async ({
   params: Promise<{ locale: string; slug: string; gender: string }>;
   searchParams: Promise<SearchParams>;
 }) => {
-  const [awaitedParams, awaitedSearchParams, t] =
-    await Promise.all([
-      params,
-      searchParams,
-      getTranslations('Header'),
-    ]);
+  const [awaitedParams, awaitedSearchParams, t] = await Promise.all([
+    params,
+    searchParams,
+    getTranslations('Header'),
+  ]);
   const { locale, slug, gender } = awaitedParams;
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
 
@@ -79,7 +78,7 @@ export const CollectionGrid = async ({
   const initialFilters = hasFilters
     ? initialData?.collection?.collection?.products.filters
     : collection.collection?.products.filters;
-  console.log(initialFilters,"initialFilters")
+  console.log(initialFilters, 'initialFilters');
   const targetLocale = locale === 'ru' ? 'uk' : 'ru';
   const paths = {
     [locale]: `/${gender}/${slug}`,
@@ -90,13 +89,11 @@ export const CollectionGrid = async ({
   return (
     <>
       <PathSync paths={paths} />
-      <div className="pl-2 md:pl-5 flex flex-col gap-4 md:gap-8 mt-8">
+      <div className=" flex flex-col gap-4 md:gap-8 mt-8">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/`}>
-                {t('nav.home')}
-              </BreadcrumbLink>
+              <BreadcrumbLink href={`/`}>{t('nav.home')}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

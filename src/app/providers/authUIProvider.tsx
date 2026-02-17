@@ -24,8 +24,6 @@ export function Provider({ children }: { children: ReactNode }) {
         changeEmail={false}
         Link={Link}
         multiSession={false}
-        
-        viewPaths={{ SIGN_OUT: '/session/sign-out' }}
         account={{
           basePath: '/account',
           fields: ['name', 'email', 'image'],

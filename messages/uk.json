@@ -558,7 +558,10 @@
     "orders": "Замовлення",
     "favorites": "Обране",
     "settings": "Налаштування",
-    "signOut": "Вийти"
+    "signOut": "Вийти",
+    "signOutConfirmTitle": "Вийти з акаунту?",
+    "signOutConfirmDescription": "Ви впевнені, що хочете вийти з акаунту?",
+    "cancel": "Скасувати"
   },
   "OrderPage": {
     "title": "Мої замовлення",

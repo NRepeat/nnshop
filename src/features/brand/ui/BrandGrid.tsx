@@ -90,7 +90,7 @@ export const BrandGrid = async ({
 
   return (
     <>
-      <div className="pl-2 md:pl-5 flex flex-col gap-4 md:gap-8 mt-8">
+      <div className=" flex flex-col gap-4 md:gap-8 mt-8">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>

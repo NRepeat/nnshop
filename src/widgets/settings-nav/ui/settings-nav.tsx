@@ -1,9 +1,21 @@
 'use client';
 
-import { Link } from '@shared/i18n/navigation';import { usePathname } from '@shared/i18n/navigation';
+import { Link } from '@shared/i18n/navigation';
+import { usePathname } from '@shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
-import { Shield, User, ChevronRight } from 'lucide-react';
+import { User, LogOut, ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { authClient } from '@features/auth/lib/auth-client';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@shared/ui/dialog';
+import { Button } from '@shared/ui/button';
 
 const useSettingsNavItems = () => {
   const t = useTranslations('Settings.navigation');
@@ -14,12 +26,6 @@ const useSettingsNavItems = () => {
       href: '/account/settings',
       icon: User,
       description: t('profileDescription'),
-    },
-    {
-      title: t('security'),
-      href: '/account/security',
-      icon: Shield,
-      description: t('securityDescription'),
     },
   ];
 };
@@ -116,7 +122,58 @@ export function SettingsNav({
           </Link>
         );
       })}
+      <SignOutNavButton />
     </nav>
+  );
+}
+
+function SignOutNavButton() {
+  const t = useTranslations('AccountButton');
+  const [open, setOpen] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+
+  const handleSignOut = async () => {
+    setIsPending(true);
+    await authClient.signOut();
+    window.location.href = '/';
+  };
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="flex items-start space-x-3 rounded-lg px-3 py-2 text-sm transition-colors text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 w-full text-left mt-2"
+      >
+        <LogOut className="h-4 w-4 mt-0.5 flex-shrink-0" />
+        <div className="font-medium">{t('signOut')}</div>
+      </button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{t('signOutConfirmTitle')}</DialogTitle>
+            <DialogDescription>
+              {t('signOutConfirmDescription')}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={isPending}
+            >
+              {t('cancel')}
+            </Button>
+            <Button
+              onClick={handleSignOut}
+              disabled={isPending}
+              variant="destructive"
+            >
+              {t('signOut')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
@@ -133,7 +190,7 @@ export function SettingsPageLayout({
 
   return (
     <div className="container  flex flex-col w-full items-center">
-      <div className="max-w-6xl min-h-screen">
+      <div className="min-h-screen w-full">
         <div className="mb-8">
           <SettingsNav variant="breadcrumb" className="mb-4" />
           {title && (
