@@ -117,7 +117,7 @@ function NavigationMenuViewport({
       <NavigationMenuPrimitive.Viewport
         data-slot="navigation-menu-viewport"
         className={cn(
-          'origin-top text-popover-foreground overflow-hidden',
+          'origin-top text-popover-foreground overflow-hidden shadow',
           'data-[state=open]:animate-in data-[state=closed]:animate-out',
           'data-[state=closed]:zoom-out-100 data-[state=open]:zoom-in-95',
           'relative',

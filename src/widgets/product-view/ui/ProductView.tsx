@@ -3,6 +3,16 @@ import { ProductViewProvider } from './ProductViewProvider';
 import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
 import { getTranslations } from 'next-intl/server';
 import { ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
+import { cookies } from 'next/headers';
+import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@shared/ui/breadcrumb';
 
 export async function ProductView({
   product,
@@ -19,9 +29,39 @@ export async function ProductView({
   attributes: ProductMEtaobjectType[];
   children: React.ReactNode;
 }) {
-  const t = await getTranslations({ locale, namespace: 'ProductPage' });
+  const [t, tHeader, cookieStore] = await Promise.all([
+    getTranslations({ locale, namespace: 'ProductPage' }),
+    getTranslations({ locale, namespace: 'Header' }),
+    cookies(),
+  ]);
+  const gender = cookieStore.get('gender')?.value || 'woman';
   return (
     <div className="container  space-y-16 my-10 h-fit min-h-screen">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href={`/`}>
+              {tHeader('nav.home')}
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href={`/${gender}`}>
+              {gender === 'man' ? tHeader('nav.man') : tHeader('nav.woman')}
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href={`/brand/${vendorToHandle(product.vendor)}`}>
+              {product.vendor}
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{product.title}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <ProductViewProvider
         favCommponent={children}
         product={product}

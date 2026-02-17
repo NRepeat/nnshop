@@ -13,7 +13,7 @@ export function ActiveFiltersCarousel({ filters }: { filters: Filter[] }) {
   searchParams.forEach((value, key) => {
     const isFilterParam = filters.some((f) => f.id.endsWith(`.${key}`));
     if (key !== 'minPrice' && key !== 'maxPrice' && isFilterParam) {
-      const values = value.split(',');
+      const values = value.split(';');
       values.forEach((v) => {
         activeFilters.push({ key: key, value: v });
       });

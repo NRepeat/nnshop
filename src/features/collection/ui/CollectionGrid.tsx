@@ -13,8 +13,8 @@ import {
 import { FilterSheet } from './FilterSheet';
 import { ActiveFiltersCarousel } from './ActiveFiltersCarousel';
 import { SortSelect } from './SortSelect';
-import { SearchParams } from '~/app/[locale]/(frontend)/collection/[slug]/page';
-import { cookies, headers } from 'next/headers';
+import { SearchParams } from '~/app/[locale]/(frontend)/(home)/[gender]/(collection)/[slug]/page';
+import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { PathSync } from '@entities/path-sync/ui/path-sync';
 import { isProductFavorite } from '@features/product/api/isProductFavorite';
@@ -23,18 +23,16 @@ export const CollectionGrid = async ({
   params,
   searchParams,
 }: {
-  params: Promise<{ locale: string; slug: string }>;
+  params: Promise<{ locale: string; slug: string; gender: string }>;
   searchParams: Promise<SearchParams>;
 }) => {
-  const [awaitedParams, awaitedSearchParams, cookieStore, t] =
+  const [awaitedParams, awaitedSearchParams, t] =
     await Promise.all([
       params,
       searchParams,
-      cookies(),
       getTranslations('Header'),
     ]);
-  const { locale, slug } = awaitedParams;
-  const gender = cookieStore.get('gender')?.value || 'woman';
+  const { locale, slug, gender } = awaitedParams;
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
 
   const collectionPromises = [
@@ -84,8 +82,8 @@ export const CollectionGrid = async ({
   console.log(initialFilters,"initialFilters")
   const targetLocale = locale === 'ru' ? 'uk' : 'ru';
   const paths = {
-    [locale]: `/collection/${slug}`,
-    [targetLocale]: `/collection/${alternateHandle}`,
+    [locale]: `/${gender}/${slug}`,
+    [targetLocale]: `/${gender}/${alternateHandle}`,
   };
   const pageInfo = collection.collection?.products.pageInfo;
 
@@ -96,13 +94,13 @@ export const CollectionGrid = async ({
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/${locale}`}>
+              <BreadcrumbLink href={`/`}>
                 {t('nav.home')}
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink>
+              <BreadcrumbLink href={`/${gender}`}>
                 {gender === 'man' ? t('nav.man') : t('nav.woman')}
               </BreadcrumbLink>
             </BreadcrumbItem>

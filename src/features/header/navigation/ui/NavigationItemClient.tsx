@@ -4,6 +4,7 @@ import { Link } from '@shared/i18n/navigation';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { cn } from '@shared/lib/utils';
+import { useNavigationClose } from './NavigationClient';
 
 interface NavigationItemClientProps {
   href: string;
@@ -17,6 +18,7 @@ export const NavigationItemClient = ({
   className,
 }: NavigationItemClientProps) => {
   const pathname = usePathname();
+  const closeMenu = useNavigationClose();
   const [pendingPath, setPendingPath] = useState<string | null>(null);
 
   useEffect(() => {
@@ -31,6 +33,7 @@ export const NavigationItemClient = ({
 
   const handleClick = () => {
     setPendingPath(normalizedHref);
+    closeMenu();
   };
 
   return (

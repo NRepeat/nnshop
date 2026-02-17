@@ -34,6 +34,7 @@ const cleanString = (str: string | null | undefined): string | null => {
 export const resolveCollectionLink = (
   collectionData: CollectionData | null | undefined,
   locale: string,
+  gender?: string,
 ): {
   handle: string | null;
   title: string | null;
@@ -58,8 +59,10 @@ export const resolveCollectionLink = (
   const cleanedHandle = cleanString(handle);
   const cleanedTitle = cleanString(title);
 
+  const prefix = gender ? `/${gender}` : '';
+
   return {
-    handle: cleanedHandle ? '/collection/' + cleanedHandle : null,
+    handle: cleanedHandle ? `${prefix}/${cleanedHandle}` : null,
     title: cleanedTitle,
     image: collectionData.image,
   };

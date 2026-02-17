@@ -96,14 +96,14 @@ const Gallery = ({
                     >
                       {({ ref, open }) => (
                         <div
-                          className="relative w-full aspect-square flex items-center justify-center  "
+                          className="relative w-full aspect-square flex items-center justify-center max-h-[60vh] "
                           ref={ref}
                         >
                           <Image
                             src={image.url}
                             alt={image.altText || ''}
                             fill
-                            className="object-contain rounded-md"
+                            className="object-contain rounded-md max-h-[60vh]"
                             onClick={open}
                             fetchPriority={index === 0 ? 'high' : 'auto'}
                             loading={index === 0 ? 'eager' : 'lazy'}
@@ -146,7 +146,7 @@ const Gallery = ({
                   <CarouselItem
                     key={index}
                     onClick={() => onThumbClick(index)}
-                    className="basis-1/3 md:basis-1/3 lg:basis-1/5 cursor-pointer"
+                    className="basis-1/4 md:basis-1/4 lg:basis-1/5 cursor-pointer"
                   >
                     <div
                       className={

@@ -9,7 +9,11 @@ import Link from 'next/link';
 
 export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   const { locale } = props;
-  const t = await getTranslations({ locale, namespace: 'Header.nav' });
+  const [t, gender] = await Promise.all([
+    getTranslations({ locale, namespace: 'Header.nav' }),
+    cookieFenderGet(),
+  ]);
+  const currentGender = gender || 'woman';
 
   const links =
     props.mainCategory?.map((category) => {
@@ -18,7 +22,7 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
       let slug = '';
 
       if (collectionData?.id) {
-        const resolved = resolveCollectionLink(collectionData, locale);
+        const resolved = resolveCollectionLink(collectionData, locale, currentGender);
         slug = resolved.handle || collectionData?.pageHandle || '';
       } else {
         slug = collectionData?.pageHandle || '';

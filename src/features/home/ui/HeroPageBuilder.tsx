@@ -45,19 +45,19 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
           case 'mainCollectionGrid':
             return (
               <Suspense key={block._key} fallback={<MainCollectionGridSkeleton />}>
-                <MainCollectionGrid locale={locale} {...block} />
+                <MainCollectionGrid locale={locale} gender={gender} {...block} />
               </Suspense>
             );
 
           case 'productCarousel':
             return (
-              <ProductCarousel key={block._key} locale={locale} {...block} />
+              <ProductCarousel key={block._key} locale={locale} gender={gender} {...block} />
             );
 
           case 'splitImage':
             return (
               <Suspense key={block._key} fallback={<SplitImageSkeleton />}>
-                <SplitImage locale={locale} {...block} />
+                <SplitImage locale={locale} gender={gender} {...block} />
               </Suspense>
             );
 
@@ -65,13 +65,14 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
             return <Features key={block._key} locale={locale} {...block} />;
 
           case 'brandGridBlock':
-            return <BrandGrid key={block._key} locale={locale} {...block} />;
+            return <BrandGrid key={block._key} locale={locale} gender={gender} {...block} />;
 
           case 'collectionsWithPreviews':
             return (
               <PreviewsCollections
                 key={block._key}
                 locale={locale}
+                gender={gender}
                 {...block}
               />
             );
@@ -96,6 +97,7 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
                 collections={block.collections as any}
                 title={block.title as any}
                 action_text={block.action_text as any}
+                gender={gender}
               />
             );
 

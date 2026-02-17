@@ -7,7 +7,7 @@ import getSymbolFromCurrency from 'currency-symbol-map';
 type ProductCarouselGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'productCarousel' }
-> & { locale: string };
+> & { locale: string; gender?: string };
 
 export const ProductCarousel = async (props: ProductCarouselGridProps) => {
   const { collection, locale, title } = props;

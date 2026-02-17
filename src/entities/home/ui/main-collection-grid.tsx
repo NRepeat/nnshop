@@ -6,15 +6,15 @@ import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link'
 type MainCollectionGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'mainCollectionGrid' }
-> & { locale: string };
+> & { locale: string; gender?: string };
 
 export const MainCollectionGrid = (props: MainCollectionGridProps) => {
-  const { collections, title, locale } = props;
+  const { collections, title, locale, gender } = props;
 
   if (!collections) return null;
 
   const resolvedCollections = collections.map((collection) => {
-    const pathData = resolveCollectionLink(collection, locale);
+    const pathData = resolveCollectionLink(collection, locale, gender);
     return {
       ...collection,
       ...pathData,

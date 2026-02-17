@@ -21,7 +21,7 @@ export function NuqsListFilter({ filter }: Props) {
 
   const [selectedValues, setSelectedValues] = useQueryState(
     filterKey,
-    parseAsArrayOf(parseAsString)
+    parseAsArrayOf(parseAsString, ';')
       .withDefault([])
       .withOptions({ shallow: false, history: 'replace' }),
   );
@@ -58,14 +58,14 @@ export function NuqsListFilter({ filter }: Props) {
                     <Spinner />
                   ) : (
                     <Checkbox
-                      disabled={false} // value.count will always be > 0 now
+                      disabled={value.count === 0 && !isChecked}
                       checked={isChecked}
                       onCheckedChange={() => handleFilterChange(value)}
                     />
                   )}
                   <span
                     className={cn({
-                      // 'text-muted-foreground line-through': value.count === 0, // No longer needed
+                      'text-muted-foreground': value.count === 0 && !isChecked,
                     })}
                   >
                     {value.label} ({value.count})

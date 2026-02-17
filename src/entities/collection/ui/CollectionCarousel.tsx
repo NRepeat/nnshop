@@ -28,8 +28,9 @@ const CollectionsCarousel = (props: {
   collections: CollectionItem[] | null | undefined;
   title?: string | { [key: string]: string } | null;
   action_text?: string | { [key: string]: string } | null;
+  gender?: string;
 }) => {
-  const { collections, title, action_text } = props;
+  const { collections, title, action_text, gender } = props;
   const locale = useLocale() as Locale;
   const t = useTranslations('productCarousel');
 
@@ -49,7 +50,7 @@ const CollectionsCarousel = (props: {
         </h2>
         <div className="hidden md:flex items-center">
           <div className="flex h-full justify-end">
-            <Link href={`/collection/all`} className="text-md underline">
+            <Link href={gender ? `/${gender}/all` : `/all`} className="text-md underline">
               {displayActionText || t('VIEW_ALL')}
             </Link>
           </div>
@@ -59,7 +60,7 @@ const CollectionsCarousel = (props: {
         <CarouselContent className="-ml-1">
           {collections?.map((collection, index) => (
             <CarouselItem key={index} className="pl-1 basis-1/2 md:basis-1/3">
-              <Link href={`/collection/${collection.store?.slug?.current}`}>
+              <Link href={gender ? `/${gender}/${collection.store?.slug?.current}` : `/${collection.store?.slug?.current}`}>
                 <div className="p-1 h-full">
                   <Card className="h-full rounded-md p-0 border-0 shadow-none bg-transparent">
                     <CardContent className="relative flex flex-col  rounded-md p-0 border-0 shadow-none h-full justify-between">

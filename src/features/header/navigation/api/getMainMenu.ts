@@ -29,12 +29,7 @@ const query = `#graphql
    }
 `;
 
-export const getMainMenu = async ({
-  locale,
-}: {
-  locale: string;
-}) => {
-
+export const getMainMenu = async ({ locale }: { locale: string }) => {
   const responce = await storefrontClient.request<
     GetMainMenuQuery,
     {
@@ -50,17 +45,17 @@ export const getMainMenu = async ({
     responce.menu?.items.map((item) => ({
       id: item.resourceId,
       title: item.title,
-      url: `/collection/${item.url?.split('/').pop()}`,
+      url: `/${item.url?.split('/').pop()}`,
       items:
         item.items?.map((subItem) => ({
           id: subItem.resourceId,
           title: subItem.title,
-          url: `/collection/${subItem.url?.split('/').pop()}`,
+          url: `/${subItem.url?.split('/').pop()}`,
           items:
             subItem.items?.map((subItem) => ({
               id: subItem.resourceId,
               title: subItem.title,
-              url: `/collection/${subItem.url?.split('/').pop()}`,
+              url: `/${subItem.url?.split('/').pop()}`,
             })) || [],
         })) || [],
     })) || [];

@@ -34,13 +34,11 @@ export const Header = async ({ locale }: { locale: string }) => {
     <>
       <Suspense
         fallback={
-          <>
-            <div className="w-full bg-foreground py-0.5 h-[50px]">
-              <div className="w-full  justify-center bg-foreground text-background grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 container ">
-                <div className="px-2 md:px-5 items-center  gap-2 w-full justify-start  flex h-full "></div>
-              </div>
+          <div className="w-full bg-foreground py-0.5 h-[50px]">
+            <div className="w-full  justify-center bg-foreground text-background grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 container ">
+              <div className="px-2 md:px-5 items-center  gap-2 w-full justify-start  flex h-full "></div>
             </div>
-          </>
+          </div>
         }
       >
         {headerData?.infoBar && headerData?.header && (
@@ -52,7 +50,6 @@ export const Header = async ({ locale }: { locale: string }) => {
           />
         )}
       </Suspense>
-
       <header className="sticky top-0 z-30 bg-background md:h-fit flex flex-col items-center">
         <div className="container w-full">
           <div className="w-full font-sans text-foreground grid grid-cols-3 text-base py-3">
@@ -88,7 +85,6 @@ export const Header = async ({ locale }: { locale: string }) => {
                 )}
               </Suspense>
             </div>
-
             <HeaderOptions locale={locale} />
           </div>
           {headerData?.header?.mainCategory && (
@@ -97,12 +93,10 @@ export const Header = async ({ locale }: { locale: string }) => {
             </div>
           )}
         </div>
-
         <div className="hidden md:block w-full">
           <Suspense fallback={<CurrentNavigationSessionSkilet />}>
             <CurrentNavigationSession
               locale={locale}
-              brandsNavigation={headerData?.brandsNavigation}
             />
           </Suspense>
         </div>

@@ -9,7 +9,7 @@ import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link'
 type SplitGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'splitImage' }
-> & { locale: string };
+> & { locale: string; gender?: string };
 
 const TextContentComponent = ({
   title,
@@ -56,11 +56,11 @@ const TextContentComponent = ({
 );
 
 export function SplitImage(props: SplitGridProps) {
-  const { title, image, orientation, collection, locale } = props;
+  const { title, image, orientation, collection, locale, gender } = props;
 
   const linkUrl =
     collection && collection?.id
-      ? resolveCollectionLink(collection, locale)
+      ? resolveCollectionLink(collection, locale, gender)
       : null;
   const ImageComponent = image ? (
     <div className="group relative h-full w-full overflow-hidden bg-gray-100">

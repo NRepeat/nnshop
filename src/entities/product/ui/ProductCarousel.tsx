@@ -22,9 +22,11 @@ type ProductCarouselProps = Extract<
 const ProductCarousel = async ({
   title,
   collection,
+  gender,
 }: {
   title: ProductCarouselProps['title'];
   collection: Collection;
+  gender?: string;
 }) => {
   const collectionHandle = collection?.store?.slug?.current;
   const locale = await getLocale();
@@ -68,7 +70,7 @@ const ProductCarousel = async ({
         </h2>
         <div className="flex h-full justify-end">
           <Link
-            href={`/collection/${collectionHandle}`}
+            href={gender ? `/${gender}/${collectionHandle}` : `/${collectionHandle}`}
             className="text-md underline"
           >
             {tBetterAuth('VIEW_ALL')}

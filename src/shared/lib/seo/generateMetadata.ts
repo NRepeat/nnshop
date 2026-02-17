@@ -73,8 +73,10 @@ export function generateCollectionMetadata(
     image?: { url: string } | null;
   },
   locale: string,
-  slug: string
+  slug: string,
+  gender?: string,
 ): Metadata {
+  const prefix = gender ? `/${gender}` : '';
   return generatePageMetadata(
     {
       title: `${collection.title} | Mio Mio`,
@@ -82,6 +84,6 @@ export function generateCollectionMetadata(
       image: collection.image?.url,
     },
     locale,
-    `/collection/${slug}`
+    `${prefix}/${slug}`
   );
 }

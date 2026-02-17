@@ -10,7 +10,7 @@ import { setRequestLocale } from 'next-intl/server';
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug, locale } = await params;
+  const { slug, locale, gender } = await params;
 
   try {
     const { collection } = await getCollection({
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       return { title: 'Collection Not Found' };
     }
 
-    return generateCollectionMetadata(collection.collection, locale, slug);
+    return generateCollectionMetadata(collection.collection, locale, slug, gender);
   } catch {
     return { title: 'Collection Not Found' };
   }
@@ -43,20 +43,19 @@ export async function generateStaticParams() {
     return params;
   } catch (error) {
     console.error('Failed to generate static params for collections:', error);
-    // Fallback to just locales if fetching slugs fails
     return locales.map(locale => ({ locale, slug: '' }));
   }
 }
 
 export type Props = {
-  params: Promise<{ locale: string; slug: string }>;
+  params: Promise<{ locale: string; slug: string; gender: string }>;
   searchParams: Promise<SearchParams>;
 };
 
 export default async function CollectionPage({ params, searchParams }: Props) {
-  const {locale} = await params
+  const { locale } = await params;
   setRequestLocale(locale);
- 
+
   return (
     <div className="container ">
       <Suspense fallback={<CollectionGridSkeleton />}>

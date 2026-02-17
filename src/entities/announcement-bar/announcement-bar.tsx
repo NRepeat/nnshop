@@ -6,6 +6,7 @@ import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link'
 import { HeaderBarProps } from '@widgets/header/ui/Header';
 import { Suspense } from 'react';
 import Link from 'next/link';
+import { cookies } from 'next/headers';
 import { parseLocale } from '@features/header/language-switcher/ui/LanguageSwitcher';
 
 type AnnouncementBarProps = Extract<
@@ -17,12 +18,14 @@ type AnnouncementBarProps = Extract<
   categories: HeaderBarProps | null | undefined;
 };
 
-export const AnnouncementBar = (props: AnnouncementBarProps) => {
+export const AnnouncementBar = async (props: AnnouncementBarProps) => {
   const { telephone, link, locale, text } = props;
+  const cookieStore = await cookies();
+  const gender = cookieStore.get('gender')?.value || 'woman';
   const collectionData = link?.collectionData;
   let resolvedLink = '';
   if (collectionData?.id) {
-    const resolved = resolveCollectionLink(collectionData, locale);
+    const resolved = resolveCollectionLink(collectionData, locale, gender);
     resolvedLink = resolved?.handle || '';
   } else {
     resolvedLink = link?.collectionData?.pageHandle || '';

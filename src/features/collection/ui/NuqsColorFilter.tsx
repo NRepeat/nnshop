@@ -19,7 +19,7 @@ export function NuqsColorFilter({ filter }: Props) {
 
   const [selectedValues, setSelectedValues] = useQueryState(
     filterKey,
-    parseAsArrayOf(parseAsString)
+    parseAsArrayOf(parseAsString, ';')
       .withDefault([])
       .withOptions({ shallow: false, history: 'replace' }),
   );
@@ -40,10 +40,12 @@ export function NuqsColorFilter({ filter }: Props) {
           return (
             <label
               key={value.label}
-              className={cn('flex items-center space-x-2 cursor-pointer', {
-                'text-muted-foreground line-through': value.count === 0,
+              className={cn('flex items-center space-x-2', {
+                'text-muted-foreground': value.count === 0 && !isChecked,
+                'cursor-pointer': value.count > 0 || isChecked,
+                'pointer-events-none opacity-50': value.count === 0 && !isChecked,
               })}
-              onClick={() => handleFilterChange(value)}
+              onClick={() => (value.count > 0 || isChecked) && handleFilterChange(value)}
             >
               <span
                 className={cn(

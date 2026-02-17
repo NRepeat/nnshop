@@ -15,7 +15,7 @@ export function ActiveFilterChip({ filterKey, filterValue }: Props) {
 
   const [selectedValues, setSelectedValues] = useQueryState(
     filterKey,
-    parseAsArrayOf(parseAsString)
+    parseAsArrayOf(parseAsString, ';')
       .withDefault([])
       .withOptions({ shallow: false, startTransition }),
   );

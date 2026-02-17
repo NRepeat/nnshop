@@ -268,7 +268,7 @@ export const getCollection = async ({
         if (definition) {
           const values = Array.isArray(value)
             ? value
-            : (value as string).split(',');
+            : (value as string).split(';');
           values.forEach((v) => {
             const filterValue = definition.values.find(
               (def) => def.label === v,

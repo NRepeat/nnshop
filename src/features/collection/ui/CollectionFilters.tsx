@@ -12,6 +12,7 @@ import { NuqsPriceRangeFilter } from './NuqsPriceRangeFilter';
 import { NuqsButtonFilter } from './NuqsButtonFilter';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
+import { useParams } from 'next/navigation';
 
 type Props = {
   filters: Filter[];
@@ -20,7 +21,8 @@ type Props = {
 
 export function CollectionFilters({ filters, initialFilters }: Props) {
   const t = useTranslations('CollectionPage');
-  console.log(filters,"filters")
+  const params = useParams();
+  const hasGender = !!params.gender;
   const sortedFilters = useMemo(() => {
     const getOrder = (label: string) => {
       if (label === 'Цена' || label === 'Ціна' || label === 'Price') return 1;
@@ -29,25 +31,16 @@ export function CollectionFilters({ filters, initialFilters }: Props) {
     };
 
     const filteredAndSorted = filters
-      .map((filter) => {
-        if (filter.type === 'PRICE_RANGE') {
-          return filter; // Price range filters don't have values with counts to filter
-        }
-        return {
-          ...filter,
-          // values: filter.values.filter((value) => value.count > 0),
-        };
-      })
       .filter((filter) => {
-        if (filter.type === 'PRICE_RANGE') {
-          return true; // Always keep price range filter
-        }
+        if (filter.id === 'filter.p.vendor') return false;
+        if (filter.id === 'filter.p.m.custom.gender' && hasGender) return false;
+        if (filter.type === 'PRICE_RANGE') return true;
         return filter.values.length > 0;
       })
       .sort((a, b) => getOrder(a.label) - getOrder(b.label));
 
     return filteredAndSorted;
-  }, [filters]);
+  }, [filters, hasGender]);
 
   const initialFilterPrice = initialFilters?.find(
     (filter) => filter.id === 'filter.v.price',

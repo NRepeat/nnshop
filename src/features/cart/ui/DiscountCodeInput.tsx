@@ -1,10 +1,14 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Input } from '@shared/ui/input';
 import { Button } from '@shared/ui/button';
 import { X, Tag, Loader2, Check } from 'lucide-react';
-import { applyDiscountCode, removeDiscountCode } from '@entities/cart/api/update-discount-codes';
+import {
+  applyDiscountCode,
+  removeDiscountCode,
+} from '@entities/cart/api/update-discount-codes';
 import { useTranslations } from 'next-intl';
 import { cn } from '@shared/lib/utils';
 
@@ -23,6 +27,7 @@ export const DiscountCodeInput = ({
   className,
 }: DiscountCodeInputProps) => {
   const t = useTranslations('CartPage');
+  const router = useRouter();
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -38,6 +43,7 @@ export const DiscountCodeInput = ({
         if (result.applicable === false) {
           setError(t('invalid_code'));
         }
+        router.refresh();
       } else {
         setError(result.error || t('invalid_code'));
       }
@@ -47,6 +53,7 @@ export const DiscountCodeInput = ({
   const handleRemove = (codeToRemove: string) => {
     startTransition(async () => {
       await removeDiscountCode(codeToRemove);
+      router.refresh();
     });
   };
 
@@ -88,9 +95,7 @@ export const DiscountCodeInput = ({
         </Button>
       </div>
 
-      {error && (
-        <p className="text-sm text-destructive">{error}</p>
-      )}
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       {discountCodes.length > 0 && (
         <div className="space-y-2">
@@ -101,7 +106,7 @@ export const DiscountCodeInput = ({
                 'flex items-center justify-between rounded-md border px-3 py-2 text-sm',
                 discount.applicable
                   ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950'
-                  : 'border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950'
+                  : 'border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950',
               )}
             >
               <div className="flex items-center gap-2">

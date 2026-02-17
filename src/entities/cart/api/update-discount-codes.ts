@@ -4,8 +4,7 @@ import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
 import { prisma } from '@shared/lib/prisma';
 import { storefrontClient } from '@shared/lib/shopify/client';
-import { revalidateTag } from 'next/cache';
-import { CART_TAGS } from '@shared/lib/cached-fetch';
+import { revalidatePath } from 'next/cache';
 
 const DISCOUNT_CODES_UPDATE_MUTATION = `#graphql
   mutation cartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]) {
@@ -111,13 +110,22 @@ export async function applyDiscountCode(code: string): Promise<{
       variables: { id: sessionCart.cartToken },
     });
 
-    const existingCodes = currentCart.cart?.discountCodes.map((d) => d.code) || [];
+    const currentDiscounts = currentCart.cart?.discountCodes || [];
+    const existingCodes = currentDiscounts.map((d) => d.code);
 
-    if (existingCodes.includes(code.toUpperCase()) || existingCodes.includes(code)) {
+    // Only block if the code is already applied AND applicable
+    const alreadyApplied = currentDiscounts.some(
+      (d) => d.applicable && d.code.toUpperCase() === code.toUpperCase(),
+    );
+    if (alreadyApplied) {
       return { success: false, error: 'Code already applied' };
     }
 
-    const newCodes = [...existingCodes, code];
+    // Filter out any stale/non-applicable instances of this code before re-adding
+    const cleanedCodes = existingCodes.filter(
+      (c) => c.toUpperCase() !== code.toUpperCase(),
+    );
+    const newCodes = [...cleanedCodes, code];
 
     const response = await storefrontClient.request<
       DiscountCodesUpdateResponse,
@@ -129,7 +137,7 @@ export async function applyDiscountCode(code: string): Promise<{
         discountCodes: newCodes,
       },
     });
-
+    console.log(JSON.stringify(response, null, 2), 'cartDiscountCodesUpdate');
     if (response.cartDiscountCodesUpdate.userErrors.length > 0) {
       return {
         success: false,
@@ -137,12 +145,14 @@ export async function applyDiscountCode(code: string): Promise<{
       };
     }
 
-    const appliedCode = response.cartDiscountCodesUpdate.cart?.discountCodes.find(
-      (d) => d.code.toUpperCase() === code.toUpperCase()
-    );
+    const appliedCode =
+      response.cartDiscountCodesUpdate.cart?.discountCodes.find(
+        (d) => d.code.toUpperCase() === code.toUpperCase(),
+      );
 
     // Save discount codes to local database
-    const allDiscountCodes = response.cartDiscountCodesUpdate.cart?.discountCodes || [];
+    const allDiscountCodes =
+      response.cartDiscountCodesUpdate.cart?.discountCodes || [];
     await prisma.cart.update({
       where: { id: sessionCart.id },
       data: {
@@ -153,11 +163,11 @@ export async function applyDiscountCode(code: string): Promise<{
       },
     });
 
-    revalidateTag(CART_TAGS.CART, { expire: 0 });
+    revalidatePath('/', 'layout');
 
     return {
       success: true,
-      applicable: appliedCode?.applicable ?? false
+      applicable: appliedCode?.applicable ?? false,
     };
   } catch (error) {
     console.error('Error applying discount code:', error);
@@ -194,9 +204,10 @@ export async function removeDiscountCode(code: string): Promise<{
       variables: { id: sessionCart.cartToken },
     });
 
-    const existingCodes = currentCart.cart?.discountCodes.map((d) => d.code) || [];
+    const existingCodes =
+      currentCart.cart?.discountCodes.map((d) => d.code) || [];
     const newCodes = existingCodes.filter(
-      (c) => c.toUpperCase() !== code.toUpperCase()
+      (c) => c.toUpperCase() !== code.toUpperCase(),
     );
 
     const response = await storefrontClient.request<
@@ -218,7 +229,8 @@ export async function removeDiscountCode(code: string): Promise<{
     }
 
     // Update discount codes in local database
-    const allDiscountCodes = response.cartDiscountCodesUpdate.cart?.discountCodes || [];
+    const allDiscountCodes =
+      response.cartDiscountCodesUpdate.cart?.discountCodes || [];
     await prisma.cart.update({
       where: { id: sessionCart.id },
       data: {
@@ -229,7 +241,7 @@ export async function removeDiscountCode(code: string): Promise<{
       },
     });
 
-    revalidateTag(CART_TAGS.CART, { expire: 0 });
+    revalidatePath('/', 'layout');
     return { success: true };
   } catch (error) {
     console.error('Error removing discount code:', error);

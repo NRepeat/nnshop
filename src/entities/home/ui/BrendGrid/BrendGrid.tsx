@@ -10,8 +10,8 @@ import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link'
 type BrandGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'brandGridBlock' }
-> & { locale: string; buttonText?: string };
-export function BrandGrid({ barnds, locale }: BrandGridProps) {
+> & { locale: string; buttonText?: string; gender?: string };
+export function BrandGrid({ barnds, locale, gender }: BrandGridProps) {
   if (!barnds || barnds.length === 0) return null;
 
   return (
@@ -28,7 +28,7 @@ export function BrandGrid({ barnds, locale }: BrandGridProps) {
             <Link
               key={brand._key}
               href={
-                resolveCollectionLink(brand.collectionData, locale).handle ||
+                resolveCollectionLink(brand.collectionData, locale, gender).handle ||
                 brand.collectionData?.handle ||
                 ''
               }

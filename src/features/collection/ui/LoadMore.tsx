@@ -26,9 +26,9 @@ export default function LoadMore({
   const { ref, inView } = useInView();
   const searchParams = useSearchParams();
 
-  // useEffect(() => {
-  //   setPageInfo(initialPageInfo);
-  // }, [initialPageInfo]);
+  useEffect(() => {
+    setPageInfo(initialPageInfo);
+  }, [initialPageInfo]);
 
   const handleLoadMore = useCallback(() => {
     if (!pageInfo.hasNextPage || isPending) return;
@@ -61,6 +61,8 @@ export default function LoadMore({
     }
   }, [inView, isPending, pageInfo, handleLoadMore]);
 
+  if (!pageInfo?.hasNextPage) return null;
+
   return (
     <div className="mt-10 flex flex-col items-center gap-6 p-4 min-h-[100px]">
       <div className="h-4 w-full flex justify-center">
@@ -72,7 +74,7 @@ export default function LoadMore({
       <Button
         variant="outline"
         onClick={handleLoadMore}
-        disabled={isPending || !pageInfo.hasNextPage}
+        disabled={isPending}
         className="px-8"
       >
         {t('showMore')}

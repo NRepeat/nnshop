@@ -37,7 +37,6 @@ const ProductSessionView = async ({ params }: Props) => {
 
   try {
     const { locale, slug } = await params;
-    const handle = decodeURIComponent(slug);
     setRequestLocale(locale);
     const { originProduct } = await getProduct({
       handle: slug,
@@ -118,10 +117,6 @@ const ProductSessionView = async ({ params }: Props) => {
 };
 
 const ProductSession = async ({ params }: Props) => {
-  // const p = await params;
-  // const response = await getProduct({ handle: p.slug, locale: p.locale });
-  // const product = response?.originProduct;
-  // console.log(product);
   return (
     <QuickView open={Boolean(params)}>
       <ProductSessionView params={params} />

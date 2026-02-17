@@ -5,36 +5,33 @@ import {
   NavigationMenuLink,
 } from '@shared/ui/navigation-menu';
 import { getMainMenu } from '../api/getMainMenu';
-import {getTranslations } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import { NavigationClient } from './NavigationClient';
 import { Skeleton } from '@shared/ui/skeleton';
 import { NavigationItemClient } from './NavigationItemClient';
 import { NavigationTriggerClient } from './NavigationTriggerClient';
 import { Button } from '@shared/ui/button';
-import Link from 'next/link';
-import { getAllBrands } from '@entities/brand/api/getAllBrands';
+import { NavigationContentLink } from './NavigationContentLink';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
-import { HEADER_QUERYResult } from '@shared/sanity/types';
-import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link';
-
-type BrandsNavigationData = NonNullable<HEADER_QUERYResult>['brandsNavigation'];
 
 export const CurrentNavigationSession = async ({
   locale,
-  brandsNavigation,
+  gender,
 }: {
   locale: string;
-  brandsNavigation?: BrandsNavigationData;
+  gender?: string;
 }) => {
   const cookie = await cookies();
-  const gender = cookie.get('gender')?.value || 'woman';
-  return <Navigation gender={gender} locale={locale} brandsNavigation={brandsNavigation} />;
+  const currentGender = gender || cookie.get('gender')?.value || 'woman';
+  return <Navigation gender={currentGender} locale={locale} />;
 };
 
 export const CurrentNavigationSessionSkilet = () => {
   const meinMenu = [
     { slug: 'home', title: 'Home', items: [] },
+    { slug: 'about', title: 'About', items: [] },
+    { slug: 'about', title: 'About', items: [] },
     { slug: 'about', title: 'About', items: [] },
   ];
   const menu = meinMenu.map((item, index) => {
@@ -68,6 +65,8 @@ const genderSlugMap: Record<string, string[]> = {
   man: ['man', 'men', 'male', 'муж', 'мужчин', 'чолов', 'cholovik'],
 };
 
+const brandSlugs = ['brand', 'бренд', 'брендi', 'бренди'];
+
 function matchesGender(
   item: { url: string; title: string },
   gender: string,
@@ -78,45 +77,38 @@ function matchesGender(
   return slugs.some((s) => slug.includes(s) || title.includes(s));
 }
 
+function isBrandsItem(item: { url: string; title: string }): boolean {
+  const slug = item.url.split('/').pop()?.toLowerCase() || '';
+  const title = item.title.toLowerCase();
+  return brandSlugs.some((s) => slug.includes(s) || title.includes(s));
+}
+
 const Navigation = async ({
   gender,
   locale,
-  brandsNavigation,
 }: {
   gender: string;
   locale: string;
-  brandsNavigation?: BrandsNavigationData;
 }) => {
   const allItems = await getMainMenu({ locale });
-  const meinMenu = allItems.filter((item) => matchesGender(item, gender));
-  console.log(meinMenu,"meinMenu",gender,locale)
   const t = await getTranslations({ locale, namespace: 'BrandsPage' });
 
-  const items = meinMenu.length > 0 ? meinMenu : allItems.slice(0, 1);
+  // Find brands item from Shopify menu
+  const brandsMenuItem = allItems.find((item) => isBrandsItem(item));
 
-  // Brands dropdown: use Sanity data if available, fallback to auto-detected
-  const sanityTopBrands = brandsNavigation?.topBrands;
-  const sanityCollections = brandsNavigation?.collections;
+  // Filter by gender, excluding brands item to avoid duplicate keys
+  const meinMenu = allItems.filter(
+    (item) => matchesGender(item, gender) && !isBrandsItem(item),
+  );
+  const items = meinMenu.length > 0 ? meinMenu : allItems.filter((i) => !isBrandsItem(i)).slice(0, 1);
+  const topBrands =
+    brandsMenuItem?.items?.flatMap((sub) =>
+      sub.items?.length > 0
+        ? sub.items.map((child) => child.title)
+        : [sub.title],
+    ) || [];
 
-  // Top brands: from Sanity or fallback to getAllBrands()
-  const topBrands = sanityTopBrands && sanityTopBrands.length > 0
-    ? sanityTopBrands
-    : await getAllBrands(locale).then((b) => b.slice(0, 20));
-
-  // Collections: from Sanity or fallback to menu sub-items
-  const collections = sanityCollections && sanityCollections.length > 0
-    ? sanityCollections.map((col) => {
-        const resolved = resolveCollectionLink(col.collectionData, locale);
-        return { title: col.title || resolved.title || '', url: resolved.handle || '' };
-      }).filter((c) => c.title && c.url)
-    : items
-        .flatMap((item) =>
-          item.items.length > 0
-            ? item.items.flatMap((sub) => sub.items.map((child) => ({ title: child.title, url: child.url })))
-            : []
-        )
-        .filter((v, i, a) => a.findIndex((t) => t.url === v.url) === i)
-        .slice(0, 8);
+  const withGender = (url: string) => `/${gender}${url}`;
 
   const menu = items.map((item, index) => {
     if (item.items.length > 0) {
@@ -124,8 +116,8 @@ const Navigation = async ({
         <React.Fragment key={index}>
           {item.items.map((subItem) => {
             const subItemUrls = [
-              subItem.url,
-              ...subItem.items.map((child) => child.url),
+              withGender(subItem.url),
+              ...subItem.items.map((child) => withGender(child.url)),
             ];
 
             return (
@@ -136,19 +128,16 @@ const Navigation = async ({
                 <NavigationTriggerClient urls={subItemUrls}>
                   {subItem.title}
                 </NavigationTriggerClient>
-                <NavigationMenuContent className="flex justify-between px-4">
-                  <div className="flex w-full">
-                    <div className="container w-full flex justify-between min-h-[300px]">
-                      <ul className="grid h-fit gap-2 md:w-lg lg:w-3xl md:grid-cols-[.75fr_1fr] lg:grid-cols-[.75fr_1fr] ">
+                <NavigationMenuContent className="px-4">
+                  <div className="flex gap-10 py-8 px-6">
+                    <div className="flex-1">
+                      <ul className="grid grid-cols-2 gap-x-8 gap-y-1">
                         {subItem.items.map((child) => (
-                          <li
-                            key={child.title + gender}
-                            className="w-full row-span-3 ml-2"
-                          >
-                            <NavigationItemClient href={child.url}>
+                          <li key={child.title + gender}>
+                            <NavigationItemClient href={withGender(child.url)}>
                               <Button
                                 variant={'ghost'}
-                                className="text-base font-300 font-sans w-full inline-block  hover:underline transition-colors border-none"
+                                className="text-base font-normal font-sans w-full justify-start px-2 hover:underline transition-colors border-none h-9"
                               >
                                 {child.title}
                               </Button>
@@ -167,11 +156,11 @@ const Navigation = async ({
     } else {
       return (
         <NavigationMenuItem
-          key={item.title}
+          key={item.url + item.title}
           className={` ${index === items.length - 1 ? 'hidden lg:block' : 'block'}`}
         >
           <NavigationMenuLink asChild>
-            <NavigationItemClient href={item.url}>
+            <NavigationItemClient href={withGender(item.url)}>
               {item.title}
             </NavigationItemClient>
           </NavigationMenuLink>
@@ -180,85 +169,69 @@ const Navigation = async ({
     }
   });
   return (
-    <NavigationClient className=" pt-2 w-full">
+    <NavigationClient key={locale} className=" pt-2 w-full">
       {menu}
-      <NavigationMenuItem className="group">
-        <NavigationTriggerClient urls={['/brands']}>
-          {t('title')}
-        </NavigationTriggerClient>
-        <NavigationMenuContent className="flex justify-between px-4">
-          <div className="flex w-full">
-            <div className="container w-full flex py-5 gap-8">
-              {/* КОЛЕКЦІЇ column */}
-              {/* <div className="shrink-0 min-w-[140px]">
-                <h3 className="text-xs font-bold uppercase tracking-wider underline mb-3">
-                  {t('collections')}
+      {brandsMenuItem && (
+        <NavigationMenuItem className="group">
+          <NavigationTriggerClient urls={['/brands']}>
+            {brandsMenuItem.title}
+          </NavigationTriggerClient>
+          <NavigationMenuContent className="px-4">
+            <div className="flex gap-10 py-8 px-6">
+              <div className="flex-1">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
+                  {t('topBrands')}
                 </h3>
-                <ul className="space-y-1.5">
-                  {collections.map((col) => (
-                    <li key={String(col.title)}>
-                      <Link
-                        href={col.url}
-                        className="text-sm hover:underline transition-colors"
+                <ul className="grid grid-cols-2 gap-x-8 gap-y-1">
+                  {topBrands.slice(0, 10).map((brand) => (
+                    <li key={brand}>
+                      <NavigationItemClient
+                        href={`/brand/${vendorToHandle(brand)}`}
                       >
-                        {String(col.title)}
-                      </Link>
+                        <Button
+                          variant={'ghost'}
+                          className="text-base font-normal font-sans w-full justify-start px-2 hover:underline transition-colors border-none h-9"
+                        >
+                          {brand}
+                        </Button>
+                      </NavigationItemClient>
                     </li>
                   ))}
                 </ul>
-              </div> */}
-
-              {/* TOP BRANDS columns */}
-              <div className="flex-1">
-                <h3 className="text-xs font-bold uppercase tracking-wider underline mb-3">
-                  {t('topBrands')}
-                </h3>
-                <div className="grid grid-flow-col grid-rows-[repeat(10,minmax(0,auto))] gap-x-8 gap-y-1.5">
-                  {topBrands.slice(0, 20).map((brand) => (
-                    <Link
-                      key={brand}
-                      href={`/brand/${vendorToHandle(brand)}`}
-                      className="text-sm hover:underline transition-colors"
-                    >
-                      {brand}
-                    </Link>
-                  ))}
+                <div className="mt-3 pl-2">
+                  <NavigationItemClient href="/brands">
+                    <span className="text-base font-medium underline hover:text-primary transition-colors">
+                      {t('allBrands')} →
+                    </span>
+                  </NavigationItemClient>
                 </div>
               </div>
-
-              {/* A-Z index + All brands link */}
-              <div className="shrink-0">
-                <h3 className="text-xs font-bold uppercase tracking-wider underline mb-3">
+              <div className="border-l border-muted pl-8 shrink-0">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
                   A - Z
                 </h3>
-                <div className="grid grid-cols-5 gap-x-3 gap-y-1.5 mb-4">
+                <div className="grid grid-cols-7 gap-x-2 gap-y-2">
                   {Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map((letter) => (
-                    <Link
+                    <NavigationContentLink
                       key={letter}
                       href={`/brands#letter-${letter}`}
-                      className="text-sm font-medium hover:text-primary transition-colors text-center"
+                      className="text-base font-medium hover:text-primary hover:bg-accent transition-colors text-center rounded-md w-9 h-9 flex items-center justify-center"
                     >
                       {letter}
-                    </Link>
+                    </NavigationContentLink>
                   ))}
-                  <Link
+                  <NavigationContentLink
                     href="/brands"
-                    className="text-sm font-medium hover:text-primary transition-colors text-center"
+                    className="text-base font-medium hover:text-primary hover:bg-accent transition-colors text-center rounded-md w-9 h-9 flex items-center justify-center"
                   >
-                    0-9
-                  </Link>
+                    #
+                  </NavigationContentLink>
                 </div>
-                <Link
-                  href="/brands"
-                  className="text-sm font-medium underline hover:text-primary transition-colors"
-                >
-                  {t('allBrands')}
-                </Link>
               </div>
             </div>
-          </div>
-        </NavigationMenuContent>
-      </NavigationMenuItem>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+      )}
     </NavigationClient>
   );
 };

@@ -50,11 +50,11 @@ const Content = async ({
     namespace: 'Header.cart.drawer',
   });
   return (
-    <SheetContent className="w-full sm:min-w-[500px] font-light " >
+    <SheetContent className="w-full sm:min-w-[500px] font-light ">
       <div className="h-full overflow-hidden flex flex-col">
-        <SheetHeader className="pt-6 pb-2 px-4">
+        <SheetHeader className="pt-6 pb-6 px-4 border-b border-muted">
           <SheetTitle className="font-sans">
-            <ShoppingCart className="h-5 w-5" />
+            <ShoppingCart className="h-6 w-6" />
           </SheetTitle>
         </SheetHeader>
         {/* <SheetHeader className="sticky top-0">
@@ -62,7 +62,6 @@ const Content = async ({
         </SheetHeader> */}
         <div className="overflow-auto flex-1">
           <div className="flex flex-col space-y-2 px-4">
-            <Separator />
             {mockProducts.map((product) => (
               <CartItem
                 key={product.id + product.title}
@@ -76,20 +75,22 @@ const Content = async ({
 
         <div className="flex flex-col justify-between py-4  ">
           <Separator />
-          <Accordion type="single" collapsible className="w-full px-4">
+          <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1" defaultChecked={false}>
-              <AccordionTrigger className="w-full">
+              <AccordionTrigger className="w-full  px-4">
                 <span className="font-light">{t('order_instraction')}</span>
               </AccordionTrigger>
-              <AccordionContent className="w-full px-1 pt-1">
-                <CartNoteTextarea placeholder={t('order_instraction_placeholder')} />
+              <AccordionContent className="w-full px-4 pt-1">
+                <CartNoteTextarea
+                  placeholder={t('order_instraction_placeholder')}
+                />
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2" defaultChecked={false}>
-              <AccordionTrigger className="w-full">
+              <AccordionTrigger className="w-full  px-4">
                 <span className="font-light">{t('promo_code')}</span>
               </AccordionTrigger>
-              <AccordionContent className="w-full px-1 pt-1">
+              <AccordionContent className="w-full px-4 pt-1">
                 <DiscountCodeInput discountCodes={discountCodes} />
               </AccordionContent>
             </AccordionItem>
@@ -97,25 +98,24 @@ const Content = async ({
           <Separator />
         </div>
         <div className="w-full flex flex-col gap-2 px-4 py-4">
-          {/* <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{t('subtotal')}</span>
-            <span className="">
-              {getSymbolFromCurrency(currencySymbol)} {subtotalAmount.toFixed(0)}
-            </span>
-          </div> */}
           {discountAmount > 0 && (
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('discount')}</span>
               <span className="text-green-600 dark:text-green-400">
-                -{getSymbolFromCurrency(currencySymbol)} {Math.round(discountAmount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
+                -{getSymbolFromCurrency(currencySymbol)}{' '}
+                {Math.round(discountAmount)
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
               </span>
             </div>
           )}
-          <Separator />
           <div className="flex justify-between font-medium">
             <span>{t('total')}</span>
             <span className="">
-              {getSymbolFromCurrency(currencySymbol)} {Math.round(totalAmount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
+              {getSymbolFromCurrency(currencySymbol)}{' '}
+              {Math.round(totalAmount)
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
             </span>
           </div>
         </div>

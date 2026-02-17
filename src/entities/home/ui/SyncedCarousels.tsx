@@ -40,11 +40,13 @@ type SyncedCarouselsProps = {
   )[];
   previews: Preview[] | undefined | null;
   title: string | undefined;
+  gender?: string;
 };
 
 export const SyncedCarousels = ({
   collectionsData,
   previews,
+  gender,
 }: SyncedCarouselsProps) => {
   const [api1, setApi1] = useState<CarouselApi>();
   const [api2, setApi2] = useState<CarouselApi>();
@@ -98,7 +100,7 @@ export const SyncedCarousels = ({
                 preview.asset && (
                   <CarouselItem key={preview._key}>
                     <Link
-                      href={`/collection/${preview.handle?.current}`}
+                      href={gender ? `/${gender}/${preview.handle?.current}` : `/${preview.handle?.current}`}
                       scroll
                       prefetch
                     >

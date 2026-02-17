@@ -32,16 +32,13 @@ export function ProductViewProvider({
     (option) => option.name.toLowerCase() === 'Розмір'.toLowerCase(),
   )?.values;
 
-
-
-
   const [size, setSize] = useQueryState('size');
   let selectedVariant = undefined;
 
   if (size) {
     selectedVariant = product.variants.edges.find((edge) => {
       const variant = edge.node;
-      console.log(variant.selectedOptions,"selectedOptions")
+      console.log(variant.selectedOptions, 'selectedOptions');
       const sizeMatch = variant.selectedOptions.find(
         (option) =>
           option.name.toLowerCase() === 'Розмір'.toLowerCase() &&
@@ -50,20 +47,6 @@ export function ProductViewProvider({
       return sizeMatch;
     })?.node;
   }
-  // if (!selectedVariant) {
-  //   const firstAvailableVariant = product.variants.edges.find(
-  //     (edge) => edge.node.availableForSale,
-  //   )?.node;
-  //   if (firstAvailableVariant) {
-  //     const sizeOption = firstAvailableVariant.selectedOptions.find(
-  //       (option) => option.name.toLowerCase() === 'розмір',
-  //     );
-  //     if (sizeOption) {
-  //       setSize(sizeOption.value.toLowerCase());
-  //     }
-  //   }
-  // }
-
   return (
     <>
       <ScrollToTop />

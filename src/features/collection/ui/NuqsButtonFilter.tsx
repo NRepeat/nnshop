@@ -25,7 +25,7 @@ export function NuqsButtonFilter({
 
   const [selectedValues, setSelectedValues] = useQueryState(
     filterKey,
-    parseAsArrayOf(parseAsString)
+    parseAsArrayOf(parseAsString, ';')
       .withDefault([])
       .withOptions({ shallow: false, history: 'replace' }),
   );
@@ -53,7 +53,7 @@ export function NuqsButtonFilter({
             variant={isSelected ? 'default' : 'outline'}
             size="sm"
             onClick={() => handleFilterChange(value)}
-            disabled={false} // value.count will always be > 0 now
+            disabled={value.count === 0 && !isSelected}
             className={cn('flex gap-x-2 w-full', {
               'bg-black text-white': isSelected,
             })}

@@ -73,7 +73,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
     (acc, item) => acc + Number(item.quantity),
     0,
   );
-  const discountCodes = cart?.cart?.discountCodes || [];
+  const discountCodes = (cart?.cart?.discountCodes || []).filter((d) => d.applicable);
 
   // Calculate totals with znizka discount applied
   // Shopify cart doesn't know about znizka metafield, so we use locally calculated estimateTotal
@@ -83,8 +83,8 @@ const CartSheet = async ({ locale }: { locale: string }) => {
   const codeDiscount = shopifySubtotal > shopifyTotal ? shopifySubtotal - shopifyTotal : 0;
   // subtotalAmount = locally calculated total with znizka applied
   const subtotalAmount = estimateTotal || 0;
-  // Final total = znizka-applied subtotal minus any cart discount code discounts
-  const totalAmount = subtotalAmount - codeDiscount;
+  // Final total = znizka-applied subtotal minus any cart discount code discounts (min 0)
+  const totalAmount = Math.max(0, subtotalAmount - codeDiscount);
   const discountAmount = codeDiscount;
 
   return (
@@ -140,7 +140,7 @@ const CartWithEmptyState = ({
   totalAmount: number;
   discountAmount: number;
 }) => {
-  if (!cartId) {
+  if (!cartId || !products || products.length === 0) {
     return <EmptyState locale={locale} />;
   } else {
     return (
