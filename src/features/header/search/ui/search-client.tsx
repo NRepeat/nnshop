@@ -66,23 +66,25 @@ export const SearchClient = ({ className }: { className?: string }) => {
 
   useEffect(() => {
     if (debouncedQuery.length >= 1) {
-      //@ts-ignore
       setLoading(true);
+      const controller = new AbortController();
       fetch('/api/predictive-search', {
         method: 'POST',
         body: JSON.stringify({ query: debouncedQuery }),
         headers: {
           'Content-Type': 'application/json',
         },
+        signal: controller.signal,
       })
         .then((res) => res.json())
         .then((data) => {
           setResults(data);
           setLoading(false);
         })
-        .catch(() => {
-          setLoading(false);
+        .catch((err) => {
+          if (err.name !== 'AbortError') setLoading(false);
         });
+      return () => controller.abort();
     } else {
       setResults(null);
     }

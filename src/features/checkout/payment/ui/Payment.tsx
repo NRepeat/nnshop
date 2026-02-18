@@ -3,7 +3,7 @@ import { getCart } from '@entities/cart/api/get';
 import PaymentForm from './PaymentForm';
 import { getPaymentInfo } from '../api/getPaymentInfo';
 import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { redirect, unstable_rethrow } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
@@ -81,6 +81,7 @@ export default async function Payment({
       </div>
     );
   } catch (error) {
+    unstable_rethrow(error);
     console.error('Error fetching cart data:', error);
     redirect('/');
   }

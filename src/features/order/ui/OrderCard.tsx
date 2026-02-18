@@ -114,7 +114,7 @@ export const OrderCard = ({ order }: OrderCardProps) => {
             <div className="flex gap-2 mt-2">
               {lineItems.map(({ node: item }, index) => (
                 <div
-                  key={index}
+                  key={item.image?.url ?? `item-${index}`}
                   className="relative w-14 h-14 rounded-md overflow-hidden bg-muted"
                 >
                   {item.image?.url ? (

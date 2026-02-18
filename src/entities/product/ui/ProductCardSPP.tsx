@@ -11,6 +11,30 @@ type ProductCardSPPProps = {
   link?: boolean;
 };
 
+const WithLink = ({
+  children,
+  link,
+  handle,
+}: {
+  children: React.ReactNode;
+  link: boolean;
+  handle: string;
+}) => {
+  if (link) {
+    return (
+      <Link
+        prefetch
+        href={`/product/${handle}`}
+        className="block h-full w-full"
+        scroll={true}
+      >
+        {children}
+      </Link>
+    );
+  }
+  return <div className="block h-full w-full">{children}</div>;
+};
+
 export const ProductCardSPP = ({
   product,
   className,
@@ -32,27 +56,11 @@ export const ProductCardSPP = ({
   const discountValue = discountMeta ? parseFloat(discountMeta.value) : 0;
   const hasDiscount = discountValue > 0;
   const discountedPrice = priceAmount * (1 - discountValue / 100);
-  const WithLink = ({ children }: { children: React.ReactNode }) => {
-    if (link) {
-      return (
-        <Link
-          prefetch
-          href={`/product/${product.handle}`}
-          className="block h-full w-full"
-          scroll={true}
-        >
-          {children}
-        </Link>
-      );
-    } else {
-      return <div className="block h-full w-full">{children}</div>;
-    }
-  };
   return (
     <div className={cn('group flex flex-col gap-3 w-full', className)}>
       {/* Контейнер изображения */}
       <div className="relative aspect-[1/1] w-full overflow-hidden bg-background">
-        <WithLink>
+        <WithLink link={link} handle={product.handle}>
           {imageUrl ? (
             <Image
               src={imageUrl}

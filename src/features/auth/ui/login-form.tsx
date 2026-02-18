@@ -207,6 +207,7 @@ export default function LoginForm({
               src="/auth_image.jpeg"
               alt="Login cover"
               fill
+              sizes="50vw"
               priority
               className="absolute inset-0 h-full w-full object-cover grayscale contrast-125"
             />

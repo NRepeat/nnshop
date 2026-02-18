@@ -1,6 +1,6 @@
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { redirect, unstable_rethrow } from 'next/navigation';
 import { Suspense } from 'react';
 import { CheckoutStepper } from '@entities/checkout/ui/CheckoutStepper';
 import { getCompletedSteps } from '@features/checkout/api/getCompletedSteps';
@@ -68,6 +68,7 @@ async function CheckoutLayoutContent({
       redirect('/auth/sign-in');
     }
   } catch (error) {
+    unstable_rethrow(error);
     console.error('Checkout auth error:', error);
     redirect('/auth/sign-in');
   }

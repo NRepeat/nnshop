@@ -252,9 +252,9 @@ export const OrderDetails = async ({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {order.lineItems.edges.map(({ node: item }, index) => (
+                {order.lineItems.edges.map(({ node: item }) => (
                   <div
-                    key={index}
+                    key={`${item.title}-${item.variant?.title}`}
                     className="flex items-start gap-4"
                   >
                     <div className="relative w-16 h-16 rounded-md overflow-hidden bg-muted shrink-0">

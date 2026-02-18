@@ -138,6 +138,7 @@ export function ForgotPasswordForm({
                 src="/auth_image.jpeg"
                 alt="Image"
                 fill
+                sizes="50vw"
                 priority
                 className="absolute inset-0 h-full w-full object-cover grayscale contrast-125"
               />
@@ -212,6 +213,7 @@ export function ForgotPasswordForm({
               src="/auth_image.jpeg"
               alt="Image"
               fill
+              sizes="50vw"
               priority
               className="absolute inset-0 h-full w-full object-cover grayscale contrast-125"
             />

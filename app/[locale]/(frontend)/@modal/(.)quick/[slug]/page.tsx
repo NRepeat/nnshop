@@ -7,7 +7,7 @@ import { getReletedProducts } from '@entities/product/api/get-related-products';
 import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
 import { ProductViewProvider } from '@widgets/product-view/ui/ProductViewProvider';
 
-import { notFound } from 'next/navigation';
+import { notFound, unstable_rethrow } from 'next/navigation';
 import { Suspense } from 'react';
 import { getProduct } from '@entities/product/api/getProduct';
 import { GallerySession } from '@widgets/product-view/ui/GallerySession';
@@ -111,6 +111,7 @@ const ProductSessionView = async ({ params }: Props) => {
       </div>
     );
   } catch (e) {
+    unstable_rethrow(e);
     console.error(e);
     return notFound();
   }

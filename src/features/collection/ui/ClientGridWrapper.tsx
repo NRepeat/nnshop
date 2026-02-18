@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { ClientGrid } from './ClientGrid';
 import LoadMore from './LoadMore';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
@@ -44,12 +44,14 @@ export const ClientGridWrapper = ({
         <div className="flex flex-col w-full justify-between  pt-0 min-h-screen h-fit">
           <ClientGrid products={products as (Product & { isFav: boolean })[]} />
           <div className="w-full items-center">
-            <LoadMore
-              initialPageInfo={pageInfo}
-              onDataLoadedAction={handleDataLoaded}
-              locale={locale}
-              handle={handle}
-            />
+            <Suspense fallback={null}>
+              <LoadMore
+                initialPageInfo={pageInfo}
+                onDataLoadedAction={handleDataLoaded}
+                locale={locale}
+                handle={handle}
+              />
+            </Suspense>
           </div>
         </div>
       </div>

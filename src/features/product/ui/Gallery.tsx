@@ -86,7 +86,7 @@ const Gallery = ({
             <Carousel setApi={setMainApi}>
               <CarouselContent className="[&>div]:-ml-0 ">
                 {images.map((image, index: number) => (
-                  <CarouselItem key={index} className="cursor-zoom-in ">
+                  <CarouselItem key={image.url ?? index} className="cursor-zoom-in ">
                     <Item
                       id={index}
                       original={image.url}
@@ -144,7 +144,7 @@ const Gallery = ({
               >
                 {[...images].map((image, index: number) => (
                   <CarouselItem
-                    key={index}
+                    key={image.url ?? index}
                     onClick={() => onThumbClick(index)}
                     className="basis-1/4 md:basis-1/4 lg:basis-1/5 cursor-pointer"
                   >

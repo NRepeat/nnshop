@@ -51,7 +51,7 @@ export const FavoriteProductCard = ({ product }: FavoriteProductCardProps) => {
         >
           {productImages.map((image, index) => (
             <Image
-              key={index}
+              key={image.url ?? index}
               className={cn(
                 'object-cover transition-opacity duration-300',
                 currentImageIndex === index ? 'opacity-100' : 'opacity-0',

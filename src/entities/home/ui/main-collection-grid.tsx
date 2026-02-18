@@ -41,6 +41,7 @@ export const MainCollectionGrid = (props: MainCollectionGridProps) => {
                       alt={col.title ?? ''}
                       className="object-contain w-full transition-transform duration-700 ease-in-out h-[375px] md:h-[450px] lg:h-[530px] max-h-[530px] group-hover:scale-105"
                       fill
+                      sizes="(max-width: 640px) 370px, (max-width: 1024px) 50vw, 33vw"
                     />
                   )}
                   <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-black opacity-20 group-hover:scale-105 transition-transform duration-700 ease-in-out"></div>

@@ -56,8 +56,8 @@ export const withScrollState = <P extends object>(
 
       window.addEventListener('mousemove', onMouseMove);
       window.addEventListener('mouseup', onEnd);
-      window.addEventListener('touchmove', onTouchMove);
-      window.addEventListener('touchend', onEnd);
+      window.addEventListener('touchmove', onTouchMove, { passive: true });
+      window.addEventListener('touchend', onEnd, { passive: true });
 
       return () => {
         window.removeEventListener('mousemove', onMouseMove);

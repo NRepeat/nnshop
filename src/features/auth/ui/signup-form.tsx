@@ -225,6 +225,7 @@ export function SignupForm({
               src="/auth_image.jpeg"
               alt="Signup cover"
               fill
+              sizes="50vw"
               priority
               className="absolute inset-0 h-full w-full object-cover grayscale contrast-125"
             />

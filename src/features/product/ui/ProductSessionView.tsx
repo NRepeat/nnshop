@@ -8,7 +8,7 @@ import { getProduct } from '@entities/product/api/getProduct';
 
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { ProductView } from '@widgets/product-view';
-import { notFound } from 'next/navigation';
+import { notFound, unstable_rethrow } from 'next/navigation';
 
 export const ProductSessionView = async ({
   handle,
@@ -82,6 +82,7 @@ export const ProductSessionView = async ({
       </>
     );
   } catch (e) {
+    unstable_rethrow(e);
     console.error(e);
     return notFound();
   }

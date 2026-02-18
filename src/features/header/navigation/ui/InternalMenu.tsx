@@ -35,7 +35,7 @@ export const InternalMenu = ({
     .filter((item) => item.menu.length > 0)
     .map((item) => {
       return (
-        <div className="flex flex-col">
+        <div key={item.label} className="flex flex-col">
           {item.menu.map((subItem) => {
             const subId = `sub-${subItem.id || subItem.title}`;
             const hasSubItems = subItem.items && subItem.items.length > 0;

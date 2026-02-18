@@ -27,9 +27,9 @@ const Description = async ({
     <div className="md:col-span-4 flex jusify-center flex-col w-full items-center">
       <div className="sticky top-24 md:max-w-xl ">
         <h4>
-          <a href="#" className="tw:no-underline tw:text-inherit text-md">
+          <span className="tw:no-underline tw:text-inherit text-md">
             {product.vendor}
-          </a>
+          </span>
         </h4>
         <div className="product__title mt-1">
           <h1 className="text-2xl font-bold">{product.title}</h1>

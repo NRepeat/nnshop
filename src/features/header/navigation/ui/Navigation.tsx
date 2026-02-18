@@ -113,7 +113,7 @@ const Navigation = async ({
   const menu = items.map((item, index) => {
     if (item.items.length > 0) {
       return (
-        <React.Fragment key={index}>
+        <React.Fragment key={item.url + item.title}>
           {item.items.map((subItem) => {
             const subItemUrls = [
               withGender(subItem.url),
