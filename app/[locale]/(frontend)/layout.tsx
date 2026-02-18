@@ -84,7 +84,6 @@ export default async function RootLayout(props: RootProps) {
       </head>
       <body className={`${jostSans.variable} antialiased`}>
         <Providers>
-          <ScrollToTop />
           <Header locale={locale} />
 
           <main>{children}</main>

@@ -32,8 +32,8 @@ export async function addToCartAction(productVariantId: string) {
         productVariantId,
       });
       if (result.success) {
-        revalidateTag(CART_TAGS.CART, { expire: 0 });
-        revalidateTag(CART_TAGS.CART_ITEMS, { expire: 0 });
+        // revalidateTag(CART_TAGS.CART, { expire: 0 });
+        // revalidateTag(CART_TAGS.CART_ITEMS, { expire: 0 });
         return { success: true, cart: result.cart };
       }
     } else {
@@ -46,8 +46,8 @@ export async function addToCartAction(productVariantId: string) {
       });
     }
     if (result.success) {
-      revalidateTag(CART_TAGS.CART, { expire: 0 });
-      revalidateTag(CART_TAGS.CART_ITEMS, { expire: 0 });
+      // revalidateTag(CART_TAGS.CART, { expire: 0 });
+      // revalidateTag(CART_TAGS.CART_ITEMS, { expire: 0 });
       return { success: true, cart: result.cart };
     }
 

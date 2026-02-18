@@ -5,6 +5,7 @@ import {
   GetCartQuery,
   GetCartQueryVariables,
 } from '@shared/lib/shopify/types/storefront.generated';
+
 const CART_QUERY = `#graphql
   query GetCart($id: ID!) {
     cart(id: $id) {

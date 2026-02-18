@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@shared/ui/button';
 import addToCart from '../api/add-to-cart';
@@ -9,6 +9,7 @@ import { Product } from '@shared/types/product/types';
 import { useTranslations } from 'next-intl';
 import clsx from 'clsx';
 import { authClient } from '@features/auth/lib/auth-client';
+import { useRouter } from 'next/navigation';
 
 function SubmitButton({
   variant = 'default',
@@ -56,8 +57,8 @@ export function AddToCartButton({
   variant?: string;
 }) {
   const [isPending, setIsPending] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
   const t = useTranslations('ProductPage');
+  const router = useRouter();
 
   // Check product availability
   const isProductAvailable = selectedVariant
@@ -78,7 +79,6 @@ export function AddToCartButton({
     }
 
     setIsPending(true);
-    const savedScroll = window.scrollY;
 
     try {
       const { data: session } = await authClient.getSession();
@@ -104,6 +104,7 @@ export function AddToCartButton({
 
       if (result.success) {
         toast.success(t('addedToCart'));
+        // router.refresh();
       } else {
         // Show specific error message or generic one
         const errorMessage =
@@ -117,15 +118,11 @@ export function AddToCartButton({
       toast.error(t('failedToAdd'));
     } finally {
       setIsPending(false);
-      // requestAnimationFrame runs before paint (immediate visual restore)
-      // setTimeout(0) runs after all React effects (including Next.js router scroll from revalidateTag)
-      requestAnimationFrame(() => window.scrollTo({ top: savedScroll, behavior: 'instant' }));
-      setTimeout(() => window.scrollTo({ top: savedScroll, behavior: 'instant' }), 0);
     }
   };
 
   return (
-    <form ref={formRef} className="w-full" onSubmit={handleSubmit}>
+    <form className="w-full" onSubmit={handleSubmit}>
       <input
         type="hidden"
         name="variantId"

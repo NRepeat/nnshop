@@ -13,6 +13,8 @@ import { Maybe } from '@shared/lib/shopify/types/storefront.types';
 import { Menu } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@shared/ui/button';
+import { cookieFenderSet } from '../api/setCookieGender';
+import { saveGenderPreference } from '../api/saveGender';
 
 const NavigationSheet = ({
   meinMenu,
@@ -44,6 +46,12 @@ const NavigationSheet = ({
   const [open, setOpen] = useState(false);
   const onClose = (link: string) => {
     setOpen(false);
+    const genderMatch = link.match(/^\/(woman|man)\//);
+    if (genderMatch) {
+      const gender = genderMatch[1] as 'woman' | 'man';
+      cookieFenderSet(gender);
+      saveGenderPreference(gender);
+    }
     navigate.push(link);
   };
   return (
