@@ -33,18 +33,18 @@ export const MainCollectionGrid = (props: MainCollectionGridProps) => {
         <div className="flex flex-col gap-5 md:grid md:grid-cols-3 items-center">
           {resolvedCollections.map((col) => (
             <div key={col.handle ?? col.id} className='w-full'>
-              <Link href={col.href} prefetch>
+              <Link href={col.href} prefetch className='flex w-full justify-center'>
                 <div className="flex flex-col relative group w-[370px] aspect-3/4 md:w-full group">
                   {col.image && col.image.url && (
                     <Image
                       src={col.image.url}
                       alt={col.title ?? ''}
-                      className="object-contain w-full transition-transform duration-700 ease-in-out h-[375px] md:h-[450px] lg:h-[530px] max-h-[530px] group-hover:scale-105"
+                      className="object-contain w-full transition-transform duration-700 ease-in-out max-h-[530px] group-hover:scale-105"
                       fill
                       sizes="(max-width: 640px) 370px, (max-width: 1024px) 50vw, 33vw"
                     />
                   )}
-                  <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-black opacity-20 group-hover:scale-105 transition-transform duration-700 ease-in-out"></div>
+                  <div className=" absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-20 group-hover:scale-105 transition-transform duration-700 ease-in-out"></div>
                   <h3 className="absolute bottom-5 left-5 text-background text-2xl font-sans font-400">
                     {col.title}
                   </h3>
