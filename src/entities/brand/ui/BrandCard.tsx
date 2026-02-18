@@ -2,6 +2,7 @@
 
 import { Link } from '@shared/i18n/navigation';
 import { ArrowRight } from 'lucide-react';
+import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 
 type BrandCardProps = {
   brand: string;
@@ -19,7 +20,7 @@ export const BrandCard = ({ brand, productCount }: BrandCardProps) => {
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-gray-900 group-hover:text-gray-700 transition-colors">
-            {brand}
+            {decodeHtmlEntities(brand)}
           </h3>
           {productCount !== undefined && (
             <p className="text-sm text-gray-500 mt-1">

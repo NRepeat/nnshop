@@ -19,7 +19,7 @@ type Props = {
 
 export function FilterSheet({ filters, initialFilters }: Props) {
   const t = useTranslations('CollectionPage');
-
+  console.log(initialFilters,"initialFilters")
   return (
     <Sheet>
       <SheetTrigger asChild>

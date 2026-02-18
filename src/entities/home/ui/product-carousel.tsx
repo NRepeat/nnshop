@@ -4,6 +4,7 @@ import { Link } from '@shared/i18n/navigation';
 import { HOME_PAGEResult } from '@shared/sanity/types';
 import { getCollection } from '@entities/collection/api/getCollection';
 import getSymbolFromCurrency from 'currency-symbol-map';
+import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 type ProductCarouselGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'productCarousel' }
@@ -40,7 +41,7 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
 
           <div className="flex flex-col flex-grow">
             <p className="text-start font-sans text-base group-hover:border-b group-hover:border-current transition-colors line-clamp-2 min-h-[3rem] mb-1">
-              {product.title}
+              {decodeHtmlEntities(product.title)}
             </p>
             <div className="mt-auto">
               {product.metafield &&

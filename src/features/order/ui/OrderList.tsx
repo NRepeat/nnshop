@@ -17,7 +17,7 @@ type LineItem = {
 type Order = {
   id: string;
   name: string;
-  createdAt: string;
+  createdAt?: string;
   displayFulfillmentStatus: string;
   totalPriceSet: {
     shopMoney: {

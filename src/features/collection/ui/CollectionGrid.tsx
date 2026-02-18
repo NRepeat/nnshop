@@ -78,7 +78,6 @@ export const CollectionGrid = async ({
   const initialFilters = hasFilters
     ? initialData?.collection?.collection?.products.filters
     : collection.collection?.products.filters;
-  console.log(initialFilters, 'initialFilters');
   const targetLocale = locale === 'ru' ? 'uk' : 'ru';
   const paths = {
     [locale]: `/${gender}/${slug}`,

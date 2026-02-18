@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import getSymbolFromCurrency from 'currency-symbol-map';
 import { cn } from '@shared/lib/utils';
+import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 
 type ProductCardSPPProps = {
   product: Product;
@@ -71,15 +72,21 @@ export const ProductCardSPP = ({
 
       {/* Инфо-блок */}
       <div className="flex flex-col gap-1 px-1">
-        <Link
-          href={`/product/${product.handle}`}
-          className="hover:border-b hover:border-current transition-colors"
-          scroll
-        >
+        {link ? (
+          <Link
+            href={`/product/${product.handle}`}
+            className="hover:border-b hover:border-current transition-colors"
+            scroll
+          >
+            <h3 className="line-clamp-2 text-[13px] leading-tight text-black">
+              {decodeHtmlEntities(product.title)}
+            </h3>
+          </Link>
+        ) : (
           <h3 className="line-clamp-2 text-[13px] leading-tight text-black">
-            {product.title}
+            {decodeHtmlEntities(product.title)}
           </h3>
-        </Link>
+        )}
 
         <div className="mt-1 flex items-center gap-2">
           {hasDiscount ? (

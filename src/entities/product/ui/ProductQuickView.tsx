@@ -9,7 +9,8 @@ import {
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import Image from 'next/image';
 import { Button } from '@shared/ui/button';
-import { Link } from '@shared/i18n/navigation';import { AddToCartButton } from './AddToCartButton';
+import { Link } from '@shared/i18n/navigation';
+import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';import { AddToCartButton } from './AddToCartButton';
 
 type ProductQuickViewProps = {
   product: Product;
@@ -50,7 +51,7 @@ export const ProductQuickView = ({ product }: ProductQuickViewProps) => {
       <div className="w-1/2 flex flex-col">
         <div className="flex justify-between items-start">
           <div>
-            <h2 className="text-xl font-medium">{product.title}</h2>
+            <h2 className="text-xl font-medium">{decodeHtmlEntities(product.title)}</h2>
             <p className="text-lg">
               {product.priceRange?.maxVariantPrice.amount}{' '}
               {product.priceRange?.maxVariantPrice.currencyCode}

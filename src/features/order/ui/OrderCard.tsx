@@ -17,7 +17,7 @@ type OrderCardProps = {
   order: {
     id: string;
     name: string;
-    createdAt: string;
+    createdAt?: string;
     displayFulfillmentStatus: string;
     totalPriceSet: {
       shopMoney: {
@@ -81,7 +81,7 @@ export const OrderCard = ({ order }: OrderCardProps) => {
             <OrderStatusBadge status={order.displayFulfillmentStatus} />
           </div>
           <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>{new Date(order.createdAt).toLocaleDateString()}</span>
+            <span>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : ''}</span>
             <div className="flex flex-col items-end gap-0.5">
               {hasDiscount && order.subtotalPriceSet ? (
                 <>

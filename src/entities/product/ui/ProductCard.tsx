@@ -19,6 +19,7 @@ import { Link } from '@shared/i18n/navigation';
 import { FavSession } from '@features/header/ui/FavSession';
 import { cn } from '@shared/lib/utils';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
+import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 
 type ProductCardProps = {
   product: Product;
@@ -196,7 +197,7 @@ export const ProductCard = ({
           <div className="w-full pt-2 md:pt-1  flex flex-col gap-1 flex-1 md:px-2 max-h-fit">
             <Link href={`/brand/${vendorToHandle(product.vendor)}`}>
               <span className="text-md font-bold hover:underline">
-                {product.vendor}
+                {decodeHtmlEntities(product.vendor)}
               </span>
             </Link>
             {product.productType && (
@@ -208,7 +209,7 @@ export const ProductCard = ({
               <div className=" w-full flex-col  justify-between flex pb-4">
                 <Link href={`/productt/${product.handle}`}>
                   <p className="text-sm md:text-md font-light  text-pretty">
-                    {product?.title}
+                    {decodeHtmlEntities(product?.title ?? '')}
                   </p>
                 </Link>
               </div>

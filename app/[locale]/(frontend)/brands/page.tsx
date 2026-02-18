@@ -1,5 +1,6 @@
 import { getAllBrands } from '@entities/brand/api/getAllBrands';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
+import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 import { Breadcrumbs } from '@shared/ui/breadcrumbs';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Metadata } from 'next';
@@ -41,7 +42,7 @@ export default async function BrandsPage({ params }: Props) {
   const t = await getTranslations({ locale, namespace: 'BrandsPage' });
   const tHeader = await getTranslations({ locale, namespace: 'Header.nav' });
 
-  const brands = await getAllBrands(locale);
+  const brands = (await getAllBrands(locale)).map(decodeHtmlEntities);
   const groupedBrands = groupBrandsByLetter(brands);
   const letters = Object.keys(groupedBrands).sort();
 

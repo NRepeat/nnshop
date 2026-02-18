@@ -1,19 +1,8 @@
-// import { fetchAllOrdersByIDs } from '@entities/order/api/getOrdersByIds';
-// import { auth } from '@features/auth/lib/auth';
-// import { OrderEmptyState } from '@features/order/ui/EmptyState';
-// import { OrderList } from '@features/order/ui/OrderList';
-// import { Breadcrumbs } from '@shared/ui/breadcrumbs';
-// import { prisma } from '@shared/lib/prisma';
-// import { getTranslations } from 'next-intl/server';
-// import { headers } from 'next/headers';
-
-import { fetchAllOrdersByIDs } from '@entities/order/api/getOrdersByIds';
+import { getCustomerOrders } from '@entities/order/api/getCustomerOrders';
 import { auth } from '@features/auth/lib/auth';
-import authShopifyCustomer from '@features/auth/lib/shopify/customer-auth';
 import { OrderEmptyState } from '@features/order/ui/EmptyState';
 import { OrderList } from '@features/order/ui/OrderList';
 import { locales } from '@shared/i18n/routing';
-import { prisma } from '@shared/lib/prisma';
 import { Breadcrumbs, BreadcrumbsSkeleton } from '@shared/ui/breadcrumbs';
 import { Card, CardContent, CardHeader } from '@shared/ui/card';
 import { Skeleton } from '@shared/ui/skeleton';
@@ -76,40 +65,23 @@ export async function OrdersPageSession({ params, searchParams }: Props) {
   const tHeader = await getTranslations('Header.nav');
   
   const headersList = await headers();
-  const clientCustomer = await authShopifyCustomer(headersList)
-  console.log(clientCustomer,"clientCustomer")
   const session = await auth.api.getSession({ headers: headersList });
 
   if (!session || session.user?.isAnonymous) {
     return <OrderEmptyState type="notLoggedIn" locale={locale} />;
   }
+
   const user = session.user;
-  if (!user) {
+  if (!user?.email) {
     return <OrderEmptyState type="notLoggedIn" locale={locale} />;
   }
 
-  const orderIdentifiers = await prisma.order.findMany({
-    where: { userId: user.id, shopifyOrderId: { not: null } },
-    select: { shopifyOrderId: true },
-  });
-
-  const numericOrderIDs = orderIdentifiers
-    .map((item) => {
-      if (!item.shopifyOrderId) return null;
-      const match = item.shopifyOrderId.match(/\/(\d+)$/);
-      return match ? match[1] : item.shopifyOrderId;
-    })
-    .filter((i) => i !== null);
-
-  if (numericOrderIDs.length === 0) {
-    return <OrderEmptyState type="emptyState" locale={locale} />;
-  }
-
-  const orders = await fetchAllOrdersByIDs(numericOrderIDs);
+  const orders = await getCustomerOrders(user.email);
 
   if (orders.length === 0) {
     return <OrderEmptyState type="emptyState" locale={locale} />;
   }
+
   const searchParamsData = await searchParams;
   const sortBy = searchParamsData?.sortBy as string;
   const order = searchParamsData?.order as string;
@@ -117,17 +89,13 @@ export async function OrdersPageSession({ params, searchParams }: Props) {
   let sortedOrders = [...orders];
   if (sortBy === 'date') {
     sortedOrders.sort((a, b) => {
-      //@ts-ignore
-      const dateA = new Date(a.createdAt).getTime();
-      //@ts-ignore
-      const dateB = new Date(b.createdAt).getTime();
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
       return order === 'asc' ? dateA - dateB : dateB - dateA;
     });
   } else if (sortBy === 'status') {
     sortedOrders.sort((a, b) => {
-      //@ts-ignore
       const statusA = a.displayFulfillmentStatus;
-      //@ts-ignore
       const statusB = b.displayFulfillmentStatus;
       if (statusA < statusB) return order === 'asc' ? -1 : 1;
       if (statusA > statusB) return order === 'asc' ? 1 : -1;

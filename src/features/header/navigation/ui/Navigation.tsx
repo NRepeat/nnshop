@@ -181,7 +181,7 @@ const Navigation = async ({
               <div className="flex-1">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
                   {t('topBrands')}
-                </h3>
+                </h3> 
                 <ul className="grid grid-cols-2 gap-x-8 gap-y-1">
                   {topBrands.slice(0, 10).map((brand) => (
                     <li key={brand}>
@@ -198,7 +198,7 @@ const Navigation = async ({
                     </li>
                   ))}
                 </ul>
-                <div className="mt-3 pl-2">
+                <div className="mt-3 ">
                   <NavigationItemClient href="/brands">
                     <span className="text-base font-medium underline hover:text-primary transition-colors">
                       {t('allBrands')} →
@@ -207,9 +207,9 @@ const Navigation = async ({
                 </div>
               </div>
               <div className="border-l border-muted pl-8 shrink-0">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
+                {/* <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
                   A - Z
-                </h3>
+                </h3> */}
                 <div className="grid grid-cols-7 gap-x-2 gap-y-2">
                   {Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map((letter) => (
                     <NavigationContentLink

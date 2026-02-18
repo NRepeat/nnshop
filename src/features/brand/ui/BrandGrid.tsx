@@ -15,6 +15,7 @@ import { ActiveFiltersCarousel } from '@features/collection/ui/ActiveFiltersCaro
 import { SortSelect } from '@features/collection/ui/SortSelect';
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 import { isProductFavorite } from '@features/product/api/isProductFavorite';
 import { auth } from '@features/auth/lib/auth';
 
@@ -106,7 +107,7 @@ export const BrandGrid = async ({
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{collection.collection?.title}</BreadcrumbPage>
+              <BreadcrumbPage>{decodeHtmlEntities(collection.collection?.title ?? '')}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -114,10 +115,10 @@ export const BrandGrid = async ({
         <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row justify-between lg:items-end gap-6">
           <div className="flex flex-col gap-3.5 w-full">
             <h2 className="text-2xl font-bold">
-              {collection.collection?.title}
+              {decodeHtmlEntities(collection.collection?.title ?? '')}
             </h2>
             {collection.collection?.description && (
-              <p className="text-gray-600 text-sm max-w-3xl">
+              <p className="text-gray-600 text-sm max-w-6xl">
                 {collection.collection?.description}
               </p>
             )}

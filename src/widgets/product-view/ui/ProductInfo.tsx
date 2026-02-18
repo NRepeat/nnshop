@@ -91,9 +91,11 @@ const FittingGuideContent = ({
 
 import { compareSizes } from '@shared/lib/sort-sizes';
 import { QuickBuyModal } from '@features/product/quick-buy/ui/QuickBuyModal';
+import { PriceSubscribeModal } from '@features/product/ui/PriceSubscribeModal';
 import { useState } from 'react';
 import { Badge } from '@shared/ui/badge';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
+import { Bell } from 'lucide-react';
 
 export const ProductInfo = ({
   product,
@@ -117,13 +119,14 @@ export const ProductInfo = ({
   const t = useTranslations('ProductPage');
   const locale = useLocale();
   const [isQuickBuyOpen, setQuickBuyOpen] = useState(false);
+  const [isPriceSubscribeOpen, setPriceSubscribeOpen] = useState(false);
 
   const sale =
     product.metafields.find((m) => m?.key === 'znizka')?.value || '0';
   const sku = product.variants.edges[0].node.sku;
-  const atTheFitting = selectedVariant?.metafields.find(
-    (m) => m?.key === 'at_the_fitting',
-  )?.value;
+  const isAtFitting =
+    selectedVariant?.currentlyNotInStock === false &&
+    selectedVariant?.quantityAvailable === 0;
   const colorOptionsValues = [
     ...(colorOptions?.map((name) => ({ name, product: product.handle })) || []),
     ...(boundProduct?.flatMap(
@@ -148,10 +151,7 @@ export const ProductInfo = ({
           </Link>
           <div className="flex items-center gap-2">
             <h2 className="text-lg text-gray-800">{product.title}</h2>
-            {atTheFitting === 'true' &&
-              selectedVariant?.quantityAvailable === 0 && (
-                <Badge>{t('atTheFitting')}</Badge>
-              )}
+            {isAtFitting && <Badge>{t('atTheFitting')}</Badge>}
           </div>
           {sku && (
             <p className="text-sm text-gray-500">
@@ -182,6 +182,14 @@ export const ProductInfo = ({
                 ),
               )?.node;
               const availableForSale = variant?.availableForSale ?? false;
+              const qty = variant?.quantityAvailable ?? -1;
+              const isZeroQty = qty === 0;
+              const variantAtFitting = variant?.currentlyNotInStock === false && isZeroQty;
+              // Zero-qty variants stay clickable (badge shows on select, cart disabled separately)
+              // Only variants unavailable for other reasons get disabled
+              const isUnavailable = !availableForSale && !isZeroQty;
+              const showCrossed = isUnavailable || (isZeroQty && !variantAtFitting);
+              const showMuted = isUnavailable || isZeroQty;
               return (
                 <Button
                   key={s}
@@ -195,13 +203,14 @@ export const ProductInfo = ({
                     {
                       'bg-primary text-white ring-2 ring-offset-1 ring-primary ':
                         size.toLowerCase() === s.toLowerCase(),
+                      'opacity-40': showMuted && size.toLowerCase() !== s.toLowerCase(),
                     },
                   )}
                   onClick={() => setSize(s.toLowerCase())}
-                  disabled={!availableForSale}
+                  disabled={isUnavailable}
                 >
                   {s}
-                  {!availableForSale && <CrossedLine />}
+                  {showCrossed && <CrossedLine />}
                 </Button>
               );
             })}
@@ -283,12 +292,26 @@ export const ProductInfo = ({
         >
           {t('quickOrder')}
         </Button>
+        <Button
+          variant="outline"
+          className="w-full h-10 md:h-12 text-sm rounded-md flex items-center gap-2"
+          onClick={() => setPriceSubscribeOpen(true)}
+        >
+          <Bell className="w-4 h-4" />
+          {t('priceSubscribeButton')}
+        </Button>
       </div>
       <QuickBuyModal
         product={product}
         open={isQuickBuyOpen}
         onOpenChange={setQuickBuyOpen}
         sizeOptions={sizeOptions}
+      />
+      <PriceSubscribeModal
+        open={isPriceSubscribeOpen}
+        onOpenChange={setPriceSubscribeOpen}
+        shopifyProductId={product.id}
+        shopifyVariantId={selectedVariant?.id}
       />
       {/* Аккордеон деталей */}
       <Accordion type="single" collapsible className="w-full border-t mt-4">

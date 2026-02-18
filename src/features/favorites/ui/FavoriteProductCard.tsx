@@ -7,6 +7,7 @@ import { FavSession } from '@features/header/ui/FavSession';
 import { useState } from 'react';
 import { cn } from '@shared/lib/utils';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
+import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 
 type FavoriteProductCardProps = {
   product: Product;
@@ -85,14 +86,14 @@ export const FavoriteProductCard = ({ product }: FavoriteProductCardProps) => {
         {/* Vendor */}
         <Link href={`/brand/${vendorToHandle(product.vendor)}`}>
           <p className="text-xs uppercase tracking-wider text-gray-500 hover:text-gray-700 transition-colors">
-            {product.vendor}
+            {decodeHtmlEntities(product.vendor)}
           </p>
         </Link>
 
         {/* Title */}
         <Link href={`/product/${product.handle}`}>
           <h3 className="text-sm font-medium text-gray-900 line-clamp-2 leading-tight hover:text-gray-700 transition-colors">
-            {product.title}
+            {decodeHtmlEntities(product.title)}
           </h3>
         </Link>
 

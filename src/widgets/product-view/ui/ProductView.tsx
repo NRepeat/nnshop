@@ -29,6 +29,7 @@ export async function ProductView({
   attributes: ProductMEtaobjectType[];
   children: React.ReactNode;
 }) {
+  console.log(product,'product')
   const [t, tHeader, cookieStore] = await Promise.all([
     getTranslations({ locale, namespace: 'ProductPage' }),
     getTranslations({ locale, namespace: 'Header' }),
