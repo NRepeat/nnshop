@@ -1,4 +1,4 @@
-import { getOrder } from '@entities/order/api/getOrder';
+import { getOrderById } from '@entities/order/api/getOrderById';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Breadcrumbs, BreadcrumbsSkeleton } from '@shared/ui/breadcrumbs';
@@ -124,7 +124,7 @@ const OrderPageSession = async ({
   const tOrderPage = await getTranslations({ locale, namespace: 'OrderPage' });
 
   const orderId = `gid://shopify/Order/${id}`;
-  const order = await getOrder(orderId);
+  const order = await getOrderById(id, locale.toUpperCase());
 
   if (!order) {
     notFound();

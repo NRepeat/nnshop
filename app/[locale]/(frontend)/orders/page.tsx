@@ -76,7 +76,7 @@ export async function OrdersPageSession({ params, searchParams }: Props) {
     return <OrderEmptyState type="notLoggedIn" locale={locale} />;
   }
 
-  const orders = await getCustomerOrders(user.email);
+  const orders = await getCustomerOrders(user.email, locale.toUpperCase());
 
   if (orders.length === 0) {
     return <OrderEmptyState type="emptyState" locale={locale} />;

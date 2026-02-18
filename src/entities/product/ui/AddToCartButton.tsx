@@ -78,6 +78,7 @@ export function AddToCartButton({
     }
 
     setIsPending(true);
+    const savedScroll = window.scrollY;
 
     try {
       const { data: session } = await authClient.getSession();
@@ -116,6 +117,7 @@ export function AddToCartButton({
       toast.error(t('failedToAdd'));
     } finally {
       setIsPending(false);
+      requestAnimationFrame(() => window.scrollTo({ top: savedScroll, behavior: 'instant' }));
     }
   };
 

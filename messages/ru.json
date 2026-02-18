@@ -587,6 +587,15 @@
       "onHold": "Приостановлен",
       "partiallyFulfilled": "Частично выполнен"
     },
+    "financialStatus": {
+      "PAID": "Оплачено",
+      "PENDING": "Ожидает оплаты",
+      "REFUNDED": "Возвращено",
+      "PARTIALLY_REFUNDED": "Частично возвращено",
+      "VOIDED": "Отменено",
+      "AUTHORIZED": "Авторизовано",
+      "PARTIALLY_PAID": "Частично оплачено"
+    },
     "timeline": {
       "ordered": "Заказан",
       "processing": "Обработка",

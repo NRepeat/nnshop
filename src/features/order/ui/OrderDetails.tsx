@@ -80,13 +80,35 @@ export const OrderDetails = async ({
   localOrder,
 }: OrderDetailsProps) => {
   const t = await getTranslations({ locale, namespace: 'OrderPage.details' });
+  const tOrder = await getTranslations({ locale, namespace: 'OrderPage' });
   const tDelivery = await getTranslations({ locale, namespace: 'DeliveryForm' });
   const tPayment = await getTranslations({ locale, namespace: 'PaymentForm' });
 
   const user = localOrder?.user;
-  const contact = user?.contactInformation;
-  const delivery = user?.deliveryInformation;
-  const payment = user?.paymentInformation;
+  const contact = user?.contactInformation ?? (
+    (order.shippingAddress?.firstName || order.email)
+      ? {
+          name: order.shippingAddress?.firstName ?? '',
+          lastName: order.shippingAddress?.lastName ?? '',
+          email: order.email ?? '',
+          phone: order.shippingAddress?.phone ?? '',
+        }
+      : null
+  );
+  const delivery = user?.deliveryInformation ?? (
+    order.shippingAddress?.address1
+      ? {
+          deliveryMethod: 'address',
+          country: order.shippingAddress.country ?? null,
+          address: order.shippingAddress.address1 ?? null,
+          apartment: order.shippingAddress.address2 ?? null,
+          city: order.shippingAddress.city ?? null,
+          postalCode: order.shippingAddress.zip ?? null,
+          novaPoshtaDepartment: null,
+        }
+      : null
+  );
+  const payment = user?.paymentInformation ?? null;
 
   return (
     <div className="mt-4 space-y-6">
@@ -205,6 +227,12 @@ export const OrderDetails = async ({
                   )}
                   <p className="text-muted-foreground">
                     {payment.amount} {payment.currency}
+                  </p>
+                </div>
+              ) : order.financialStatus ? (
+                <div className="space-y-1 text-sm">
+                  <p className="font-medium">
+                    {tOrder(`financialStatus.${order.financialStatus}` as any) || order.financialStatus}
                   </p>
                 </div>
               ) : (

@@ -587,6 +587,15 @@
       "onHold": "Призупинено",
       "partiallyFulfilled": "Частково виконано"
     },
+    "financialStatus": {
+      "PAID": "Оплачено",
+      "PENDING": "Очікує оплати",
+      "REFUNDED": "Повернено",
+      "PARTIALLY_REFUNDED": "Частково повернено",
+      "VOIDED": "Скасовано",
+      "AUTHORIZED": "Авторизовано",
+      "PARTIALLY_PAID": "Частково оплачено"
+    },
     "timeline": {
       "ordered": "Замовлено",
       "processing": "Обробка",
