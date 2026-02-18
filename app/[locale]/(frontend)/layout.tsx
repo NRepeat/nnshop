@@ -13,6 +13,7 @@ import { draftMode } from 'next/headers';
 import { Suspense } from 'react';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { generateOrganizationJsonLd } from '@shared/lib/seo/jsonld';
+import { ScrollToTop } from '@shared/ui/ScrollToTop';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 const jostSans = Jost({
@@ -83,6 +84,7 @@ export default async function RootLayout(props: RootProps) {
       </head>
       <body className={`${jostSans.variable} antialiased`}>
         <Providers>
+          <ScrollToTop />
           <Header locale={locale} />
 
           <main>{children}</main>

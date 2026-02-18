@@ -19,14 +19,15 @@ export async function fetchProductImages(
   const query = `query fetchOrderImages { ${aliases} }`;
 
   try {
-    const data = await storefrontClient.request<Record<string, { featuredImage: { url: string } | null } | null>>({
+    const data = await storefrontClient.request<string, { featuredImage: { url: string } | null } | null>({
       query,
       language: locale as any,
     });
 
     const result: Record<string, string> = {};
     unique.forEach((handle, i) => {
-      const url = data[`p${i}`]?.featuredImage?.url;
+      //@ts-ignore
+      const url = data[`p${i}` as keyof typeof data]?.featuredImage?.url;
       if (url) result[handle] = url;
     });
     return result;

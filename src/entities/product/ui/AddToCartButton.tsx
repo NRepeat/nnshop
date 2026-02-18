@@ -117,7 +117,10 @@ export function AddToCartButton({
       toast.error(t('failedToAdd'));
     } finally {
       setIsPending(false);
+      // requestAnimationFrame runs before paint (immediate visual restore)
+      // setTimeout(0) runs after all React effects (including Next.js router scroll from revalidateTag)
       requestAnimationFrame(() => window.scrollTo({ top: savedScroll, behavior: 'instant' }));
+      setTimeout(() => window.scrollTo({ top: savedScroll, behavior: 'instant' }), 0);
     }
   };
 

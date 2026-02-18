@@ -16,7 +16,7 @@ async function addToCart(_: any, formData: FormData) {
       return { success: false, message: 'No products available' };
     }
     const result = await addToCartAction(variantId);
-    revalidateTag('cart', { expire: 0 });
+    // revalidateTag('cart', { expire: 0 });
 
     if (!result.success) {
       return { success: false, message: result.error };
