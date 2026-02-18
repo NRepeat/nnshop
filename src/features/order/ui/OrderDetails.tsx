@@ -273,7 +273,7 @@ export const OrderDetails = async ({
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate">{item.title}</p>
+                      <p className="font-medium text-sm truncate text-wrap">{item.title}</p>
                       <p className="text-sm text-muted-foreground">
                         {item.variant.title}
                       </p>
