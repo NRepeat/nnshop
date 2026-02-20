@@ -144,13 +144,15 @@ export const ProductInfo = ({
     <div className="content-stretch flex flex-col gap-[30px] items-start  py-0 relative w-full">
       <div className="flex flex-col gap-8 items-start  w-full max-w-2xl">
         <section className="space-y-2 w-full">
-          <Link href={`/brand/${vendorToHandle(product.vendor)}`} prefetch>
-            <h1 className="text-xl font-semibold uppercase tracking-tight">
-              {product.vendor}
-            </h1>
-          </Link>
+          {product.vendor && (
+            <Link href={`/brand/${vendorToHandle(product.vendor)}`} prefetch>
+              <p className="text-xl font-semibold uppercase tracking-tight">
+                {product.vendor}
+              </p>
+            </Link>
+          )}
           <div className="flex items-center gap-2">
-            <h2 className="text-lg text-gray-800">{product.title}</h2>
+            <h1 className="text-lg text-gray-800">{product.title}</h1>
             {isAtFitting && <Badge>{t('atTheFitting')}</Badge>}
           </div>
           {sku && (

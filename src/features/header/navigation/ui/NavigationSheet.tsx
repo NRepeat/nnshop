@@ -11,10 +11,10 @@ import { InternalMenu } from './InternalMenu';
 import { useState } from 'react';
 import { Maybe } from '@shared/lib/shopify/types/storefront.types';
 import { Menu } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@shared/i18n/navigation';
 import { Button } from '@shared/ui/button';
-import { cookieFenderSet } from '../api/setCookieGender';
 import { saveGenderPreference } from '../api/saveGender';
+import { cookieFenderSet } from '../api/setCookieGender';
 
 const NavigationSheet = ({
   meinMenu,

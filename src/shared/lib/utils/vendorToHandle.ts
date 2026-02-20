@@ -4,6 +4,7 @@
  * Example: "Nike Inc." -> "nike-inc"
  */
 export function vendorToHandle(vendor: string): string {
+  if (!vendor) return '';
   return vendor
     .toLowerCase()
     // Remove zero-width characters and other invisible Unicode characters

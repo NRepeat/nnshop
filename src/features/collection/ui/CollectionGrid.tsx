@@ -20,6 +20,10 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { PathSync } from '@entities/path-sync/ui/path-sync';
 import { isProductFavorite } from '@features/product/api/isProductFavorite';
 import { auth } from '@features/auth/lib/auth';
+import { JsonLd } from '@shared/ui/JsonLd';
+import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
 export const CollectionGrid = async ({
   params,
   searchParams,
@@ -89,6 +93,19 @@ export const CollectionGrid = async ({
   return (
     <>
       <PathSync paths={paths} />
+      <JsonLd
+        data={generateBreadcrumbJsonLd([
+          { name: t('nav.home'), url: `${BASE_URL}/${locale}` },
+          {
+            name: gender === 'man' ? t('nav.man') : t('nav.woman'),
+            url: `${BASE_URL}/${locale}/${gender}`,
+          },
+          {
+            name: collection.collection?.title ?? slug,
+            url: `${BASE_URL}/${locale}/${gender}/${slug}`,
+          },
+        ])}
+      />
       <div className=" flex flex-col gap-4 md:gap-8 mt-8">
         <Breadcrumb>
           <BreadcrumbList>
@@ -110,9 +127,9 @@ export const CollectionGrid = async ({
 
         <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row justify-between lg:items-end gap-6">
           <div className="flex flex-col gap-3.5 w-full">
-            <h2 className="text-2xl font-bold">
+            <h1 className="text-2xl font-bold">
               {collection.collection?.title}
-            </h2>
+            </h1>
             {collection.collection?.products.filters && (
               <Suspense fallback={null}>
                 <ActiveFiltersCarousel

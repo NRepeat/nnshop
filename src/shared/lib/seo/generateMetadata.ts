@@ -57,7 +57,7 @@ export function generateProductMetadata(
 ): Metadata {
   return generatePageMetadata(
     {
-      title: `${product.title} | Mio Mio`,
+      title: product.title,
       description: product.description || undefined,
       image: product.featuredImage?.url,
     },
@@ -79,7 +79,7 @@ export function generateCollectionMetadata(
   const prefix = gender ? `/${gender}` : '';
   return generatePageMetadata(
     {
-      title: `${collection.title} | Mio Mio`,
+      title: collection.title,
       description: collection.description || undefined,
       image: collection.image?.url,
     },

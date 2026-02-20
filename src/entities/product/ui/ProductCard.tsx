@@ -208,7 +208,7 @@ export const ProductCard = ({
             )}
             <div className="flex flex-col justify-between flex-1">
               <div className=" w-full flex-col  justify-between flex pb-4">
-                <Link href={`/productt/${product.handle}`}>
+                <Link href={`/product/${product.handle}`}>
                   <p className="text-sm md:text-md font-light  text-pretty">
                     {decodeHtmlEntities(product?.title ?? '')}
                   </p>

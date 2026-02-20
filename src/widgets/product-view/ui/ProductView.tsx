@@ -3,7 +3,6 @@ import { ProductViewProvider } from './ProductViewProvider';
 import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
 import { getTranslations } from 'next-intl/server';
 import { ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
-import { cookies } from 'next/headers';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 import {
   Breadcrumb,
@@ -13,6 +12,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@shared/ui/breadcrumb';
+import { JsonLd } from '@shared/ui/JsonLd';
+import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
 
 export async function ProductView({
   product,
@@ -29,15 +32,36 @@ export async function ProductView({
   attributes: ProductMEtaobjectType[];
   children: React.ReactNode;
 }) {
-  console.log(product,'product')
-  const [t, tHeader, cookieStore] = await Promise.all([
+  const [t, tHeader] = await Promise.all([
     getTranslations({ locale, namespace: 'ProductPage' }),
     getTranslations({ locale, namespace: 'Header' }),
-    cookies(),
   ]);
-  const gender = cookieStore.get('gender')?.value || 'woman';
+  const gender = (product.tags ?? []).some((tag) => {
+    const lower = tag.toLowerCase();
+    return lower === 'man' || lower.includes('чоловіч');
+  })
+    ? 'man'
+    : 'woman';
+  const breadcrumbItems = [
+    { name: tHeader('nav.home'), url: `${BASE_URL}/${locale}` },
+    {
+      name: gender === 'man' ? tHeader('nav.man') : tHeader('nav.woman'),
+      url: `${BASE_URL}/${locale}/${gender}`,
+    },
+    ...(product.vendor
+      ? [
+          {
+            name: product.vendor,
+            url: `${BASE_URL}/${locale}/brand/${vendorToHandle(product.vendor)}`,
+          },
+        ]
+      : []),
+    { name: product.title, url: `${BASE_URL}/${locale}/product/${product.handle}` },
+  ];
+
   return (
     <div className="container  space-y-16 my-10 h-fit min-h-screen">
+      <JsonLd data={generateBreadcrumbJsonLd(breadcrumbItems)} />
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -51,12 +75,16 @@ export async function ProductView({
               {gender === 'man' ? tHeader('nav.man') : tHeader('nav.woman')}
             </BreadcrumbLink>
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href={`/brand/${vendorToHandle(product.vendor)}`}>
-              {product.vendor}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
+          {product.vendor && (
+            <>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href={`/brand/${vendorToHandle(product.vendor)}`}>
+                  {product.vendor}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            </>
+          )}
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>{product.title}</BreadcrumbPage>
