@@ -74,16 +74,36 @@ export const auth = betterAuth({
     anonymous({
       emailDomainName: 'gmail.com',
       onLinkAccount: async ({ anonymousUser, newUser }) => {
-        try {
-          await Promise.allSettled([
-            anonymousCartBuyerIdentityUpdate({ anonymousUser, newUser }),
-            linkAnonymousDataToUser({
-              anonymousUserId: anonymousUser.user.id,
-              newUserId: newUser.user.id,
-            }),
-          ]);
-        } catch (error) {
-          console.error('[onLinkAccount] ERROR:', error);
+        const [cartMergeResult, dataLinkResult] = await Promise.allSettled([
+          anonymousCartBuyerIdentityUpdate({ anonymousUser, newUser }),
+          linkAnonymousDataToUser({
+            anonymousUserId: anonymousUser.user.id,
+            newUserId: newUser.user.id,
+          }),
+        ]);
+
+        if (cartMergeResult.status === 'rejected') {
+          console.error('[onLinkAccount] cart merge failed', {
+            step: 'anonymous-cart-buyer-identity-update',
+            userId: newUser.user.id,
+            orderId: undefined,
+            error:
+              cartMergeResult.reason instanceof Error
+                ? cartMergeResult.reason.message
+                : String(cartMergeResult.reason),
+          });
+        }
+
+        if (dataLinkResult.status === 'rejected') {
+          console.error('[onLinkAccount] data link failed', {
+            step: 'link-anonymous-data-to-user',
+            userId: newUser.user.id,
+            orderId: undefined,
+            error:
+              dataLinkResult.reason instanceof Error
+                ? dataLinkResult.reason.message
+                : String(dataLinkResult.reason),
+          });
         }
       },
     }),
