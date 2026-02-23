@@ -140,33 +140,23 @@ export const anonymousCartBuyerIdentityUpdate = async ({
     session: Session & Record<string, any>;
   };
 }) => {
-  console.log('[cartBuyerIdentityUpdate] START', {
-    anonymousUserId: anonymousUser.user.id,
-    newUserId: newUser.user.id,
-    newUserEmail: newUser.user.email,
-  });
   try {
     const anonCartRecord = await prisma.cart.findFirst({
       where: { userId: anonymousUser.user.id, completed: false },
     });
-    console.log('[cartBuyerIdentityUpdate] Anon cart:', anonCartRecord ? { id: anonCartRecord.id, cartToken: anonCartRecord.cartToken.substring(0, 30) + '...' } : null);
 
     if (!anonCartRecord) {
-      console.log('[cartBuyerIdentityUpdate] No anonymous cart found, skipping');
       return;
     }
 
     const userCartRecord = await prisma.cart.findFirst({
       where: { userId: newUser.user.id, completed: false },
     });
-    console.log('[cartBuyerIdentityUpdate] User cart:', userCartRecord ? { id: userCartRecord.id } : null);
 
     let finalCartToken = anonCartRecord.cartToken;
 
     if (userCartRecord) {
-      console.log('[cartBuyerIdentityUpdate] Merge scenario: user already has a cart');
       const anonLines = await getShopifyCartLines(anonCartRecord.cartToken);
-      console.log('[cartBuyerIdentityUpdate] Anon cart lines:', anonLines.length);
 
       if (anonLines.length > 0) {
         const linesToAdd = anonLines.map((node: any) => ({
@@ -178,7 +168,6 @@ export const anonymousCartBuyerIdentityUpdate = async ({
           userCartRecord.cartToken,
           linesToAdd,
         );
-        console.log('[cartBuyerIdentityUpdate] Merged cart ID:', mergedCartId);
         if (mergedCartId) {
           finalCartToken = mergedCartId;
         }
@@ -188,7 +177,6 @@ export const anonymousCartBuyerIdentityUpdate = async ({
         finalCartToken,
         newUser.user.email,
       );
-      console.log('[cartBuyerIdentityUpdate] Updated buyer identity:', updatedCartId);
       if (updatedCartId) {
         finalCartToken = updatedCartId;
       }
@@ -198,14 +186,11 @@ export const anonymousCartBuyerIdentityUpdate = async ({
         data: { cartToken: finalCartToken },
       });
       await prisma.cart.delete({ where: { id: anonCartRecord.id } });
-      console.log('[cartBuyerIdentityUpdate] Merge complete, anon cart deleted');
     } else {
-      console.log('[cartBuyerIdentityUpdate] No existing user cart, reassigning anonymous cart');
       const updatedCartId = await updateShopifyBuyerIdentity(
         anonCartRecord.cartToken.split('?')[0],
         newUser.user.email,
       );
-      console.log('[cartBuyerIdentityUpdate] Updated buyer identity:', updatedCartId);
       if (updatedCartId) {
         finalCartToken = updatedCartId;
       }
@@ -217,9 +202,7 @@ export const anonymousCartBuyerIdentityUpdate = async ({
           cartToken: finalCartToken,
         },
       });
-      console.log('[cartBuyerIdentityUpdate] Anonymous cart reassigned to new user');
     }
-    console.log('[cartBuyerIdentityUpdate] DONE');
   } catch (error) {
     console.error('[cartBuyerIdentityUpdate] ERROR:', error);
   }

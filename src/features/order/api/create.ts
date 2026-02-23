@@ -294,7 +294,6 @@ export async function createOrder(
         draft: false,
       },
     });
-    console.log('[createOrder] Order saved:', createdOrder.name);
 
     return {
       success: true,
