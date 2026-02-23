@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-23)
 Phase: 2 of 5 (Core Flow Reliability)
 Plan: 3 of TBD in current phase
 Status: In progress
-Last activity: 2026-02-23 — Completed 02-03 (Promise.allSettled result checking + Prisma error propagation in account linking)
+Last activity: 2026-02-23 — Completed 02-01 (anonymous cart merge hardened with prisma transaction, retry, rollback, and structured logging)
 
 Progress: [████░░░░░░] 40%
 
@@ -36,6 +36,7 @@ Progress: [████░░░░░░] 40%
 
 *Updated after each plan completion*
 | Phase 02-core-flow-reliability P02 | 2 | 3 tasks | 2 files |
+| Phase 02-core-flow-reliability P01 | 3 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -58,6 +59,9 @@ Recent decisions affecting current work:
 - [02-03]: orderId: undefined included in rejection log shape for consistency with error-logging convention
 - [Phase 02-02]: Used @features/auth/lib/client for useSession import (not auth-client.ts which doesn't export it) — consistent with codebase pattern
 - [Phase 02-02]: DB save catch logs structured { step, userId, orderId, error } shape for Phase 5 Sentry upgrade compatibility — does not re-throw
+- [Phase 02-01]: withRetry wraps only addLinesToCart — buyer identity update is non-fatal and logged but not retried
+- [Phase 02-01]: Shopify API calls execute before prisma.$transaction to avoid 5s timeout exhaustion on network I/O
+- [Phase 02-01]: toast() not toast.error() for cart merge failure — neutral phrasing per CONTEXT.md UX decision
 
 ### Pending Todos
 
@@ -70,5 +74,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 02-03-PLAN.md — Promise.allSettled result checking in onLinkAccount; Prisma error re-throw in linkAnonymousDataToUser
+Stopped at: Completed 02-01-PLAN.md — anonymous cart merge hardened with prisma.$transaction, 3-attempt retry, rollback, and structured step logging
 Resume file: None

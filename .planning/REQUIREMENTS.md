@@ -15,7 +15,7 @@
 
 ### Reliability
 
-- [ ] **RELY-01**: Cart merge flow logs each step's success/failure, uses idempotency keys, and rolls back database state if Shopify API call fails
+- [x] **RELY-01**: Cart merge flow logs each step's success/failure, uses idempotency keys, and rolls back database state if Shopify API call fails
 - [x] **RELY-02**: Order creation function uses compensating transactions so partial failures (Shopify succeeds, email fails) don't leave orphaned orders; has retry logic for idempotent operations
 - [x] **RELY-03**: Account linking uses named result destructuring from Promise.allSettled (no hardcoded indices) and performs database updates transactionally
 
@@ -33,7 +33,7 @@
 ### Performance
 
 - [ ] **PERF-01**: Collection page only fetches filter data from Shopify when the filter UI is rendered; cached separately with longer revalidation
-- [ ] **PERF-02**: Cart merge flow fetches cart data exactly once from Shopify and reuses it; no duplicate API calls during login
+- [x] **PERF-02**: Cart merge flow fetches cart data exactly once from Shopify and reuses it; no duplicate API calls during login
 
 ### Security
 
@@ -88,7 +88,7 @@
 | BUG-03 | Phase 1 | Complete |
 | BUG-04 | Phase 3 | Pending |
 | BUG-05 | Phase 2 | Complete |
-| RELY-01 | Phase 2 | Pending |
+| RELY-01 | Phase 2 | Complete |
 | RELY-02 | Phase 2 | Complete |
 | RELY-03 | Phase 2 | Complete |
 | TYPE-01 | Phase 4 | Pending |
@@ -97,7 +97,7 @@
 | MEM-01 | Phase 4 | Pending |
 | MEM-02 | Phase 4 | Pending |
 | PERF-01 | Phase 5 | Pending |
-| PERF-02 | Phase 2 | Pending |
+| PERF-02 | Phase 2 | Complete |
 | SEC-01 | Phase 1 | Complete |
 | SEC-02 | Phase 1 | Complete |
 | OBS-01 | Phase 5 | Pending |
