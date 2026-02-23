@@ -132,6 +132,7 @@ export const getProduct = async ({
   'use cache';
   cacheLife("default");
   cacheTag(`product:${handle}`);
+  cacheTag(`${handle}`);
   try {
     const targetLocale = locale === 'ru' ? 'UK' : 'RU';
     const product = await storefrontClient.request<
@@ -142,6 +143,7 @@ export const getProduct = async ({
       variables: { handle },
       language: locale.toUpperCase() as StorefrontLanguageCode,
     });
+    console.log(product)
     if (!product.product) {
       console.warn(`Product not found: ${handle}`);
       return {

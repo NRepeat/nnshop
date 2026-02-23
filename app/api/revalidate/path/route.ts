@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
       type: string;
       slug?: string;
     }>(req, revalidateSecret);
-
     if (!isValidSignature) {
       const message = 'Invalid signature';
       return new Response(message, { status: 401 });
@@ -58,7 +57,7 @@ export async function POST(req: NextRequest) {
 
     // Shopify: collection updates also invalidate the slugs list
     if (body.type === 'collection') {
-      revalidateTag('collections');
+      revalidateTag('collections','default');
       revalidatedTags.push('collections');
     }
     return NextResponse.json({
