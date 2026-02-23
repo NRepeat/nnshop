@@ -28,7 +28,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. No user IDs, emails, or cart tokens appear in server logs or browser console in production builds
   2. Product descriptions rendered via dangerouslySetInnerHTML are visibly sanitized by DOMPurify before rendering (verified by injecting a test XSS payload into a Shopify product description)
   3. CSRF protection on all Server Actions is verified active and documented in code comments; a cross-origin POST to a Server Action is rejected
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Remove PII console.log from auth, cart, and order files (BUG-03)
+- [ ] 01-02-PLAN.md — Install DOMPurify and sanitize product HTML; verify CSRF protection (SEC-01, SEC-02)
 
 ### Phase 2: Core Flow Reliability
 **Goal**: The cart merge, checkout, and order creation flows handle partial failures without data loss or orphaned state
@@ -84,7 +88,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Security | 0/TBD | Not started | - |
+| 1. Security | 0/2 | Not started | - |
 | 2. Core Flow Reliability | 0/TBD | Not started | - |
 | 3. Visible Bug Fixes | 0/TBD | Not started | - |
 | 4. Code Quality | 0/TBD | Not started | - |
