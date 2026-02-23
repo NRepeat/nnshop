@@ -205,7 +205,7 @@ export async function createOrder(
       order.phone = formattedPhone;
     }
 
-    const selectedDelivery = cart.delivery.addresses.find(
+    const selectedDelivery = cart.delivery?.addresses?.find(
       (a) => a.selected,
     )?.address;
     const shippingAddress = {
