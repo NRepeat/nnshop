@@ -1,5 +1,6 @@
-import { Heart, ShoppingCart, User2 } from 'lucide-react';
+import { Heart, ShoppingCart } from 'lucide-react';
 import CartSheet from '../cart/ui/Sheet';
+import { CartSheetController } from '../cart/ui/CartSheetController';
 import { Button } from '@shared/ui/button';
 import { SearchSession } from '../search/ui/search-session';
 import { Suspense } from 'react';
@@ -28,7 +29,6 @@ export const HeaderOptions = ({ locale }: { locale: string }) => {
               size="icon"
               aria-label="Account"
             >
-              <User2 />
             </Button>
           </Suspense>
         }
@@ -47,7 +47,9 @@ export const HeaderOptions = ({ locale }: { locale: string }) => {
           </Button>
         }
       >
-        <CartSheet locale={locale} />
+        <CartSheetController locale={locale}>
+          <CartSheet locale={locale} />
+        </CartSheetController>
       </Suspense>
     </div>
   );

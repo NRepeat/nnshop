@@ -1,4 +1,4 @@
-import { Sheet, SheetTrigger } from '@shared/ui/sheet';
+import { SheetTrigger } from '@shared/ui/sheet';
 import { EmptyState } from './EmptyState';
 import Content from './Content';
 import { ShoppingCart } from 'lucide-react';
@@ -88,7 +88,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
   const discountAmount = codeDiscount;
 
   return (
-    <Sheet >
+    <>
       <SheetTrigger
         className="cursor-pointer relative"
         asChild
@@ -113,7 +113,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
         totalAmount={totalAmount}
         discountAmount={discountAmount}
       />
-    </Sheet>
+    </>
   );
 };
 
