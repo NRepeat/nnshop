@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Path } from 'react-hook-form';
 import {
   FormField,
   FormItem,
@@ -12,8 +12,11 @@ import {
 import { Input } from '@shared/ui/input';
 import { useTranslations } from 'next-intl';
 import clsx from 'clsx';
+import { DeliveryInfo } from '../model/deliverySchema';
 
-const addressFields = [
+type FieldConfig = { name: Path<DeliveryInfo>; label: string; placeholder: string };
+
+const addressFields: FieldConfig[] = [
   { name: 'address', label: 'address', placeholder: 'enterStreetAddress' },
   {
     name: 'apartment',
@@ -22,13 +25,13 @@ const addressFields = [
   },
 ];
 
-const locationFields = [
+const locationFields: FieldConfig[] = [
   { name: 'city', label: 'city', placeholder: 'enterCity' },
   { name: 'postalCode', label: 'postalCode', placeholder: 'enterPostalCode' },
 ];
 
 export default function UkrPoshtaForm() {
-  const form = useFormContext();
+  const form = useFormContext<DeliveryInfo>();
   const t = useTranslations('DeliveryForm');
 
   return (
@@ -74,7 +77,7 @@ export default function UkrPoshtaForm() {
             <FormField
               key={item.name}
               control={form.control}
-              name={item.name as any}
+              name={item.name}
               render={({ field }) => (
                 <FormItem className="w-full relative">
                   <FormLabel className="text-sm font-medium text-gray-700 mb-2 block">
@@ -84,11 +87,15 @@ export default function UkrPoshtaForm() {
                     <div className="relative">
                       <Input
                         placeholder={t(item.placeholder)}
-                        {...field}
+                        name={field.name}
+                        ref={field.ref}
+                        onBlur={field.onBlur}
+                        onChange={field.onChange}
+                        value={typeof field.value === 'string' ? field.value : ''}
                         className={clsx(
                           'h-12 px-4 rounded-md border transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
                           form.formState.isSubmitted &&
-                            form.formState.errors[item.name]
+                            form.getFieldState(item.name).invalid
                             ? 'border-red-500 focus-visible:ring-red-500'
                             : 'border-gray-200 focus:border-black',
                         )}
@@ -107,7 +114,7 @@ export default function UkrPoshtaForm() {
             <FormField
               key={item.name}
               control={form.control}
-              name={item.name as any}
+              name={item.name}
               render={({ field }) => (
                 <FormItem className="w-full relative">
                   <FormLabel className="text-sm font-medium text-gray-700 mb-2 block">
@@ -117,11 +124,15 @@ export default function UkrPoshtaForm() {
                     <div className="relative">
                       <Input
                         placeholder={t(item.placeholder)}
-                        {...field}
+                        name={field.name}
+                        ref={field.ref}
+                        onBlur={field.onBlur}
+                        onChange={field.onChange}
+                        value={typeof field.value === 'string' ? field.value : ''}
                         className={clsx(
                           'h-12 px-4 rounded-md border transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
                           form.formState.isSubmitted &&
-                            form.formState.errors[item.name]
+                            form.getFieldState(item.name).invalid
                             ? 'border-red-500 focus-visible:ring-red-500'
                             : 'border-gray-200 focus:border-[#325039]',
                         )}
