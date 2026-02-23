@@ -12,7 +12,7 @@ This milestone remediates all documented bugs, security issues, reliability gaps
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Security** - Stop data leaks and close attack surface before the shop goes live
+- [x] **Phase 1: Security** - Stop data leaks and close attack surface before the shop goes live (completed 2026-02-23)
 - [ ] **Phase 2: Core Flow Reliability** - Make cart merge, order creation, and account linking bulletproof
 - [ ] **Phase 3: Visible Bug Fixes** - Eliminate the remaining user-facing defects
 - [ ] **Phase 4: Code Quality** - Remove unsafe type casts and fix memory leaks
@@ -88,7 +88,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Security | 1/2 | In Progress|  |
+| 1. Security | 2/2 | Complete   | 2026-02-23 |
 | 2. Core Flow Reliability | 0/TBD | Not started | - |
 | 3. Visible Bug Fixes | 0/TBD | Not started | - |
 | 4. Code Quality | 0/TBD | Not started | - |

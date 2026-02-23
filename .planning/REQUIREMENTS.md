@@ -37,8 +37,8 @@
 
 ### Security
 
-- [ ] **SEC-01**: Product descriptions rendered via dangerouslySetInnerHTML are passed through DOMPurify before rendering
-- [ ] **SEC-02**: Next.js Server Actions CSRF protection verified to be active; assumptions documented in code comments; cross-origin requests tested and rejected
+- [x] **SEC-01**: Product descriptions rendered via dangerouslySetInnerHTML are passed through DOMPurify before rendering
+- [x] **SEC-02**: Next.js Server Actions CSRF protection verified to be active; assumptions documented in code comments; cross-origin requests tested and rejected
 
 ### Observability
 
@@ -98,8 +98,8 @@
 | MEM-02 | Phase 4 | Pending |
 | PERF-01 | Phase 5 | Pending |
 | PERF-02 | Phase 2 | Pending |
-| SEC-01 | Phase 1 | Pending |
-| SEC-02 | Phase 1 | Pending |
+| SEC-01 | Phase 1 | Complete |
+| SEC-02 | Phase 1 | Complete |
 | OBS-01 | Phase 5 | Pending |
 | SCALE-01 | Phase 5 | Pending |
 | SCALE-02 | Phase 5 | Pending |

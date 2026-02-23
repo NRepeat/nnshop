@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-23)
 ## Current Position
 
 Phase: 1 of 5 (Security)
-Plan: 1 of TBD in current phase
+Plan: 2 of TBD in current phase
 Status: In progress
-Last activity: 2026-02-23 — Completed 01-01 (PII log removal from auth, cart, order flows)
+Last activity: 2026-02-23 — Completed 01-02 (HTML sanitization via DOMPurify; CSRF protection documented)
 
-Progress: [█░░░░░░░░░] 10%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 3 min
-- Total execution time: 0.05 hours
+- Total plans completed: 2
+- Average duration: 3.5 min
+- Total execution time: 0.12 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-security | 1 | 3 min | 3 min |
+| 01-security | 2 | 7 min | 3.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (3 min)
-- Trend: Baseline established
+- Last 5 plans: 01-01 (3 min), 01-02 (4 min)
+- Trend: Consistent (2 plans)
 
 *Updated after each plan completion*
 
@@ -48,6 +48,9 @@ Recent decisions affecting current work:
 - [Init]: Fix fragile flows without full rewrite — add logging, transactions, idempotency within existing structure
 - [01-01]: Empty databaseHooks.user.create.after handler kept as async () => {} — no parameter, preserves hook registration point for future use
 - [01-01]: Server actions handling PII must not use console.log; use console.error only in catch blocks
+- [01-02]: isomorphic-dompurify pinned to ^2.36.0 (not @latest); v3.x uses ESM-only jsdom@28 which breaks CommonJS require() on Vercel
+- [01-02]: t.raw('shippingAndReturnsContent') dangerouslySetInnerHTML in ProductInfo.tsx not sanitized — developer-controlled translation string, not external HTML
+- [01-02]: next.config.ts allowedDevOrigins is dev-server-only and does NOT affect Server Action CSRF protection
 
 ### Pending Todos
 
@@ -60,5 +63,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 01-01-PLAN.md — PII log removal from auth.ts, on-link-account.ts, anonymous-cart-buyer-identity-update.ts, create.ts
+Stopped at: Completed 01-02-PLAN.md — DOMPurify HTML sanitization in Description.tsx and ProductInfo.tsx; CSRF comment blocks in two Server Action files
 Resume file: None
