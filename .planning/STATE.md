@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-23)
 
 **Core value:** The checkout-to-order flow works reliably and securely for every user — anonymous or authenticated — without data leaks, silent failures, or broken UI.
-**Current focus:** Phase 2 — Core Flow Reliability
+**Current focus:** Phase 3 — Visible Bug Fixes
 
 ## Current Position
 
-Phase: 2 of 5 (Core Flow Reliability)
-Plan: 3 of TBD in current phase
+Phase: 3 of 5 (Visible Bug Fixes)
+Plan: 1 of TBD in current phase
 Status: In progress
-Last activity: 2026-02-23 — Completed 02-01 (anonymous cart merge hardened with prisma transaction, retry, rollback, and structured logging)
+Last activity: 2026-02-23 — Completed 03-01 (FavSession silent failure fixed with toast notifications on both error paths)
 
 Progress: [████░░░░░░] 40%
 
@@ -37,6 +37,7 @@ Progress: [████░░░░░░] 40%
 *Updated after each plan completion*
 | Phase 02-core-flow-reliability P02 | 2 | 3 tasks | 2 files |
 | Phase 02-core-flow-reliability P01 | 3 | 2 tasks | 1 files |
+| Phase 03-visible-bug-fixes P01 | 1 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -62,6 +63,8 @@ Recent decisions affecting current work:
 - [Phase 02-01]: withRetry wraps only addLinesToCart — buyer identity update is non-fatal and logged but not retried
 - [Phase 02-01]: Shopify API calls execute before prisma.$transaction to avoid 5s timeout exhaustion on network I/O
 - [Phase 02-01]: toast() not toast.error() for cart merge failure — neutral phrasing per CONTEXT.md UX decision
+- [Phase 03-01]: Removed console.error from FavSession catch block — Phase 1 decision states client handlers should not log to console; toast is the user-facing signal
+- [Phase 03-01]: Used toast() (neutral) not toast.error() for FavSession error feedback — consistent with Phase 2 UX pattern for cart merge failure
 
 ### Pending Todos
 
@@ -74,5 +77,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 02-01-PLAN.md — anonymous cart merge hardened with prisma.$transaction, 3-attempt retry, rollback, and structured step logging
+Stopped at: Completed 03-01-PLAN.md — FavSession silent failure fixed with toast notifications on both error paths
 Resume file: None

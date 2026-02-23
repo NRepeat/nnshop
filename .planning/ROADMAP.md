@@ -100,6 +100,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Security | 2/2 | Complete   | 2026-02-23 |
 | 2. Core Flow Reliability | 3/3 | Complete   | 2026-02-23 |
-| 3. Visible Bug Fixes | 0/3 | Not started | - |
+| 3. Visible Bug Fixes | 1/3 | In Progress|  |
 | 4. Code Quality | 0/TBD | Not started | - |
 | 5. Observability & Scaling | 0/TBD | Not started | - |
