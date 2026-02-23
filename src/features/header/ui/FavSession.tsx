@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useReducer, memo } from 'react';
+import { toast } from 'sonner';
 import { toggleFavoriteProduct } from '@features/product/api/toggle-favorite';
 import { useRouter } from '@shared/i18n/navigation';
 import { Button } from '@shared/ui/button';
@@ -47,6 +48,8 @@ export const FavSession = memo(({
         setIsFav(previousValue);
         if (result.error === 'AUTH_REQUIRED') {
           router.push(`/auth/sign-in`, { scroll: false });
+        } else {
+          toast("Couldn't save favorite. Try again.");
         }
       } else {
         setIsFav(result.isFavorited);
@@ -54,7 +57,7 @@ export const FavSession = memo(({
       }
     } catch (err) {
       setIsFav(previousValue);
-      console.error('Favorite toggle error:', err);
+      toast("Couldn't save favorite. Try again.");
     } finally {
       setIsProcessing(false);
       forceUpdate();
