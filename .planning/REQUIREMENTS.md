@@ -22,12 +22,12 @@
 ### Type Safety
 
 - [ ] **TYPE-01**: `as any` type casts removed from UkrPoshtaForm, HeroPageBuilder, and AnnouncementBar; replaced with proper typed interfaces using Sanity-generated types
-- [ ] **TYPE-02**: `Record<string, any>` removed from cart buyer identity update and session extensions; replaced with typed User and Session interfaces
-- [ ] **TYPE-03**: Promise.allSettled array index access in auth.ts replaced with named destructuring via a result interface
+- [x] **TYPE-02**: `Record<string, any>` removed from cart buyer identity update and session extensions; replaced with typed User and Session interfaces
+- [x] **TYPE-03**: Promise.allSettled array index access in auth.ts replaced with named destructuring via a result interface
 
 ### Memory & Cleanup
 
-- [ ] **MEM-01**: Every `addEventListener` call in the codebase has a matching `removeEventListener` in its useEffect cleanup function
+- [x] **MEM-01**: Every `addEventListener` call in the codebase has a matching `removeEventListener` in its useEffect cleanup function
 - [ ] **MEM-02**: All `setTimeout` calls in NovaPoshtaButton, QuickBuyModal, LanguageSwitcher, and SyncedCarousels store IDs in refs and are cleared on component unmount
 
 ### Performance
@@ -92,9 +92,9 @@
 | RELY-02 | Phase 2 | Complete |
 | RELY-03 | Phase 2 | Complete |
 | TYPE-01 | Phase 4 | Pending |
-| TYPE-02 | Phase 4 | Pending |
-| TYPE-03 | Phase 4 | Pending |
-| MEM-01 | Phase 4 | Pending |
+| TYPE-02 | Phase 4 | Complete |
+| TYPE-03 | Phase 4 | Complete |
+| MEM-01 | Phase 4 | Complete |
 | MEM-02 | Phase 4 | Pending |
 | PERF-01 | Phase 5 | Pending |
 | PERF-02 | Phase 2 | Complete |

@@ -40,6 +40,8 @@ Progress: [████░░░░░░] 40%
 | Phase 03-visible-bug-fixes P01 | 1 | 1 tasks | 1 files |
 | Phase 03-visible-bug-fixes P02 | 8 | 2 tasks | 4 files |
 | Phase 03-visible-bug-fixes P03 | 6 | 2 tasks | 6 files |
+| Phase 04-code-quality P03 | 4 | 2 tasks | 1 files |
+| Phase 04-code-quality P04 | 4 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -72,6 +74,7 @@ Recent decisions affecting current work:
 - [Phase 03-03]: CartSheetController uses children pattern not direct import — required for RSC compatibility; functions cannot cross server/client boundary
 - [Phase 03-03]: Cart Sheet outer wrapper moved to CartSheetController; CartSheet renders only SheetTrigger+content fragment; onOpenChange handles both open (openCart) and close (closeCart) in controlled mode
 - [Phase 03-03]: AddToCartButton onSuccess called after result.success — fires only on confirmed Shopify add success, not on error paths
+- [Phase 04-code-quality]: Unexported inline interfaces AnonymousUserArg and NewUserArg used instead of T & Record<string, any> for cart buyer identity update parameters
 
 ### Pending Todos
 
