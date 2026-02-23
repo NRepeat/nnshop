@@ -2040,6 +2040,13 @@
           },
           "optional": true
         },
+        "viberPhone": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        },
         "text": {
           "type": "objectAttribute",
           "value": {

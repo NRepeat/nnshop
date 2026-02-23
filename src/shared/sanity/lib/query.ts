@@ -789,6 +789,7 @@ export const HEADER_QUERY = defineQuery(`
     infoBar {
       ...,
       telephone,
+      viberPhone,
       "text": coalesce(text[$locale], text.uk, text.ru, ""),
       link {
         ...,
