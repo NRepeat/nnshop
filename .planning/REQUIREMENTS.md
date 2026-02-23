@@ -17,7 +17,7 @@
 
 - [ ] **RELY-01**: Cart merge flow logs each step's success/failure, uses idempotency keys, and rolls back database state if Shopify API call fails
 - [ ] **RELY-02**: Order creation function uses compensating transactions so partial failures (Shopify succeeds, email fails) don't leave orphaned orders; has retry logic for idempotent operations
-- [ ] **RELY-03**: Account linking uses named result destructuring from Promise.allSettled (no hardcoded indices) and performs database updates transactionally
+- [x] **RELY-03**: Account linking uses named result destructuring from Promise.allSettled (no hardcoded indices) and performs database updates transactionally
 
 ### Type Safety
 
@@ -90,7 +90,7 @@
 | BUG-05 | Phase 2 | Pending |
 | RELY-01 | Phase 2 | Pending |
 | RELY-02 | Phase 2 | Pending |
-| RELY-03 | Phase 2 | Pending |
+| RELY-03 | Phase 2 | Complete |
 | TYPE-01 | Phase 4 | Pending |
 | TYPE-02 | Phase 4 | Pending |
 | TYPE-03 | Phase 4 | Pending |

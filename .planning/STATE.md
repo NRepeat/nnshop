@@ -5,33 +5,34 @@
 See: .planning/PROJECT.md (updated 2026-02-23)
 
 **Core value:** The checkout-to-order flow works reliably and securely for every user — anonymous or authenticated — without data leaks, silent failures, or broken UI.
-**Current focus:** Phase 1 — Security
+**Current focus:** Phase 2 — Core Flow Reliability
 
 ## Current Position
 
-Phase: 1 of 5 (Security)
-Plan: 2 of TBD in current phase
+Phase: 2 of 5 (Core Flow Reliability)
+Plan: 3 of TBD in current phase
 Status: In progress
-Last activity: 2026-02-23 — Completed 01-02 (HTML sanitization via DOMPurify; CSRF protection documented)
+Last activity: 2026-02-23 — Completed 02-03 (Promise.allSettled result checking + Prisma error propagation in account linking)
 
-Progress: [██░░░░░░░░] 20%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 3.5 min
-- Total execution time: 0.12 hours
+- Total plans completed: 3
+- Average duration: 2.7 min
+- Total execution time: 0.13 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-security | 2 | 7 min | 3.5 min |
+| 02-core-flow-reliability | 1 | 1 min | 1 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (3 min), 01-02 (4 min)
-- Trend: Consistent (2 plans)
+- Last 5 plans: 01-01 (3 min), 01-02 (4 min), 02-03 (1 min)
+- Trend: Consistent (3 plans)
 
 *Updated after each plan completion*
 
@@ -51,6 +52,9 @@ Recent decisions affecting current work:
 - [01-02]: isomorphic-dompurify pinned to ^2.36.0 (not @latest); v3.x uses ESM-only jsdom@28 which breaks CommonJS require() on Vercel
 - [01-02]: t.raw('shippingAndReturnsContent') dangerouslySetInnerHTML in ProductInfo.tsx not sanitized — developer-controlled translation string, not external HTML
 - [01-02]: next.config.ts allowedDevOrigins is dev-server-only and does NOT affect Server Action CSRF protection
+- [02-03]: Remove outer try/catch around Promise.allSettled — allSettled never rejects; the catch was dead code masking real errors
+- [02-03]: Re-throw after logging in linkAnonymousDataToUser — satisfies CONTEXT.md decision: propagate Prisma transaction errors up to caller
+- [02-03]: orderId: undefined included in rejection log shape for consistency with error-logging convention
 
 ### Pending Todos
 
@@ -63,5 +67,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 01-02-PLAN.md — DOMPurify HTML sanitization in Description.tsx and ProductInfo.tsx; CSRF comment blocks in two Server Action files
+Stopped at: Completed 02-03-PLAN.md — Promise.allSettled result checking in onLinkAccount; Prisma error re-throw in linkAnonymousDataToUser
 Resume file: None

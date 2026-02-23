@@ -49,7 +49,7 @@ Plans:
 Plans:
 - [ ] 02-01-PLAN.md — Harden cart merge with Prisma transaction, retry+rollback, step logging, single Shopify fetch (RELY-01, PERF-02)
 - [ ] 02-02-PLAN.md — Fix null-safe cart.delivery access and isolate DB save failure from Shopify order success (BUG-05, RELY-02)
-- [ ] 02-03-PLAN.md — Fix Promise.allSettled result handling and re-throw Prisma errors in account linking (RELY-03)
+- [x] 02-03-PLAN.md — Fix Promise.allSettled result handling and re-throw Prisma errors in account linking (RELY-03)
 
 ### Phase 3: Visible Bug Fixes
 **Goal**: All user-facing defects are resolved — favorites persist, quick-buy orders the right variant, and the announcement bar uses a real phone number
@@ -94,7 +94,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Security | 2/2 | Complete   | 2026-02-23 |
-| 2. Core Flow Reliability | 0/3 | Not started | - |
+| 2. Core Flow Reliability | 1/3 | In progress | - |
 | 3. Visible Bug Fixes | 0/TBD | Not started | - |
 | 4. Code Quality | 0/TBD | Not started | - |
 | 5. Observability & Scaling | 0/TBD | Not started | - |
