@@ -12,7 +12,7 @@ import {
 import { GetCollectionQuery } from '@shared/lib/shopify/types/storefront.generated';
 import getSymbolFromCurrency from 'currency-symbol-map';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@shared/ui/button';
 import Link from 'next/link';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
@@ -49,6 +49,7 @@ export const SyncedCarousels = ({
   gender,
 }: SyncedCarouselsProps) => {
   const [api1, setApi1] = useState<CarouselApi>();
+  const initTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [api2, setApi2] = useState<CarouselApi>();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
@@ -77,10 +78,11 @@ export const SyncedCarousels = ({
     if (api2) {
       api2.on('select', onSelect);
       api2.on('reInit', onSelect);
-      setTimeout(() => onInit(api2), 0);
+      initTimerRef.current = setTimeout(() => onInit(api2), 0);
     }
 
     return () => {
+      if (initTimerRef.current) clearTimeout(initTimerRef.current);
       if (api1) api1.off('select', onSelect);
       if (api2) {
         api2.off('select', onSelect);

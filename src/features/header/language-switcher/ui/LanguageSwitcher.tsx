@@ -9,7 +9,7 @@ import {
 } from '@/shared/ui/dropdown-menu';
 import { useTranslations } from 'use-intl';
 import { usePathname, useRouter } from '@shared/i18n/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { cn } from '@shared/lib/utils';
 import { usePathStore } from '@/shared/store/use-path-store';
 export const parseLocale = {
@@ -33,6 +33,7 @@ export function LanguageSwitcher({
   const [selectedLocale, setSelectedLocale] = useState<string | undefined>(
     locale,
   );
+  const localeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const alternatePaths = usePathStore((state) => state.alternatePaths);
   const router = useRouter();
   const changeLocale = (newLocale: string) => {
@@ -43,8 +44,11 @@ export function LanguageSwitcher({
   };
   useEffect(() => {
     if (locale && selectedLocale !== locale) {
-      setTimeout(() => setSelectedLocale(locale), 0);
+      localeTimerRef.current = setTimeout(() => setSelectedLocale(locale), 0);
     }
+    return () => {
+      if (localeTimerRef.current) clearTimeout(localeTimerRef.current);
+    };
   }, [locale, selectedLocale]);
 
   return (
