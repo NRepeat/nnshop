@@ -289,19 +289,30 @@ export async function createOrder(
       };
     }
 
-    // Delete any existing draft orders for this user
-    await prisma.order.deleteMany({
-      where: { userId: session.user.id, draft: true },
-    });
+    // DB save is best-effort — Shopify order already exists and is confirmed
+    try {
+      // Delete any existing draft orders for this user
+      await prisma.order.deleteMany({
+        where: { userId: session.user.id, draft: true },
+      });
 
-    await prisma.order.create({
-      data: {
-        shopifyOrderId: createdOrder.id,
-        orderName: createdOrder.name,
+      await prisma.order.create({
+        data: {
+          shopifyOrderId: createdOrder.id,
+          orderName: createdOrder.name,
+          userId: session.user.id,
+          draft: false,
+        },
+      });
+    } catch (dbError) {
+      console.error('[create-order] DB save failed after Shopify success', {
+        step: 'prisma-order-create',
         userId: session.user.id,
-        draft: false,
-      },
-    });
+        orderId: createdOrder.id,
+        error: dbError instanceof Error ? dbError.message : String(dbError),
+      });
+      // Do NOT re-throw — Shopify order exists; user must see success state
+    }
 
     return {
       success: true,
