@@ -50,11 +50,15 @@ export function AddToCartButton({
   selectedVariant,
   className,
   variant,
+  disabled,
+  onSuccess,
 }: {
   product: Product;
   selectedVariant?: ProductVariant;
   className?: string;
   variant?: string;
+  disabled?: boolean;
+  onSuccess?: () => void;
 }) {
   const [isPending, setIsPending] = useState(false);
   const t = useTranslations('ProductPage');
@@ -105,6 +109,7 @@ export function AddToCartButton({
       if (result.success) {
         toast.success(t('addedToCart'));
         // router.refresh();
+        onSuccess?.();
       } else {
         // Show specific error message or generic one
         const errorMessage =
@@ -135,7 +140,7 @@ export function AddToCartButton({
       <div className={clsx('product-form__buttons mt-1 md:mt-4', className)}>
         <SubmitButton
           variant={variant}
-          disabled={!isProductAvailable}
+          disabled={!isProductAvailable || (disabled ?? false)}
           isProductAvailable={!isProductAvailable}
           pending={isPending}
         />
