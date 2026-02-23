@@ -58,6 +58,7 @@ export default function PaymentForm({
   const selectedPaymentMethodValue = form.watch('paymentMethod');
   const selectedProviderValue = form.watch('paymentProvider');
   const [isLoading, setIsLoading] = useState(false);
+  const [liqpayOrderId, setLiqpayOrderId] = useState<string | null>(null);
 
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
     setIsLoading(true);
@@ -86,7 +87,14 @@ export default function PaymentForm({
       // 3. Reset the cart
       await resetCartSession();
 
-      // 4. Redirect to success page
+      // 4a. LiqPay (pay-now + bank-transfer): show LiqPay form — redirect happens after payment
+      if (data.paymentMethod === 'pay-now' && data.paymentProvider === 'bank-transfer') {
+        setLiqpayOrderId(createdOrder.id);
+        setIsLoading(false);
+        return;
+      }
+
+      // 4b. All other methods: redirect to success page immediately
       toast.success(t('paymentInformationSaved'));
       router.push(`/checkout/success/${encodeURIComponent(orderName)}`);
     } catch (error) {
@@ -95,6 +103,19 @@ export default function PaymentForm({
       setIsLoading(false);
     }
   };
+
+  if (liqpayOrderId && liqpayPublicKey && liqpayPrivateKey) {
+    return (
+      <LiqPayForm
+        liqpayPublicKey={liqpayPublicKey}
+        liqpayPrivateKey={liqpayPrivateKey}
+        shopifyOrderId={liqpayOrderId}
+        amount={amount}
+        currency={currency}
+        checkoutData={completeCheckoutData}
+      />
+    );
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">

@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { isValidPhone, formatPhoneE164 } from '@shared/lib/validation/phone';
 
+const CYRILLIC_NAME_REGEX = /^[а-яА-ЯёЁіІїЇєЄґҐ'\-\s]+$/;
+
 export function formatPhoneForShopify(
   phone: string,
   countryCode: string,
@@ -39,11 +41,13 @@ export const contactInfoSchema = z.object({
   name: z
     .string()
     .min(1, 'Name is required')
-    .max(50, 'Name must be less than 50 characters'),
+    .max(50, 'Name must be less than 50 characters')
+    .regex(CYRILLIC_NAME_REGEX, 'Name must contain Cyrillic characters only'),
   lastName: z
     .string()
     .min(1, 'Last name is required')
-    .max(50, 'Last name must be less than 50 characters'),
+    .max(50, 'Last name must be less than 50 characters')
+    .regex(CYRILLIC_NAME_REGEX, 'Last name must contain Cyrillic characters only'),
   email: z.string().email('Please enter a valid email address'),
   phone: z
     .string()
