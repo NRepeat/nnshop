@@ -51,14 +51,7 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        after: async (user) => {
-          console.log('[databaseHooks] User created:', {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            isAnonymous: (user as any).isAnonymous,
-          });
-        },
+        after: async (_user) => {},
       },
     },
   },
@@ -81,26 +74,14 @@ export const auth = betterAuth({
     anonymous({
       emailDomainName: 'gmail.com',
       onLinkAccount: async ({ anonymousUser, newUser }) => {
-        console.log('[onLinkAccount] START', {
-          anonymousUserId: anonymousUser.user.id,
-          newUserId: newUser.user.id,
-          newUserEmail: newUser.user.email,
-        });
         try {
-          const results = await Promise.allSettled([
+          await Promise.allSettled([
             anonymousCartBuyerIdentityUpdate({ anonymousUser, newUser }),
             linkAnonymousDataToUser({
               anonymousUserId: anonymousUser.user.id,
               newUserId: newUser.user.id,
             }),
           ]);
-          console.log('[onLinkAccount] RESULTS', {
-            cartUpdate: results[0].status,
-            cartUpdateReason: results[0].status === 'rejected' ? results[0].reason?.message : undefined,
-            dataLink: results[1].status,
-            dataLinkReason: results[1].status === 'rejected' ? results[1].reason?.message : undefined,
-          });
-          console.log('[onLinkAccount] DONE');
         } catch (error) {
           console.error('[onLinkAccount] ERROR:', error);
         }
