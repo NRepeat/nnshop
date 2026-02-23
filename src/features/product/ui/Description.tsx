@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { ProductVariant } from '@shared/lib/shopify/types/storefront.types';
 import { ProductOptions } from './ProductOptions';
+import DOMPurify from 'isomorphic-dompurify';
 
 const Description = async ({
   product,
@@ -22,6 +23,7 @@ const Description = async ({
   const isDiscounted = false;
   const compareAtPrice = product.priceRange?.maxVariantPrice;
   // const isDiscounted = compareAtPrice && compareAtPrice.amount > price.amount;
+  const safeDescriptionHtml = DOMPurify.sanitize(product.descriptionHtml);
 
   return (
     <div className="md:col-span-4 flex jusify-center flex-col w-full items-center">
@@ -62,7 +64,7 @@ const Description = async ({
           <div className="product__description rte quick-add-hidden mt-8">
             <div
               className="prose prose-sm dark:prose-invert"
-              dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+              dangerouslySetInnerHTML={{ __html: safeDescriptionHtml }}
             />
           </div>
         )}

@@ -96,6 +96,7 @@ import { useState } from 'react';
 import { Badge } from '@shared/ui/badge';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 import { Bell } from 'lucide-react';
+import DOMPurify from 'isomorphic-dompurify';
 
 export const ProductInfo = ({
   product,
@@ -139,7 +140,7 @@ export const ProductInfo = ({
   ];
 
   const sortedSizeOptions = sizeOptions?.slice().sort(compareSizes);
-  const cleanHtml = product.descriptionHtml.replace(/style="[^"]*"/gi, '');
+  const cleanHtml = DOMPurify.sanitize(product.descriptionHtml);
   return (
     <div className="content-stretch flex flex-col gap-[30px] items-start  py-0 relative w-full">
       <div className="flex flex-col gap-8 items-start  w-full max-w-2xl">
