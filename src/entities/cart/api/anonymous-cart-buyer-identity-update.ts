@@ -165,18 +165,22 @@ async function addLinesToCart(
 
 // --- Main Function ---
 
+interface AnonymousUserArg {
+  user: UserWithAnonymous;
+  session: Session;
+}
+
+interface NewUserArg {
+  user: User;
+  session: Session;
+}
+
 export const anonymousCartBuyerIdentityUpdate = async ({
   newUser,
   anonymousUser,
 }: {
-  anonymousUser: {
-    user: UserWithAnonymous & Record<string, any>;
-    session: Session & Record<string, any>;
-  };
-  newUser: {
-    user: User & Record<string, any>;
-    session: Session & Record<string, any>;
-  };
+  anonymousUser: AnonymousUserArg;
+  newUser: NewUserArg;
 }) => {
   // 1. Fetch anonCartRecord from DB
   const anonCartRecord = await prisma.cart.findFirst({
