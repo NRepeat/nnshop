@@ -60,7 +60,12 @@ Plans:
   2. A user can remove a favorite and it stays removed after page reload
   3. A user on the quick-buy modal can select a specific variant (size/color), add to cart, and the cart contains that exact variant — not the first one
   4. The Viber link in the announcement bar opens a real phone number from Sanity or environment config, not a placeholder
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Fix FavSession error paths: add toast on DB error and exception (BUG-01)
+- [ ] 03-02-PLAN.md — Add viberPhone to Sanity schema + GROQ + announcement bar component (BUG-02)
+- [ ] 03-03-PLAN.md — Wire variant selection in ProductQuickView + create useCartUIStore for post-add cart open (BUG-04)
 
 ### Phase 4: Code Quality
 **Goal**: All unsafe type casts and memory leaks are eliminated; the codebase compiles cleanly with proper types
@@ -95,6 +100,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Security | 2/2 | Complete   | 2026-02-23 |
 | 2. Core Flow Reliability | 3/3 | Complete   | 2026-02-23 |
-| 3. Visible Bug Fixes | 0/TBD | Not started | - |
+| 3. Visible Bug Fixes | 0/3 | Not started | - |
 | 4. Code Quality | 0/TBD | Not started | - |
 | 5. Observability & Scaling | 0/TBD | Not started | - |
