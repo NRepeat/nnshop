@@ -98,6 +98,22 @@ Plans:
   5. `getCollectionHandles` does not load all handles into memory at once for collections above a defined threshold
 **Plans**: TBD
 
+### Phase 6: Pre-Launch UI Polish
+**Goal**: Complete the visible UI gaps before launch — favicon, currency display as "грн", CMS-managed footer (social links, hours, address, payment icons), and language switcher cleanup
+**Depends on**: Phase 4 (can run parallel with Phase 5)
+**Requirements**: UI-01, UI-02, UI-03, UI-04
+**Success Criteria** (what must be TRUE):
+  1. Browser tab shows a branded favicon icon (not the browser default)
+  2. All price displays show amounts in "грн" format (e.g., "1 234 грн"), not "₴"
+  3. Footer renders CMS-managed social links, work hours, address, and payment method badges when configured in Sanity Studio; falls back gracefully when fields are empty
+  4. Language switcher button has no invisible/dead CSS hover classes; visual behavior is intentional
+**Plans**: 3 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Add favicon (app/icon.tsx) and currency utility (₴ → грн across 11 files) (UI-01, UI-02)
+- [ ] 06-02-PLAN.md — Expand footerSettings schema, register in siteSettings, add FOOTER_QUERY, update Footer component (UI-03)
+- [ ] 06-03-PLAN.md — Language switcher button cleanup + build verification gate (UI-04)
+
 ## Progress
 
 **Execution Order:**
@@ -110,3 +126,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 3. Visible Bug Fixes | 1/3 | In Progress|  |
 | 4. Code Quality | 2/5 | In Progress|  |
 | 5. Observability & Scaling | 0/TBD | Not started | - |
+| 6. Pre-Launch UI Polish | 0/3 | Not started | - |
