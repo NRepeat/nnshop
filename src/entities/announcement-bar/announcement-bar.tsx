@@ -32,6 +32,7 @@ export const AnnouncementBar = async (props: AnnouncementBarProps) => {
   } else {
     resolvedLink = link?.collectionData?.pageHandle || '';
   }
+  const displayText = typeof text === 'string' ? text : '';
   return (
     <>
       <div className="w-full bg-foreground py-0.5">
@@ -60,10 +61,10 @@ export const AnnouncementBar = async (props: AnnouncementBarProps) => {
           <Suspense>
             <Link href={resolvedLink} className="hidden sm:block">
               <p className=" w-full items-center justify-center py-3 font-400 hidden md:flex  ">
-                {text as any as string}
+                {displayText}
               </p>
               <p className=" w-full items-center justify-center py-3  font-400 flex md:hidden">
-                {text as any as string}
+                {displayText}
               </p>
             </Link>
           </Suspense>
