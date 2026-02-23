@@ -47,8 +47,8 @@ export async function POST(request: NextRequest) {
         amount: paymentData.amount,
         currency: paymentData.currency,
         paymentMethod: 'pay-now',
-        paymentProvider: 'after-delivered',
-        description: '',
+        paymentProvider: 'bank-transfer',
+        description: `LiqPay payment: status=${paymentData.status}, liqpayOrderId=${paymentData.payment_id || ''}`,
         orderId: order.id,
       };
       await savePaymentInfo(paymentInfo, order.id);

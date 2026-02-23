@@ -162,7 +162,9 @@ const createCart = async (
     if (!cartCreate.cart) {
       return {
         success: false,
-        errors: cartCreate.userErrors.map((error) => error.message),
+        errors: cartCreate.userErrors?.length
+          ? cartCreate.userErrors.map((error) => error.message)
+          : ['Cart creation returned no cart and no errors'],
       };
     }
     await prisma.cart.create({

@@ -146,6 +146,9 @@ export async function updateCartDeliveryPreferences(
               city: string | null;
               countryCode: string | null;
               zip: string | null;
+              firstName?: string | null;
+              lastName?: string | null;
+              phone?: string | null;
             };
           };
         }[];
@@ -163,6 +166,9 @@ export async function updateCartDeliveryPreferences(
                 city: deliveryAddressInput?.city,
                 countryCode: deliveryAddressInput?.countryCode,
                 zip: deliveryAddressInput?.zip,
+                firstName: deliveryAddressInput?.firstName || null,
+                lastName: deliveryAddressInput?.lastName || null,
+                phone: deliveryAddressInput?.phone || null,
               },
             },
           },
@@ -198,10 +204,8 @@ export async function updateCartDeliveryPreferences(
       };
     }
 
-    // @ts-ignore
-    revalidateTag(CART_TAGS.CART,{expire:0});
-    // @ts-ignore
-    revalidateTag(CART_TAGS.CART_SESSION,{expire:0});
+    revalidateTag(CART_TAGS.CART, { expire: 0 });
+    revalidateTag(CART_TAGS.CART_SESSION, { expire: 0 });
 
     console.log(
       'updateCartDeliveryPreferences: Cart delivery address added successfully!',
