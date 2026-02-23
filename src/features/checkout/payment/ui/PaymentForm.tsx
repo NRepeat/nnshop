@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useRouter } from '@shared/i18n/navigation';
@@ -17,6 +17,7 @@ import { paymentMethods, paymentProviders } from '../lib/constants';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import resetCartSession from '@features/cart/api/resetCartSession';
 import { createOrder } from '@features/order/api/create';
+import { useSession } from '@features/auth/lib/client';
 
 interface PaymentFormProps {
   defaultValues?: PaymentInfo | null;
@@ -59,6 +60,15 @@ export default function PaymentForm({
   const selectedProviderValue = form.watch('paymentProvider');
   const [isLoading, setIsLoading] = useState(false);
   const [liqpayOrderId, setLiqpayOrderId] = useState<string | null>(null);
+  const { data: session } = useSession();
+  const [isMerging, setIsMerging] = useState(false);
+
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    setIsMerging(true);
+    const timer = setTimeout(() => setIsMerging(false), 1500);
+    return () => clearTimeout(timer);
+  }, [session?.user?.id]);
 
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
     setIsLoading(true);
@@ -162,7 +172,7 @@ export default function PaymentForm({
         <div className="space-y-3">
           <Button
             className="w-full h-12 bg-green-800 rounded-md"
-            disabled={isLoading}
+            disabled={isMerging || isLoading}
             onClick={async () => {
               await onSubmit({
                 amount: form.getValues('amount'),
@@ -174,7 +184,12 @@ export default function PaymentForm({
               });
             }}
           >
-            {isLoading ? (
+            {isMerging ? (
+              <div className="flex items-center gap-3">
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <span>{t('completePayment')}</span>
+              </div>
+            ) : isLoading ? (
               <div className="flex items-center gap-3">
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                 <span>{t('processingPayment')}</span>
