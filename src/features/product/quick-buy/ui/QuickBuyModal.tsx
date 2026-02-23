@@ -10,7 +10,7 @@ import {
 } from '@shared/ui/dialog';
 import { Button } from '@shared/ui/button';
 import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
-import { useState, useEffect, useTransition } from 'react';
+import { useState, useEffect, useTransition, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@shared/lib/utils';
 import { CrossedLine } from '@shared/ui/crossed-line';
@@ -72,6 +72,7 @@ export const QuickBuyModal = ({
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [isSuccess, setIsSuccess] = useState(false);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const form = useForm<z.infer<ReturnType<typeof createFormSchema>>>({
     resolver: zodResolver(formSchema),
@@ -81,6 +82,12 @@ export const QuickBuyModal = ({
       phone: '',
     },
   });
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -165,7 +172,7 @@ export const QuickBuyModal = ({
       if (result.success) {
         setIsSuccess(true);
         toast.success(t('orderSuccess', { orderName: result.orderName || '' }));
-        setTimeout(() => {
+        closeTimerRef.current = setTimeout(() => {
           onOpenChange(false);
         }, 2000);
       } else {

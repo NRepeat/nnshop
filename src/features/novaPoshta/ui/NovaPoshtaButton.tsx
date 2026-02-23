@@ -24,6 +24,7 @@ export default function NovaPoshtaButton({
     longitude: '',
   });
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -59,7 +60,7 @@ export default function NovaPoshtaButton({
   const openFrame = () => {
     setIsModalOpen(true);
 
-    setTimeout(() => {
+    openTimerRef.current = setTimeout(() => {
       if (iframeRef.current) {
         const queryParams = getQueryParams();
         const domain =
@@ -145,6 +146,12 @@ export default function NovaPoshtaButton({
     },
     [onDepartmentSelect],
   );
+
+  useEffect(() => {
+    return () => {
+      if (openTimerRef.current) clearTimeout(openTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (isModalOpen) {
