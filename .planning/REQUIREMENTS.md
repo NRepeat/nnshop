@@ -8,7 +8,7 @@
 ### Bugs
 
 - [x] **BUG-01**: User can add/remove favorite products and the selection persists across sessions (implement FavoriteProduct DB writes)
-- [ ] **BUG-02**: Announcement bar Viber link uses a real phone number fetched from Sanity or environment variable, not the placeholder
+- [x] **BUG-02**: Announcement bar Viber link uses a real phone number fetched from Sanity or environment variable, not the placeholder
 - [x] **BUG-03**: No user PII (user IDs, emails, cart tokens) is logged to console or server logs in production
 - [ ] **BUG-04**: User can select a variant in quick-buy modal and the selected variant is what gets ordered (not hardcoded first variant)
 - [x] **BUG-05**: Checkout does not enter broken state when user adds items and checks out rapidly (defensive null-check hardening)
@@ -84,7 +84,7 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | BUG-01 | Phase 3 | Complete |
-| BUG-02 | Phase 3 | Pending |
+| BUG-02 | Phase 3 | Complete |
 | BUG-03 | Phase 1 | Complete |
 | BUG-04 | Phase 3 | Pending |
 | BUG-05 | Phase 2 | Complete |

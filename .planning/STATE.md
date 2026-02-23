@@ -38,6 +38,7 @@ Progress: [████░░░░░░] 40%
 | Phase 02-core-flow-reliability P02 | 2 | 3 tasks | 2 files |
 | Phase 02-core-flow-reliability P01 | 3 | 2 tasks | 1 files |
 | Phase 03-visible-bug-fixes P01 | 1 | 1 tasks | 1 files |
+| Phase 03-visible-bug-fixes P02 | 8 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,8 @@ Recent decisions affecting current work:
 - [Phase 02-01]: toast() not toast.error() for cart merge failure — neutral phrasing per CONTEXT.md UX decision
 - [Phase 03-01]: Removed console.error from FavSession catch block — Phase 1 decision states client handlers should not log to console; toast is the user-facing signal
 - [Phase 03-01]: Used toast() (neutral) not toast.error() for FavSession error feedback — consistent with Phase 2 UX pattern for cart merge failure
+- [Phase 03-visible-bug-fixes]: VIBER_PHONE_NUMBER env var has no NEXT_PUBLIC_ prefix — AnnouncementBar is a Server Component, phone number must not be exposed to client bundle
+- [Phase 03-visible-bug-fixes]: Viber phone resolution priority: Sanity viberPhone -> VIBER_PHONE_NUMBER env -> null (link hidden when both empty)
 
 ### Pending Todos
 
