@@ -20,6 +20,11 @@ import { getHomePage } from '../api/get-home-page';
 import { Locale } from '@/shared/i18n/routing';
 import { Suspense } from 'react';
 import { HeroSwiper } from '@entities/slider/ui/Slider';
+import type { PAGE_QUERYResult, SliderBlock } from '@shared/sanity/types';
+
+type PageContent = NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number];
+type SimilarProductsBlock = Extract<PageContent, { _type: 'similarProducts' }>;
+type CollectionsCarouselBlock = Extract<PageContent, { _type: 'collectionsCarousel' }>;
 
 type HeroPageProps = {
   locale: Locale;
@@ -81,28 +86,30 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
             return <Hero key={block._key} {...block} />;
 
           case 'faqs':
-            return <FAQs key={block._key} {...(block as any)} />;
+            return <FAQs key={block._key} {...block} />;
 
           case 'similarProducts':
             return block.collection ? (
               <Suspense key={block._key} fallback={<div className="h-96 animate-pulse bg-gray-100" />}>
-                <SimilarProducts collection={block.collection as any} />
+                <SimilarProducts collection={block.collection as unknown as Parameters<typeof SimilarProducts>[0]['collection']} />
               </Suspense>
             ) : null;
 
-          case 'collectionsCarousel':
+          case 'collectionsCarousel': {
+            const carousel = block as unknown as CollectionsCarouselBlock;
             return (
               <CollectionsCarousel
                 key={block._key}
-                collections={block.collections as any}
-                title={block.title as any}
-                action_text={block.action_text as any}
+                collections={carousel.collections}
+                title={carousel.title}
+                action_text={carousel.action_text}
                 gender={gender}
               />
             );
+          }
 
           case 'sliderBlock':
-            return <HeroSwiper key={block._key} {...(block as any)} />;
+            return <HeroSwiper key={block._key} slides={(block as unknown as SliderBlock).slides} />;
 
           case 'elegantEase':
             return <ElegantEase key={block._key} />;
@@ -125,7 +132,7 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
             return null;
 
           default:
-            console.warn(`Unknown block type: ${(block as any)._type}`);
+            console.warn(`Unknown block type: ${(block as { _type: string })._type}`);
             return null;
         }
       })}
