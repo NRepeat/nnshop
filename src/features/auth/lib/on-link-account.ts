@@ -62,6 +62,10 @@ export const linkAnonymousDataToUser = async ({
       });
     });
   } catch (error) {
-    console.error('[linkAnonymousData] ERROR:', error);
+    console.error('[linkAnonymousData] transaction failed', {
+      step: 'prisma-link-anonymous-data',
+      error: error instanceof Error ? error.message : String(error),
+    });
+    throw error; // re-throw so Promise.allSettled detects rejection
   }
 };
