@@ -11,12 +11,12 @@
 - [ ] **BUG-02**: Announcement bar Viber link uses a real phone number fetched from Sanity or environment variable, not the placeholder
 - [x] **BUG-03**: No user PII (user IDs, emails, cart tokens) is logged to console or server logs in production
 - [ ] **BUG-04**: User can select a variant in quick-buy modal and the selected variant is what gets ordered (not hardcoded first variant)
-- [ ] **BUG-05**: Checkout does not enter broken state when user adds items and checks out rapidly (defensive null-check hardening)
+- [x] **BUG-05**: Checkout does not enter broken state when user adds items and checks out rapidly (defensive null-check hardening)
 
 ### Reliability
 
 - [ ] **RELY-01**: Cart merge flow logs each step's success/failure, uses idempotency keys, and rolls back database state if Shopify API call fails
-- [ ] **RELY-02**: Order creation function uses compensating transactions so partial failures (Shopify succeeds, email fails) don't leave orphaned orders; has retry logic for idempotent operations
+- [x] **RELY-02**: Order creation function uses compensating transactions so partial failures (Shopify succeeds, email fails) don't leave orphaned orders; has retry logic for idempotent operations
 - [x] **RELY-03**: Account linking uses named result destructuring from Promise.allSettled (no hardcoded indices) and performs database updates transactionally
 
 ### Type Safety
@@ -87,9 +87,9 @@
 | BUG-02 | Phase 3 | Pending |
 | BUG-03 | Phase 1 | Complete |
 | BUG-04 | Phase 3 | Pending |
-| BUG-05 | Phase 2 | Pending |
+| BUG-05 | Phase 2 | Complete |
 | RELY-01 | Phase 2 | Pending |
-| RELY-02 | Phase 2 | Pending |
+| RELY-02 | Phase 2 | Complete |
 | RELY-03 | Phase 2 | Complete |
 | TYPE-01 | Phase 4 | Pending |
 | TYPE-02 | Phase 4 | Pending |

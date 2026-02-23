@@ -35,6 +35,7 @@ Progress: [████░░░░░░] 40%
 - Trend: Consistent (3 plans)
 
 *Updated after each plan completion*
+| Phase 02-core-flow-reliability P02 | 2 | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -55,6 +56,8 @@ Recent decisions affecting current work:
 - [02-03]: Remove outer try/catch around Promise.allSettled — allSettled never rejects; the catch was dead code masking real errors
 - [02-03]: Re-throw after logging in linkAnonymousDataToUser — satisfies CONTEXT.md decision: propagate Prisma transaction errors up to caller
 - [02-03]: orderId: undefined included in rejection log shape for consistency with error-logging convention
+- [Phase 02-02]: Used @features/auth/lib/client for useSession import (not auth-client.ts which doesn't export it) — consistent with codebase pattern
+- [Phase 02-02]: DB save catch logs structured { step, userId, orderId, error } shape for Phase 5 Sentry upgrade compatibility — does not re-throw
 
 ### Pending Todos
 
