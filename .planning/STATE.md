@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-23)
 ## Current Position
 
 Phase: 3 of 5 (Visible Bug Fixes)
-Plan: 1 of TBD in current phase
+Plan: 3 of TBD in current phase
 Status: In progress
-Last activity: 2026-02-23 — Completed 03-01 (FavSession silent failure fixed with toast notifications on both error paths)
+Last activity: 2026-02-23 — Completed 03-03 (quick-view variant selection fixed, useCartUIStore created, CartSheetController RSC composition pattern)
 
 Progress: [████░░░░░░] 40%
 
@@ -39,6 +39,7 @@ Progress: [████░░░░░░] 40%
 | Phase 02-core-flow-reliability P01 | 3 | 2 tasks | 1 files |
 | Phase 03-visible-bug-fixes P01 | 1 | 1 tasks | 1 files |
 | Phase 03-visible-bug-fixes P02 | 8 | 2 tasks | 4 files |
+| Phase 03-visible-bug-fixes P03 | 6 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -68,6 +69,9 @@ Recent decisions affecting current work:
 - [Phase 03-01]: Used toast() (neutral) not toast.error() for FavSession error feedback — consistent with Phase 2 UX pattern for cart merge failure
 - [Phase 03-visible-bug-fixes]: VIBER_PHONE_NUMBER env var has no NEXT_PUBLIC_ prefix — AnnouncementBar is a Server Component, phone number must not be exposed to client bundle
 - [Phase 03-visible-bug-fixes]: Viber phone resolution priority: Sanity viberPhone -> VIBER_PHONE_NUMBER env -> null (link hidden when both empty)
+- [Phase 03-03]: CartSheetController uses children pattern not direct import — required for RSC compatibility; functions cannot cross server/client boundary
+- [Phase 03-03]: Cart Sheet outer wrapper moved to CartSheetController; CartSheet renders only SheetTrigger+content fragment; onOpenChange handles both open (openCart) and close (closeCart) in controlled mode
+- [Phase 03-03]: AddToCartButton onSuccess called after result.success — fires only on confirmed Shopify add success, not on error paths
 
 ### Pending Todos
 
@@ -80,5 +84,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 03-01-PLAN.md — FavSession silent failure fixed with toast notifications on both error paths
+Stopped at: Completed 03-03-PLAN.md — quick-view variant selection fixed with useCartUIStore, CartSheetController RSC composition pattern, and post-add modal close + cart open flow
 Resume file: None
