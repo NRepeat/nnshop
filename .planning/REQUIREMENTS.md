@@ -28,7 +28,7 @@
 ### Memory & Cleanup
 
 - [x] **MEM-01**: Every `addEventListener` call in the codebase has a matching `removeEventListener` in its useEffect cleanup function
-- [ ] **MEM-02**: All `setTimeout` calls in NovaPoshtaButton, QuickBuyModal, LanguageSwitcher, and SyncedCarousels store IDs in refs and are cleared on component unmount
+- [x] **MEM-02**: All `setTimeout` calls in NovaPoshtaButton, QuickBuyModal, LanguageSwitcher, and SyncedCarousels store IDs in refs and are cleared on component unmount
 
 ### Performance
 
@@ -95,7 +95,7 @@
 | TYPE-02 | Phase 4 | Complete |
 | TYPE-03 | Phase 4 | Complete |
 | MEM-01 | Phase 4 | Complete |
-| MEM-02 | Phase 4 | Pending |
+| MEM-02 | Phase 4 | Complete |
 | PERF-01 | Phase 5 | Pending |
 | PERF-02 | Phase 2 | Complete |
 | SEC-01 | Phase 1 | Complete |
