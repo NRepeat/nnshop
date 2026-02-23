@@ -77,7 +77,14 @@ Plans:
   3. Promise.allSettled results in auth.ts are destructured by name, not array index
   4. Every component that calls addEventListener also calls removeEventListener in its useEffect cleanup; verified by code review
   5. NovaPoshtaButton, QuickBuyModal, LanguageSwitcher, and SyncedCarousels store setTimeout IDs in refs and clear them on unmount
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Replace as-any in UkrPoshtaForm (typed form context) and AnnouncementBar (string narrowing) (TYPE-01)
+- [ ] 04-02-PLAN.md — Replace as-any in HeroPageBuilder with Sanity type assertions; narrow HeroSwiper props (TYPE-01)
+- [ ] 04-03-PLAN.md — Replace Record&lt;string, any&gt; in cart buyer identity update with inline interfaces; verify TYPE-03 and MEM-01 already satisfied (TYPE-02, TYPE-03, MEM-01)
+- [ ] 04-04-PLAN.md — Add setTimeout refs with clearTimeout cleanup to NovaPoshtaButton, QuickBuyModal, LanguageSwitcher, SyncedCarousels (MEM-02)
+- [ ] 04-05-PLAN.md — Full build verification and human-verify checkpoint (TYPE-01, TYPE-02, TYPE-03, MEM-01, MEM-02)
 
 ### Phase 5: Observability & Scaling
 **Goal**: Sentry captures unhandled errors in production, filter fetching is conditional, and hardcoded pagination limits are gone
@@ -101,5 +108,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Security | 2/2 | Complete   | 2026-02-23 |
 | 2. Core Flow Reliability | 3/3 | Complete   | 2026-02-23 |
 | 3. Visible Bug Fixes | 1/3 | In Progress|  |
-| 4. Code Quality | 0/TBD | Not started | - |
+| 4. Code Quality | 0/5 | Not started | - |
 | 5. Observability & Scaling | 0/TBD | Not started | - |
