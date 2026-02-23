@@ -1,0 +1,116 @@
+# Requirements: nnshop Pre-Launch Hardening
+
+**Defined:** 2026-02-23
+**Core Value:** The checkout-to-order flow works reliably and securely for every user — anonymous or authenticated — without data leaks, silent failures, or broken UI.
+
+## v1 Requirements
+
+### Bugs
+
+- [ ] **BUG-01**: User can add/remove favorite products and the selection persists across sessions (implement FavoriteProduct DB writes)
+- [ ] **BUG-02**: Announcement bar Viber link uses a real phone number fetched from Sanity or environment variable, not the placeholder
+- [ ] **BUG-03**: No user PII (user IDs, emails, cart tokens) is logged to console or server logs in production
+- [ ] **BUG-04**: User can select a variant in quick-buy modal and the selected variant is what gets ordered (not hardcoded first variant)
+- [ ] **BUG-05**: Checkout does not enter broken state when user adds items and checks out rapidly (defensive null-check hardening)
+
+### Reliability
+
+- [ ] **RELY-01**: Cart merge flow logs each step's success/failure, uses idempotency keys, and rolls back database state if Shopify API call fails
+- [ ] **RELY-02**: Order creation function uses compensating transactions so partial failures (Shopify succeeds, email fails) don't leave orphaned orders; has retry logic for idempotent operations
+- [ ] **RELY-03**: Account linking uses named result destructuring from Promise.allSettled (no hardcoded indices) and performs database updates transactionally
+
+### Type Safety
+
+- [ ] **TYPE-01**: `as any` type casts removed from UkrPoshtaForm, HeroPageBuilder, and AnnouncementBar; replaced with proper typed interfaces using Sanity-generated types
+- [ ] **TYPE-02**: `Record<string, any>` removed from cart buyer identity update and session extensions; replaced with typed User and Session interfaces
+- [ ] **TYPE-03**: Promise.allSettled array index access in auth.ts replaced with named destructuring via a result interface
+
+### Memory & Cleanup
+
+- [ ] **MEM-01**: Every `addEventListener` call in the codebase has a matching `removeEventListener` in its useEffect cleanup function
+- [ ] **MEM-02**: All `setTimeout` calls in NovaPoshtaButton, QuickBuyModal, LanguageSwitcher, and SyncedCarousels store IDs in refs and are cleared on component unmount
+
+### Performance
+
+- [ ] **PERF-01**: Collection page only fetches filter data from Shopify when the filter UI is rendered; cached separately with longer revalidation
+- [ ] **PERF-02**: Cart merge flow fetches cart data exactly once from Shopify and reuses it; no duplicate API calls during login
+
+### Security
+
+- [ ] **SEC-01**: Product descriptions rendered via dangerouslySetInnerHTML are passed through DOMPurify before rendering
+- [ ] **SEC-02**: Next.js Server Actions CSRF protection verified to be active; assumptions documented in code comments; cross-origin requests tested and rejected
+
+### Observability
+
+- [ ] **OBS-01**: Sentry is integrated via Next.js SDK; unhandled errors are captured with context; source maps uploaded on deploy
+
+### Scaling
+
+- [ ] **SCALE-01**: Hardcoded `first: 250` (variants) and `first: 10` (line items) replaced with dynamic limits based on actual data needs; cursor-based pagination used for large result sets
+- [ ] **SCALE-02**: `getCollectionHandles` uses streaming or on-demand generation instead of building a full handle set in memory; handles large collections (10k+ products) without OOM risk
+
+## v2 Requirements
+
+### Security
+
+- **SEC-V2-01**: Shopify OAuth tokens have a rotation policy; token refresh has rate limiting; token usage is audit-logged
+
+### Observability
+
+- **OBS-V2-01**: Structured logging replaces all remaining console.error calls; logs include request IDs and redact PII
+
+### Performance
+
+- **PERF-V2-01**: Prisma queries audited for N+1 patterns; all relations use explicit include/select
+
+### Testing
+
+- **TEST-V2-01**: Integration tests for cart merge flow (anonymous-to-authenticated, partial failures)
+- **TEST-V2-02**: Integration tests for order creation flow (cart validation → Shopify order → DB state → email)
+- **TEST-V2-03**: E2E test suite covering browsing → cart → checkout → order
+- **TEST-V2-04**: Tests for favorites feature (add, remove, session persistence)
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Offline support / service worker | E-commerce checkout requires network; not meaningful for this shop |
+| New product features | This milestone is exclusively remediation |
+| OAuth token rotation (v1) | Current mitigation (expiry buffer, server-only) is acceptable at launch |
+| Prisma N+1 audit (v1) | Performance acceptable at launch scale; defer to v2 |
+
+## Traceability
+
+_Populated during roadmap creation._
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| BUG-01 | — | Pending |
+| BUG-02 | — | Pending |
+| BUG-03 | — | Pending |
+| BUG-04 | — | Pending |
+| BUG-05 | — | Pending |
+| RELY-01 | — | Pending |
+| RELY-02 | — | Pending |
+| RELY-03 | — | Pending |
+| TYPE-01 | — | Pending |
+| TYPE-02 | — | Pending |
+| TYPE-03 | — | Pending |
+| MEM-01 | — | Pending |
+| MEM-02 | — | Pending |
+| PERF-01 | — | Pending |
+| PERF-02 | — | Pending |
+| SEC-01 | — | Pending |
+| SEC-02 | — | Pending |
+| OBS-01 | — | Pending |
+| SCALE-01 | — | Pending |
+| SCALE-02 | — | Pending |
+
+**Coverage:**
+- v1 requirements: 20 total
+- Mapped to phases: 0
+- Unmapped: 20 ⚠️
+
+---
+*Requirements defined: 2026-02-23*
+*Last updated: 2026-02-23 after initial definition*
