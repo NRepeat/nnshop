@@ -56,11 +56,11 @@ export async function POST(req: NextRequest) {
       revalidatedTags.push(`${body.type}:${body.slug}`);
     }
 
-    console.log(
-      '🚀 ~ POST ~    revalidatedPaths',
-      revalidatedTags,
-      revalidatedTags,
-    );
+    // Shopify: collection updates also invalidate the slugs list
+    if (body.type === 'collection') {
+      revalidateTag('collections');
+      revalidatedTags.push('collections');
+    }
     return NextResponse.json({
       status: 200,
       revalidated: true,

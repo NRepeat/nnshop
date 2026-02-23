@@ -1,7 +1,7 @@
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { GetProductByHandleQuery } from '@shared/lib/shopify/types/storefront.generated';
-import { cacheLife } from 'next/cache';
+import { cacheLife, cacheTag } from 'next/cache';
 
 export const PRODUCT_METAFIELDS_FRAGMENT = `#graphql
   fragment ProductMetafields on Product {
@@ -130,7 +130,8 @@ export const getProduct = async ({
   locale: string;
 }) => {
   'use cache';
-  cacheLife("default")
+  cacheLife("default");
+  cacheTag(`product:${handle}`);
   try {
     const targetLocale = locale === 'ru' ? 'UK' : 'RU';
     const product = await storefrontClient.request<

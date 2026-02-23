@@ -9,7 +9,7 @@ import {
   GetCollectionFiltersQueryVariables,
 } from '@shared/lib/shopify/types/storefront.generated';
 import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
-import { cacheLife } from 'next/cache';
+import { cacheLife, cacheTag } from 'next/cache';
 
 const GetCollectionWithProducts = `#graphql
   query GetCollection(
@@ -178,6 +178,7 @@ const GET_COLLECTION_SLUGS = `
 export const getCollectionSlugs = async () => {
   'use cache';
   cacheLife('default');
+  cacheTag('collections');
 
   const handlesSet = new Set<string>();
   const locales: StorefrontLanguageCode[] = ['RU', 'UK'];
@@ -244,6 +245,7 @@ export const getCollection = async ({
 }) => {
   'use cache';
   cacheLife('default');
+  cacheTag(`collection:${handle}`);
   if (!locale) {
     throw new Error('getCollection: locale is required');
   }
