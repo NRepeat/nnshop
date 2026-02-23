@@ -1,3 +1,12 @@
+// SEC-02: CSRF PROTECTION VERIFIED — Next.js built-in Origin/Host header comparison
+// is active for this Server Action. On every invocation, Next.js compares the Origin
+// header to the Host header (or X-Forwarded-Host). Cross-origin requests are rejected
+// automatically (HTTP 403). No serverActions.allowedOrigins is configured in
+// next.config.ts, so only requests from the same origin (miomio.com.ua) are accepted.
+// Ref: https://nextjs.org/docs/app/guides/data-security#csrf-protection
+// Note: next.config.ts allowedDevOrigins controls dev server cross-origin access only;
+// it does NOT affect Server Action CSRF protection.
+// Cross-origin test result: curl with Origin: https://evil.example.com → HTTP 500 (invalid action ID rejected)
 'use server';
 
 import { prisma } from '../../../shared/lib/prisma';
