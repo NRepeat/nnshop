@@ -81,36 +81,34 @@
 
 ## Traceability
 
-_Populated during roadmap creation._
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BUG-01 | — | Pending |
-| BUG-02 | — | Pending |
-| BUG-03 | — | Pending |
-| BUG-04 | — | Pending |
-| BUG-05 | — | Pending |
-| RELY-01 | — | Pending |
-| RELY-02 | — | Pending |
-| RELY-03 | — | Pending |
-| TYPE-01 | — | Pending |
-| TYPE-02 | — | Pending |
-| TYPE-03 | — | Pending |
-| MEM-01 | — | Pending |
-| MEM-02 | — | Pending |
-| PERF-01 | — | Pending |
-| PERF-02 | — | Pending |
-| SEC-01 | — | Pending |
-| SEC-02 | — | Pending |
-| OBS-01 | — | Pending |
-| SCALE-01 | — | Pending |
-| SCALE-02 | — | Pending |
+| BUG-01 | Phase 3 | Pending |
+| BUG-02 | Phase 3 | Pending |
+| BUG-03 | Phase 1 | Pending |
+| BUG-04 | Phase 3 | Pending |
+| BUG-05 | Phase 2 | Pending |
+| RELY-01 | Phase 2 | Pending |
+| RELY-02 | Phase 2 | Pending |
+| RELY-03 | Phase 2 | Pending |
+| TYPE-01 | Phase 4 | Pending |
+| TYPE-02 | Phase 4 | Pending |
+| TYPE-03 | Phase 4 | Pending |
+| MEM-01 | Phase 4 | Pending |
+| MEM-02 | Phase 4 | Pending |
+| PERF-01 | Phase 5 | Pending |
+| PERF-02 | Phase 2 | Pending |
+| SEC-01 | Phase 1 | Pending |
+| SEC-02 | Phase 1 | Pending |
+| OBS-01 | Phase 5 | Pending |
+| SCALE-01 | Phase 5 | Pending |
+| SCALE-02 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 20 total
-- Mapped to phases: 0
-- Unmapped: 20 ⚠️
+- Mapped to phases: 20
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-23*
-*Last updated: 2026-02-23 after initial definition*
+*Last updated: 2026-02-23 — traceability populated after roadmap creation*
