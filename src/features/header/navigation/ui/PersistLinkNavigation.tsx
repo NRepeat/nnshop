@@ -1,4 +1,3 @@
-import { NavigationMenuItem } from '@shared/ui/navigation-menu';
 import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link';
 import { HeaderBarProps } from '@widgets/header/ui/Header';
 import { NavButton } from './NavButton';
@@ -33,12 +32,12 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
       };
     }) || [];
   return (
-    <>
+    <ul className="flex items-center">
       {links &&
         links.map((link) => {
           const label = t.has(link.slug) ? t(link.slug) : link.slug;
           return (
-            <NavigationMenuItem key={link.slug} className={`flex p-0`}>
+            <li key={link.slug} className="flex p-0">
               <Link href={`/${locale}/${link.slug}`}>
                 <Suspense
                   fallback={
@@ -53,10 +52,10 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
                   <GenderSession label={label} slug={link.slug} />
                 </Suspense>
               </Link>
-            </NavigationMenuItem>
+            </li>
           );
         })}
-    </>
+    </ul>
   );
 };
 const GenderSession = async ({
