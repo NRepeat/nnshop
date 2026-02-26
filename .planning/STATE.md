@@ -1,3 +1,16 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: unknown
+last_updated: "2026-02-26T13:43:18.834Z"
+progress:
+  total_phases: 5
+  completed_phases: 3
+  total_plans: 16
+  completed_plans: 13
+---
+
 # Project State
 
 ## Project Reference
@@ -42,6 +55,7 @@ Progress: [████░░░░░░] 40%
 | Phase 03-visible-bug-fixes P03 | 6 | 2 tasks | 6 files |
 | Phase 04-code-quality P03 | 4 | 2 tasks | 1 files |
 | Phase 04-code-quality P04 | 4 | 2 tasks | 4 files |
+| Phase 06-ui-polish P02 | 2 | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -75,6 +89,8 @@ Recent decisions affecting current work:
 - [Phase 03-03]: Cart Sheet outer wrapper moved to CartSheetController; CartSheet renders only SheetTrigger+content fragment; onOpenChange handles both open (openCart) and close (closeCart) in controlled mode
 - [Phase 03-03]: AddToCartButton onSuccess called after result.success — fires only on confirmed Shopify add success, not on error paths
 - [Phase 04-code-quality]: Unexported inline interfaces AnonymousUserArg and NewUserArg used instead of T & Record<string, any> for cart buyer identity update parameters
+- [Phase 06-ui-polish]: Explicit type annotations for Footer map callbacks (no as-any) until typegen regenerates FOOTER_QUERYResult
+- [Phase 06-ui-polish]: sanityFetch imported from @shared/sanity/lib/client — matches Header component pattern
 
 ### Pending Todos
 
