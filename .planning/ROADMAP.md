@@ -17,6 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 3: Visible Bug Fixes** - Eliminate the remaining user-facing defects
 - [ ] **Phase 4: Code Quality** - Remove unsafe type casts and fix memory leaks
 - [ ] **Phase 5: Observability & Scaling** - Add production error tracking and remove hardcoded limits
+- [ ] **Phase 7: Lighthouse Audit Fixes** - Resolve SEO, accessibility, and quality issues surfaced by Lighthouse audit
 
 ## Phase Details
 
@@ -114,6 +115,19 @@ Plans:
 - [ ] 06-02-PLAN.md — Expand footerSettings schema, register in siteSettings, add FOOTER_QUERY, update Footer component (UI-03)
 - [ ] 06-03-PLAN.md — Language switcher button cleanup + build verification gate (UI-04)
 
+### Phase 7: Lighthouse Audit Fixes
+**Goal**: All Lighthouse-identified SEO, accessibility, and quality issues resolved — meta descriptions on product/collection pages, accessible interactive elements, valid HTML structure, hydration error eliminated, product hero image loads with priority
+**Depends on**: Phase 4 (can run parallel with Phase 5)
+**Requirements**: SEO-01, A11Y-01, A11Y-02, A11Y-03, QUAL-01, QUAL-02
+**Success Criteria** (what must be TRUE):
+  1. Product pages and collection pages render a unique `<meta name="description">` tag visible in page source
+  2. Hamburger menu button and icon-only social/navigation links have `aria-label` attributes (verified by Lighthouse accessibility audit)
+  3. Footer copyright text contrast ratio ≥ 4.5:1 (updated color passes WCAG AA)
+  4. All `<li>` elements reside inside valid `<ul>/<ol>` parents; heading levels on product page follow sequential order
+  5. No browser errors logged during normal product page load (React hydration error #419 eliminated)
+  6. Product page LCP element has `priority` prop; LCP improves from 6.6s baseline
+**Plans**: TBD
+
 ## Progress
 
 **Execution Order:**
@@ -127,3 +141,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 4. Code Quality | 2/5 | In Progress|  |
 | 5. Observability & Scaling | 0/TBD | Not started | - |
 | 6. Pre-Launch UI Polish | 3/3 | Complete   | 2026-02-26 |
+| 7. Lighthouse Audit Fixes | 0/TBD | Not started | - |

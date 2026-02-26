@@ -49,6 +49,21 @@
 - [ ] **SCALE-01**: Hardcoded `first: 250` (variants) and `first: 10` (line items) replaced with dynamic limits based on actual data needs; cursor-based pagination used for large result sets
 - [ ] **SCALE-02**: `getCollectionHandles` uses streaming or on-demand generation instead of building a full handle set in memory; handles large collections (10k+ products) without OOM risk
 
+### SEO
+
+- [ ] **SEO-01**: Product and collection pages render a unique `<meta name="description">` tag derived from Shopify product description / collection description
+
+### Accessibility
+
+- [ ] **A11Y-01**: All interactive elements have accessible names — hamburger menu button and icon-only social/navigation links have `aria-label` attributes
+- [ ] **A11Y-02**: Footer copyright text meets WCAG 2.1 AA contrast ratio (≥ 4.5:1); currently failing at 3.83:1
+- [ ] **A11Y-03**: HTML structure is valid — `<li>` elements reside inside `<ul>/<ol>` parents; heading levels follow sequential descending order
+
+### Quality
+
+- [ ] **QUAL-01**: React hydration error #419 eliminated from production console; no browser errors logged during normal product page load
+- [ ] **QUAL-02**: Product page LCP element (hero image) has Next.js `priority` prop so the browser fetches it early; target LCP improvement toward &lt; 4.0 s
+
 ## v2 Requirements
 
 ### Security
@@ -103,10 +118,16 @@
 | OBS-01 | Phase 5 | Pending |
 | SCALE-01 | Phase 5 | Pending |
 | SCALE-02 | Phase 5 | Pending |
+| SEO-01 | Phase 7 | Pending |
+| A11Y-01 | Phase 7 | Pending |
+| A11Y-02 | Phase 7 | Pending |
+| A11Y-03 | Phase 7 | Pending |
+| QUAL-01 | Phase 7 | Pending |
+| QUAL-02 | Phase 7 | Pending |
 
 **Coverage:**
-- v1 requirements: 20 total
-- Mapped to phases: 20
+- v1 requirements: 26 total
+- Mapped to phases: 26
 - Unmapped: 0
 
 ---
