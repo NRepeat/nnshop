@@ -126,7 +126,12 @@ Plans:
   4. All `<li>` elements reside inside valid `<ul>/<ol>` parents; heading levels on product page follow sequential order
   5. No browser errors logged during normal product page load (React hydration error #419 eliminated)
   6. Product page LCP element has `priority` prop; LCP improves from 6.6s baseline
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — SEO meta description fallbacks + Gallery hydration fix + LCP priority prop (SEO-01, QUAL-01, QUAL-02)
+- [ ] 07-02-PLAN.md — aria-label on Telegram/Viber links + footer copyright contrast fix (A11Y-01, A11Y-02)
+- [ ] 07-03-PLAN.md — Accordion heading fix + navigation ul/li fix + build verification gate (A11Y-03)
 
 ## Progress
 
@@ -141,4 +146,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 4. Code Quality | 2/5 | In Progress|  |
 | 5. Observability & Scaling | 0/TBD | Not started | - |
 | 6. Pre-Launch UI Polish | 3/3 | Complete   | 2026-02-26 |
-| 7. Lighthouse Audit Fixes | 0/TBD | Not started | - |
+| 7. Lighthouse Audit Fixes | 0/3 | Not started | - |
