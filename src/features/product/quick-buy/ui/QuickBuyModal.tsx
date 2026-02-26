@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -15,6 +16,12 @@ import { useTranslations } from 'next-intl';
 import { cn } from '@shared/lib/utils';
 import { CrossedLine } from '@shared/ui/crossed-line';
 import { compareSizes } from '@shared/lib/sort-sizes';
+import { VariantInventory } from '@entities/product/api/getInventoryLevels';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@shared/ui/popover';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -55,6 +62,7 @@ interface QuickBuyModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   sizeOptions: string[] | undefined;
+  inventoryLevels: VariantInventory[];
 }
 
 export const QuickBuyModal = ({
@@ -62,6 +70,7 @@ export const QuickBuyModal = ({
   open,
   onOpenChange,
   sizeOptions,
+  inventoryLevels,
 }: QuickBuyModalProps) => {
   const t = useTranslations('ProductPage');
   const formSchema = createFormSchema(t);
@@ -212,23 +221,63 @@ export const QuickBuyModal = ({
                   edge.node.selectedOptions.some(
                     (option) =>
                       option.name.toLowerCase() === 'розмір' &&
-                      option.value.toLowerCase() === s.toLowerCase()
-                  )
+                      option.value.toLowerCase() === s.toLowerCase(),
+                  ),
                 )?.node;
                 const availableForSale = variant?.availableForSale ?? false;
-                return (
+                const qty = variant?.quantityAvailable ?? -1;
+                const isZeroQty = qty === 0;
+                const variantAtFitting =
+                  variant?.currentlyNotInStock === false && isZeroQty;
+                const isUnavailable = !availableForSale && !isZeroQty;
+                const inventoryLevel = variant
+                  ? inventoryLevels.find((inv) => inv.variantId === variant.id)
+                  : undefined;
+                const committed = inventoryLevel?.committed ?? 0;
+                const hasCommitted = committed > 0;
+                const showCrossed =
+                  isUnavailable ||
+                  (isZeroQty && !variantAtFitting && !hasCommitted);
+                const showMuted =
+                  (isUnavailable || isZeroQty) && !hasCommitted;
+                const btn = (
                   <Button
-                    key={s}
                     variant={
                       selectedSize === s.toLowerCase() ? 'default' : 'outline'
                     }
-                    className={cn('rounded-md min-w-[50px] relative')}
+                    className={cn(
+                      'rounded-md min-w-[50px] relative border-primary border',
+                      {
+                        'bg-primary text-white ring-2 ring-offset-1 ring-primary':
+                          selectedSize === s.toLowerCase(),
+                        'opacity-40':
+                          showMuted && selectedSize !== s.toLowerCase(),
+                      },
+                    )}
                     onClick={() => handleSizeSelect(s)}
-                    disabled={!availableForSale}
+                    disabled={isUnavailable}
                   >
                     {s}
-                    {!availableForSale && <CrossedLine />}
+                    {showCrossed && <CrossedLine />}
+                    {hasCommitted && (
+                      <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white leading-none">
+                        !
+                      </span>
+                    )}
                   </Button>
+                );
+                if (!hasCommitted)
+                  return <React.Fragment key={s}>{btn}</React.Fragment>;
+                return (
+                  <Popover key={s}>
+                    <PopoverTrigger asChild>{btn}</PopoverTrigger>
+                    <PopoverContent className="w-56 text-sm p-3" side="top">
+                      <p className="font-medium">Розмір в резерві</p>
+                      <p className="text-muted-foreground mt-1">
+                        Придбання товару можливо після зняття резерву 5-7 днів.
+                      </p>
+                    </PopoverContent>
+                  </Popover>
                 );
               })}
             </div>

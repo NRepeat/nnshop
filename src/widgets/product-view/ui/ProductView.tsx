@@ -1,4 +1,5 @@
 import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
+import { VariantInventory } from '@entities/product/api/getInventoryLevels';
 import { ProductViewProvider } from './ProductViewProvider';
 import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
 import { getTranslations } from 'next-intl/server';
@@ -25,6 +26,7 @@ export async function ProductView({
   locale,
   attributes,
   children,
+  inventoryLevels
 }: {
   product: ShopifyProduct;
   relatedProducts: ShopifyProduct[];
@@ -32,6 +34,7 @@ export async function ProductView({
   locale: string;
   attributes: ProductMEtaobjectType[];
   children: React.ReactNode;
+  inventoryLevels: VariantInventory[];
 }) {
   const [t, tHeader] = await Promise.all([
     getTranslations({ locale, namespace: 'ProductPage' }),
@@ -96,6 +99,7 @@ export async function ProductView({
         product={product}
         boundProducts={boundProducts}
         attributes={attributes}
+        inventoryLevels={inventoryLevels}
       />
       {relatedProducts && relatedProducts.length > 0 && (
         <div className="content-stretch flex flex-col gap-[30px] items-center px-0 py-[30px] relative w-full">

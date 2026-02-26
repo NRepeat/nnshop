@@ -4,6 +4,7 @@ import Gallery from '@features/product/ui/Gallery';
 import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
 import { ProductInfo } from './ProductInfo';
 import { ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
+import { VariantInventory } from '@entities/product/api/getInventoryLevels';
 import { ScrollToTop } from '@shared/ui/ScrollToTop';
 
 export function ProductViewProvider({
@@ -11,11 +12,13 @@ export function ProductViewProvider({
   boundProducts,
   attributes,
   favCommponent,
+  inventoryLevels,
 }: {
   product: ShopifyProduct;
   boundProducts: ShopifyProduct[];
   attributes: ProductMEtaobjectType[];
   favCommponent: React.ReactNode;
+  inventoryLevels?: VariantInventory[];
 }) {
   // const t = useTranslations('ProductPage');
   if (!product) throw new Error('Product not found');
@@ -38,7 +41,6 @@ export function ProductViewProvider({
   if (size) {
     selectedVariant = product.variants.edges.find((edge) => {
       const variant = edge.node;
-      console.log(variant.selectedOptions, 'selectedOptions');
       const sizeMatch = variant.selectedOptions.find(
         (option) =>
           option.name.toLowerCase() === 'Розмір'.toLowerCase() &&
@@ -51,7 +53,7 @@ export function ProductViewProvider({
     <>
               <ScrollToTop />
     
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12 ">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12 relative">
         <Gallery images={images} productId={product.id} handle={product.handle}>
           {favCommponent}
         </Gallery>
@@ -64,6 +66,7 @@ export function ProductViewProvider({
           boundProduct={boundProductColorOptions}
           size={size ?? ''}
           attributes={attributes}
+          inventoryLevels={inventoryLevels ?? []}
         />
       </div>
     </>

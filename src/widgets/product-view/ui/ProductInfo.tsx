@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import {
   Product as ShopifyProduct,
   ProductVariant,
@@ -18,6 +19,18 @@ import {
 } from '@shared/ui/accordion';
 import { useLocale, useTranslations } from 'next-intl';
 import { ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
+
+import { CrossedLine } from '@shared/ui/crossed-line';
+import { compareSizes } from '@shared/lib/sort-sizes';
+import { QuickBuyModal } from '@features/product/quick-buy/ui/QuickBuyModal';
+import { PriceSubscribeModal } from '@features/product/ui/PriceSubscribeModal';
+import { useState, useRef, useEffect } from 'react';
+import { Badge } from '@shared/ui/badge';
+import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
+import { Bell } from 'lucide-react';
+import DOMPurify from 'isomorphic-dompurify';
+import { VariantInventory } from '@entities/product/api/getInventoryLevels';
+import { Popover, PopoverContent, PopoverTrigger } from '@shared/ui/popover';
 
 const DetailsContent = ({
   attributes,
@@ -59,45 +72,6 @@ const DetailsContent = ({
   );
 };
 
-import { CrossedLine } from '@shared/ui/crossed-line';
-
-const FittingGuideContent = ({
-  attributes,
-  locale,
-}: {
-  attributes: ProductMEtaobjectType[];
-  locale: string;
-}) => {
-  const fittingAttr = attributes.find(
-    (attr) =>
-      attr?.fields.find((f) => f.key === 'title')?.value === 'Особливості',
-  );
-
-  if (!fittingAttr) {
-    return (
-      <p className="text-sm text-gray-600">
-        Параметры модели и особенности посадки данного изделия.
-      </p>
-    );
-  }
-
-  const value =
-    locale === 'ru'
-      ? fittingAttr.fields.find((f) => f.key === 'ru_translation')?.value
-      : fittingAttr.fields.find((f) => f.key === 'atribute_payload')?.value;
-
-  return <p className="text-sm text-gray-600">{value}</p>;
-};
-
-import { compareSizes } from '@shared/lib/sort-sizes';
-import { QuickBuyModal } from '@features/product/quick-buy/ui/QuickBuyModal';
-import { PriceSubscribeModal } from '@features/product/ui/PriceSubscribeModal';
-import { useState } from 'react';
-import { Badge } from '@shared/ui/badge';
-import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
-import { Bell } from 'lucide-react';
-import DOMPurify from 'isomorphic-dompurify';
-
 export const ProductInfo = ({
   product,
   colorOptions,
@@ -107,6 +81,7 @@ export const ProductInfo = ({
   boundProduct,
   size,
   attributes,
+  inventoryLevels,
 }: {
   product: ShopifyProduct;
   colorOptions: string[] | undefined;
@@ -116,18 +91,36 @@ export const ProductInfo = ({
   setSize: (value: string) => void;
   size: string;
   attributes: ProductMEtaobjectType[];
+  inventoryLevels: VariantInventory[];
 }) => {
   const t = useTranslations('ProductPage');
   const locale = useLocale();
   const [isQuickBuyOpen, setQuickBuyOpen] = useState(false);
   const [isPriceSubscribeOpen, setPriceSubscribeOpen] = useState(false);
+  const [isDescExpanded, setDescExpanded] = useState(false);
+  const [isDescOverflowing, setDescOverflowing] = useState(false);
+  const descRef = useRef<HTMLDivElement>(null);
+  const cleanHtml = DOMPurify.sanitize(product.descriptionHtml);
+
+  useEffect(() => {
+    const el = descRef.current;
+    if (!el) return;
+    const check = () => setDescOverflowing(el.scrollHeight > el.clientHeight);
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [cleanHtml]);
 
   const sale =
     product.metafields.find((m) => m?.key === 'znizka')?.value || '0';
   const sku = product.variants.edges[0].node.sku;
-  const isAtFitting =
-    selectedVariant?.currentlyNotInStock === false &&
-    selectedVariant?.quantityAvailable === 0;
+  const inventoryLevel = selectedVariant
+    ? inventoryLevels.find((inv) => inv.variantId === selectedVariant.id)
+    : undefined;
+  const committed = inventoryLevel?.committed ?? 0;
+  const hasCommitted = committed > 0 && inventoryLevel!.available === 0;
+  const isAtFitting = hasCommitted;
   const colorOptionsValues = [
     ...(colorOptions?.map((name) => ({ name, product: product.handle })) || []),
     ...(boundProduct?.flatMap(
@@ -140,7 +133,6 @@ export const ProductInfo = ({
   ];
 
   const sortedSizeOptions = sizeOptions?.slice().sort(compareSizes);
-  const cleanHtml = DOMPurify.sanitize(product.descriptionHtml);
   return (
     <div className="content-stretch flex flex-col gap-[30px] items-start  py-0 relative w-full">
       <div className="flex flex-col gap-8 items-start  w-full max-w-2xl">
@@ -184,19 +176,29 @@ export const ProductInfo = ({
                     option.value.toLowerCase() === s.toLowerCase(),
                 ),
               )?.node;
-              console.log(variant,'variant')
               const availableForSale = variant?.availableForSale ?? false;
               const qty = variant?.quantityAvailable ?? -1;
               const isZeroQty = qty === 0;
-              const variantAtFitting = variant?.currentlyNotInStock === false && isZeroQty;
+              const variantAtFitting =
+                variant?.currentlyNotInStock === false && isZeroQty;
               // Zero-qty variants stay clickable (badge shows on select, cart disabled separately)
               // Only variants unavailable for other reasons get disabled
               const isUnavailable = !availableForSale && !isZeroQty;
-              const showCrossed = isUnavailable || (isZeroQty && !variantAtFitting);
-              const showMuted = isUnavailable || isZeroQty;
-              return (
+              const inventoryLevel = variant
+                ? inventoryLevels.find((inv) => inv.variantId === variant.id)
+                : undefined;
+              console.log(inventoryLevel, 'inventoryLevel');
+              const committed = inventoryLevel?.committed ?? 0;
+              const hasCommitted =
+                committed > 0 && inventoryLevel!.available === 0;
+              // Cross line: truly unavailable (available=0 AND committed=0, not just reserved)
+              const showCrossed =
+                isUnavailable ||
+                (isZeroQty && !variantAtFitting && !hasCommitted);
+              // Committed variants stay full opacity — they're reserved, not gone
+              const showMuted = (isUnavailable || isZeroQty) && !hasCommitted;
+              const btn = (
                 <Button
-                  key={s}
                   variant={
                     size.toLowerCase() === s.toLowerCase()
                       ? 'default'
@@ -207,7 +209,8 @@ export const ProductInfo = ({
                     {
                       'bg-primary text-white ring-2 ring-offset-1 ring-primary ':
                         size.toLowerCase() === s.toLowerCase(),
-                      'opacity-40': showMuted && size.toLowerCase() !== s.toLowerCase(),
+                      'opacity-40':
+                        showMuted && size.toLowerCase() !== s.toLowerCase(),
                     },
                   )}
                   onClick={() => setSize(s.toLowerCase())}
@@ -215,7 +218,25 @@ export const ProductInfo = ({
                 >
                   {s}
                   {showCrossed && <CrossedLine />}
+                  {hasCommitted && (
+                    <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white leading-none">
+                      !
+                    </span>
+                  )}
                 </Button>
+              );
+              if (!hasCommitted)
+                return <React.Fragment key={s}>{btn}</React.Fragment>;
+              return (
+                <Popover key={s}>
+                  <PopoverTrigger asChild>{btn}</PopoverTrigger>
+                  <PopoverContent className="w-56 text-sm p-3" side="top">
+                    <p className="font-medium">Розмір в резерві</p>
+                    <p className="text-muted-foreground mt-1">
+                      Придбання товару можливо після зняття резерву 5-7 днів.
+                    </p>
+                  </PopoverContent>
+                </Popover>
               );
             })}
           </div>
@@ -269,10 +290,25 @@ export const ProductInfo = ({
         </section>
       )}
       {product.descriptionHtml && (
-        <div
-          className="text-md font-sans leading-relaxed text-gray-700 prose prose-md max-w-none"
-          dangerouslySetInnerHTML={{ __html: cleanHtml }}
-        />
+        <div className="w-full">
+          <div
+            ref={descRef}
+            className={cn(
+              'text-md font-sans leading-relaxed text-gray-700 prose prose-md max-w-none overflow-hidden transition-all duration-300',
+              isDescExpanded ? 'max-h-none' : 'max-h-[110px]',
+            )}
+            dangerouslySetInnerHTML={{ __html: cleanHtml }}
+          />
+          {(isDescOverflowing || isDescExpanded) && (
+            <button
+              type="button"
+              onClick={() => setDescExpanded((v) => !v)}
+              className="mt-1 text-sm text-gray-500 hover:text-gray-800 underline underline-offset-2 transition-colors"
+            >
+              {isDescExpanded ? 'Згорнути' : 'Показати більше'}
+            </button>
+          )}
+        </div>
       )}
       <div className="flex gap-4 flex-nowrap flex-col w-full">
         {sortedSizeOptions && sortedSizeOptions.length > 0 ? (
@@ -310,6 +346,7 @@ export const ProductInfo = ({
         open={isQuickBuyOpen}
         onOpenChange={setQuickBuyOpen}
         sizeOptions={sizeOptions}
+        inventoryLevels={inventoryLevels}
       />
       <PriceSubscribeModal
         open={isPriceSubscribeOpen}
@@ -327,25 +364,6 @@ export const ProductInfo = ({
             <DetailsContent attributes={attributes} locale={locale} />
           </AccordionContent>
         </AccordionItem>
-
-        {/* <AccordionItem value="fit">
-          <AccordionTrigger className="text-sm uppercase">
-            {t('fitDetails')}
-          </AccordionTrigger>
-          <AccordionContent>
-            <FittingGuideContent attributes={attributes} locale={locale} />
-          </AccordionContent>
-        </AccordionItem> */}
-
-        {/* <AccordionItem value="care">
-          <AccordionTrigger className="text-sm uppercase">
-            {t('fabricationAndCare')}
-          </AccordionTrigger>
-          <AccordionContent className="text-sm text-gray-600">
-            Рекомендации по уходу: только ручная стирка, не отбеливать.
-          </AccordionContent>
-        </AccordionItem> */}
-
         <AccordionItem value="shipping">
           <AccordionTrigger className="text-sm uppercase">
             {t('shippingAndReturns')}

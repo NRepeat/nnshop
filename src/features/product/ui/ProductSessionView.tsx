@@ -5,6 +5,7 @@ import {
 import { PathSync } from '@entities/path-sync/ui/path-sync';
 import { getReletedProducts } from '@entities/product/api/get-related-products';
 import { getNewProductsFiller } from '@entities/product/api/getNewProductsFiller';
+import { getInventoryLevels, VariantInventory } from '@entities/product/api/getInventoryLevels';
 import { getProduct } from '@entities/product/api/getProduct';
 
 import { Product } from '@shared/lib/shopify/types/storefront.types';
@@ -51,11 +52,14 @@ export const ProductSessionView = async ({
       ? JSON.parse(attributesJsonIds as string)
       : [];
 
-    const [relatedShopiyProductsData, boundProducts, attributesResults] =
+    const variantIds = product.variants.edges.map((e) => e.node.id);
+
+    const [relatedShopiyProductsData, boundProducts, attributesResults, inventoryLevels] =
       await Promise.all([
         getReletedProducts(relatedProductsIds, locale),
         getReletedProducts(boundProductsData, locale),
         Promise.all(parsedAttributeIDs.map((id) => getMetaobject(id))),
+        getInventoryLevels(variantIds),
       ]);
 
     // Fill related products up to 3 with shuffled "new"-tagged items from same productType
@@ -92,6 +96,7 @@ export const ProductSessionView = async ({
           relatedProducts={relatedShopiyProductsData}
           boundProducts={boundProducts}
           locale={locale}
+          inventoryLevels={inventoryLevels}
         >
           {children}
         </ProductView>

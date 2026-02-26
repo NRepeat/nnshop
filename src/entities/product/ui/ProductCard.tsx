@@ -125,18 +125,6 @@ export const ProductCard = ({
                     handle={product.handle}
                   />
                 </div>
-                {availableSizes.length > 0 && (
-                  <div className="absolute bottom-0 left-2 px-2 py-1.5 hidden group-hover:flex flex-col gap-1 bg-background/70 rounded-md">
-                    {availableSizes.map((size) => (
-                      <span
-                        key={size}
-                        className="text-[10px] md:text-xs px-2 py-0.5  border rounded text-center"
-                      >
-                        {size}
-                      </span>
-                    ))}
-                  </div>
-                )}
                 <div className=" bottom-0 left-2  flex w-full justify-end absolute rounded-md">
                   <Button
                     variant={'ghost'}
@@ -167,18 +155,6 @@ export const ProductCard = ({
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 />
               </div>
-              {availableSizes.length > 0 && (
-                <div className="absolute bottom-0 left-2 px-2 py-1.5 hidden group-hover:flex flex-col gap-1">
-                  {availableSizes.map((size) => (
-                    <span
-                      key={size}
-                      className="text-[10px] md:text-xs px-1.5 py-0.5 border rounded text-center"
-                    >
-                      {size}
-                    </span>
-                  ))}
-                </div>
-              )}
               <div className=" bottom-2 left-1/2 -translate-x-1/2 hidden group-hover:block absolute">
                 <Button
                   variant={'ghost'}
@@ -201,11 +177,11 @@ export const ProductCard = ({
                 {decodeHtmlEntities(product.vendor)}
               </span>
             </Link>
-            {product.productType && (
+            {/* {product.productType && (
               <span className="text-xs text-muted-foreground">
                 {product.productType}
               </span>
-            )}
+            )} */}
             <div className="flex flex-col justify-between flex-1">
               <div className=" w-full flex-col  justify-between flex pb-4">
                 <Link href={`/product/${product.handle}`}>
@@ -213,6 +189,11 @@ export const ProductCard = ({
                     {decodeHtmlEntities(product?.title ?? '')}
                   </p>
                 </Link>
+                {availableSizes.length > 0 && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {availableSizes.join(' · ')}
+                  </p>
+                )}
               </div>
               <div className="mt-auto">
                 {product.metafield &&

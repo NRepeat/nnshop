@@ -10,6 +10,7 @@ import { ProductViewProvider } from '@widgets/product-view/ui/ProductViewProvide
 import { notFound, unstable_rethrow } from 'next/navigation';
 import { Suspense } from 'react';
 import { getProduct } from '@entities/product/api/getProduct';
+import { getInventoryLevels } from '@entities/product/api/getInventoryLevels';
 import { GallerySession } from '@widgets/product-view/ui/GallerySession';
 import { setRequestLocale } from 'next-intl/server';
 import { headers } from 'next/headers';
@@ -81,7 +82,11 @@ const ProductSessionView = async ({ params }: Props) => {
         ),
       );
     }
-    const session = await auth.api.getSession({ headers: await headers() });
+    const variantIds = product.variants.edges.map((e) => e.node.id);
+    const [session, inventoryLevels] = await Promise.all([
+      auth.api.getSession({ headers: await headers() }),
+      getInventoryLevels(variantIds),
+    ]);
     const isFavorite = await isProductFavorite(product.id, session);
     return (
       <div className="mt-10">
@@ -107,6 +112,7 @@ const ProductSessionView = async ({ params }: Props) => {
           product={product as ShopifyProduct}
           boundProducts={boundProducts}
           attributes={attributes}
+          inventoryLevels={inventoryLevels}
         />
       </div>
     );

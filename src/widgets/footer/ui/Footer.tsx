@@ -85,10 +85,10 @@ export const Footer = async ({ locale }: { locale: string }) => {
   return (
     <footer className="bg-[#1a1a1a] text-white container ">
       <div className=" mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
 
           {/* Column 1 — Logo, socials, newsletter, payment */}
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-5 w-full">
             <Link href="/" className="inline-block">
               <Logo className="text-white h-10 w-auto" />
             </Link>
@@ -135,7 +135,7 @@ export const Footer = async ({ locale }: { locale: string }) => {
           </div>
 
           {/* Column 2 — Categories */}
-          <div>
+          {/* <div>
             <h3 className="text-base font-bold mb-4 text-white">
               {t('categories_column_title')}
             </h3>
@@ -151,7 +151,7 @@ export const Footer = async ({ locale }: { locale: string }) => {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
 
           {/* Column 3 — Info */}
           <div>
