@@ -39,8 +39,8 @@ export const NavigationItemClient = ({
       prefetch
       onClick={(e) => handleClick(e as any as MouseEvent, href)}
       className={cn(
-        'inline-block px-4 py-2 text-base font-300 font-sans border-b transition-colors',
-        isActive ? 'border-current' : 'border-transparent hover:border-current',
+        'inline-block px-4 py-2 text-base font-300 font-sans border-none transition-colors',
+        // isActive ? 'border-current' : 'border-transparent hover:border-current',
         className,
       )}
     >

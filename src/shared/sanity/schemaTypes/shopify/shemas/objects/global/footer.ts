@@ -1,6 +1,6 @@
-import { defineField } from 'sanity';
+import { defineField, defineType } from 'sanity';
 
-export default defineField({
+export const footerSettings = defineType({
   name: 'footerSettings',
   title: 'Footer',
   type: 'object',

@@ -38,7 +38,9 @@ import { infoBar } from './blocks/info-bar';
 import { headerType } from './headerType';
 import { brandGridBlock } from './blocks/brendGrid';
 import { collectionsWithPreviews } from './blocks/collection-with-images';
+import { popularPosts } from './blocks/popularPosts';
 import { brandsNavigation } from './blocks/brandsNavigation';
+import { footerSettings } from './shopify/shemas/objects/global/footer';
 
 // const blocks = [heroSlider, heroSlide, mainCollectionGrid];
 
@@ -50,6 +52,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
 
     collectionsWithPreviews,
     brandsNavigation,
+    footerSettings,
     brandGridBlock,
     infoBar,
     headerType,
@@ -86,5 +89,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     heroSlide,
     heroSlider,
     mainCollectionGrid,
+    popularPosts,
   ],
 };

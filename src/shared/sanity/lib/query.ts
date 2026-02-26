@@ -65,7 +65,7 @@ export const POSTS_QUERY =
 
 // Get posts for specific language with English fallback - Ukrainian posts first
 export const POSTS_BY_LANGUAGE_QUERY =
-  defineQuery(`*[_type == "post" && defined(slug.current) && language == $language] | order(publishedAt desc)[0...12]{
+  defineQuery(`*[_type == "post" && defined(slug.current) && (language == $language || !defined(language))] | order(publishedAt desc)[0...12]{
   _id,
   title,
   slug,
@@ -173,7 +173,7 @@ export const POST_QUERY =
 
 // Get single post by language with English fallback - prioritizes exact language match
 export const POST_BY_LANGUAGE_QUERY =
-  defineQuery(`*[_type == "post" && slug.current == $slug && language == $language][0]{
+  defineQuery(`*[_type == "post" && slug.current == $slug && (language == $language || !defined(language))][0]{
   _id,
   title,
   body,
@@ -442,6 +442,20 @@ export const HOME_PAGE =
                handles,
                titles
              }
+          },
+          _type == "popularPosts" => {
+            ...,
+            "title": coalesce(title[$language], title.uk, title.ru),
+            "posts": posts[]->{
+              _id,
+              title,
+              slug,
+              mainImage,
+              publishedAt,
+              language,
+              "categories": coalesce(categories[]->{_id, slug, title}, []),
+              author->{ name, image }
+            }
           },
           _type == "splitImage" => {
                ...,

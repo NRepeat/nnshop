@@ -5,3 +5,4 @@ export * from './topic';
 export * from './cardCarousel';
 export * from './stories-carousel';
 export * from './MainCollectionGridSkeleton';
+export * from './popular-posts';

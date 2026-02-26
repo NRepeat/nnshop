@@ -8,9 +8,10 @@ import { X } from 'lucide-react';
 type Props = {
   filterKey: string;
   filterValue: string;
+  label: string;
 };
 
-export function ActiveFilterChip({ filterKey, filterValue }: Props) {
+export function ActiveFilterChip({ filterKey, filterValue, label }: Props) {
   const [isPending, startTransition] = useTransition();
 
   const [selectedValues, setSelectedValues] = useQueryState(
@@ -27,7 +28,7 @@ export function ActiveFilterChip({ filterKey, filterValue }: Props) {
 
   return (
     <div className="flex items-center justify-center gap-1 rounded-full border border-muted-foreground pl-3 py-1 basis-auto">
-      <span className="text-sm font-medium">{decodeURIComponent(filterValue)}</span>
+      <span className="text-sm font-medium">{label}</span>
       <Button
         variant={'link'}
         size={'icon'}

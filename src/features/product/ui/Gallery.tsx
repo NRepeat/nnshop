@@ -146,7 +146,7 @@ const Gallery = ({
                   <CarouselItem
                     key={image.url ?? index}
                     onClick={() => onThumbClick(index)}
-                    className="basis-1/4 md:basis-1/4 lg:basis-1/5 cursor-pointer"
+                    className="basis-1/4 md:basis-1/4 lg:basis-1/5 cursor-pointer ml-2"
                   >
                     <div
                       className={
@@ -168,15 +168,6 @@ const Gallery = ({
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              {/*<CarouselNext
-              variant={'ghost'}
-              size={'icon'}
-              className="group-hover:flex  bg-background/70 rounded-full top-1/2 right-2 absolute hidden md:flex"
-            />
-            <CarouselPrevious
-              variant={'ghost'}
-              className="group-hover:flex  bg-background/70 rounded-full top-1/2 left-2 absolute hidden md:flex"
-            />*/}
               {scrollSnaps.length > 2 && (
                 <div className="flex justify-center gap-2 mt-4">
                   {scrollSnaps.map((_, index) => (

@@ -4,6 +4,7 @@ import {
   MainCollectionGrid,
   ProductCarousel,
   MainCollectionGridSkeleton,
+  PopularPosts,
 } from '@entities/home/ui';
 import { BrandGrid } from '@entities/home/ui/BrendGrid/BrendGrid';
 import { PreviewsCollections } from '@entities/home/ui/previews-collections';
@@ -113,6 +114,9 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
 
           case 'elegantEase':
             return <ElegantEase key={block._key} />;
+
+          case 'popularPosts':
+            return <PopularPosts key={block._key} locale={locale} {...(block as Parameters<typeof PopularPosts>[0])} />;
 
           case 'productComments':
             return <ProductComments key={block._key} />;

@@ -4,6 +4,7 @@ import {
 } from '@entities/metaobject/api/get-metaobject';
 import { PathSync } from '@entities/path-sync/ui/path-sync';
 import { getReletedProducts } from '@entities/product/api/get-related-products';
+import { getNewProductsFiller } from '@entities/product/api/getNewProductsFiller';
 import { getProduct } from '@entities/product/api/getProduct';
 
 import { Product } from '@shared/lib/shopify/types/storefront.types';
@@ -56,6 +57,21 @@ export const ProductSessionView = async ({
         getReletedProducts(boundProductsData, locale),
         Promise.all(parsedAttributeIDs.map((id) => getMetaobject(id))),
       ]);
+
+    // Fill related products up to 3 with shuffled "new"-tagged items from same productType
+    if (relatedShopiyProductsData.length < 3 && product.productType) {
+      const excludeIds = [
+        product.id,
+        ...relatedShopiyProductsData.map((p) => p.id),
+      ];
+      const fillers = await getNewProductsFiller({
+        productType: product.productType,
+        excludeIds,
+        locale,
+        count: 3 - relatedShopiyProductsData.length,
+      });
+      relatedShopiyProductsData.push(...(fillers as any[]));
+    }
 
     const attributes = attributesResults.filter(
       (attr): attr is ProductMEtaobjectType => attr !== null,

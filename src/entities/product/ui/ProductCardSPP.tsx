@@ -83,7 +83,7 @@ export const ProductCardSPP = ({
         {link ? (
           <Link
             href={`/product/${product.handle}`}
-            className="hover:border-b hover:border-current transition-colors"
+            className="hover:border-b hover:border-black border-b border-transparent  transition-colors"
             scroll
           >
             <h3 className="line-clamp-2 text-[13px] leading-tight text-black">

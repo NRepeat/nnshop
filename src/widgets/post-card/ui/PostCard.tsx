@@ -27,13 +27,7 @@ export function PostCard(
   // Get content language info including fallback detection
   const languageInfo = getContentLanguageInfo(language, currentLocale || 'en');
 
-  // Generate locale-aware URL
-  // For default documents (language === 'en' or null), always use /posts/
-  // For translated documents, use the locale prefix
-  const postUrl =
-    language && language !== 'en' && language !== null
-      ? `/${language}/posts/${props.slug!.current}`
-      : `/posts/${props.slug!.current}`;
+  const postUrl = `/blog/${props.slug!.current}`;
 
   return (
     <Link className="group" href={postUrl}>

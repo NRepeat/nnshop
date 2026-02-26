@@ -184,6 +184,7 @@ export const ProductInfo = ({
                     option.value.toLowerCase() === s.toLowerCase(),
                 ),
               )?.node;
+              console.log(variant,'variant')
               const availableForSale = variant?.availableForSale ?? false;
               const qty = variant?.quantityAvailable ?? -1;
               const isZeroQty = qty === 0;

@@ -5,6 +5,7 @@ import LoadMore from './LoadMore';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
 import { useParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
+import { ArrowUp } from 'lucide-react';
 
 export const ClientGridWrapper = ({
   initialPageInfo,
@@ -34,6 +35,16 @@ export const ClientGridWrapper = ({
     });
     setPageInfo(newPageInfo);
   };
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 600);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
   const params = useParams();
   const handle = Array.isArray(params.slug)
     ? params.slug.join('/')
@@ -55,6 +66,16 @@ export const ClientGridWrapper = ({
           </div>
         </div>
       </div>
+
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          aria-label="Scroll to top"
+          className="fixed bottom-6 right-6 z-50 w-10 h-10 bg-black text-white rounded-full shadow-lg flex items-center justify-center hover:bg-neutral-800 transition-colors"
+        >
+          <ArrowUp className="w-5 h-5" />
+        </button>
+      )}
     </div>
   );
 };

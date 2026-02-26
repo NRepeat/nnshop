@@ -4,6 +4,7 @@ import { Carousel, CarouselContent, CarouselItem } from '@shared/ui/carousel';
 import { useSearchParams } from 'next/navigation';
 import { Filter } from '@shared/lib/shopify/types/storefront.types';
 import { ActiveFilterChip } from './ActiveFilterChip';
+import { toFilterSlug } from '@shared/lib/filterSlug';
 
 export function ActiveFiltersCarousel({ filters }: { filters: Filter[] }) {
   const searchParams = useSearchParams();
@@ -27,17 +28,26 @@ export function ActiveFiltersCarousel({ filters }: { filters: Filter[] }) {
   return (
     <Carousel>
       <CarouselContent className="pl-2 md:max-w-full lg:max-w-full">
-        {activeFilters.map((filter, index) => (
-          <CarouselItem
-            key={`${filter.key}-${filter.value}-${index}`}
-            className="basis-auto ml-2"
-          >
-            <ActiveFilterChip
-              filterKey={filter.key}
-              filterValue={filter.value}
-            />
-          </CarouselItem>
-        ))}
+        {activeFilters.map((filter, index) => {
+          const filterDef = filters.find((f) => f.id.endsWith(`.${filter.key}`));
+          const label =
+            filterDef?.values.find(
+              (v) => toFilterSlug(v.label) === filter.value,
+            )?.label ?? decodeURIComponent(filter.value);
+
+          return (
+            <CarouselItem
+              key={`${filter.key}-${filter.value}-${index}`}
+              className="basis-auto ml-2"
+            >
+              <ActiveFilterChip
+                filterKey={filter.key}
+                filterValue={filter.value}
+                label={label}
+              />
+            </CarouselItem>
+          );
+        })}
       </CarouselContent>
     </Carousel>
   );

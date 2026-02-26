@@ -313,6 +313,7 @@ export const getCollection = async ({
     case 'created-desc':
       sortKey = 'CREATED';
       reverse = true;
+      // handled separately below — "new"-tagged products first
       break;
     case 'trending':
     default:
@@ -322,6 +323,7 @@ export const getCollection = async ({
   }
 
   const isDefaultSort = !sort || sort === 'trending';
+  const isNewSort = sort === 'created-desc';
   let collection: GetCollectionQuery;
 
   if (isDefaultSort) {
@@ -406,6 +408,85 @@ export const getCollection = async ({
       collection.collection.products.edges = slicedEdges;
       collection.collection.products.pageInfo = {
         hasNextPage: startIndex + pageSize < allEdges.length,
+        hasPreviousPage: startIndex > 0,
+        endCursor:
+          slicedEdges.length > 0
+            ? slicedEdges[slicedEdges.length - 1].node.id
+            : null,
+        startCursor: slicedEdges.length > 0 ? slicedEdges[0].node.id : null,
+      };
+    }
+  } else if (isNewSort) {
+    // Fetch all products sorted by creation date desc, then put "new"-tagged products first
+    const allEdges: any[] = [];
+    let cursor: string | null = null;
+    let hasNextPage = true;
+    let firstBatch: GetCollectionQuery | null = null;
+
+    while (hasNextPage) {
+      const batch: GetCollectionQuery = await storefrontClient.request<
+        GetCollectionQuery,
+        {
+          handle: string;
+          filters?: ProductFilter[];
+          first?: number;
+          after?: string;
+          sortKey?: string;
+          reverse?: boolean;
+        }
+      >({
+        query: GetCollectionWithProducts,
+        variables: {
+          handle,
+          filters,
+          first: 250,
+          after: cursor ?? undefined,
+          sortKey: 'CREATED',
+          reverse: true,
+        },
+        language: locale.toUpperCase() as StorefrontLanguageCode,
+      });
+
+      if (!firstBatch) firstBatch = batch;
+      const products = batch.collection?.products;
+      if (!products) break;
+
+      allEdges.push(...products.edges);
+      hasNextPage = products.pageInfo.hasNextPage;
+      cursor = products.pageInfo.endCursor ?? null;
+    }
+
+    // "new"-tagged products first, rest after — each group preserves CREATED desc order
+    const newEdges = allEdges.filter((e: any) =>
+      (e.node.tags as string[]).some((t) => t.toLowerCase() === 'new'),
+    );
+    const restEdges = allEdges.filter(
+      (e: any) =>
+        !(e.node.tags as string[]).some((t) => t.toLowerCase() === 'new'),
+    );
+    const sortedEdges = [...newEdges, ...restEdges];
+
+    const cursorToIndex = new Map<string, number>();
+    sortedEdges.forEach((edge, index) => cursorToIndex.set(edge.node.id, index));
+
+    const pageSize = first || last || 20;
+    let startIndex = 0;
+    if (after) {
+      const afterIndex = cursorToIndex.get(after);
+      startIndex = afterIndex !== undefined ? afterIndex + 1 : 0;
+    } else if (before) {
+      const beforeIndex = cursorToIndex.get(before);
+      startIndex =
+        beforeIndex !== undefined ? Math.max(0, beforeIndex - pageSize) : 0;
+    }
+
+    const slicedEdges = sortedEdges.slice(startIndex, startIndex + pageSize);
+
+    collection = firstBatch!;
+    if (collection.collection) {
+      collection.collection.products.edges = slicedEdges;
+      collection.collection.products.pageInfo = {
+        hasNextPage: startIndex + pageSize < sortedEdges.length,
         hasPreviousPage: startIndex > 0,
         endCursor:
           slicedEdges.length > 0
