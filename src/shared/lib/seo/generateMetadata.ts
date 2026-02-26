@@ -58,7 +58,7 @@ export function generateProductMetadata(
   return generatePageMetadata(
     {
       title: product.title,
-      description: product.description || undefined,
+      description: product.description || `${product.title} — купити в інтернет-магазині Mio Mio`,
       image: product.featuredImage?.url,
     },
     locale,
@@ -80,7 +80,7 @@ export function generateCollectionMetadata(
   return generatePageMetadata(
     {
       title: collection.title,
-      description: collection.description || undefined,
+      description: collection.description || `${collection.title} — каталог товарів інтернет-магазину Mio Mio`,
       image: collection.image?.url,
     },
     locale,

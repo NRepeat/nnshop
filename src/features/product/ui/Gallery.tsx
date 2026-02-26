@@ -1,6 +1,5 @@
 'use client';
 import 'photoswipe/dist/photoswipe.css';
-import { useWindowSize } from '@uidotdev/usehooks';
 import { Gallery as PhotoSwipeGallery, Item } from 'react-photoswipe-gallery';
 import type { Image as ShoipifyImage } from '@shared/lib/shopify/types/storefront.types';
 import { Button } from '@shared/ui/button';
@@ -78,9 +77,6 @@ const Gallery = ({
     };
   }, [mainApi, secApi, onSelect, onInit]);
 
-  const { width: windowWidth } = useWindowSize();
-  const md = windowWidth && windowWidth >= 768;
-  console.log(quiqView,"quiqView")
   return (
     <PhotoSwipeGallery>
       <div
@@ -116,6 +112,7 @@ const Gallery = ({
                             fill
                             className="object-contain rounded-md max-h-[60vh]"
                             onClick={open}
+                            priority={index === 0}
                             fetchPriority={index === 0 ? 'high' : 'auto'}
                             loading={index === 0 ? 'eager' : 'lazy'}
                             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 40vw"
@@ -143,7 +140,7 @@ const Gallery = ({
               opts={{
                 // containScroll: 'keepSnaps',
                 dragFree: true,
-                slidesToScroll: !md ? 3 : 5,
+                slidesToScroll: 'auto',
               }}
               className=""
               setApi={setSecApi}
