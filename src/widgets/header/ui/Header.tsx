@@ -50,7 +50,7 @@ export const Header = async ({ locale }: { locale: string }) => {
           />
         )}
       </Suspense>
-      <header className="sticky top-0 z-30 bg-background md:h-fit flex flex-col items-center">
+      <header className="sticky top-0 z-30 bg-background md:h-fit flex flex-col items-center shadow">
         <div className="container w-full">
           <div className="w-full font-sans text-foreground grid grid-cols-3 text-base py-3">
             <Suspense fallback={<HeaderContentSkeleton />}>

@@ -190,7 +190,7 @@ export const ProductCard = ({
                   </p>
                 </Link>
                 {availableSizes.length > 0 && (
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-base text-muted-foreground mt-1">
                     {availableSizes.join(' · ')}
                   </p>
                 )}
