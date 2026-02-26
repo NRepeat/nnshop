@@ -13,12 +13,14 @@ export function ProductViewProvider({
   attributes,
   favCommponent,
   inventoryLevels,
+  quiqView,
 }: {
   product: ShopifyProduct;
   boundProducts: ShopifyProduct[];
   attributes: ProductMEtaobjectType[];
   favCommponent: React.ReactNode;
   inventoryLevels?: VariantInventory[];
+  quiqView?: boolean;
 }) {
   // const t = useTranslations('ProductPage');
   if (!product) throw new Error('Product not found');
@@ -51,10 +53,15 @@ export function ProductViewProvider({
   }
   return (
     <>
-              <ScrollToTop />
-    
+      <ScrollToTop />
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12 relative">
-        <Gallery images={images} productId={product.id} handle={product.handle}>
+        <Gallery
+          images={images}
+          productId={product.id}
+          handle={product.handle}
+          quiqView={quiqView}
+        >
           {favCommponent}
         </Gallery>
         <ProductInfo

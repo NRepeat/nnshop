@@ -146,7 +146,7 @@ export const ProductInfo = ({
           )}
           <div className="flex items-center gap-2">
             <h1 className="text-lg text-gray-800">{product.title}</h1>
-            {isAtFitting && <Badge>{t('atTheFitting')}</Badge>}
+            {/* {isAtFitting && <Badge>{t('atTheFitting')}</Badge>} */}
           </div>
           {sku && (
             <p className="text-sm text-gray-500">
@@ -187,7 +187,6 @@ export const ProductInfo = ({
               const inventoryLevel = variant
                 ? inventoryLevels.find((inv) => inv.variantId === variant.id)
                 : undefined;
-              console.log(inventoryLevel, 'inventoryLevel');
               const committed = inventoryLevel?.committed ?? 0;
               const hasCommitted =
                 committed > 0 && inventoryLevel!.available === 0;
@@ -205,7 +204,7 @@ export const ProductInfo = ({
                       : 'outline'
                   }
                   className={cn(
-                    'rounded-md min-w-[56px] h-11 text-sm font-medium relative border-primary border',
+                    'rounded-md min-w-[56px] h-11 text-sm font-medium relative border-primary border capitalize',
                     {
                       'bg-primary text-white ring-2 ring-offset-1 ring-primary ':
                         size.toLowerCase() === s.toLowerCase(),
@@ -216,7 +215,7 @@ export const ProductInfo = ({
                   onClick={() => setSize(s.toLowerCase())}
                   disabled={isUnavailable}
                 >
-                  {s}
+                  {s.toUpperCase()}
                   {showCrossed && <CrossedLine />}
                   {hasCommitted && (
                     <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white leading-none">

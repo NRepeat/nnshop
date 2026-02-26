@@ -23,6 +23,7 @@ import { connection } from 'next/server';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
+  quiqView?: boolean;
 };
 
 export default async function ProductQuickViewPage({ params }: Props) {
@@ -33,7 +34,7 @@ export default async function ProductQuickViewPage({ params }: Props) {
   );
 }
 
-const ProductSessionView = async ({ params }: Props) => {
+const ProductSessionView = async ({ params, quiqView }: Props) => {
   await connection();
 
   try {
@@ -91,6 +92,7 @@ const ProductSessionView = async ({ params }: Props) => {
     return (
       <div className="mt-10">
         <ProductViewProvider
+        quiqView={quiqView}
           favCommponent={
             <Suspense
               fallback={
@@ -126,7 +128,7 @@ const ProductSessionView = async ({ params }: Props) => {
 const ProductSession = async ({ params }: Props) => {
   return (
     <QuickView open={Boolean(params)}>
-      <ProductSessionView params={params} />
+      <ProductSessionView params={params} quiqView={true} />
     </QuickView>
   );
 };

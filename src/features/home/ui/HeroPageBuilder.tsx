@@ -23,9 +23,14 @@ import { Suspense } from 'react';
 import { HeroSwiper } from '@entities/slider/ui/Slider';
 import type { PAGE_QUERYResult, SliderBlock } from '@shared/sanity/types';
 
-type PageContent = NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number];
+type PageContent = NonNullable<
+  NonNullable<PAGE_QUERYResult>['content']
+>[number];
 type SimilarProductsBlock = Extract<PageContent, { _type: 'similarProducts' }>;
-type CollectionsCarouselBlock = Extract<PageContent, { _type: 'collectionsCarousel' }>;
+type CollectionsCarouselBlock = Extract<
+  PageContent,
+  { _type: 'collectionsCarousel' }
+>;
 
 type HeroPageProps = {
   locale: Locale;
@@ -50,14 +55,26 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
 
           case 'mainCollectionGrid':
             return (
-              <Suspense key={block._key} fallback={<MainCollectionGridSkeleton />}>
-                <MainCollectionGrid locale={locale} gender={gender} {...block} />
+              <Suspense
+                key={block._key}
+                fallback={<MainCollectionGridSkeleton />}
+              >
+                <MainCollectionGrid
+                  locale={locale}
+                  gender={gender}
+                  {...block}
+                />
               </Suspense>
             );
 
           case 'productCarousel':
             return (
-              <ProductCarousel key={block._key} locale={locale} gender={gender} {...block} />
+              <ProductCarousel
+                key={block._key}
+                locale={locale}
+                gender={gender}
+                {...block}
+              />
             );
 
           case 'splitImage':
@@ -91,8 +108,17 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
 
           case 'similarProducts':
             return block.collection ? (
-              <Suspense key={block._key} fallback={<div className="h-96 animate-pulse bg-gray-100" />}>
-                <SimilarProducts collection={block.collection as unknown as Parameters<typeof SimilarProducts>[0]['collection']} />
+              <Suspense
+                key={block._key}
+                fallback={<div className="h-96 animate-pulse bg-gray-100" />}
+              >
+                <SimilarProducts
+                  collection={
+                    block.collection as unknown as Parameters<
+                      typeof SimilarProducts
+                    >[0]['collection']
+                  }
+                />
               </Suspense>
             ) : null;
 
@@ -110,13 +136,23 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
           }
 
           case 'sliderBlock':
-            return <HeroSwiper key={block._key} slides={(block as unknown as SliderBlock).slides} />;
+            return (
+              <HeroSwiper
+                key={block._key}
+                slides={(block as unknown as SliderBlock).slides}
+              />
+            );
 
           case 'elegantEase':
             return <ElegantEase key={block._key} />;
 
           case 'popularPosts':
-            return <PopularPosts key={block._key} locale={locale} {...(block as Parameters<typeof PopularPosts>[0])} />;
+            return (
+              <PopularPosts
+                key={block._key}
+                {...(block as Parameters<typeof PopularPosts>[0])}
+              />
+            );
 
           case 'productComments':
             return <ProductComments key={block._key} />;
@@ -136,7 +172,9 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
             return null;
 
           default:
-            console.warn(`Unknown block type: ${(block as { _type: string })._type}`);
+            console.warn(
+              `Unknown block type: ${(block as { _type: string })._type}`,
+            );
             return null;
         }
       })}
