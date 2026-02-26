@@ -22,8 +22,48 @@ import { isProductFavorite } from '@features/product/api/isProductFavorite';
 import { auth } from '@features/auth/lib/auth';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
-
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
+
+const GENDERED_HANDLES = new Set([
+  'ryukzaky-cholovichi',
+  'sumky-cholovichi',
+  'tufli-cholovichi',
+  'golovni-ubory-zhinochi',
+  'shtany-ta-bryuky-zhinochi',
+  'svitshoty-ta-kofty-cholovichi',
+  'dzhynsy-cholovichi',
+  'pidzhaky-zhinochi',
+  'verhnij-odyag-zhinocha',
+  'svetry-ta-dzhempery-cholovichi',
+  'shorty-cholovichi',
+  'verhnij-odyag-cholovicha',
+  'krosivky-ta-kedy-cholovichi',
+  'zhinoche-vzuttya',
+  'choloviche-vzuttya',
+  'zhinochyj-odyag',
+  'cholovichyj-odyag',
+]);
+
+const GENDER_SUFFIXES: Record<string, string[]> = {
+  man: ['cholovichi', 'cholovicha', 'cholovichyj', 'choloviche'],
+  woman: ['zhinochi', 'zhinocha', 'zhinochyj', 'zhinoche'],
+};
+
+function resolveCollectionHandle(slug: string, gender: string): string {
+  // Try appending each gender suffix — if the resulting handle exists in known set, use it
+  const suffixes = GENDER_SUFFIXES[gender] || [];
+  for (const suffix of suffixes) {
+    // Try as suffix: krosivky-ta-kedy → krosivky-ta-kedy-cholovichi
+    const withSuffix = `${slug}-${suffix}`;
+    if (GENDERED_HANDLES.has(withSuffix)) return withSuffix;
+
+    // Try as prefix: vzuttya → choloviche-vzuttya
+    const withPrefix = `${suffix}-${slug}`;
+    if (GENDERED_HANDLES.has(withPrefix)) return withPrefix;
+  }
+  return slug;
+}
+
 export const CollectionGrid = async ({
   params,
   searchParams,
@@ -38,10 +78,10 @@ export const CollectionGrid = async ({
   ]);
   const { locale, slug, gender } = awaitedParams;
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
-
+  const resolvedHandle = resolveCollectionHandle(slug, gender);
   const collectionPromises = [
     getCollection({
-      handle: slug,
+      handle: resolvedHandle,
       first: 18,
       locale: locale,
       searchParams: awaitedSearchParams,
@@ -50,12 +90,12 @@ export const CollectionGrid = async ({
 
   if (hasFilters) {
     collectionPromises.push(
-      getCollection({ handle: slug, first: 18, locale: locale }),
+      getCollection({ handle: resolvedHandle, first: 18, locale: locale }),
     );
   }
 
   const [currentData, initialData] = await Promise.all(collectionPromises);
-
+  console.log(currentData);
   if (!currentData?.collection) {
     return notFound();
   }

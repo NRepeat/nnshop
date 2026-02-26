@@ -19,14 +19,24 @@ type Props = {
   initialFilters?: Filter[];
 };
 
+const FILTER_LABEL_KEYS: Record<string, string> = {
+  'filter.p.m.custom.color': 'filters.labels.color',
+  'filter.p.m.custom.size': 'filters.labels.size',
+  'filter.p.m.custom.gender': 'filters.labels.gender',
+  'filter.p.m.custom.category': 'filters.labels.category',
+  'filter.p.m.custom.brand': 'filters.labels.brand',
+  'filter.p.m.custom.material': 'filters.labels.material',
+  'filter.p.m.custom.pidkladka': 'filters.labels.pidkladka',
+};
+
 export function CollectionFilters({ filters, initialFilters }: Props) {
   const t = useTranslations('CollectionPage');
   const params = useParams();
   const hasGender = !!params.gender;
   const sortedFilters = useMemo(() => {
-    const getOrder = (label: string) => {
-      if (label === 'Цена' || label === 'Ціна' || label === 'Price') return 1;
-      if (label === 'Размер' || label === 'Розмір') return 2;
+    const getOrder = (id: string) => {
+      if (id === 'filter.v.price') return 1;
+      if (id === 'filter.p.m.custom.size') return 2;
       return Infinity;
     };
 
@@ -37,7 +47,7 @@ export function CollectionFilters({ filters, initialFilters }: Props) {
         if (filter.type === 'PRICE_RANGE') return true;
         return filter.values.length > 0;
       })
-      .sort((a, b) => getOrder(a.label) - getOrder(b.label));
+      .sort((a, b) => getOrder(a.id) - getOrder(b.id));
 
     return filteredAndSorted;
   }, [filters, hasGender]);
@@ -59,7 +69,8 @@ export function CollectionFilters({ filters, initialFilters }: Props) {
               <AccordionTrigger className="font-medium cursor-pointer w-full">
                 {filter.type === 'PRICE_RANGE'
                   ? t('filters.priceRange')
-                  : filter.label}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  : FILTER_LABEL_KEYS[filter.id] ? t(FILTER_LABEL_KEYS[filter.id] as any) : filter.label}
               </AccordionTrigger>
               <AccordionContent>
                 {(() => {
@@ -74,7 +85,7 @@ export function CollectionFilters({ filters, initialFilters }: Props) {
                   if (filter.id === 'filter.p.m.custom.color') {
                     return <NuqsColorFilter filter={filter} />;
                   }
-                  if (filter.label === 'Розмір' || filter.label === 'Размер') {
+                  if (filter.id === 'filter.p.m.custom.size' || filter.label === 'Розмір' || filter.label === 'Размер') {
                     return (
                       <NuqsButtonFilter
                         filter={filter}

@@ -69,8 +69,8 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
           case 'features':
             return <Features key={block._key} locale={locale} {...block} />;
 
-          case 'brandGridBlock':
-            return <BrandGrid key={block._key} locale={locale} gender={gender} {...block} />;
+          // case 'brandGridBlock':
+          //   return <BrandGrid key={block._key} locale={locale} gender={gender} {...block} />;
 
           case 'collectionsWithPreviews':
             return (

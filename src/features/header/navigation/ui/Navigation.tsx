@@ -61,12 +61,38 @@ const genderSlugMap: Record<string, string[]> = {
     'жінк',
     'zhinok',
     'zhinoch',
+    'zhinochi',
   ],
-  man: ['man', 'men', 'male', 'муж', 'мужчин', 'чолов', 'cholovik'],
+  man: [
+    'man',
+    'men',
+    'male',
+    'муж',
+    'мужчин',
+    'чолов',
+    'cholovik',
+    'cholovichi',
+  ],
 };
+export const GENDER_SLUGS = [
+  'zhenskaya',
+  'zhenskie',
+  'zhinocha',
+  'zhinoche',
+  'zhinochi',
+  'cholovichi',
+  'cholovicha',
+  'muzhskaya',
+  'muzhskie',
+];
 
 const brandSlugs = ['brand', 'бренд', 'брендi', 'бренди'];
-
+export function stripGenderFromHandle(handle: string): string {
+  return handle
+    .split('-')
+    .filter((part) => !GENDER_SLUGS.includes(part))
+    .join('-');
+}
 function matchesGender(
   item: { url: string; title: string },
   gender: string,
@@ -100,7 +126,10 @@ const Navigation = async ({
   const meinMenu = allItems.filter(
     (item) => matchesGender(item, gender) && !isBrandsItem(item),
   );
-  const items = meinMenu.length > 0 ? meinMenu : allItems.filter((i) => !isBrandsItem(i)).slice(0, 1);
+  const items =
+    meinMenu.length > 0
+      ? meinMenu
+      : allItems.filter((i) => !isBrandsItem(i)).slice(0, 1);
   const topBrands =
     brandsMenuItem?.items?.flatMap((sub) =>
       sub.items?.length > 0
@@ -108,7 +137,7 @@ const Navigation = async ({
         : [sub.title],
     ) || [];
 
-  const withGender = (url: string) => `/${gender}${url}`;
+  const withGender = (url: string) => `/${gender}${stripGenderFromHandle(url)}`;
 
   const menu = items.map((item, index) => {
     if (item.items.length > 0) {
@@ -181,7 +210,7 @@ const Navigation = async ({
               <div className="flex-1">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
                   {t('topBrands')}
-                </h3> 
+                </h3>
                 <ul className="grid grid-cols-2 gap-x-8 gap-y-1">
                   {topBrands.slice(0, 10).map((brand) => (
                     <li key={brand}>

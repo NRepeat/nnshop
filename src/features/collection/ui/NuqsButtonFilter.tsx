@@ -8,6 +8,7 @@ import {
 } from '@shared/lib/shopify/types/storefront.types';
 import { Button } from '@shared/ui/button';
 import { cn } from '@shared/lib/utils';
+import { toFilterSlug } from '@shared/lib/filterSlug';
 
 type Props = {
   filter: Filter;
@@ -32,9 +33,10 @@ export function NuqsButtonFilter({
 
   const handleFilterChange = (value: FilterValue) => {
     startTransition(() => {
-      const newSelection = selectedValues.includes(value.label)
-        ? selectedValues.filter((item) => item !== value.label)
-        : [...selectedValues, value.label];
+      const slug = toFilterSlug(value.label);
+      const newSelection = selectedValues.includes(slug)
+        ? selectedValues.filter((item) => item !== slug)
+        : [...selectedValues, slug];
       setSelectedValues(newSelection.length > 0 ? newSelection : null);
     });
   };
@@ -46,7 +48,7 @@ export function NuqsButtonFilter({
   return (
     <div className="grid grid-cols-4 gap-2 ">
       {sortedValues.map((value) => {
-        const isSelected = selectedValues.includes(value.label);
+        const isSelected = selectedValues.includes(toFilterSlug(value.label));
         return (
           <Button
             key={value.label}

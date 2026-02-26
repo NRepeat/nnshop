@@ -402,7 +402,16 @@
       "clear": "Очистити",
       "show": "Показати",
       "hide": "Сховати",
-      "priceRange": "Ціна"
+      "priceRange": "Ціна",
+      "labels": {
+        "color": "Колір",
+        "size": "Розмір",
+        "gender": "Стать",
+        "category": "Категорія",
+        "brand": "Бренд",
+        "material": "Матеріал",
+        "pidkladka": "Підкладка"
+      }
     },
     "sort": {
       "sortBy": "Сортувати за",

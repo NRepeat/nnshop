@@ -14,6 +14,7 @@ import {
 } from '@shared/ui/breadcrumb';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
+import { cookies } from 'next/headers';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
 
@@ -36,12 +37,8 @@ export async function ProductView({
     getTranslations({ locale, namespace: 'ProductPage' }),
     getTranslations({ locale, namespace: 'Header' }),
   ]);
-  const gender = (product.tags ?? []).some((tag) => {
-    const lower = tag.toLowerCase();
-    return lower === 'man' || lower.includes('чоловіч');
-  })
-    ? 'man'
-    : 'woman';
+  const cookieStore = await cookies();
+  const gender = cookieStore.get('gender')?.value || 'woman';
   const breadcrumbItems = [
     { name: tHeader('nav.home'), url: `${BASE_URL}/${locale}` },
     {
@@ -56,7 +53,10 @@ export async function ProductView({
           },
         ]
       : []),
-    { name: product.title, url: `${BASE_URL}/${locale}/product/${product.handle}` },
+    {
+      name: product.title,
+      url: `${BASE_URL}/${locale}/product/${product.handle}`,
+    },
   ];
 
   return (
@@ -65,9 +65,7 @@ export async function ProductView({
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/`}>
-              {tHeader('nav.home')}
-            </BreadcrumbLink>
+            <BreadcrumbLink href={`/`}>{tHeader('nav.home')}</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -79,7 +77,9 @@ export async function ProductView({
             <>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href={`/brand/${vendorToHandle(product.vendor)}`}>
+                <BreadcrumbLink
+                  href={`/brand/${vendorToHandle(product.vendor)}`}
+                >
                   {product.vendor}
                 </BreadcrumbLink>
               </BreadcrumbItem>

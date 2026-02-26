@@ -402,7 +402,16 @@
       "clear": "Очистить",
       "show": "Показать",
       "hide": "Спрятать",
-      "priceRange": "Цена"
+      "priceRange": "Цена",
+      "labels": {
+        "color": "Цвет",
+        "size": "Размер",
+        "gender": "Пол",
+        "category": "Категория",
+        "brand": "Бренд",
+        "material": "Материал",
+        "pidkladka": "Подкладка"
+      }
     },
     "sort": {
       "sortBy": "Сортировать по",

@@ -1,4 +1,5 @@
 'use server';
+import { toFilterSlug } from '@shared/lib/filterSlug';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import {
@@ -273,7 +274,7 @@ export const getCollection = async ({
             : (value as string).split(';');
           values.forEach((v) => {
             const filterValue = definition.values.find(
-              (def) => def.label === v,
+              (def) => toFilterSlug(def.label) === v,
             );
             if (filterValue) {
               filters.push(JSON.parse(filterValue.input));

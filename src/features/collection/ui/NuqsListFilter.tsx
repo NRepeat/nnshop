@@ -7,6 +7,7 @@ import {
   FilterValue,
 } from '@shared/lib/shopify/types/storefront.types';
 import { cn } from '@shared/lib/utils';
+import { toFilterSlug } from '@shared/lib/filterSlug';
 import { Checkbox } from '@shared/ui/checkbox';
 import { Spinner } from '@/shared/ui/Spinner';
 
@@ -27,11 +28,12 @@ export function NuqsListFilter({ filter }: Props) {
   );
 
   const handleFilterChange = (value: FilterValue) => {
-    setChangingFilter(value.label);
+    const slug = toFilterSlug(value.label);
+    setChangingFilter(slug);
     startTransition(() => {
-      const newSelection = selectedValues.includes(value.label)
-        ? selectedValues.filter((item) => item !== value.label)
-        : [...selectedValues, value.label];
+      const newSelection = selectedValues.includes(slug)
+        ? selectedValues.filter((item) => item !== slug)
+        : [...selectedValues, slug];
       setSelectedValues(newSelection.length > 0 ? newSelection : null);
     });
   };
@@ -48,8 +50,8 @@ export function NuqsListFilter({ filter }: Props) {
         {[...filter.values]
           // .sort((a, b) => a.label.localeCompare(b.label))
           .map((value) => {
-            const isChecked = selectedValues.includes(value.label);
-            const isChanging = changingFilter === value.label;
+            const isChecked = selectedValues.includes(toFilterSlug(value.label));
+            const isChanging = changingFilter === toFilterSlug(value.label);
 
             return (
               <li key={value.label} className="cursor-pointer">
@@ -64,7 +66,7 @@ export function NuqsListFilter({ filter }: Props) {
                     />
                   )}
                   <span
-                    className={cn({
+                    className={cn('capitalize', {
                       'text-muted-foreground': value.count === 0 && !isChecked,
                     })}
                   >

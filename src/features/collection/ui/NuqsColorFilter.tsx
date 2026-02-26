@@ -7,6 +7,7 @@ import {
 } from '@shared/lib/shopify/types/storefront.types';
 import { cn } from '@shared/lib/utils';
 import { COLOR_MAP } from '@widgets/product-view/ui/collors';
+import { toFilterSlug } from '@shared/lib/filterSlug';
 
 type Props = {
   filter: Filter;
@@ -25,9 +26,10 @@ export function NuqsColorFilter({ filter }: Props) {
   );
 
   const handleFilterChange = (value: FilterValue) => {
-    const newSelection = selectedValues.includes(value.label)
-      ? selectedValues.filter((item) => item !== value.label)
-      : [...selectedValues, value.label];
+    const slug = toFilterSlug(value.label);
+    const newSelection = selectedValues.includes(slug)
+      ? selectedValues.filter((item) => item !== slug)
+      : [...selectedValues, slug];
     setSelectedValues(newSelection.length > 0 ? newSelection : null);
   };
 
@@ -36,7 +38,7 @@ export function NuqsColorFilter({ filter }: Props) {
       {[...filter.values]
         .sort((a, b) => a.label.localeCompare(b.label))
         .map((value) => {
-          const isChecked = selectedValues.includes(value.label);
+          const isChecked = selectedValues.includes(toFilterSlug(value.label));
           return (
             <label
               key={value.label}
@@ -58,7 +60,7 @@ export function NuqsColorFilter({ filter }: Props) {
                   COLOR_MAP[value.label] || 'bg-gray-200',
                 )}
               ></span>
-              <span>
+              <span className="capitalize">
                 {value.label} ({value.count})
               </span>
             </label>
