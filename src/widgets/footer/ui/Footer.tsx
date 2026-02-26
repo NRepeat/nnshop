@@ -83,7 +83,7 @@ export const Footer = async ({ locale }: { locale: string }) => {
   const email = t('email');
 
   return (
-    <footer className="bg-[#1a1a1a] text-white container ">
+    <footer className="bg-[#1a1a1a] text-white  ">
       <div className=" mx-auto px-4 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
 
