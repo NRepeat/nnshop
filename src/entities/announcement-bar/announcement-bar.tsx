@@ -39,13 +39,13 @@ export const AnnouncementBar = async (props: AnnouncementBarProps) => {
         <div className="w-full  justify-center bg-foreground text-background grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 container ">
           <div className="px-2 md:px-5 items-center  gap-2 w-full justify-start  flex h-full ">
             <span className="text-nowrap">{telephone}</span>
-            <a href="https://t.me/miomio_com_ua" target="_blank" rel="noopener noreferrer">
+            <a href="https://t.me/miomio_com_ua" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
               <Button variant={'default'} className="bg-foreground" asChild>
                 <span><Send className="max-w-[16px]" /></span>
               </Button>
             </a>
             {viberUrl && (
-              <a href={viberUrl} target="_blank" rel="noopener noreferrer">
+              <a href={viberUrl} target="_blank" rel="noopener noreferrer" aria-label="Viber">
                 <Button variant={'default'} className="bg-foreground" asChild>
                   <span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="currentColor" className="max-w-[16px] h-4 w-4">

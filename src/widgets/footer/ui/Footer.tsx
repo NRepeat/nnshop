@@ -206,7 +206,7 @@ export const Footer = async ({ locale }: { locale: string }) => {
 
       {/* Bottom bar */}
       <div className="border-t border-white/10">
-        <div className="container mx-auto px-4 py-4 text-center text-white/40 text-sm">
+        <div className="container mx-auto px-4 py-4 text-center text-white/50 text-sm">
           {t('copyright')}
         </div>
       </div>
