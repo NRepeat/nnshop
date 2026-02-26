@@ -847,3 +847,23 @@ export const HEADER_QUERY = defineQuery(`
     }
   }
 `);
+
+export const FOOTER_QUERY = defineQuery(`
+  *[_type == 'siteSettings'][0]{
+    footerSettings {
+      socialLinks[] {
+        platform,
+        url
+      },
+      workingHours {
+        uk,
+        ru
+      },
+      address {
+        uk,
+        ru
+      },
+      paymentMethods
+    }
+  }
+`);
