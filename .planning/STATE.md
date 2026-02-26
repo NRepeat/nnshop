@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-02-26T13:48:42.228Z"
+last_updated: "2026-02-26T20:39:05.744Z"
 progress:
-  total_phases: 5
-  completed_phases: 4
-  total_plans: 16
-  completed_plans: 15
+  total_phases: 6
+  completed_phases: 5
+  total_plans: 19
+  completed_plans: 18
 ---
 
 # Project State
@@ -58,6 +58,7 @@ Progress: [████░░░░░░] 40%
 | Phase 06-ui-polish P02 | 2 | 3 tasks | 4 files |
 | Phase 06-ui-polish P01 | 3 | 2 tasks | 13 files |
 | Phase 06-ui-polish P03 | 4 | 2 tasks | 1 files |
+| Phase 07-lighthouse-audit-fixes P03 | 5 | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -98,6 +99,8 @@ Recent decisions affecting current work:
 - [06-01]: CartPage.tsx had getSymbolFromCurrency only in commented JSX — updated for consistency
 - [Phase 06-ui-polish]: LanguageSwitcher trigger button className reduced to h-full — variant=default provides all visual styles; border-b-2 border-foreground on bg-foreground background is invisible dead code
 - [Phase 06-ui-polish]: app/icon.svg accepted as favicon artifact instead of app/icon.tsx — commit da4dde4 replaced ImageResponse with real brand SVG after 06-01; both fulfill UI-01
+- [Phase 07-03]: AccordionPrimitive.Header rendered via asChild+div to suppress h3 — no h3 emitted on product page, heading sequence is now sequential
+- [Phase 07-03]: PersistLinkNavigation uses plain ul/li (not NavigationMenuList) because neither Header.tsx nor HeaderContent.tsx provide NavigationMenu context at call sites
 
 ### Pending Todos
 

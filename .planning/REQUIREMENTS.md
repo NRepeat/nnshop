@@ -57,7 +57,7 @@
 
 - [ ] **A11Y-01**: All interactive elements have accessible names — hamburger menu button and icon-only social/navigation links have `aria-label` attributes
 - [ ] **A11Y-02**: Footer copyright text meets WCAG 2.1 AA contrast ratio (≥ 4.5:1); currently failing at 3.83:1
-- [ ] **A11Y-03**: HTML structure is valid — `<li>` elements reside inside `<ul>/<ol>` parents; heading levels follow sequential descending order
+- [x] **A11Y-03**: HTML structure is valid — `<li>` elements reside inside `<ul>/<ol>` parents; heading levels follow sequential descending order
 
 ### Quality
 
@@ -121,7 +121,7 @@
 | SEO-01 | Phase 7 | Pending |
 | A11Y-01 | Phase 7 | Pending |
 | A11Y-02 | Phase 7 | Pending |
-| A11Y-03 | Phase 7 | Pending |
+| A11Y-03 | Phase 7 | Complete |
 | QUAL-01 | Phase 7 | Pending |
 | QUAL-02 | Phase 7 | Pending |
 
