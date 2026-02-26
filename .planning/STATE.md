@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-23)
 
 **Core value:** The checkout-to-order flow works reliably and securely for every user — anonymous or authenticated — without data leaks, silent failures, or broken UI.
-**Current focus:** Phase 3 — Visible Bug Fixes
+**Current focus:** Phase 6 — UI Polish
 
 ## Current Position
 
-Phase: 3 of 5 (Visible Bug Fixes)
-Plan: 3 of TBD in current phase
+Phase: 6 of 6 (UI Polish)
+Plan: 1 of TBD in current phase
 Status: In progress
-Last activity: 2026-02-23 — Completed 03-03 (quick-view variant selection fixed, useCartUIStore created, CartSheetController RSC composition pattern)
+Last activity: 2026-02-26 — Completed 06-01 (branded favicon via ImageResponse, getCurrencySymbol utility, UAH→грн across 11 price files)
 
 Progress: [████░░░░░░] 40%
 
@@ -56,6 +56,7 @@ Progress: [████░░░░░░] 40%
 | Phase 04-code-quality P03 | 4 | 2 tasks | 1 files |
 | Phase 04-code-quality P04 | 4 | 2 tasks | 4 files |
 | Phase 06-ui-polish P02 | 2 | 3 tasks | 4 files |
+| Phase 06-ui-polish P01 | 3 | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -91,6 +92,9 @@ Recent decisions affecting current work:
 - [Phase 04-code-quality]: Unexported inline interfaces AnonymousUserArg and NewUserArg used instead of T & Record<string, any> for cart buyer identity update parameters
 - [Phase 06-ui-polish]: Explicit type annotations for Footer map callbacks (no as-any) until typegen regenerates FOOTER_QUERYResult
 - [Phase 06-ui-polish]: sanityFetch imported from @shared/sanity/lib/client — matches Header component pattern
+- [06-01]: getCurrencySymbol wraps currency-symbol-map with UAH->'грн' override; fallback to currencyCode for unknown currencies
+- [06-01]: Item.tsx hardcoded getSymbolFromCurrency('UAH') — replaced with getCurrencySymbol('UAH'), now returns 'грн'
+- [06-01]: CartPage.tsx had getSymbolFromCurrency only in commented JSX — updated for consistency
 
 ### Pending Todos
 
@@ -102,6 +106,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-23
-Stopped at: Completed 03-03-PLAN.md — quick-view variant selection fixed with useCartUIStore, CartSheetController RSC composition pattern, and post-add modal close + cart open flow
+Last session: 2026-02-26
+Stopped at: Completed 06-01-PLAN.md — branded favicon (ImageResponse 'M' icon), getCurrencySymbol utility, UAH displays as 'грн' in all 11 price files
 Resume file: None
