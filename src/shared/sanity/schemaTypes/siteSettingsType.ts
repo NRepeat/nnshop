@@ -20,7 +20,11 @@ export const siteSettingsType = defineType({
       title: 'Brands Navigation',
       description: 'Configure the brands dropdown in the navigation bar.',
       type: 'brandsNavigation',
-    })
+    }),
+    defineField({
+      name: 'footerSettings',
+      type: 'footerSettings',
+    }),
     // defineField({
     //   name: 'homePageWoman',
     //   type: 'reference',
