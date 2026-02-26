@@ -4,7 +4,7 @@ import { Card, CardContent } from '@shared/ui/card';
 import Image from 'next/image';
 import { Link } from '@shared/i18n/navigation';
 import { RemoveItemButton } from '@features/header/cart/ui/RemoveItemButton';
-import getSymbolFromCurrency from 'currency-symbol-map';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { cn } from '@shared/lib/utils';
 import { useTranslations } from 'next-intl';
 
@@ -34,7 +34,7 @@ export const CartItem = ({
   const t = useTranslations('Header.cart.drawer');
   const sale = Number(product.sale);
   const originalPrice = Number(product.price); // This is the original price from variant
-  const symbol = getSymbolFromCurrency(currencySymbol);
+  const symbol = getCurrencySymbol(currencySymbol);
 
   // Calculate discounted price
   const discountedPrice = sale > 0 ? originalPrice * (1 - sale / 100) : originalPrice;

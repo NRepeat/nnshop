@@ -1,7 +1,7 @@
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import Image from 'next/image';
 import Link from 'next/link';
-import getSymbolFromCurrency from 'currency-symbol-map';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { cn } from '@shared/lib/utils';
 import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 
@@ -45,7 +45,7 @@ export const ProductCardSPP = ({
 
   const priceAmount = parseFloat(product.priceRange?.maxVariantPrice.amount);
   const currencyCode = product.priceRange?.maxVariantPrice.currencyCode;
-  const currencySymbol = getSymbolFromCurrency(currencyCode) || currencyCode;
+  const currencySymbol = getCurrencySymbol(currencyCode);
 
   const discountMeta = Array.isArray(product.metafields)
     ? product.metafields.find((m) => m?.key === 'znizka')

@@ -10,7 +10,7 @@ import {
   type CarouselApi,
 } from '@shared/ui/carousel';
 import { GetCollectionQuery } from '@shared/lib/shopify/types/storefront.generated';
-import getSymbolFromCurrency from 'currency-symbol-map';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@shared/ui/button';
@@ -220,24 +220,20 @@ export const SyncedCarousels = ({
                                           ) /
                                             100)
                                       ).toFixed(0)}{' '}
-                                      {getSymbolFromCurrency(
+                                      {getCurrencySymbol(
                                         product.node.priceRange?.maxVariantPrice
                                           .currencyCode,
-                                      ) ||
-                                        product.node.priceRange?.maxVariantPrice
-                                          .currencyCode}
+                                      )}
                                     </span>
                                     <span className="text-xs text-gray-400 line-through">
                                       {parseFloat(
                                         product.node.priceRange?.maxVariantPrice
                                           .amount,
                                       ).toFixed(0)}{' '}
-                                      {getSymbolFromCurrency(
+                                      {getCurrencySymbol(
                                         product.node.priceRange?.maxVariantPrice
                                           .currencyCode,
-                                      ) ||
-                                        product.node.priceRange?.maxVariantPrice
-                                          .currencyCode}
+                                      )}
                                     </span>
                                   </>
                                 ) : (
@@ -246,12 +242,10 @@ export const SyncedCarousels = ({
                                       product.node.priceRange?.maxVariantPrice
                                         .amount,
                                     ).toFixed(0)}{' '}
-                                    {getSymbolFromCurrency(
+                                    {getCurrencySymbol(
                                       product.node.priceRange?.maxVariantPrice
                                         .currencyCode,
-                                    ) ||
-                                      product.node.priceRange?.maxVariantPrice
-                                        .currencyCode}
+                                    )}
                                   </span>
                                 )}
                               </div>

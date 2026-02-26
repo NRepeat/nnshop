@@ -10,7 +10,7 @@ import {
 import { Separator } from '@shared/ui/separator';
 import { getTranslations } from 'next-intl/server';
 import { CreateOrderButton } from './CreateOrderButton';
-import getSymbolFromCurrency from 'currency-symbol-map';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { DiscountCodeInput } from '@features/cart/ui/DiscountCodeInput';
 import { ShoppingCart } from 'lucide-react';
 
@@ -102,7 +102,7 @@ const Content = async ({
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('discount')}</span>
               <span className="text-green-600 dark:text-green-400">
-                -{getSymbolFromCurrency(currencySymbol)}{' '}
+                -{getCurrencySymbol(currencySymbol)}{' '}
                 {Math.round(discountAmount)
                   .toString()
                   .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
@@ -112,7 +112,7 @@ const Content = async ({
           <div className="flex justify-between font-medium">
             <span>{t('total')}</span>
             <span className="">
-              {getSymbolFromCurrency(currencySymbol)}{' '}
+              {getCurrencySymbol(currencySymbol)}{' '}
               {Math.round(totalAmount)
                 .toString()
                 .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}

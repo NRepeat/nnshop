@@ -5,7 +5,7 @@ import { Separator } from '@shared/ui/separator';
 import { Button } from '@shared/ui/button';
 import { Link } from '@shared/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import getSymbolFromCurrency from 'currency-symbol-map';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { DiscountCodeInput } from './DiscountCodeInput';
 import { CartNoteTextarea } from '@features/header/cart/ui/CartNoteTextarea';
 import { CartItem } from './CartItem';
@@ -69,7 +69,7 @@ export const CartPageContent = ({
               {/* <div className="flex justify-between text-sm">
                 <span>{t('subtotal')}</span>
                 <span>
-                  {getSymbolFromCurrency(currencySymbol)} {subtotal.toFixed(0)}
+                  {getCurrencySymbol(currencySymbol)} {subtotal.toFixed(0)}
                 </span>
               </div> */}
               {discountCodes.some((d) => d.applicable) && (
@@ -85,7 +85,7 @@ export const CartPageContent = ({
             {/* <div className="flex justify-between font-medium text-lg">
               <span>{t('total')}</span>
               <span>
-                {getSymbolFromCurrency(currencySymbol)} {subtotal.toFixed(0)}
+                {getCurrencySymbol(currencySymbol)} {subtotal.toFixed(0)}
               </span>
             </div> */}
 

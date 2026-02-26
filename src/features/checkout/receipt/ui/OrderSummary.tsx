@@ -5,7 +5,7 @@ import { getCart } from '@entities/cart/api/get';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
-import getSymbolFromCurrency from 'currency-symbol-map';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import {
   Accordion,
   AccordionContent,
@@ -39,7 +39,7 @@ function formatPrice(price: number): string {
 }
 
 function OrderItemCard({ item, currency }: { item: CartItem; currency: string }) {
-  const currencySymbol = getSymbolFromCurrency(currency) || currency;
+  const currencySymbol = getCurrencySymbol(currency);
 
   return (
     <div className="flex gap-4 py-3 border-b border-gray-100 last:border-b-0">
@@ -119,7 +119,7 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
 
   const cart = cartResult.cart;
   const currency = cart.cost.totalAmount.currencyCode;
-  const currencySymbol = getSymbolFromCurrency(currency) || currency;
+  const currencySymbol = getCurrencySymbol(currency);
 
   // Process cart items with discounts
   const items: CartItem[] = cart.lines.edges.map((edge) => {

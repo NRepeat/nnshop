@@ -2,7 +2,7 @@ import { Card, CardContent } from '@shared/ui/card';
 import Image from 'next/image';
 import { Link } from '@shared/i18n/navigation';
 import { RemoveItemButton } from './RemoveItemButton';
-import getSymbolFromCurrency from 'currency-symbol-map';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { cn } from '@shared/lib/utils';
 import { useTranslations } from 'next-intl';
 
@@ -62,7 +62,7 @@ const CartItem = ({
               {Math.round(Number(product.totalPrice))
                 .toString()
                 .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
-              {getSymbolFromCurrency('UAH')}
+              {getCurrencySymbol('UAH')}
             </p>
             <div className="absolute top-2 -right-0.5 mr-1 mt-1 z-10">
               <RemoveItemButton cartId={cartId} itemId={itemId} />

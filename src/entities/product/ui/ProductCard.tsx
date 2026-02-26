@@ -1,5 +1,5 @@
 'use client';
-import getSymbolFromCurrency from 'currency-symbol-map';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { Card, CardContent } from '@/shared/ui/card';
 import Image from 'next/image';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
@@ -224,9 +224,9 @@ export const ProductCard = ({
                       {parseFloat(
                         product.priceRange?.maxVariantPrice.amount,
                       ).toFixed(0)}{' '}
-                      {getSymbolFromCurrency(
+                      {getCurrencySymbol(
                         product.priceRange?.maxVariantPrice.currencyCode,
-                      ) || product.priceRange?.maxVariantPrice.currencyCode}
+                      )}
                     </span>
 
                     <span className="text-red-600 font-bold text-sm">
@@ -234,9 +234,9 @@ export const ProductCard = ({
                         product.priceRange?.maxVariantPrice.amount *
                         (1 - parseFloat(product.metafield.value) / 100)
                       ).toFixed(0)}{' '}
-                      {getSymbolFromCurrency(
+                      {getCurrencySymbol(
                         product.priceRange?.maxVariantPrice.currencyCode,
-                      ) || product.priceRange?.maxVariantPrice.currencyCode}
+                      )}
                     </span>
 
                     <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded-md">
@@ -248,9 +248,9 @@ export const ProductCard = ({
                     {parseFloat(
                       product.priceRange?.maxVariantPrice.amount,
                     ).toFixed(0)}{' '}
-                    {getSymbolFromCurrency(
+                    {getCurrencySymbol(
                       product.priceRange?.maxVariantPrice.currencyCode,
-                    ) || product.priceRange?.maxVariantPrice.currencyCode}
+                    )}
                   </span>
                 )}
               </div>

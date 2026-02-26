@@ -1,5 +1,5 @@
 'use client';
-import getSymbolFromCurrency from 'currency-symbol-map';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import Image from 'next/image';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { Link } from '@shared/i18n/navigation';
@@ -36,9 +36,7 @@ export const FavoriteProductCard = ({ product }: FavoriteProductCardProps) => {
     ? originalPrice * (1 - parseFloat(product.metafield?.value || '0') / 100)
     : originalPrice;
 
-  const currencySymbol =
-    getSymbolFromCurrency(product.priceRange?.maxVariantPrice.currencyCode) ||
-    product.priceRange?.maxVariantPrice.currencyCode;
+  const currencySymbol = getCurrencySymbol(product.priceRange?.maxVariantPrice.currencyCode);
 
   return (
     <div className="group relative">

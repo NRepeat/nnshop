@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Link } from '@shared/i18n/navigation';
 import { HOME_PAGEResult } from '@shared/sanity/types';
 import { getCollection } from '@entities/collection/api/getCollection';
-import getSymbolFromCurrency from 'currency-symbol-map';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 type ProductCarouselGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
@@ -53,9 +53,9 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
                     {parseFloat(
                       product.priceRange?.maxVariantPrice.amount,
                     ).toFixed(0)}{' '}
-                    {getSymbolFromCurrency(
+                    {getCurrencySymbol(
                       product.priceRange?.maxVariantPrice.currencyCode,
-                    ) || product.priceRange?.maxVariantPrice.currencyCode}
+                    )}
                   </span>
 
                   <span className="text-red-600 font-bold text-sm">
@@ -63,9 +63,9 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
                       product.priceRange?.maxVariantPrice.amount *
                       (1 - parseFloat(product.metafield.value) / 100)
                     ).toFixed(0)}{' '}
-                    {getSymbolFromCurrency(
+                    {getCurrencySymbol(
                       product.priceRange?.maxVariantPrice.currencyCode,
-                    ) || product.priceRange?.maxVariantPrice.currencyCode}
+                    )}
                   </span>
 
                   <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
@@ -77,9 +77,9 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
                   {parseFloat(
                     product.priceRange?.maxVariantPrice.amount,
                   ).toFixed(0)}{' '}
-                  {getSymbolFromCurrency(
+                  {getCurrencySymbol(
                     product.priceRange?.maxVariantPrice.currencyCode,
-                  ) || product.priceRange?.maxVariantPrice.currencyCode}
+                  )}
                 </span>
               )}
             </div>
