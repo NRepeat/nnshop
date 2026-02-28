@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-02-26T20:39:05.744Z"
+last_updated: "2026-02-28T20:28:20.070Z"
 progress:
-  total_phases: 6
+  total_phases: 7
   completed_phases: 5
-  total_plans: 19
-  completed_plans: 18
+  total_plans: 23
+  completed_plans: 19
 ---
 
 # Project State
@@ -22,10 +22,10 @@ See: .planning/PROJECT.md (updated 2026-02-23)
 
 ## Current Position
 
-Phase: 6 of 6 (UI Polish)
-Plan: 1 of TBD in current phase
+Phase: 8 of 7 (Recently Viewed + Newsletter)
+Plan: 1 of 4 in current phase
 Status: In progress
-Last activity: 2026-02-26 — Completed 06-01 (branded favicon via ImageResponse, getCurrencySymbol utility, UAH→грн across 11 price files)
+Last activity: 2026-02-28 — Completed 08-01 (NewsletterSubscriber migration, recordProductView, getProductsByHandles, subscribeToNewsletter, newsletterSchema, i18n keys)
 
 Progress: [████░░░░░░] 40%
 
@@ -59,6 +59,7 @@ Progress: [████░░░░░░] 40%
 | Phase 06-ui-polish P01 | 3 | 2 tasks | 13 files |
 | Phase 06-ui-polish P03 | 4 | 2 tasks | 1 files |
 | Phase 07-lighthouse-audit-fixes P03 | 5 | 3 tasks | 2 files |
+| Phase 08 P01 | 2 | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -101,6 +102,9 @@ Recent decisions affecting current work:
 - [Phase 06-ui-polish]: app/icon.svg accepted as favicon artifact instead of app/icon.tsx — commit da4dde4 replaced ImageResponse with real brand SVG after 06-01; both fulfill UI-01
 - [Phase 07-03]: AccordionPrimitive.Header rendered via asChild+div to suppress h3 — no h3 emitted on product page, heading sequence is now sequential
 - [Phase 07-03]: PersistLinkNavigation uses plain ul/li (not NavigationMenuList) because neither Header.tsx nor HeaderContent.tsx provide NavigationMenu context at call sites
+- [Phase 08]: NewsletterSubscriber is standalone (no User relation) — email-only identification, no auth required
+- [Phase 08]: subscribeToNewsletter always returns success:true — duplicate emails treated silently
+- [Phase 08]: getProductsByHandles post-sorts results to match DB viewedAt DESC order after Shopify fetch
 
 ### Roadmap Evolution
 
@@ -116,6 +120,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-26
-Stopped at: Completed 06-01-PLAN.md — branded favicon (ImageResponse 'M' icon), getCurrencySymbol utility, UAH displays as 'грн' in all 11 price files
+Last session: 2026-02-28
+Stopped at: Completed 08-01-PLAN.md — NewsletterSubscriber migration, recordProductView, getProductsByHandles, subscribeToNewsletter, newsletterSchema, i18n keys for uk/ru
 Resume file: None
