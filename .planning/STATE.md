@@ -102,6 +102,10 @@ Recent decisions affecting current work:
 - [Phase 07-03]: AccordionPrimitive.Header rendered via asChild+div to suppress h3 — no h3 emitted on product page, heading sequence is now sequential
 - [Phase 07-03]: PersistLinkNavigation uses plain ul/li (not NavigationMenuList) because neither Header.tsx nor HeaderContent.tsx provide NavigationMenu context at call sites
 
+### Roadmap Evolution
+
+- Phase 8 added: Recently Viewed Products section and Newsletter subscription section
+
 ### Pending Todos
 
 None yet.
