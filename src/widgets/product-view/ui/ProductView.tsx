@@ -17,6 +17,9 @@ import { JsonLd } from '@shared/ui/JsonLd';
 import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
 import { cookies } from 'next/headers';
 import { ProductCard } from '@entities/product/ui/ProductCard';
+import { Suspense } from 'react';
+import { ViewTracker } from '@entities/recently-viewed/ui/ViewTracker';
+import { RecentlyViewedSection } from '@entities/recently-viewed/ui/RecentlyViewedSection';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
 
@@ -114,6 +117,12 @@ export async function ProductView({
           </div>
         </div>
       )}
+      {/* Recently Viewed: fire-and-forget view recording */}
+      <ViewTracker productHandle={product.handle} productId={product.id} />
+      {/* Recently Viewed: server-rendered carousel, streams in after page load */}
+      <Suspense fallback={null}>
+        <RecentlyViewedSection locale={locale} />
+      </Suspense>
     </div>
   );
 }
