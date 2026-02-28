@@ -153,7 +153,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 **Goal:** Session-aware recently viewed products carousel on home page and product detail pages, plus a newsletter subscription section on the home page with DB persistence
 **Requirements**: TBD
 **Depends on:** Phase 7
-**Plans:** 1/4 plans executed
+**Plans:** 2/4 plans executed
 
 Plans:
 - [ ] 08-01-PLAN.md — DB schema (NewsletterSubscriber migration), server actions (recordProductView, getProductsByHandles, subscribeToNewsletter), Zod schema, i18n keys

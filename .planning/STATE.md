@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-02-28T20:28:20.070Z"
+last_updated: "2026-02-28T20:31:06Z"
 progress:
   total_phases: 7
   completed_phases: 5
@@ -23,11 +23,11 @@ See: .planning/PROJECT.md (updated 2026-02-23)
 ## Current Position
 
 Phase: 8 of 7 (Recently Viewed + Newsletter)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-02-28 — Completed 08-01 (NewsletterSubscriber migration, recordProductView, getProductsByHandles, subscribeToNewsletter, newsletterSchema, i18n keys)
+Last activity: 2026-02-28 — Completed 08-02 (ViewTracker, RecentlyViewedSection, ProductView wiring)
 
-Progress: [████░░░░░░] 40%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
@@ -60,6 +60,7 @@ Progress: [████░░░░░░] 40%
 | Phase 06-ui-polish P03 | 4 | 2 tasks | 1 files |
 | Phase 07-lighthouse-audit-fixes P03 | 5 | 3 tasks | 2 files |
 | Phase 08 P01 | 2 | 3 tasks | 8 files |
+| Phase 08 P02 | 2 | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -105,6 +106,9 @@ Recent decisions affecting current work:
 - [Phase 08]: NewsletterSubscriber is standalone (no User relation) — email-only identification, no auth required
 - [Phase 08]: subscribeToNewsletter always returns success:true — duplicate emails treated silently
 - [Phase 08]: getProductsByHandles post-sorts results to match DB viewedAt DESC order after Shopify fetch
+- [08-02]: Suspense fallback=null for RecentlyViewedSection — section streams in silently; no skeleton shown
+- [08-02]: ViewTracker placed after relatedProducts block — records view without blocking above-fold rendering
+- [08-02]: RecentlyViewedSection guards three null cases: no session, empty DB records, empty Shopify products
 
 ### Roadmap Evolution
 
@@ -121,5 +125,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 08-01-PLAN.md — NewsletterSubscriber migration, recordProductView, getProductsByHandles, subscribeToNewsletter, newsletterSchema, i18n keys for uk/ru
+Stopped at: Completed 08-02-PLAN.md — ViewTracker client component, RecentlyViewedSection server component, ProductView wiring
 Resume file: None
