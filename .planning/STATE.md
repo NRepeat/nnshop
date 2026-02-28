@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-02-23)
 ## Current Position
 
 Phase: 8 of 7 (Recently Viewed + Newsletter)
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-02-28 — Completed 08-02 (ViewTracker, RecentlyViewedSection, ProductView wiring)
+Last activity: 2026-02-28 — Completed 08-03 (NewsletterForm, NewsletterSection, home page wiring, anonymous merge patch)
 
 Progress: [█████░░░░░] 50%
 
@@ -61,6 +61,7 @@ Progress: [█████░░░░░] 50%
 | Phase 07-lighthouse-audit-fixes P03 | 5 | 3 tasks | 2 files |
 | Phase 08 P01 | 2 | 3 tasks | 8 files |
 | Phase 08 P02 | 2 | 3 tasks | 3 files |
+| Phase 08 P03 | 2 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -109,6 +110,8 @@ Recent decisions affecting current work:
 - [08-02]: Suspense fallback=null for RecentlyViewedSection — section streams in silently; no skeleton shown
 - [08-02]: ViewTracker placed after relatedProducts block — records view without blocking above-fold rendering
 - [08-02]: RecentlyViewedSection guards three null cases: no session, empty DB records, empty Shopify products
+- [08-03]: z.input<typeof newsletterSchema> used as TFieldValues for useForm — Zod .default() makes input type optional but output required; using input type prevents resolver TS mismatch
+- [08-03]: NewsletterSection heading hardcoded Ukrainian — consistent with CONTEXT.md screenshot; form strings remain i18n via useTranslations
 
 ### Roadmap Evolution
 
@@ -125,5 +128,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 08-02-PLAN.md — ViewTracker client component, RecentlyViewedSection server component, ProductView wiring
+Stopped at: Completed 08-03-PLAN.md — NewsletterForm, NewsletterSection, home page wiring, anonymous merge patch
 Resume file: None
