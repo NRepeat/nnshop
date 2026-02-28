@@ -30,6 +30,13 @@ export const brandGridBlock = defineType({
               type: 'reference',
               to: [{ type: 'collection' }],
             },
+            defineField({
+              name: 'isBrandCollection',
+              title: 'Is brand collection',
+              type: 'boolean',
+              description: 'If checked, the link will use /brand/{collection-handle} instead of the regular collection URL.',
+              initialValue: true,
+            }),
           ],
         }),
       ],

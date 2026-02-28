@@ -51,7 +51,7 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
       {content.map((block) => {
         switch (block._type) {
           case 'heroSlider':
-            return <HeroBanner key={block._key} {...block} />;
+            return <HeroBanner key={block._key} {...block} gender={gender} />;
 
           case 'mainCollectionGrid':
             return (
@@ -87,8 +87,8 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
           case 'features':
             return <Features key={block._key} locale={locale} {...block} />;
 
-          // case 'brandGridBlock':
-          //   return <BrandGrid key={block._key} locale={locale} gender={gender} {...block} />;
+          case 'brandGridBlock':
+            return <BrandGrid key={block._key} locale={locale} gender={gender} {...block} />;
 
           case 'collectionsWithPreviews':
             return (

@@ -27,6 +27,7 @@ type ProductCardProps = {
   addToCard?: boolean;
   className?: string;
   withCarousel?: boolean;
+  withQuick?: boolean;
 };
 
 export const ProductCard = ({
@@ -34,9 +35,10 @@ export const ProductCard = ({
   className,
   withCarousel = false,
   isFav,
+  withQuick,
 }: ProductCardProps) => {
   const t = useTranslations('ProductCard');
-
+  console.log(withQuick, 'withCarousel');
   const availableSizes = (() => {
     const sizeOption = product.options?.find((opt) =>
       ['size', 'розмір', 'размер'].includes(opt.name.toLowerCase()),
@@ -52,9 +54,11 @@ export const ProductCard = ({
         .filter(Boolean),
     );
 
-    return sizeOption.optionValues
-      ?.map((v) => v.name)
-      .filter((name) => availableValues.has(name)) ?? [];
+    return (
+      sizeOption.optionValues
+        ?.map((v) => v.name)
+        .filter((name) => availableValues.has(name)) ?? []
+    );
   })();
 
   const productImages = [
@@ -125,20 +129,22 @@ export const ProductCard = ({
                     handle={product.handle}
                   />
                 </div>
-                <div className=" bottom-0 left-2  flex w-full justify-end absolute rounded-md">
-                  <Button
-                    variant={'ghost'}
-                    className="group-hover:flex hidden bg-background/70 rounded-md"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
+                {withQuick && (
+                  <div className=" bottom-0 left-2  flex w-full justify-end absolute rounded-md">
+                    <Button
+                      variant={'ghost'}
+                      className="group-hover:flex hidden bg-background/70 rounded-md"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
 
-                      nav.push(`/quick/${product.handle}`, { scroll: false });
-                    }}
-                  >
-                    {t('quickView')}
-                  </Button>
-                </div>
+                        nav.push(`/quick/${product.handle}`, { scroll: false });
+                      }}
+                    >
+                      {t('quickView')}
+                    </Button>
+                  </div>
+                )}
               </div>
             </Carousel>
           ) : (
@@ -146,7 +152,7 @@ export const ProductCard = ({
               {isNew && (
                 <Badge className="absolute top-2 left-2 z-10">{t('new')}</Badge>
               )}
-              <div className="relative  md:h-full w-full flex justify-center items-center">
+              <div className="relative aspect-square  md:h-full w-full flex justify-center items-center">
                 <Image
                   className="object-contain"
                   src={productImages[0].url}
@@ -155,77 +161,55 @@ export const ProductCard = ({
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 />
               </div>
-              <div className=" bottom-2 left-1/2 -translate-x-1/2 hidden group-hover:block absolute">
-                <Button
-                  variant={'ghost'}
-                  className="bg-background/70 rounded-md"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    nav.push(`/product/${product.handle}`, {});
-                  }}
-                >
-                  {t('quickView')}
-                </Button>
-              </div>
+              {withQuick && (
+                <div className=" bottom-2 left-1/2 -translate-x-1/2 hidden group-hover:block absolute">
+                  <Button
+                    variant={'ghost'}
+                    className="bg-background/70 rounded-md"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      nav.push(`/product/${product.handle}`, {});
+                    }}
+                  >
+                    {t('quickView')}
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </Link>
-          <div className="w-full pt-2 md:pt-1  flex flex-col gap-1 flex-1 md:px-2 max-h-fit">
-            <Link href={`/brand/${vendorToHandle(product.vendor)}`}>
-              <span className="text-md font-bold hover:underline">
-                {decodeHtmlEntities(product.vendor)}
-              </span>
-            </Link>
-            {/* {product.productType && (
+        <div className="w-full pt-2 md:pt-1  flex flex-col gap-1 flex-1 md:px-2 max-h-fit">
+          <Link href={`/brand/${vendorToHandle(product.vendor)}`}>
+            <span className="text-md font-bold hover:underline">
+              {decodeHtmlEntities(product.vendor)}
+            </span>
+          </Link>
+          {/* {product.productType && (
               <span className="text-xs text-muted-foreground">
                 {product.productType}
               </span>
             )} */}
-            <div className="flex flex-col justify-between flex-1">
-              <div className=" w-full flex-col  justify-between flex pb-4">
-                <Link href={`/product/${product.handle}`}>
-                  <p className="text-sm md:text-md font-light  text-pretty">
-                    {decodeHtmlEntities(product?.title ?? '')}
-                  </p>
-                </Link>
-                {availableSizes.length > 0 && (
-                  <p className="text-base text-muted-foreground mt-1">
-                    {availableSizes.join(' · ')}
-                  </p>
-                )}
-              </div>
-              <div className="mt-auto">
-                {product.metafield &&
-                product.metafield.key === 'znizka' &&
-                product.metafield.value &&
-                Number(product.metafield.value) > 0 ? (
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="line-through text-gray-500 text-xs">
-                      {parseFloat(
-                        product.priceRange?.maxVariantPrice.amount,
-                      ).toFixed(0)}{' '}
-                      {getCurrencySymbol(
-                        product.priceRange?.maxVariantPrice.currencyCode,
-                      )}
-                    </span>
-
-                    <span className="text-red-600 font-bold text-sm">
-                      {(
-                        product.priceRange?.maxVariantPrice.amount *
-                        (1 - parseFloat(product.metafield.value) / 100)
-                      ).toFixed(0)}{' '}
-                      {getCurrencySymbol(
-                        product.priceRange?.maxVariantPrice.currencyCode,
-                      )}
-                    </span>
-
-                    <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded-md">
-                      -{product.metafield.value}%
-                    </span>
-                  </div>
-                ) : (
-                  <span className="font-bold text-sm">
+          <div className="flex flex-col justify-between flex-1">
+            <div className=" w-full flex-col  justify-between flex pb-4">
+              <Link href={`/product/${product.handle}`}>
+                <p className="text-sm md:text-md font-light  text-pretty">
+                  {decodeHtmlEntities(product?.title ?? '')}
+                </p>
+              </Link>
+              {availableSizes.length > 0 && (
+                <p className="text-base text-muted-foreground mt-1">
+                  {availableSizes.join(' · ')}
+                </p>
+              )}
+            </div>
+            <div className="mt-auto">
+              {product.metafield &&
+              product.metafield.key === 'znizka' &&
+              product.metafield.value &&
+              Number(product.metafield.value) > 0 ? (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="line-through text-gray-500 text-xs">
                     {parseFloat(
                       product.priceRange?.maxVariantPrice.amount,
                     ).toFixed(0)}{' '}
@@ -233,10 +217,34 @@ export const ProductCard = ({
                       product.priceRange?.maxVariantPrice.currencyCode,
                     )}
                   </span>
-                )}
-              </div>
+
+                  <span className="text-red-600 font-bold text-sm">
+                    {(
+                      product.priceRange?.maxVariantPrice.amount *
+                      (1 - parseFloat(product.metafield.value) / 100)
+                    ).toFixed(0)}{' '}
+                    {getCurrencySymbol(
+                      product.priceRange?.maxVariantPrice.currencyCode,
+                    )}
+                  </span>
+
+                  <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded-md">
+                    -{product.metafield.value}%
+                  </span>
+                </div>
+              ) : (
+                <span className="font-bold text-sm">
+                  {parseFloat(
+                    product.priceRange?.maxVariantPrice.amount,
+                  ).toFixed(0)}{' '}
+                  {getCurrencySymbol(
+                    product.priceRange?.maxVariantPrice.currencyCode,
+                  )}
+                </span>
+              )}
             </div>
           </div>
+        </div>
       </CardContent>
     </Card>
   );

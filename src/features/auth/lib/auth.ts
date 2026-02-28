@@ -7,7 +7,6 @@ import { anonymousCartBuyerIdentityUpdate } from '../../../entities/cart/api/ano
 import { prisma } from '../../../shared/lib/prisma';
 import { sendEvent } from '../../../shared/lib/mailer';
 import { linkAnonymousDataToUser } from './on-link-account';
-import { createShopifyCustomer } from '@entities/customer/api/create-customer';
 
 const betterAuthSecret = process.env.BETTER_AUTH_SECRET;
 const betterAuthUrl = process.env.NEXT_PUBLIC_BASE_URL;

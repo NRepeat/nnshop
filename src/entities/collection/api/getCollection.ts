@@ -247,6 +247,7 @@ export const getCollection = async ({
   'use cache';
   cacheLife('default');
   cacheTag(`collection:${handle}`);
+  console.log('getCollection',handle)
   if (!locale) {
     throw new Error('getCollection: locale is required');
   }

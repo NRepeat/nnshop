@@ -33,7 +33,7 @@ import { contentPageBlock } from './blocks/contentPageBlock';
 import { mainCollectionGrid } from './blocks/mainCollectionGrid';
 import { topicType } from './blocks/topicType';
 import { productDetailsType } from './blocks/productDetailsType';
-import { heroSlide, heroSlider } from './blocks/heroSlider';
+import { heroSlide, heroSlideButton, heroSlider } from './blocks/heroSlider';
 import { infoBar } from './blocks/info-bar';
 import { headerType } from './headerType';
 import { brandGridBlock } from './blocks/brendGrid';
@@ -86,6 +86,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     productDetailsType,
     elegantEaseType,
     productCommentsType,
+    heroSlideButton,
     heroSlide,
     heroSlider,
     mainCollectionGrid,

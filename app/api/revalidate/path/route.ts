@@ -8,6 +8,7 @@ import { revalidateSecret } from '@/shared/sanity/env';
 const LAYOUT_TYPES = ['siteSettings', 'header', 'footer', 'infoBar'];
 
 export async function POST(req: NextRequest) {
+  console.log(req,"req")
   try {
     const { body, isValidSignature } = await parseBody<{
       type: string;

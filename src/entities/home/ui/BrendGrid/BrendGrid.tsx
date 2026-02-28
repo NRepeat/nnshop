@@ -14,6 +14,18 @@ type BrandGridProps = Extract<
 export function BrandGrid({ barnds, locale, gender }: BrandGridProps) {
   if (!barnds || barnds.length === 0) return null;
 
+  const getBrandHref = (brand: NonNullable<typeof barnds>[number]) => {
+    const collectionHandle = brand.collectionData?.handle;
+    if (brand.isBrandCollection && collectionHandle) {
+      return `/brand/${collectionHandle}`;
+    }
+    return (
+      resolveCollectionLink(brand.collectionData, locale, gender).handle ||
+      collectionHandle ||
+      ''
+    );
+  };
+
   return (
     <section className="container  ">
       <div className="px-4 mx-auto py-4 md:py-8">
@@ -23,15 +35,11 @@ export function BrandGrid({ barnds, locale, gender }: BrandGridProps) {
           </h2>
         }*/}
 
-        <div className="hidden md:grid grid-cols-2 items-center justify-items-center gap-x-6 gap-y-10 md:grid-cols-5 md:gap-x-8 md:gap-y-8">
+        <div className="hidden md:grid grid-cols-2 items-center justify-items-center gap-x-6 gap-y-10 md:grid-cols-5 md:gap-x-4 md:gap-y-4">
           {barnds.map((brand) => (
             <Link
               key={brand._key}
-              href={
-                resolveCollectionLink(brand.collectionData, locale, gender).handle ||
-                brand.collectionData?.handle ||
-                ''
-              }
+              href={getBrandHref(brand)}
               className="cursor-pointer basis-1/3"
             >
               <div className="group relative flex h-16 w-full max-w-[160px] items-center justify-center transition-all duration-300 hover:opacity-60">
@@ -60,7 +68,7 @@ export function BrandGrid({ barnds, locale, gender }: BrandGridProps) {
                   <div className="flex flex-col gap-y-8">
                     {barnds.slice(i * 2, i * 2 + 2).map((brand) => (
                       <Link
-                        href={`/brand/${brand.handle?.current}`}
+                        href={getBrandHref(brand)}
                         key={brand._key}
                       >
                         <div className="group relative flex h-16 w-full max-w-[160px] items-center justify-center transition-all duration-300 hover:opacity-60 mx-auto">

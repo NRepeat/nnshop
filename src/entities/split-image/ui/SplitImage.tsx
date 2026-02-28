@@ -65,10 +65,9 @@ export function SplitImage(props: SplitGridProps) {
   const ImageComponent = image ? (
     <div className="group relative h-full w-full overflow-hidden bg-gray-100">
       <Image
-        className="h-full w-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
-        src={urlFor(image).width(1200).height(800).url()}
-        width={1200}
-        height={800}
+        className="transition-transform duration-700 ease-in-out group-hover:scale-105 h-[600px] w-[600px]"
+        src={urlFor(image).width(600).height(600).url()}
+        fill
         alt={(title as unknown as string) || ''}
         priority
       />
@@ -76,13 +75,13 @@ export function SplitImage(props: SplitGridProps) {
   ) : null;
 
   return (
-    <section className="container  ">
+    <section className="container">
       <div className="py-8 md:py-8">
         <div
           className="flex flex-col gap-8 md:flex-row md:items-center data-[orientation='imageRight']:md:flex-row-reverse"
           data-orientation={stegaClean(orientation) || 'imageLeft'}
         >
-          <div className="relative aspect-[4/5] w-full overflow-hidden md:aspect-auto md:h-[600px] md:w-2/3">
+          <div className="relative aspect-square w-full overflow-hidden   md:w-[600px] max-h-[600px]">
             {linkUrl && linkUrl.handle ? (
               <Link href={linkUrl.handle} className="block h-full w-full" prefetch>
                 {ImageComponent}

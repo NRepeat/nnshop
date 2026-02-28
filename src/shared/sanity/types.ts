@@ -48,6 +48,20 @@ export type HeroSlider = {
   >;
 };
 
+export type HeroSlideButton = {
+  _type: 'heroSlideButton';
+  _key: string;
+  label: string;
+  url?: string;
+  collection?: {
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: 'collection';
+  };
+  variant?: 'default' | 'secondary' | 'outline' | 'ghost';
+};
+
 export type HeroSlide = {
   _type: 'heroSlide';
   description?: string;
@@ -63,6 +77,19 @@ export type HeroSlide = {
     crop?: SanityImageCrop;
     _type: 'image';
   };
+  mobileImage?: {
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: 'image';
+  };
+  buttons?: Array<HeroSlideButton>;
   link?: LinkExternal;
   collection?: {
     _ref: string;
@@ -2482,6 +2509,7 @@ export type HOME_PAGEResult = {
           hotspot?: SanityImageHotspot;
           crop?: SanityImageCrop;
           handle?: Slug;
+          isBrandCollection?: boolean;
           collection?: {
             _ref: string;
             _type: 'reference';
@@ -2685,11 +2713,57 @@ export type HOME_PAGEResult = {
         _type: 'heroSlider';
         title?: string;
         description?: string;
-        slides?: Array<
-          {
+        slides?: Array<{
+          _key: string;
+          _type: 'heroSlide';
+          description?: string;
+          image?: {
+            asset?: {
+              _ref: string;
+              _type: 'reference';
+              _weak?: boolean;
+              [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+            };
+            media?: unknown;
+            hotspot?: SanityImageHotspot;
+            crop?: SanityImageCrop;
+            _type: 'image';
+          };
+          mobileImage?: {
+            asset?: {
+              _ref: string;
+              _type: 'reference';
+              _weak?: boolean;
+              [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+            };
+            media?: unknown;
+            hotspot?: SanityImageHotspot;
+            crop?: SanityImageCrop;
+            _type: 'image';
+          };
+          buttons?: Array<{
             _key: string;
-          } & HeroSlide
-        >;
+            _type: 'heroSlideButton';
+            label: string;
+            url?: string;
+            variant?: 'default' | 'secondary' | 'outline' | 'ghost';
+            collection?: {
+              title: null;
+              handle: string | null;
+              id: number | null;
+              handles: { uk?: string; ru?: string } | null;
+              titles: { uk?: string; ru?: string } | null;
+            } | null;
+          }> | null;
+          link?: LinkExternal;
+          collection?: {
+            title: null;
+            handle: string | null;
+            id: number | null;
+            handles: { uk?: string; ru?: string } | null;
+            titles: { uk?: string; ru?: string } | null;
+          } | null;
+        }>;
       }
     | {
         _key: string;

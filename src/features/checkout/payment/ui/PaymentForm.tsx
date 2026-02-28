@@ -97,14 +97,14 @@ export default function PaymentForm({
       // 3. Reset the cart
       await resetCartSession();
 
-      // 4a. LiqPay (pay-now + bank-transfer): show LiqPay form — redirect happens after payment
-      if (data.paymentMethod === 'pay-now' && data.paymentProvider === 'bank-transfer') {
-        setLiqpayOrderId(createdOrder.id);
-        setIsLoading(false);
-        return;
-      }
+      // 4a. LiqPay disabled temporarily — skip and redirect to success page directly
+      // if (data.paymentMethod === 'pay-now' && data.paymentProvider === 'bank-transfer') {
+      //   setLiqpayOrderId(createdOrder.id);
+      //   setIsLoading(false);
+      //   return;
+      // }
 
-      // 4b. All other methods: redirect to success page immediately
+      // 4b. All methods: redirect to success page immediately
       toast.success(t('paymentInformationSaved'));
       router.push(`/checkout/success/${encodeURIComponent(orderName)}`);
     } catch (error) {

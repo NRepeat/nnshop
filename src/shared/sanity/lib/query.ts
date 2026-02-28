@@ -533,6 +533,29 @@ export const HOME_PAGE =
                 }
               }
             },
+            _type == "heroSlider" => {
+              ...,
+              slides[]{
+                ...,
+                "collection": collection->{
+                  title,
+                  "handle": store.slug.current,
+                  "id": store.id,
+                  handles,
+                  titles
+                },
+                buttons[]{
+                  ...,
+                  "collection": collection->{
+                    title,
+                    "handle": store.slug.current,
+                    "id": store.id,
+                    handles,
+                    titles
+                  }
+                }
+              }
+            },
             _type == "faqs" => {
               ...,
               faqs[]->{

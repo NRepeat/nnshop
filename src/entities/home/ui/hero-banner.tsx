@@ -11,12 +11,84 @@ import { HOME_PAGEResult } from '@shared/sanity/types';
 type HeroSliderProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'heroSlider' }
->;
+> & { gender?: string };
+
+type Slide = NonNullable<HeroSliderProps['slides']>[number];
+type SlideButton = NonNullable<NonNullable<Slide['buttons']>[number]>;
 
 export const HeroBanner = (props: HeroSliderProps) => {
-  const { slides } = props;
+  const { slides, gender } = props;
 
   if (!slides || slides.length === 0) return null;
+
+  const resolveHref = (
+    url?: string | null,
+    collection?: { handle?: string | null } | null,
+  ) => {
+    if (url) return url;
+    if (collection?.handle) {
+      return gender ? `/${gender}/${collection.handle}` : `/${collection.handle}`;
+    }
+    return null;
+  };
+
+  const getSlideHref = (slide: Slide) =>
+    resolveHref(slide.link?.url, slide.collection) ?? '/';
+
+  const getButtonHref = (btn: SlideButton) =>
+    resolveHref(btn.url, btn.collection) ?? '/';
+
+  const renderImages = (slide: Slide, index: number) => (
+    <>
+      {slide.mobileImage?.asset && (
+        <Image
+          src={urlFor(slide.mobileImage.asset).url()}
+          alt={slide.description || 'Banner mobile'}
+          width={600}
+          height={900}
+          priority={index === 0}
+          className="block md:hidden object-cover w-full max-h-[60vh]"
+        />
+      )}
+      {slide.image?.asset && (
+        <Image
+          src={urlFor(slide.image.asset, 2560, 1040).url()}
+          alt={slide.description || 'Banner desktop'}
+          width={2560}
+          height={1040}
+          priority={index === 0}
+          className={`${slide.mobileImage?.asset ? 'hidden md:block' : 'block'} w-full`}
+        />
+      )}
+    </>
+  );
+
+  const renderOverlay = (slide: Slide, hasButtons: boolean) => (
+    <>
+      <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors" />
+      <div className="absolute bottom-12 left-6 md:bottom-20 md:left-16 z-10 max-w-[80%] flex flex-col gap-6">
+        {slide.description && (
+          <h2 className="text-white text-3xl md:text-4xl lg:text-4xl font-medium tracking-tight drop-shadow-lg">
+            {slide.description}
+          </h2>
+        )}
+        {hasButtons && slide.buttons && slide.buttons.length > 0 && (
+          <div className="flex flex-wrap gap-3">
+            {slide.buttons.map((btn) => (
+              <Link key={btn._key} href={getButtonHref(btn)}>
+                <Button
+                  variant={btn.variant ?? 'secondary'}
+                  className="min-w-[140px] h-11 md:h-13 text-sm uppercase tracking-widest"
+                >
+                  {btn.label}
+                </Button>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
+  );
 
   return (
     <div className="hero-banner relative w-full overflow-hidden mx-auto 3xl:max-w-400">
@@ -29,74 +101,34 @@ export const HeroBanner = (props: HeroSliderProps) => {
           }),
         ]}
       >
-        <CarouselContent className="ml-0 ">
-          {slides.map((slide, index) => (
-            <CarouselItem
-              key={index}
-              className="pl-0 relative w-full text-pretty font-light leading-tight tracking-tight text-left text-2xl md:text-4xl"
-            >
-              <Link
-                prefetch
-                href={slide?.link?.url ?? '/'}
-                className="group relative flex w-full h-full justify-center"
+        <CarouselContent className="ml-0">
+          {slides.map((slide, index) => {
+            const hasButtons = !!slide.buttons?.length;
+            return (
+              <CarouselItem
+                key={index}
+                className="pl-0 relative w-full text-pretty font-light leading-tight tracking-tight text-left text-2xl md:text-4xl"
               >
-                {slide.image?.asset && (
-                  <>
-                    {/*<div className="block md:hidden  relative w-full h-full">
-                      <Image
-                        src={urlFor(slide.image.asset, 600, 700).url()}
-                        alt={slide.description || 'Banner mobile'}
-                        width={600}
-                        height={900}
-                        priority={index === 0}
-                        className="object-cover max-h-[500px]"
-                      />
-                    </div>
-
-                    <div className="hidden md:block relative w-full h-full">
-                      <Image
-                        src={urlFor(slide.image.asset, 1320, 535).url()}
-                        alt={slide.description || 'Banner desktop'}
-                        width={1320}
-                        height={535}
-                        priority={index === 0}
-                        className="object-cover"
-                      />
-                    </div>*/}
-                    {/*<div className="hidden lg:block relative w-full h-full">*/}
-                    <Image
-                      src={urlFor(slide.image.asset, 2560, 1040).url()}
-                      alt={slide.description || 'Banner desktop'}
-                      width={2560}
-                      height={1040}
-                      priority={index === 0}
-                      className="object-cover h-[350px] md:h-[530px] lg:h-[560px]"
-                    />
-                    {/*</div>*/}
-                  </>
+                {hasButtons ? (
+                  /* When buttons are present, slide is a plain div; buttons handle navigation */
+                  <div className="group relative flex w-full h-full justify-center">
+                    {renderImages(slide, index)}
+                    {renderOverlay(slide, true)}
+                  </div>
+                ) : (
+                  /* No buttons — entire slide is clickable */
+                  <Link
+                    prefetch
+                    href={getSlideHref(slide)}
+                    className="group relative flex w-full h-full justify-center"
+                  >
+                    {renderImages(slide, index)}
+                    {renderOverlay(slide, false)}
+                  </Link>
                 )}
-
-                <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors" />
-
-                <div className="absolute bottom-12 left-6 md:bottom-20 md:left-16 z-10 max-w-[80%] flex flex-col gap-6">
-                  {slide.description && (
-                    <h2 className="text-white text-3xl md:text-4xl lg:text-4xl font-medium tracking-tight drop-shadow-lg">
-                      {slide.description}
-                    </h2>
-                  )}
-
-                  {/*{slide.link && (
-                    <Button
-                      variant="secondary"
-                      className="w-fit min-w-[160px] h-12 md:h-14 text-sm md:text-base uppercase tracking-widest transition-transform group-hover:scale-105"
-                    >
-                      Shop now
-                    </Button>
-                  )}*/}
-                </div>
-              </Link>
-            </CarouselItem>
-          ))}
+              </CarouselItem>
+            );
+          })}
         </CarouselContent>
       </Carousel>
     </div>
