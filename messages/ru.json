@@ -724,5 +724,17 @@
     "code_applied": "Промокод применен",
     "order_note": "Примечание к заказу",
     "order_note_placeholder": "Введите примечание к заказу"
+  },
+  "RecentlyViewed": {
+    "title": "Недавно просмотренные"
+  },
+  "Newsletter": {
+    "heading": "Присоединяйтесь к нам и получите доступ к закрытым распродажам",
+    "forHer": "Для неё",
+    "forHim": "Для него",
+    "emailPlaceholder": "Ваш email",
+    "submit": "Подписаться",
+    "success": "Спасибо! Вы подписаны",
+    "emailError": "Введите корректный email"
   }
 }

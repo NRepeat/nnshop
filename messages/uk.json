@@ -724,5 +724,17 @@
     "code_applied": "Промокод застосовано",
     "order_note": "Примітка до замовлення",
     "order_note_placeholder": "Введіть примітку до замовлення"
+  },
+  "RecentlyViewed": {
+    "title": "Нещодавно переглянуті"
+  },
+  "Newsletter": {
+    "heading": "Приєднуйтесь до нас і отримайте доступ до закритих розпродажів",
+    "forHer": "Для неї",
+    "forHim": "Для нього",
+    "emailPlaceholder": "Ваш email",
+    "submit": "Підписатися",
+    "success": "Дякуємо! Ви підписані",
+    "emailError": "Введіть коректний email"
   }
 }
