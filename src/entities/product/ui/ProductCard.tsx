@@ -223,8 +223,8 @@ export const ProductCard = ({
               <div className="relative aspect-square  md:h-full w-full flex justify-center items-center rounded-t overflow-hidden">
                 <Image
                   className="object-cover w-[1000px] h-auto"
-                  src={productImages[0].url}
-                  alt={productImages[0].altText || ''}
+                  src={productImages[0]?.url || product.featuredImage?.url || ''}
+                  alt={productImages[0]?.altText || product.featuredImage?.altText || ''}
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 />
