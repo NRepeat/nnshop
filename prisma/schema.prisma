@@ -197,3 +197,14 @@ model RecentlyViewedProduct {
   @@index([viewedAt])
   @@map("recently_viewed_product")
 }
+
+model NewsletterSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  gender       String
+  subscribedAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("newsletter_subscriber")
+}
