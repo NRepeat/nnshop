@@ -147,3 +147,16 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 5. Observability & Scaling | 0/TBD | Not started | - |
 | 6. Pre-Launch UI Polish | 3/3 | Complete   | 2026-02-26 |
 | 7. Lighthouse Audit Fixes | 3/3 | Complete   | 2026-02-26 |
+
+### Phase 8: Recently Viewed Products section and Newsletter subscription section
+
+**Goal:** Session-aware recently viewed products carousel on home page and product detail pages, plus a newsletter subscription section on the home page with DB persistence
+**Requirements**: TBD
+**Depends on:** Phase 7
+**Plans:** 4 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — DB schema (NewsletterSubscriber migration), server actions (recordProductView, getProductsByHandles, subscribeToNewsletter), Zod schema, i18n keys
+- [ ] 08-02-PLAN.md — Recently Viewed UI (ViewTracker, RecentlyViewedSection) + product page integration
+- [ ] 08-03-PLAN.md — Newsletter UI (NewsletterForm, NewsletterSection) + home page integration + anonymous merge patch
+- [ ] 08-04-PLAN.md — Build verification + human-verify checkpoint
