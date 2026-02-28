@@ -46,7 +46,6 @@ const OrdersPageSkeleton = () => (
   </div>
 );
 
-
 export async function generateStaticParams() {
   const params = [];
   for (const locale of locales) {
@@ -63,7 +62,7 @@ export async function OrdersPageSession({ params, searchParams }: Props) {
   const { locale } = await params;
   const t = await getTranslations('OrderPage');
   const tHeader = await getTranslations('Header.nav');
-  
+
   const headersList = await headers();
   const session = await auth.api.getSession({ headers: headersList });
 
@@ -109,10 +108,12 @@ export async function OrdersPageSession({ params, searchParams }: Props) {
   ];
 
   return (
-    <div className="container mx-auto py-10 min-h-[60vh] my-2 mb-10 md:mt-10">
-      <Breadcrumbs items={breadcrumbItems} />
-      <h1 className="text-2xl font-bold my-4">{t('title')}</h1>
-      <OrderList orders={sortedOrders as any} />
+    <div className="container min-h-[100vh] ">
+      <div className="flex flex-col gap-4 md:gap-8 mt-8">
+        <Breadcrumbs items={breadcrumbItems} />
+        <h1 className="text-2xl font-bold ">{t('title')}</h1>
+        <OrderList orders={sortedOrders as any} />
+      </div>
     </div>
   );
 }
@@ -123,4 +124,3 @@ export default async function OrdersPage({ params, searchParams }: Props) {
     </Suspense>
   );
 }
-

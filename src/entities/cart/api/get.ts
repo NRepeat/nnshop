@@ -66,6 +66,12 @@ const CART_QUERY = `#graphql
                 currencyCode
               }
             }
+            discountAllocations {
+              discountedAmount {
+                amount
+                currencyCode
+              }
+            }
             attributes {
               key
               value
@@ -80,6 +86,12 @@ const CART_QUERY = `#graphql
       discountCodes {
         code
         applicable
+      }
+      discountAllocations{
+        discountedAmount{
+          amount
+        }
+
       }
       delivery {
         addresses {

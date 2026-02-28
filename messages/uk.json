@@ -546,7 +546,7 @@
     "shipping": "Доставка",
     "tax": "Податок",
     "items": "товарів",
-    "calculated_next": "Розраховується далі",
+    "calculated_next": "20грн +2% від вартості товару",
     "size_label": "Розмір",
     "quantity_label": "Кількість"
   },

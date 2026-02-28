@@ -135,7 +135,7 @@ export const ProductCard = ({
             >
               <div className="group relative md:aspect-square w-full ">
                 {isNew && (
-                  <Badge className="absolute rounded-md top-1.5  left-2 z-10 ">
+                  <Badge className="absolute rounded-md top-1  left-1 z-10 ">
                     {t('new')}
                   </Badge>
                 )}
@@ -215,7 +215,7 @@ export const ProductCard = ({
           ) : (
             <div className="group relative aspect-square w-full overflow-hidden">
               {isNew && (
-                <Badge className="absolute rounded-md top-1.5  left-2 z-10 ">
+                <Badge className="absolute rounded-md top-1  left-1 z-10 ">
                   {t('new')}
                 </Badge>
               )}
@@ -243,6 +243,20 @@ export const ProductCard = ({
                   </Button>
                 </div>
               )}
+                   <div
+                  className={cn(
+                    'absolute top-1.5  right-2 z-20   group-hover:block',
+                    {
+                      hidden: !isFav,
+                    },
+                  )}
+                >
+                  <FavSession
+                    fav={isFav}
+                    productId={product.id}
+                    handle={product.handle}
+                  />
+                </div>
             </div>
           )}
         </Link>

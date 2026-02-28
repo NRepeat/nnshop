@@ -7,7 +7,7 @@ export default function Loading() {
     <div className="container mx-auto py-10 min-h-screen mt-2 md:mt-10">
       <BreadcrumbsSkeleton />
 
-      <div className="mt-4 space-y-6">
+      <div className="space-y-6">
         {/* Header card with timeline */}
         <Card className="shadow-sm">
           <CardHeader>

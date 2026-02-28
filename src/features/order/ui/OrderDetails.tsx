@@ -111,8 +111,8 @@ export const OrderDetails = async ({
   const payment = user?.paymentInformation ?? null;
 
   return (
-    <div className="mt-4 space-y-6">
-      <Card className="shadow-sm">
+    <div className="space-y-6">
+      <Card className="shadow px-0 rounded"  >
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -128,14 +128,14 @@ export const OrderDetails = async ({
             <OrderStatusBadge status={order.displayFulfillmentStatus} />
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className=''>
           <OrderTimeline status={order.displayFulfillmentStatus} />
         </CardContent>
       </Card>
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-6">
-          <Card className="shadow-sm">
+          <Card className="shadow px-0 rounded ">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <User className="w-4 h-4" />
@@ -157,7 +157,7 @@ export const OrderDetails = async ({
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm">
+          <Card className="shadow px-0 rounded">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <MapPin className="w-4 h-4" />
@@ -207,7 +207,7 @@ export const OrderDetails = async ({
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm">
+          <Card className="shadow px-0 rounded ">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <CreditCard className="w-4 h-4" />
@@ -243,7 +243,7 @@ export const OrderDetails = async ({
         </div>
 
         <div>
-          <Card className="shadow-sm">
+          <Card className="shadow px-0 rounded sticky top-[150px]">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Package className="w-4 h-4" />

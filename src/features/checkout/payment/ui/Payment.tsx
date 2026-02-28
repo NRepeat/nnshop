@@ -38,9 +38,8 @@ export default async function Payment({
     })) as GetCartQuery | null;
     if (cartResult && cartResult.cart) {
       currency = cartResult.cart.cost.totalAmount.currencyCode;
-      // Calculate total with znizka metafield discount applied
-      // Shopify cart total doesn't include znizka, so calculate locally
       const lines = cartResult.cart.lines.edges;
+      // Calculate znizka-discounted subtotal
       let localTotal = 0;
       for (const edge of lines) {
         const line = edge.node;
@@ -51,11 +50,14 @@ export default async function Payment({
         const discountedPrice = sale > 0 ? price * (1 - sale / 100) : price;
         localTotal += discountedPrice * line.quantity;
       }
-      // Also subtract any cart discount code discounts
-      const shopifySubtotal = Number(cartResult.cart.cost.subtotalAmount?.amount || 0);
+      const hasApplicableDiscount = cartResult.cart.discountCodes?.some((d) => d.applicable);
+      // If a discount code is applied, Shopify's total is authoritative (code applied to full prices)
+      // Use the minimum of the two to ensure the customer always pays the lower amount
       const shopifyTotal = Number(cartResult.cart.cost.totalAmount.amount);
-      const codeDiscount = shopifySubtotal > shopifyTotal ? shopifySubtotal - shopifyTotal : 0;
-      cartAmount = localTotal - codeDiscount;
+      const goodsTotal = hasApplicableDiscount ? Math.min(localTotal, shopifyTotal) : localTotal;
+      // Add shipping: 20 + 2% of goods total
+      const shippingFee = Math.round(20 + goodsTotal * 0.02);
+      cartAmount = goodsTotal + shippingFee;
     }
 
     const completeCheckoutData = await getCompleteCheckoutData(session);

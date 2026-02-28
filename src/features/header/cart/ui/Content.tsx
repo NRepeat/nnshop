@@ -102,20 +102,21 @@ const Content = async ({
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('discount')}</span>
               <span className="text-green-600 dark:text-green-400">
-                -{getCurrencySymbol(currencySymbol)}{' '}
+                -
                 {Math.round(discountAmount)
                   .toString()
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}{' '}
+                {getCurrencySymbol(currencySymbol)}
               </span>
             </div>
           )}
           <div className="flex justify-between font-medium">
             <span>{t('total')}</span>
             <span className="">
-              {getCurrencySymbol(currencySymbol)}{' '}
               {Math.round(totalAmount)
                 .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}{' '}
+              {getCurrencySymbol(currencySymbol)}
             </span>
           </div>
         </div>

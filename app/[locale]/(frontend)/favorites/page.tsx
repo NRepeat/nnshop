@@ -11,6 +11,7 @@ import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { locales } from '@shared/i18n/routing';
 import { FavoriteGridSkeleton } from '@features/favorites/ui/FavoriteProductCardSkeleton';
+import { ProductCard } from '@entities/product/ui/ProductCard';
 export async function generateStaticParams() {
   const params = [];
   for (const locale of locales) {
@@ -25,7 +26,7 @@ export default async function FavoritesPage({
   params: Promise<{ locale: string }>;
 }) {
   return (
-    <div className="container  py-10 mt-2 md:mt-10 h-fit min-h-screen ">
+    <div className="container h-fit min-h-screen ">
       <Suspense fallback={<FavoriteGridSkeleton />}>
         <FavoritesPageSession params={params} />
       </Suspense>
@@ -58,13 +59,18 @@ const FavoritesPageSession = async ({
 
   if (favoriteProducts.length === 0) {
     return (
-      <div className="py-10 mt-2 md:mt-10">
+      <div className=" flex flex-col gap-4 md:gap-8 mt-8">
         <Breadcrumbs items={breadcrumbItems} />
         <h1 className="text-2xl font-bold my-4">{t('title')}</h1>
         <Empty className="flex flex-col items-center justify-center min-h-[50vh]">
-          <Heart className="h-16 w-16 text-muted-foreground/30 mb-4" strokeWidth={1} />
+          <Heart
+            className="h-16 w-16 text-muted-foreground/30 mb-4"
+            strokeWidth={1}
+          />
           <EmptyHeader>
-            <EmptyTitle className="text-muted-foreground">{t('empty')}</EmptyTitle>
+            <EmptyTitle className="text-muted-foreground">
+              {t('empty')}
+            </EmptyTitle>
           </EmptyHeader>
         </Empty>
       </div>
@@ -76,26 +82,33 @@ const FavoritesPageSession = async ({
 
   if (products.length === 0) {
     return (
-      <div className="py-10 mt-2 md:mt-10">
+      <div className=" flex flex-col gap-4 md:gap-8 mt-8">
         <Breadcrumbs items={breadcrumbItems} />
         <h1 className="text-2xl font-bold my-4">{t('title')}</h1>
         <Empty className="flex flex-col items-center justify-center min-h-[50vh]">
-          <Heart className="h-16 w-16 text-muted-foreground/30 mb-4" strokeWidth={1} />
+          <Heart
+            className="h-16 w-16 text-muted-foreground/30 mb-4"
+            strokeWidth={1}
+          />
           <EmptyHeader>
-            <EmptyTitle className="text-muted-foreground">{t('empty')}</EmptyTitle>
+            <EmptyTitle className="text-muted-foreground">
+              {t('empty')}
+            </EmptyTitle>
           </EmptyHeader>
         </Empty>
       </div>
     );
   }
   return (
-    <div className="container mx-auto py-10 mt-2 md:mt-10">
-      <Breadcrumbs items={breadcrumbItems} />
-      <h1 className="text-2xl font-bold my-6">{t('title')}</h1>
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-        {products.map((product) => (
-          <FavoriteProductCard key={product.id} product={product} />
-        ))}
+    <div className="container ">
+      <div className=" flex flex-col gap-4 md:gap-8 mt-8">
+        <Breadcrumbs items={breadcrumbItems} />
+        <h1 className="text-2xl font-bold ">{t('title')}</h1>
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} isFav  className='px-0 py-0'/>
+          ))}
+        </div>
       </div>
     </div>
   );

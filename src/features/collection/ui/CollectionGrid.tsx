@@ -16,7 +16,7 @@ import { ActiveFiltersCarousel } from './ActiveFiltersCarousel';
 import { SortSelect } from './SortSelect';
 import { SearchParams } from '~/app/[locale]/(frontend)/(home)/[gender]/(collection)/[slug]/page';
 import { headers } from 'next/headers';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import { PathSync } from '@entities/path-sync/ui/path-sync';
 import { isProductFavorite } from '@features/product/api/isProductFavorite';
 import { auth } from '@features/auth/lib/auth';
@@ -50,14 +50,10 @@ const GENDER_SUFFIXES: Record<string, string[]> = {
 };
 
 function resolveCollectionHandle(slug: string, gender: string): string {
-  // Try appending each gender suffix — if the resulting handle exists in known set, use it
   const suffixes = GENDER_SUFFIXES[gender] || [];
   for (const suffix of suffixes) {
-    // Try as suffix: krosivky-ta-kedy → krosivky-ta-kedy-cholovichi
     const withSuffix = `${slug}-${suffix}`;
     if (GENDERED_HANDLES.has(withSuffix)) return withSuffix;
-
-    // Try as prefix: vzuttya → choloviche-vzuttya
     const withPrefix = `${suffix}-${slug}`;
     if (GENDERED_HANDLES.has(withPrefix)) return withPrefix;
   }

@@ -1,3 +1,6 @@
+import { BreadcrumbsSkeleton } from '@shared/ui/breadcrumbs';
+import { Skeleton } from '@shared/ui/skeleton';
+
 export const FavoriteProductCardSkeleton = () => {
   return (
     <div className="animate-pulse">
@@ -24,10 +27,16 @@ export const FavoriteProductCardSkeleton = () => {
 
 export const FavoriteGridSkeleton = () => {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-      {Array.from({ length: 10 }).map((_, i) => (
-        <FavoriteProductCardSkeleton key={i} />
-      ))}
+    <div className=" flex flex-col gap-4 md:gap-8 mt-8">
+      <BreadcrumbsSkeleton />
+      <p className="text-2xl font-bold ">
+        {<Skeleton className="h-4 w-[150px]" />}
+      </p>
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+        {Array.from({ length: 10 }).map((_, i) => (
+          <FavoriteProductCardSkeleton key={i} />
+        ))}
+      </div>
     </div>
   );
 };

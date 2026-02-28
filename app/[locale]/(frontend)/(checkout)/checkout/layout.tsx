@@ -9,7 +9,7 @@ import { connection } from 'next/server';
 
 function CheckoutLayoutSkeleton() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col mt-8">
       <div className="w-full py-4">
         <div className="flex items-center justify-between container">
           {[1, 2, 3, 4].map((i) => (
@@ -76,9 +76,9 @@ async function CheckoutLayoutContent({
   const completedSteps = await getCompletedSteps();
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col mt-8">
       <CheckoutStepper completedSteps={completedSteps} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 mb-10 container flex-1">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 mb-10 container flex-1 h-fit min-h-screen">
         {children}
         <Suspense fallback={<ReceiptSkeleton />}>
           {receipt}

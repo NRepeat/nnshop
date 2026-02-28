@@ -218,14 +218,15 @@ export default function ContactInfoForm({
           control={form.control}
           name="preferViber"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+            <FormItem className="flex flex-row items-center space-x-1 space-y-0">
               <FormControl>
                 <Checkbox
                   checked={field.value}
                   onCheckedChange={field.onChange}
+                  className='h-6 w-6'
                 />
               </FormControl>
-              <FormLabel className="text-sm font-normal cursor-pointer">
+              <FormLabel className="text-sm font-normal cursor-pointer ">
                 {t('preferViber')}
               </FormLabel>
             </FormItem>
@@ -234,7 +235,7 @@ export default function ContactInfoForm({
 
         <Button
           type="submit"
-          className="w-full rounded-md"
+          className="w-full rounded"
           size="lg"
           disabled={form.formState.isSubmitting}
         >

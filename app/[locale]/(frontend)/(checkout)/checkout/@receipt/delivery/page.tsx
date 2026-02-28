@@ -29,7 +29,7 @@ function ReceiptSkeleton() {
 
 function EmptyCard({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-md border border-dashed border-gray-200 bg-gray-50/50 p-4">
+    <div className="flex items-center gap-3 rounded border border-dashed border-gray-200 bg-gray-50/50 p-4">
       <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-400">
         {icon}
       </div>

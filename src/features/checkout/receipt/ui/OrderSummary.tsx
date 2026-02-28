@@ -12,6 +12,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@shared/ui/accordion';
+import { cn } from '@shared/lib/utils';
 
 interface OrderSummaryProps {
   locale: string;
@@ -35,10 +36,18 @@ interface CartItem {
 }
 
 function formatPrice(price: number): string {
-  return Math.round(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return Math.round(price)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 }
 
-function OrderItemCard({ item, currency }: { item: CartItem; currency: string }) {
+function OrderItemCard({
+  item,
+  currency,
+}: {
+  item: CartItem;
+  currency: string;
+}) {
   const currencySymbol = getCurrencySymbol(currency);
 
   return (
@@ -71,36 +80,30 @@ function OrderItemCard({ item, currency }: { item: CartItem; currency: string })
           </p>
         )}
 
-        {/* Price */}
-        <div className="flex items-center gap-2">
-          {item.sale > 0 ? (
-            <>
-              <span className="text-xs text-gray-400 line-through">
-                {formatPrice(item.price)}{currencySymbol}
-              </span>
-              <span className="text-sm font-medium text-red-600">
-                {formatPrice(item.discountedPrice)}{currencySymbol}
-              </span>
-            </>
-          ) : (
-            <span className="text-sm text-gray-700">
-              {formatPrice(item.price)}{currencySymbol}
-            </span>
-          )}
-        </div>
       </div>
 
       {/* Total Price */}
       <div className="flex-shrink-0 text-right">
-        <p className={`text-sm font-medium ${item.sale > 0 ? 'text-gray-900' : 'text-gray-900'}`}>
-          {formatPrice(item.totalPrice)}{currencySymbol}
+        <p
+          className={`text-sm font-medium `}
+        >
+          <span
+            className={cn('text-sm font-medium ', {
+              'text-red-600': item.sale > 0,
+            })}
+          >
+            {formatPrice(item.discountedPrice)} {currencySymbol}
+          </span>
         </p>
       </div>
     </div>
   );
 }
 
-export async function OrderSummary({ locale, collapsible = false }: OrderSummaryProps) {
+export async function OrderSummary({
+  locale,
+  collapsible = false,
+}: OrderSummaryProps) {
   const t = await getTranslations({ locale, namespace: 'ReceiptPage' });
   const session = await auth.api.getSession({ headers: await headers() });
 
@@ -108,10 +111,10 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
     return null;
   }
 
-  const cartResult = await getCart({
+  const cartResult = (await getCart({
     userId: session.user.id,
     locale,
-  }) as GetCartQuery | null;
+  })) as GetCartQuery | null;
 
   if (!cartResult?.cart || cartResult.cart.lines.edges.length === 0) {
     return null;
@@ -125,16 +128,24 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
   const items: CartItem[] = cart.lines.edges.map((edge) => {
     const line = edge.node;
     const product = line.merchandise.product;
-    const sale = Number(product.metafields?.find((m) => m?.key === 'znizka')?.value || '0') || 0;
+    const sale =
+      Number(
+        product.metafields?.find((m) => m?.key === 'znizka')?.value || '0',
+      ) || 0;
     const price = Number(line.cost.amountPerQuantity.amount);
     const discountedPrice = price - (price * sale) / 100;
-    const totalPrice = sale > 0 ? discountedPrice * line.quantity : price * line.quantity;
+    const totalPrice =
+      sale > 0 ? discountedPrice * line.quantity : price * line.quantity;
 
     const sizeOption = line.merchandise.selectedOptions?.find(
-      (opt) => opt.name.toLowerCase() === 'розмір' || opt.name.toLowerCase() === 'size'
+      (opt) =>
+        opt.name.toLowerCase() === 'розмір' ||
+        opt.name.toLowerCase() === 'size',
     );
     const colorOption = line.merchandise.selectedOptions?.find(
-      (opt) => opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'колір'
+      (opt) =>
+        opt.name.toLowerCase() === 'color' ||
+        opt.name.toLowerCase() === 'колір',
     );
 
     return {
@@ -156,21 +167,20 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
 
   // Calculate totals with discounts
   const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
-  const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
 
   // Get discount codes from cart
   const discountCodes = cart.discountCodes || [];
   const hasApplicableDiscount = discountCodes.some((d) => d.applicable);
 
-  // Shopify's total doesn't include znizka metafield discount, so use locally calculated subtotal
-  // Only apply Shopify's discount code reductions on top
-  const shopifySubtotal = Number(cart.cost.subtotalAmount.amount);
+  // Use Shopify's authoritative total (based on full prices minus code discounts)
   const shopifyTotal = Number(cart.cost.totalAmount.amount);
-  const codeDiscount = hasApplicableDiscount && shopifySubtotal > shopifyTotal
-    ? shopifySubtotal - shopifyTotal
-    : 0;
-  const totalAmount = subtotal - codeDiscount;
-  const discountAmount = codeDiscount;
+  // Total shown to user: Shopify total when code is applied, znizka subtotal otherwise
+  const totalAmount = hasApplicableDiscount ? shopifyTotal : subtotal;
+  // Effective discount = difference between what user sees (znizka prices) and what they pay
+  const discountAmount = hasApplicableDiscount ? Math.max(0, subtotal - shopifyTotal) : 0;
+  // Shipping fee: 20 + 2% of goods total
+  const shippingFee = Math.round(20 + totalAmount * 0.02);
+  const grandTotal = totalAmount + shippingFee;
 
   const content = (
     <>
@@ -183,15 +193,9 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
 
       {/* Totals */}
       <div className="border-t border-gray-200 mt-2 pt-3 px-4 pb-4 space-y-2">
-        {/* <div className="flex justify-between text-sm">
-          <span className="text-gray-500">{t('subtotal')}</span>
-          <span className="text-gray-900">{formatPrice(subtotal)}{currencySymbol}</span>
-        </div> */}
-
-        {/* Show discount codes and amount */}
         {hasApplicableDiscount && (
           <>
-            <div className="flex justify-between text-sm text-green-600">
+            <div className="flex justify-between text-sm ">
               <div className="flex flex-col gap-1">
                 <span>{t('discount')}</span>
                 {discountCodes
@@ -202,18 +206,26 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
                     </span>
                   ))}
               </div>
-              <span>-{formatPrice(discountAmount)}{currencySymbol}</span>
+              <span className='text-green-600'>
+                -{formatPrice(discountAmount)}{" "}
+                {currencySymbol}
+              </span>
             </div>
           </>
         )}
 
         <div className="flex justify-between text-sm">
           <span className="text-gray-500">{t('shipping')}</span>
-          <span className="text-gray-500 text-xs">{t('calculated_next')}</span>
+          <span className="text-gray-500">
+            {formatPrice(shippingFee)} {currencySymbol}
+          </span>
         </div>
         <div className="flex justify-between text-base font-medium pt-2 border-t border-gray-100">
           <span className="text-gray-900">{t('total')}</span>
-          <span className="text-gray-900">{formatPrice(totalAmount)}{currencySymbol}</span>
+          <span className="text-gray-900">
+            {formatPrice(grandTotal)}{" "}
+            {currencySymbol}
+          </span>
         </div>
       </div>
     </>
@@ -221,35 +233,44 @@ export async function OrderSummary({ locale, collapsible = false }: OrderSummary
 
   if (collapsible) {
     return (
-      <Accordion type="single" collapsible className="border border-gray-200 bg-white md:hidden rounded-md">
+      <Accordion
+        type="single"
+        collapsible
+        className="border border-gray-200 bg-white md:hidden rounded"
+      >
         <AccordionItem value="order-summary" className="border-none">
           <AccordionTrigger className="p-4 hover:no-underline">
             <div className="flex items-center gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-gray-100">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded bg-gray-100">
                 <ShoppingBag className="size-5 text-gray-600" />
               </div>
               <div className="text-left">
-                <p className="text-sm font-medium text-gray-900">{t('products_title')}</p>
-                <p className="text-xs text-gray-500">{formatPrice(totalAmount)}{currencySymbol}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {t('products_title')}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {formatPrice(grandTotal)}{" "}
+                  {currencySymbol}
+                </p>
               </div>
             </div>
           </AccordionTrigger>
-          <AccordionContent className="pb-0">
-            {content}
-          </AccordionContent>
+          <AccordionContent className="pb-0">{content}</AccordionContent>
         </AccordionItem>
       </Accordion>
     );
   }
 
   return (
-    <div className="border border-gray-200 bg-white rounded-md">
+    <div className="border border-gray-200 bg-white rounded">
       <div className="flex items-center gap-3 p-4 border-b border-gray-100">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-gray-100">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded bg-gray-100">
           <ShoppingBag className="size-5 text-gray-600" />
         </div>
         <div>
-          <p className="text-sm font-medium text-gray-900">{t('products_title')}</p>
+          <p className="text-sm font-medium text-gray-900">
+            {t('products_title')}
+          </p>
         </div>
       </div>
       {content}
@@ -261,7 +282,7 @@ export function OrderSummarySkeleton() {
   return (
     <div className="border border-gray-200 bg-white animate-pulse">
       <div className="flex items-center gap-3 p-4 border-b border-gray-100">
-        <div className="w-10 h-10 rounded-md bg-gray-100" />
+        <div className="w-10 h-10 rounded bg-gray-100" />
         <div className="flex-1">
           <div className="h-4 w-20 bg-gray-100 rounded mb-1" />
           <div className="h-3 w-16 bg-gray-100 rounded" />

@@ -35,7 +35,7 @@ export default function UkrPoshtaForm() {
   const t = useTranslations('DeliveryForm');
 
   return (
-    <div className=" border border-gray-200 p-6 ">
+    <div className=" border border-gray-200 p-6 rounded">
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
           {t('deliveryAddress')}

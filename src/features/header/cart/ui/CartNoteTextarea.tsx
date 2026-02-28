@@ -30,6 +30,7 @@ export const CartNoteTextarea = ({ placeholder }: CartNoteTextareaProps) => {
     <Textarea
       placeholder={placeholder}
       value={note}
+      className='rounded'
       onChange={handleChange}
     />
   );

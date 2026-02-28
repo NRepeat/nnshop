@@ -30,8 +30,11 @@ const CartItem = ({
 
   return (
     <Card className="p-0 shadow-none">
-      <Link href={'/product/' + product.handle} className="flex col-span-1">
-        <CardContent className="grid grid-cols-[164px_1fr_0.6fr] gap-3  shadow-none relative px-0 pt-4">
+      <Link
+        href={'/product/' + product.handle}
+        className="flex col-span-1 w-full"
+      >
+        <CardContent className="grid grid-cols-[140px_1fr_0.6fr] gap-3  shadow-none relative px-0 w-full">
           <div className="relative w-36 h-36 shrink-0">
             <Image
               className="object-cover"
@@ -55,14 +58,16 @@ const CartItem = ({
           </div>
           <div className="col-span-1 flex flex-col justify-center">
             <p
-              className={cn('justify-items-end text-right', {
+              className={cn('justify-items-end text-right gap-1 flex justify-end md:flex-row flex-col', {
                 'text-red-500': sale > 0,
               })}
             >
-              {Math.round(Number(product.totalPrice))
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
-              {getCurrencySymbol('UAH')}
+              <span>
+                {Math.round(Number(product.totalPrice))
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
+              </span>
+              <span>{getCurrencySymbol('UAH')}</span>
             </p>
             <div className="absolute top-2 -right-0.5 mr-1 mt-1 z-10">
               <RemoveItemButton cartId={cartId} itemId={itemId} />

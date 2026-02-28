@@ -48,13 +48,13 @@ export const Thank = async ({
   return (
     <div className="flex justify-center dark:bg-gray-900">
       <Card className="w-full max-w-full p-0 shadow-none">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold">{t('title')}</CardTitle>
+        <CardHeader className='px-0'>
+          <CardTitle className="text-3xl  font-bold">{t('title')}</CardTitle>
           <CardDescription className="text-gray-500 dark:text-gray-400">
             {t('order_confirmation')}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 px-0">
           <div className="space-y-2">
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {t('order_id')}
@@ -65,8 +65,8 @@ export const Thank = async ({
             {t('order_confirmation_text')}
           </p>
         </CardContent>
-        <CardFooter>
-          <Button asChild className="w-full">
+        <CardFooter className='px-0'>
+          <Button asChild className="w-full rounded">
             <Link href="/">{t('continue_shopping')}</Link>
           </Button>
         </CardFooter>

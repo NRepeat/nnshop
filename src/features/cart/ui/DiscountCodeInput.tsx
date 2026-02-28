@@ -72,12 +72,13 @@ export const DiscountCodeInput = ({
           <Input
             placeholder={t('discount_code')}
             value={code}
+            
             onChange={(e) => {
               setCode(e.target.value);
               setError(null);
             }}
             onKeyDown={handleKeyDown}
-            className="pl-10"
+            className="pl-10 rounded"
             disabled={isPending}
           />
         </div>
@@ -86,6 +87,7 @@ export const DiscountCodeInput = ({
           disabled={isPending || !code.trim()}
           variant="outline"
           size="default"
+          className='rounded'
         >
           {isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" />

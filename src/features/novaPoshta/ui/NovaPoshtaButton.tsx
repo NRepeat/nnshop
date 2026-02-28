@@ -170,7 +170,7 @@ export default function NovaPoshtaButton({
   return (
     <>
       <div
-        className={`${styles.novaPoshtaButton} ${styles.buttonHorizontal} ${styles.textRow} ${className}`}
+        className={`${styles.novaPoshtaButton} ${styles.buttonHorizontal} ${styles.textRow} ${className} rounded!`}
         onClick={openFrame}
         data-selected-department-id={selectedDepartmentId}
       >

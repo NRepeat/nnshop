@@ -85,8 +85,9 @@ export const Footer = async ({ locale }: { locale: string }) => {
 
   return (
     <footer className="bg-[#1a1a1a] text-white  ">
-      <div className=" mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+      <div className="container ">
+        
+        <div className="grid px-4 py-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
 
           {/* Column 1 — Logo, socials, newsletter, payment */}
           <div className="flex flex-col gap-5 w-full">

@@ -74,18 +74,16 @@ const CartSheet = async ({ locale }: { locale: string }) => {
     0,
   );
   const discountCodes = (cart?.cart?.discountCodes || []).filter((d) => d.applicable);
+  const hasApplicableDiscount = discountCodes.length > 0;
 
-  // Calculate totals with znizka discount applied
-  // Shopify cart doesn't know about znizka metafield, so we use locally calculated estimateTotal
-  const shopifySubtotal = Number(cart?.cart?.cost?.subtotalAmount?.amount || 0);
-  const shopifyTotal = Number(cart?.cart?.cost?.totalAmount?.amount || 0);
-  // Discount from cart discount codes (not znizka)
-  const codeDiscount = shopifySubtotal > shopifyTotal ? shopifySubtotal - shopifyTotal : 0;
   // subtotalAmount = locally calculated total with znizka applied
   const subtotalAmount = estimateTotal || 0;
-  // Final total = znizka-applied subtotal minus any cart discount code discounts (min 0)
-  const totalAmount = Math.max(0, subtotalAmount - codeDiscount);
-  const discountAmount = codeDiscount;
+  // Use Shopify's authoritative total (based on full prices minus code discount)
+  const shopifyTotal = Number(cart?.cart?.cost.totalAmount.amount ?? subtotalAmount);
+  // Total shown: Shopify total when code applied, znizka subtotal otherwise
+  const totalAmount = hasApplicableDiscount ? shopifyTotal : subtotalAmount;
+  // Effective discount = what user saves on top of znizka prices
+  const discountAmount = hasApplicableDiscount ? Math.max(0, subtotalAmount - shopifyTotal) : 0;
 
   return (
     <>

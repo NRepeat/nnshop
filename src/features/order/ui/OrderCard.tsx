@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@shared/i18n/navigation';
 import { Card, CardContent, CardHeader } from '@shared/ui/card';
 import { OrderStatusBadge } from './OrderStatusBadge';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 
 type LineItem = {
   title: string;
@@ -74,8 +75,8 @@ export const OrderCard = ({ order }: OrderCardProps) => {
 
   return (
     <Link href={`/orders/${numericId}`}>
-      <Card className="h-full transition-all hover:shadow-md hover:border-primary/50 cursor-pointer">
-        <CardHeader className="pb-2">
+      <Card className="group h-full transition-all hover:shadow-md hover:border-primary/50 cursor-pointer rounded p-4">
+        <CardHeader className="pb-2 px-0">
           <div className="flex items-center justify-between gap-2">
             <span className="font-semibold text-lg">{order.name}</span>
             <OrderStatusBadge status={order.displayFulfillmentStatus} />
@@ -97,7 +98,7 @@ export const OrderCard = ({ order }: OrderCardProps) => {
               ) : (
                 <span className="font-medium text-foreground">
                   {Math.round(Number(order.totalPriceSet.shopMoney.amount))}{' '}
-                  {order.totalPriceSet.shopMoney.currencyCode}
+                  {getCurrencySymbol(order.totalPriceSet.shopMoney.currencyCode)}
                 </span>
               )}
             </div>
@@ -109,7 +110,7 @@ export const OrderCard = ({ order }: OrderCardProps) => {
             </div>
           )}
         </CardHeader>
-        <CardContent>
+        <CardContent className='px-0'>
           {lineItems.length > 0 && (
             <div className="flex gap-2 mt-2">
               {lineItems.map(({ node: item }, index) => (
@@ -139,7 +140,7 @@ export const OrderCard = ({ order }: OrderCardProps) => {
               )}
             </div>
           )}
-          <div className="mt-3 text-sm text-primary hover:border-b hover:border-primary w-fit transition-colors">
+          <div className="mt-3 text-sm text-primary group-hover:underline  duration-300 decoration-transparent group-hover:decoration-primary  transition-all w-fit ">
             {t('viewDetails')} →
           </div>
         </CardContent>

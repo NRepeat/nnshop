@@ -16,6 +16,7 @@ import {
 import { JsonLd } from '@shared/ui/JsonLd';
 import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
 import { cookies } from 'next/headers';
+import { ProductCard } from '@entities/product/ui/ProductCard';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
 
@@ -108,7 +109,7 @@ export async function ProductView({
           </p>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 mx-auto max-w-5xl py-0 w-full">
             {relatedProducts.slice(0, 3).map((p) => (
-              <ProductCardSPP product={p} key={p.id} />
+              <ProductCard product={p} key={p.id} />
             ))}
           </div>
         </div>

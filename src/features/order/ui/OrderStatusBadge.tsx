@@ -36,5 +36,5 @@ export const OrderStatusBadge = ({ status }: OrderStatusBadgeProps) => {
     }
   };
 
-  return <Badge variant={variant}>{getStatusLabel(status)}</Badge>;
+  return <Badge className='rounded' variant={variant}>{getStatusLabel(status)}</Badge>;
 };

@@ -48,21 +48,12 @@ export const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
 
 export const BreadcrumbsSkeleton = () => {
   return (
-    <Breadcrumb>
-      <BreadcrumbList>
-        <div className="flex items-center">
-          <BreadcrumbItem>
-            <Skeleton className="h-4 w-20" />
-          </BreadcrumbItem>
-          <BreadcrumbSeparator className="px-2 pt-0.5" />
-        </div>
-        <div className="flex items-center">
-          <BreadcrumbItem>
-            <Skeleton className="h-4 w-24" />
-          </BreadcrumbItem>
-        </div>
-      </BreadcrumbList>
-    </Breadcrumb>
+    <div className="flex gap-2">
+      <Skeleton className="h-4 w-20" />
+      <Skeleton className="h-4 w-4" />
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-4 w-4" />
+      <Skeleton className="h-4 w-28" />
+    </div>
   );
 };
-
