@@ -44,7 +44,7 @@ const TextContentComponent = ({
     {linkUrl && linkUrl?.handle && (
       <Button
         variant="link"
-        className={`h-auto p-0 text-base uppercase tracking-widest transition-all group-hover:opacity-70 ${
+        className={`h-auto p-0 text-base uppercase tracking-widest group-hover:underline  duration-300 decoration-transparent group-hover:decoration-primary  transition-all group-hover:opacity-70 ${
           mobile ? 'text-white  border-white' : 'text-black  border-black'
         } rounded-md`}
       >
@@ -61,7 +61,7 @@ export function SplitImage(props: SplitGridProps) {
       ? resolveCollectionLink(collection, locale, gender)
       : null;
   const ImageComponent = image ? (
-    <div className="group relative h-[600px] w-[600px] overflow-hidden rounded bg-gray-100">
+    <div className="group relative w-full h-full aspect-square overflow-hidden rounded bg-gray-100 ">
       <Image
         className="transition-transform duration-700 ease-in-out group-hover:scale-105"
         src={urlFor(image).width(600).height(600).url()}
@@ -74,7 +74,7 @@ export function SplitImage(props: SplitGridProps) {
     </div>
   ) : null;
   return (
-    <section className="container">
+    <section className="container group">
       <div className="py-8 md:py-8">
         <Link
           href={linkUrl && linkUrl.handle ? linkUrl.handle : ''}
@@ -88,7 +88,7 @@ export function SplitImage(props: SplitGridProps) {
             <div className="relative aspect-square w-full overflow-hidden    md:w-[600px] max-h-[600px]">
               {ImageComponent}
 
-              <div className=" absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[2px] md:hidden">
+              <div className="rounded absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[2px] md:hidden">
                 <TextContentComponent
                   mobile
                   title={title as string | null}

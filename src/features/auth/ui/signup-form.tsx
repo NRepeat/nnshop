@@ -54,14 +54,13 @@ export function SignupForm({
 
   const handleSubmit = createSignUpHandler(tErrors, tSuccess);
   const handleGoogleSignIn = createGoogleSignInHandler(tErrors);
-  const handleShopifySignIn = createShopifySignInHandler(tErrors);
 
   return (
     <div
       className={cn('flex flex-col gap-6 w-full max-w-3xl', className)}
       {...props}
     >
-      <Card className="overflow-hidden p-0 rounded-md shadow-none border-none">
+      <Card className="overflow-hidden p-0 rounded shadow-none border-none">
         <CardContent className="grid p-0 md:grid-cols-2">
           <Form {...form}>
             <form
@@ -97,7 +96,7 @@ export function SignupForm({
                           autoComplete="email"
                           placeholder={t('emailPlaceholder')}
                           disabled={isLoading}
-                          className="rounded-md"
+                          className="rounded"
                         />
                       </FormControl>
                       <FormMessage />
@@ -123,7 +122,7 @@ export function SignupForm({
                             autoComplete="new-password"
                             placeholder={t('passwordPlaceholder')}
                             disabled={isLoading}
-                            className="rounded-md"
+                            className="rounded"
                           />
                         </FormControl>
                         <FormMessage />
@@ -146,7 +145,7 @@ export function SignupForm({
                             autoComplete="new-password"
                             placeholder={t('confirmPasswordPlaceholder')}
                             disabled={isLoading}
-                            className="rounded-md"
+                            className="rounded"
                           />
                         </FormControl>
                         <FormMessage />
@@ -162,7 +161,7 @@ export function SignupForm({
                 <Button 
                   type="submit" 
                   disabled={isLoading} 
-                  className="w-full rounded-md h-11"
+                  className="w-full rounded h-11"
                 >
                   {isLoading ? t('creatingAccount') : t('createAccountButton')}
                 </Button>
@@ -177,7 +176,7 @@ export function SignupForm({
                   {/* <Button
                     variant="outline"
                     type="button"
-                    className="rounded-md h-11"
+                    className="rounded h-11"
                     disabled={isLoading}
                     onClick={async () => {
                       setIsLoading(true);
@@ -194,7 +193,7 @@ export function SignupForm({
                   <Button
                     variant="outline"
                     type="button"
-                    className="rounded-md h-11 group hover:border-[#4285F4] hover:bg-[#4285F4]/5 transition-all"
+                    className="rounded h-11 group hover:border-[#4285F4] hover:bg-[#4285F4]/5 transition-all"
                     disabled={isLoading}
                     onClick={async () => {
                       setIsLoading(true);

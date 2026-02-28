@@ -5,7 +5,8 @@ import {} from './action';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Image from 'next/image';
-import { Link } from '@shared/i18n/navigation';import { useState } from 'react';
+import { Link } from '@shared/i18n/navigation';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
@@ -84,8 +85,8 @@ export function ForgotPasswordForm({
         className={cn('flex flex-col gap-6 w-full max-w-3xl ', className)}
         {...props}
       >
-      <Card className="overflow-hidden p-0 rounded-md shadow-none border-none">
-          <CardContent className="grid p-0 md:grid-cols-2 rounded-md border-none">
+        <Card className="overflow-hidden p-0 rounded shadow-none border-none">
+          <CardContent className="grid p-0 md:grid-cols-2 rounded border-none">
             <div className="p-6 space-y-6">
               <div className="flex flex-col items-center gap-2 text-center">
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
@@ -154,8 +155,8 @@ export function ForgotPasswordForm({
       className={cn('flex flex-col gap-6 w-full max-w-3xl  ', className)}
       {...props}
     >
-     <Card className="overflow-hidden p-0 rounded-md shadow-none border-none">
-        <CardContent className="grid p-0 md:grid-cols-2 rounded-md shadow-none border-none">
+      <Card className="overflow-hidden p-0 rounded shadow-none border-none">
+        <CardContent className="grid p-0 md:grid-cols-2 rounded shadow-none border-none">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
@@ -192,15 +193,18 @@ export function ForgotPasswordForm({
                 />
 
                 <Field>
-                  <Button type="submit" disabled={isLoading} className="w-full">
+                  <Button type="submit" disabled={isLoading} className="w-full rounded">
                     {isLoading ? t('sending') : t('sendResetLink')}
                   </Button>
                 </Field>
 
                 <FieldDescription className="text-center">
                   {t('rememberPassword')}{' '}
-                  <Link href="/auth/sign-in" className="underline"  
-                  scroll={false}> 
+                  <Link
+                    href="/auth/sign-in"
+                    className="underline"
+                    scroll={false}
+                  >
                     {t('signIn')}
                   </Link>
                 </FieldDescription>
@@ -222,7 +226,7 @@ export function ForgotPasswordForm({
       </Card>
       <FieldDescription className="px-6 text-center">
         {tCommon('byClickingContinue')}{' '}
-        <Link href="/terms-of-service" className="underline" >
+        <Link href="/terms-of-service" className="underline">
           {tCommon('termsOfService')}
         </Link>{' '}
         {tCommon('and')}{' '}

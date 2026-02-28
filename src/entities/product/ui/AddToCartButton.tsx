@@ -9,7 +9,6 @@ import { Product } from '@shared/types/product/types';
 import { useTranslations } from 'next-intl';
 import clsx from 'clsx';
 import { authClient } from '@features/auth/lib/auth-client';
-import { useRouter } from 'next/navigation';
 
 function SubmitButton({
   variant = 'default',
@@ -36,7 +35,7 @@ function SubmitButton({
       type="submit"
       //@ts-expect-error
       variant={variant}
-      className="w-full h-10 md:h-14 text-md rounded-md"
+      className="w-full h-10 md:h-14 text-md rounded"
       disabled={disabled || pending}
       aria-disabled={pending}
     >
@@ -62,9 +61,7 @@ export function AddToCartButton({
 }) {
   const [isPending, setIsPending] = useState(false);
   const t = useTranslations('ProductPage');
-  const router = useRouter();
 
-  // Check product availability
   const isProductAvailable = selectedVariant
     ? selectedVariant?.quantityAvailable !== 0
     : //@ts-ignore
@@ -76,7 +73,6 @@ export function AddToCartButton({
       toast.warning(t('variantNotSelected')+"!",{style:{justifyContent:"center",backgroundColor:"#FFF4E5",color:"#B98900",border:"1px solid #FFCC47"}});
       return
     }
-    // Check if product is available before proceeding
     if (!isProductAvailable) {
       toast.error(t('productNotAvailable'));
       return;
@@ -108,10 +104,8 @@ export function AddToCartButton({
 
       if (result.success) {
         toast.success(t('addedToCart'));
-        // router.refresh();
         onSuccess?.();
       } else {
-        // Show specific error message or generic one
         const errorMessage =
           result.message === 'No products available'
             ? t('productNotAvailable')

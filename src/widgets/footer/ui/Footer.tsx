@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { sanityFetch } from '@shared/sanity/lib/client';
 import { FOOTER_QUERY } from '@shared/sanity/lib/query';
 import { Phone, Mail } from 'lucide-react';
+import { Input } from '@shared/ui/input';
 
 // Inline brand icons (lucide-react has no brand icons)
 const FacebookIcon = () => (
@@ -113,14 +114,16 @@ export const Footer = async ({ locale }: { locale: string }) => {
             <div className="flex flex-col gap-2">
               <p className="text-sm font-semibold text-white">{t('subscribe_title')}</p>
               <form className="flex">
-                <input
+                <Input
+                  id="email"
+                  name="email"
                   type="email"
                   placeholder={t('subscribe_placeholder')}
-                  className="flex-1 bg-transparent border border-white/30 text-sm text-white placeholder-white/40 px-3 py-2 focus:outline-none focus:border-white/60 min-w-0"
+                  className="flex-1 rounded-r-none bg-transparent border border-white/30 text-sm text-white placeholder-white/40 px-3 py-2 focus:outline-none focus:border-white/60 min-w-0"
                 />
                 <button
                   type="submit"
-                  className="bg-white text-black text-sm font-medium px-4 py-2 hover:bg-white/90 transition-colors whitespace-nowrap"
+                  className="bg-white rounded rounded-l-none text-black text-sm font-medium px-4 py-2 hover:bg-white/90 transition-colors whitespace-nowrap"
                 >
                   {t('subscribe_button')}
                 </button>

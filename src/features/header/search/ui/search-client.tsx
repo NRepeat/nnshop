@@ -16,8 +16,8 @@ import {
   EmptyTitle,
 } from '@shared/ui/empty';
 import { Skeleton } from '@shared/ui/skeleton';
-import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
+import { ProductCard } from '@entities/product/ui/ProductCard';
 
 type PredictiveSearchResult = NonNullable<
   PredictiveSearchQuery['predictiveSearch']
@@ -104,7 +104,6 @@ export const SearchClient = ({ className }: { className?: string }) => {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Overlay background */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -151,7 +150,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
                   <div className="py-8">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                       {Array.from({ length: 8 }).map((_, i) => (
-                        <div key={i} className="flex flex-col gap-2">
+                        <div key={i} className="flex flex-col gap-2 max-h-[]">
                           <Skeleton className="relative aspect-[3/4]" />
                           <div className="flex flex-col gap-2 mt-2">
                             <Skeleton className="h-4 w-4/5" />
@@ -193,34 +192,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
                           className="group flex flex-col gap-2"
                           onClick={() => setIsOpen(false)}
                         >
-                            <ProductCardSPP
-                            link={false}
-                            product={product as Product}
-                            key={product.id}
-                          />
-                          {/* <div className="relative aspect-[3/4] bg-background overflow-hidden">
-                            {product.featuredImage?.url && (
-                              <Image
-                                src={product.featuredImage.url}
-                                alt={product.title}
-                                fill
-                                className="object-contain"
-                              />
-                            )}
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                              <PlusIcon className="w-5 h-5" />
-                            </Button>
-                          </div>
-                          <div className="flex flex-col">
-                            <h3 className="text-sm font-medium">
-                              {product.title}
-                            </h3>
-                            <p className="text-sm text-gray-600">{`${product.variants.edges[0]?.node.price.amount} ${product.variants.edges[0]?.node.price.currencyCode}`}</p>
-                          </div> */}
+                           <ProductCard product={product as Product} withCarousel={false} />
                         </Link>
                       ))}
                     </div>

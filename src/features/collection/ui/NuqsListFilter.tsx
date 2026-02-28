@@ -48,7 +48,6 @@ export function NuqsListFilter({ filter }: Props) {
     >
       <ul className="space-y-2">
         {[...filter.values]
-          // .sort((a, b) => a.label.localeCompare(b.label))
           .map((value) => {
             const isChecked = selectedValues.includes(toFilterSlug(value.label));
             const isChanging = changingFilter === toFilterSlug(value.label);
@@ -63,11 +62,12 @@ export function NuqsListFilter({ filter }: Props) {
                       disabled={value.count === 0 && !isChecked}
                       checked={isChecked}
                       onCheckedChange={() => handleFilterChange(value)}
+                      className='h-6 w-6 cursor-pointer'
                     />
                   )}
                   <span
-                    className={cn('capitalize', {
-                      'text-muted-foreground': value.count === 0 && !isChecked,
+                    className={cn('text-md', {
+                      'text-muted-foreground ': value.count === 0 && !isChecked,
                     })}
                   >
                     {value.label} ({value.count})

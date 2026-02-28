@@ -43,17 +43,56 @@ const PREDICTIVE_SEARCH_QUERY = `#graphql
               currencyCode
              }
             }
-        variants(first: 1) {
-          edges {
-            node {
-              
-              price {
-                amount
-                currencyCode
+                featuredImage {
+              url
+              altText
+              width
+              height
+            }
+            tags
+            vendor
+             options {
+              name
+              optionValues {
+                name
               }
             }
-          }
-        }
+            media(first:20){
+                    edges{
+                      node{
+
+                            previewImage{
+                              url
+                              width
+                              height
+                              altText
+                          }
+                      }
+                    }
+                  }
+            variants(first: 250) {
+              edges {
+                node {
+                  id
+                  title
+                  availableForSale
+                  quantityAvailable
+                  price {
+                    amount
+                    currencyCode
+                  }
+                  compareAtPrice {
+                    amount
+                    currencyCode
+                  }
+                  selectedOptions {
+                    name
+                    value
+                  }
+
+                }
+              }
+            }
       }
     }
   }

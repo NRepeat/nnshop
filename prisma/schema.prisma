@@ -26,6 +26,7 @@ model User {
   deliveryInformation DeliveryInformation?
   paymentInformation  PaymentInformation?
   favoriteProducts    FavoriteProduct[]
+  recentlyViewed      RecentlyViewedProduct[]
 
   @@unique([email])
   @@map("user")
@@ -180,4 +181,19 @@ model FavoriteProduct {
 
   @@unique([userId, productId])
   @@index([userId])
+}
+
+model RecentlyViewedProduct {
+  id            String   @id @default(cuid())
+  userId        String
+  productId     String
+  productHandle String
+  viewedAt      DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([viewedAt])
+  @@map("recently_viewed_product")
 }

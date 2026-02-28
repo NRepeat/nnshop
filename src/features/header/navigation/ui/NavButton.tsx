@@ -7,10 +7,12 @@ export const NavButton = ({
   children,
   gender,
   slug,
+  className,
 }: {
   slug: string;
   children?: React.ReactNode;
   gender?: string;
+  className?: string;
 }) => {
   const onClick = async (genderValue: string) => {
     if (genderValue) {
@@ -25,11 +27,12 @@ export const NavButton = ({
   return (
     <Button
       className={cn(
-        'w-full cursor-pointer text-nowrap md:text-base font-300 font-sans h-full px-6 text-lg md:px-5 md:py-2',
-        'border-b-2 border-transparent transition-colors duration-200 hover:bg-accent/50',
+        'w-full cursor-pointer text-nowrap md:text-base font-300 font-sans h-full px-6 text-lg md:px-5 md:py-2    ',
+        'border-b-2 border-transparent hover:bg-accent/50 hover:underline  duration-300 decoration-transparent hover:decoration-primary  transition-all',
         {
-          'border-b-foreground': isActive,
+          'border-b-primary': isActive,
         },
+        className,
       )}
       variant={'ghost'}
       onClick={async () => await onClick(slug)}

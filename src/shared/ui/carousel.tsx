@@ -183,7 +183,7 @@ function CarouselPrevious({
       data-slot="carousel-previous"
       variant={variant}
       size={size}
-      className={cn(className)}
+      className={cn(className,"pr-0.5")}
       disabled={!canScrollPrev}
       onClick={handleNextClick}
       {...props}
@@ -214,7 +214,7 @@ function CarouselNext({
       data-slot="carousel-next"
       variant={variant}
       size={size}
-      className={cn(className)}
+      className={cn(className,'pl-0.5')}
       disabled={!canScrollNext}
       onClick={handleNextClick}
       {...props}

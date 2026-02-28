@@ -69,7 +69,6 @@ export function CollectionFilters({ filters, initialFilters }: Props) {
               <AccordionTrigger className="font-medium cursor-pointer w-full">
                 {filter.type === 'PRICE_RANGE'
                   ? t('filters.priceRange')
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   : FILTER_LABEL_KEYS[filter.id] ? t(FILTER_LABEL_KEYS[filter.id] as any) : filter.label}
               </AccordionTrigger>
               <AccordionContent>
@@ -85,7 +84,7 @@ export function CollectionFilters({ filters, initialFilters }: Props) {
                   if (filter.id === 'filter.p.m.custom.color') {
                     return <NuqsColorFilter filter={filter} />;
                   }
-                  if (filter.id === 'filter.p.m.custom.size' || filter.label === 'Розмір' || filter.label === 'Размер') {
+                  if (filter.id === 'filter.p.m.custom.rozmir' || filter.label === 'Розмір' || filter.label === 'Размер') {
                     return (
                       <NuqsButtonFilter
                         filter={filter}

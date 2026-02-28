@@ -6,6 +6,7 @@ import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
 import { useParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { ArrowUp } from 'lucide-react';
+import { Button } from '@shared/ui/button';
 
 export const ClientGridWrapper = ({
   initialPageInfo,
@@ -68,13 +69,13 @@ export const ClientGridWrapper = ({
       </div>
 
       {showScrollTop && (
-        <button
+        <Button
           onClick={scrollToTop}
           aria-label="Scroll to top"
           className="fixed bottom-6 right-6 z-50 w-10 h-10 bg-black text-white rounded-full shadow-lg flex items-center justify-center hover:bg-neutral-800 transition-colors"
         >
           <ArrowUp className="w-5 h-5" />
-        </button>
+        </Button>
       )}
     </div>
   );

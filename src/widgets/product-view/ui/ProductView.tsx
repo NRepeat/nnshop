@@ -26,7 +26,7 @@ export async function ProductView({
   locale,
   attributes,
   children,
-  inventoryLevels
+  inventoryLevels,
 }: {
   product: ShopifyProduct;
   relatedProducts: ShopifyProduct[];
@@ -63,7 +63,7 @@ export async function ProductView({
   ];
 
   return (
-    <div className="container  space-y-16 my-10 h-fit min-h-screen">
+    <div className="container  space-y-16 my-8 h-fit min-h-screen">
       <JsonLd data={generateBreadcrumbJsonLd(breadcrumbItems)} />
       <Breadcrumb>
         <BreadcrumbList>
@@ -113,8 +113,6 @@ export async function ProductView({
           </div>
         </div>
       )}
-
-      {/* <ProductComments /> */}
     </div>
   );
 }

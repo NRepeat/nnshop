@@ -1,4 +1,6 @@
-export const Spinner = () => {
+import clsx from 'clsx';
+
+export const Spinner = ({ className }: { className?: string }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -10,7 +12,7 @@ export const Spinner = () => {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="animate-spin h-4 w-4"
+      className={clsx('animate-spin h-6 w-6',  className )}
     >
       <path d="M21 12a9 9 0 1 1-6.219-8.56" />
     </svg>

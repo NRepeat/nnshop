@@ -25,10 +25,9 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
   const products = shopifyCollection.collection?.collection?.products.edges.map(
     (edge) => edge.node,
   );
-  // console.log(products?.splice(4, 10));
   const items = products?.map((product, index) => {
-    return <ProductCard product={product as Product}  withCarousel={false}  withInnerShadow
-    withQuick={false} className='py-2 hover:shadow rounded-b rounded-t '/>;
+    return <ProductCard product={product as Product}  withCarousel={false}  withSizes withInnerShadow
+    withQuick={false} className=' hover:shadow rounded-b rounded-t pt-0 px-0 '/>;
   });
 
   return (

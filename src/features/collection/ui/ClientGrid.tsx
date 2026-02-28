@@ -28,7 +28,7 @@ export const ClientGrid = ({
           >
             <ProductCard
               product={product}
-              className=" px-0"
+              className="hover:shadow pt-0 px-0 rounded"
               withCarousel
               isFav={product.isFav}
             />

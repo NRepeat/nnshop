@@ -51,7 +51,6 @@ export const SyncedCarousels = ({
   previews,
   gender,
 }: SyncedCarouselsProps) => {
-
   const [api1, setApi1] = useState<CarouselApi>();
   const initTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [api2, setApi2] = useState<CarouselApi>();
@@ -115,7 +114,7 @@ export const SyncedCarousels = ({
                       }
                       scroll
                       prefetch
-                      className=" w-full overflow-hidden flex justify-center"
+                      className=" w-full overflow-hidden flex justify-center h-full"
                     >
                       <Image
                         src={urlFor(preview).url()}
@@ -141,21 +140,21 @@ export const SyncedCarousels = ({
           />
         </Carousel>
       </div>
-      <div className="flex items-center md:py-8 flex-col">
+      <div className="flex items-center md:py-8 flex-col ">
         <Carousel
           opts={{ loop: true }}
           setApi={setApi2}
           className="flex h-full mb-12 flex-col justify-center items-center "
         >
-          <CarouselContent className="h-fit [&>div]:ml-0 px-1 ">
+          <CarouselContent className="h-fit [&>div]:ml-0  ">
             {collectionsData.filter(Boolean).map((collection, index) => (
-              <CarouselItem key={index} className="mb-2">
+              <CarouselItem key={index} className="pl-1 ">
                 <div className="w-full flex justify-center mb-8">
                   <h3 className="text-3xl font-medium">
                     {collection?.collection?.collection?.title}
                   </h3>
                 </div>
-                <div className="grid grid-cols-3 gap-[1px]">
+                <div className="grid grid-cols-3 gap-1 md:gap-2 pb-1">
                   {collection?.collection?.collection?.products.edges
                     ?.slice(0, 3)
                     .map(
@@ -166,95 +165,14 @@ export const SyncedCarousels = ({
                       ) =>
                         product && (
                           <div key={product.node.handle} className="group">
-                            {/* <Link
-                              href={`/product/${product.node.handle}`}
-                              scroll={true}
-                              prefetch
-                            >
-                              <div className="relative w-full aspect-square overflow-hidden bg-background mb-3">
-                                <Image
-                                  src={
-                                    product.node.media.edges[0].node
-                                      .previewImage?.url
-                                  }
-                                  alt={product.node.title}
-                                  fill
-                                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                                  className="object-contain transition-transform duration-300 group-hover:scale-105"
-                                />
-                              </div>
-                            </Link> */}
                             <ProductCard
                               product={product.node as any as Product}
                               withCarousel={false}
                               withQuick={false}
-                              className="px-1 py-2 hover:shadow rounded-b rounded-t"
+                              withSizes={false}
+                              withInnerShadow
+                              className="px-0 py-0 pb-2 hover:shadow rounded-b rounded-t"
                             />
-                            {/*                         
-                            <div className="space-y-1">
-                       
-                              <Link
-                                href={`/brand/${vendorToHandle(product.node.vendor)}`}
-                              >
-                                <p className="text-xs uppercase tracking-wider text-gray-500 hover:text-gray-700 transition-colors">
-                                  {product.node.vendor}
-                                </p>
-                              </Link>
-
-                    
-                              <Link href={`/product/${product.node.handle}`}>
-                                <h4 className="text-sm font-medium text-gray-900 line-clamp-2 leading-tight hover:text-gray-700 transition-colors">
-                                  {product.node.title}
-                                </h4>
-                              </Link>
-
-                           
-                              <div className="flex items-center gap-2 pt-1">
-                                {product.node.metafield &&
-                                product.node.metafield.key === 'znizka' &&
-                                product.node.metafield.value &&
-                                Number(product.node.metafield.value) > 0 ? (
-                                  <>
-                                    <span className="text-sm font-semibold text-gray-900">
-                                      {(
-                                        product.node.priceRange?.maxVariantPrice
-                                          .amount *
-                                        (1 -
-                                          parseFloat(
-                                            product.node.metafield.value,
-                                          ) /
-                                            100)
-                                      ).toFixed(0)}{' '}
-                                      {getCurrencySymbol(
-                                        product.node.priceRange?.maxVariantPrice
-                                          .currencyCode,
-                                      )}
-                                    </span>
-                                    <span className="text-xs text-gray-400 line-through">
-                                      {parseFloat(
-                                        product.node.priceRange?.maxVariantPrice
-                                          .amount,
-                                      ).toFixed(0)}{' '}
-                                      {getCurrencySymbol(
-                                        product.node.priceRange?.maxVariantPrice
-                                          .currencyCode,
-                                      )}
-                                    </span>
-                                  </>
-                                ) : (
-                                  <span className="text-sm font-semibold text-gray-900">
-                                    {parseFloat(
-                                      product.node.priceRange?.maxVariantPrice
-                                        .amount,
-                                    ).toFixed(0)}{' '}
-                                    {getCurrencySymbol(
-                                      product.node.priceRange?.maxVariantPrice
-                                        .currencyCode,
-                                    )}
-                                  </span>
-                                )}
-                              </div>
-                            </div> */}
                           </div>
                         ),
                     )}

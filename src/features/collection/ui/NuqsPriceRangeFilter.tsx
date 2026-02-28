@@ -33,17 +33,6 @@ export function NuqsPriceRangeFilter({ filter, initialFilterPrice }: Props) {
 
   const [min, setMin] = useState(minPrice ?? minPossible);
   const [max, setMax] = useState(maxPrice ?? maxPossible);
-
-  // useEffect(() => {
-  //   if (minPrice === null) setMin(minPossible);
-  //   else setMin(minPrice);
-  // }, [minPrice, minPossible]);
-
-  // useEffect(() => {
-  //   if (maxPrice === null) setMax(maxPossible);
-  //   else setMax(maxPrice);
-  // }, [maxPrice, maxPossible]);
-
   const applyPriceFilter = () => {
     setMinPrice(min);
     setMaxPrice(max);
@@ -75,9 +64,9 @@ export function NuqsPriceRangeFilter({ filter, initialFilterPrice }: Props) {
       <div className="flex items-center space-x-2">
         <Button
           onClick={applyPriceFilter}
-          variant={'outline'}
+          variant={'ghost'}
           disabled={isPristine || isPending}
-          className="w-full"
+          className="w-full rounded"
         >
           {isPending ? <Spinner /> : t('apply')}
         </Button>

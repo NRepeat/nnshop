@@ -31,6 +31,7 @@ type ProductCardProps = {
   withCarousel?: boolean;
   withQuick?: boolean;
   withInnerShadow?: boolean;
+  withSizes?: boolean;
 };
 
 export const ProductCard = ({
@@ -40,6 +41,7 @@ export const ProductCard = ({
   isFav,
   withQuick,
   withInnerShadow,
+  withSizes = true,
 }: ProductCardProps) => {
   const t = useTranslations('ProductCard');
   const availableSizes = (() => {
@@ -116,11 +118,11 @@ export const ProductCard = ({
   return (
     <Card
       className={clsx(
-        'h-full shadow-none  transition-shadow   backdrop-blur-sm bg-transparent border border-none cursor-pointer group md:min-h-[570px]',
+        'h-full shadow-none  transition-shadow   backdrop-blur-sm bg-transparent border border-none cursor-pointer group ',
         className,
       )}
     >
-      <CardContent className="flex flex-col p-0 md:p-1 border-0 shadow-none h-full gap-4 bg-transparent">
+      <CardContent className="flex flex-col px-1 md:px-2 pt-2 border-0 shadow-none h-full gap-4 bg-transparent">
         {withInnerShadow && (
           <div className="pointer-events-none absolute inset-0 rounded inset-shadow-sm " />
         )}
@@ -137,10 +139,10 @@ export const ProductCard = ({
                     {t('new')}
                   </Badge>
                 )}
-                <CarouselContent className="[&>div]:-ml-0">
+                <CarouselContent className="[&>div]:-ml-0 ">
                   {productImages.map((image, index) => (
                     <CarouselItem key={index} className=" relative">
-                      <div className="relative w-full h-full aspect-square flex justify-center items-center rounded-md overflow-hidden">
+                      <div className="relative w-full  h-full aspect-square flex justify-center items-center rounded-t overflow-hidden">
                         <Image
                           key={index}
                           className="object-cover w-[1000px] h-auto "
@@ -187,7 +189,7 @@ export const ProductCard = ({
                       onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
-                        api2?.scrollTo(index)
+                        api2?.scrollTo(index);
                       }}
                     />
                   ))}
@@ -213,13 +215,13 @@ export const ProductCard = ({
           ) : (
             <div className="group relative aspect-square w-full overflow-hidden">
               {isNew && (
-                <Badge className="absolute rounded-md top-0 left-0 z-10">
+                <Badge className="absolute rounded-md top-1.5  left-2 z-10 ">
                   {t('new')}
                 </Badge>
               )}
-              <div className="relative aspect-square  md:h-full w-full flex justify-center items-center rounded-md overflow-hidden">
+              <div className="relative aspect-square  md:h-full w-full flex justify-center items-center rounded-t overflow-hidden">
                 <Image
-                  className="object-cover w-[1000px] h-[1000px]"
+                  className="object-cover w-[1000px] h-auto"
                   src={productImages[0].url}
                   alt={productImages[0].altText || ''}
                   fill
@@ -244,9 +246,9 @@ export const ProductCard = ({
             </div>
           )}
         </Link>
-        <div className="w-full pl-1.5 pb-1   flex flex-col gap-1 flex-1 h-full">
+        <div className="w-full pl-1 md:pl-3 pb-1   flex flex-col gap-1 flex-1 h-full">
           <Link href={`/brand/${vendorToHandle(product.vendor)}`}>
-            <span className="text-md font-bold group-hover:underline">
+            <span className="text-md font-bold group-hover:underline  duration-300 decoration-transparent group-hover:decoration-primary  transition-all">
               {decodeHtmlEntities(product.vendor)}
             </span>
           </Link>
@@ -257,7 +259,7 @@ export const ProductCard = ({
                   {decodeHtmlEntities(product?.title ?? '')}
                 </p>
               </Link>
-              {availableSizes.length > 0 && (
+              {withSizes && availableSizes.length > 0 && (
                 <p className="text-base text-muted-foreground mt-1">
                   {availableSizes.join(' · ')}
                 </p>

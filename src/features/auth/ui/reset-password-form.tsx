@@ -107,9 +107,9 @@ export function ResetPasswordForm({
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
-              className="pr-0 md:pr-8 pl-1"
+              className="pr-0 md:pr-8 "
             >
-              <FieldGroup className="gap-6">
+              <FieldGroup className="gap-6 ">
                 <div className="flex flex-col items-center gap-2 text-center mb-4">
                   <h1 className="text-2xl font-bold">{t('title')}</h1>
                   <p className="text-muted-foreground text-sm">
@@ -133,7 +133,7 @@ export function ResetPasswordForm({
                           autoComplete="new-password"
                           placeholder={t('newPasswordPlaceholder')}
                           disabled={isLoading}
-                          className="rounded-md"
+                          className="rounded"
                         />
                       </FormControl>
                       <FormMessage />
@@ -157,7 +157,7 @@ export function ResetPasswordForm({
                           autoComplete="new-password"
                           placeholder={t('confirmPasswordPlaceholder')}
                           disabled={isLoading}
-                          className="rounded-md"
+                          className="rounded"
                         />
                       </FormControl>
                       <FormMessage />
@@ -168,7 +168,7 @@ export function ResetPasswordForm({
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full rounded-md h-11"
+                  className="w-full rounded h-11"
                 >
                   {isLoading ? t('saving') : t('saveButton')}
                 </Button>

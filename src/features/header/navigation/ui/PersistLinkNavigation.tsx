@@ -5,6 +5,9 @@ import { Suspense } from 'react';
 import { cookieFenderGet } from '../api/setCookieGender';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
+import { ButtonGroup } from '@shared/ui/button-group';
+import clsx from 'clsx';
+import { Separator } from '@shared/ui/separator';
 
 export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   const { locale } = props;
@@ -17,16 +20,17 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   const links =
     props.mainCategory?.map((category) => {
       const { collectionData } = category;
-
       let slug = '';
-
       if (collectionData?.id) {
-        const resolved = resolveCollectionLink(collectionData, locale, currentGender);
+        const resolved = resolveCollectionLink(
+          collectionData,
+          locale,
+          currentGender,
+        );
         slug = resolved.handle || collectionData?.pageHandle || '';
       } else {
         slug = collectionData?.pageHandle || '';
       }
-
       return {
         slug: slug,
       };
@@ -34,25 +38,32 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   return (
     <ul className="flex items-center">
       {links &&
-        links.map((link) => {
+        links.map((link, index) => {
           const label = t.has(link.slug) ? t(link.slug) : link.slug;
           return (
-            <li key={link.slug} className="flex p-0">
-              <Link href={`/${locale}/${link.slug}`}>
-                <Suspense
-                  fallback={
-                    <NavButton
-                      children={
-                        <div className="h-6 w-20 animate-pulse bg-gray-200 dark:bg-gray-700 rounded"></div>
-                      }
+              <li key={link.slug} className="flex p-0">
+                <Link href={`/${locale}/${link.slug}`}>
+                  <Suspense
+                    fallback={
+                      <NavButton
+                        children={
+                          <div className="h-6 w-20 animate-pulse bg-gray-200  rounded"></div>
+                        }
+                        slug={link.slug}
+                      />
+                    }
+                  >
+                    <GenderSession
+                      label={label}
                       slug={link.slug}
+                      className={clsx({
+                        'hover:rounded-tl ': index === 0,
+                        'hover:rounded-tr ': index === 1,
+                      })}
                     />
-                  }
-                >
-                  <GenderSession label={label} slug={link.slug} />
-                </Suspense>
-              </Link>
-            </li>
+                  </Suspense>
+                </Link>
+              </li>
           );
         })}
     </ul>
@@ -61,13 +72,15 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
 const GenderSession = async ({
   label,
   slug,
+  className,
 }: {
   label: string;
   slug: string;
+  className?: string;
 }) => {
   const gender = (await cookieFenderGet()) || 'woman';
   return (
-    <NavButton gender={gender} slug={slug}>
+    <NavButton gender={gender} slug={slug} className={className}>
       {label}
     </NavButton>
   );

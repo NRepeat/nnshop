@@ -138,7 +138,6 @@ const Gallery = ({
           {images.length > 1 && (
             <Carousel
               opts={{
-                // containScroll: 'keepSnaps',
                 dragFree: true,
                 slidesToScroll: 'auto',
               }}
@@ -146,15 +145,15 @@ const Gallery = ({
               setApi={setSecApi}
             >
               <CarouselContent
-                className={cn(' [&>div]:ml-0 [&>div]:gap-1 px-2 [&>div]:justify-center', {
-                  '[&>div]:justify-center ': images.length <= 4,
+                className={cn('[&>div]:ml-0 [&>div]:gap-1 px-2 [&>div]:justify-center', {
+                  '[&>div]:justify-start': images.length > 5,
                 })}
               >
                 {[...images].map((image, index: number) => (
                   <CarouselItem
                     key={image.url ?? index}
                     onClick={() => onThumbClick(index)}
-                    className="basis-1/4 md:basis-1/4 lg:basis-1/5 cursor-pointer"
+                    className="basis-1/5 md:basis-1/4 lg:basis-1/5 cursor-pointer"
                   >
                     <div
                       className={

@@ -388,7 +388,9 @@
     "sizeNotFound": "Не удалось найти выбранный размер",
     "productUnavailable": "Товар недоступен",
     "nameValidation": "Имя должно содержать не менее 2 символов.",
-    "phoneValidation": "Введите корректный номер телефона."
+    "phoneValidation": "Введите корректный номер телефона.",
+    "reservedSizeTitle": "Размер в резерве",
+    "reservedSizeDescription": "Покупка товара возможна после снятия резерва через 5-7 дней."
   },
   "CollectionPage": {
     "noProducts": "Ничего не найдено",

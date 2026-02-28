@@ -31,6 +31,7 @@ import { Bell } from 'lucide-react';
 import DOMPurify from 'isomorphic-dompurify';
 import { VariantInventory } from '@entities/product/api/getInventoryLevels';
 import { Popover, PopoverContent, PopoverTrigger } from '@shared/ui/popover';
+import { ButtonGroup, ButtonGroupSeparator } from '@shared/ui/button-group';
 
 const DetailsContent = ({
   attributes,
@@ -115,12 +116,7 @@ export const ProductInfo = ({
   const sale =
     product.metafields.find((m) => m?.key === 'znizka')?.value || '0';
   const sku = product.variants.edges[0].node.sku;
-  const inventoryLevel = selectedVariant
-    ? inventoryLevels.find((inv) => inv.variantId === selectedVariant.id)
-    : undefined;
-  const committed = inventoryLevel?.committed ?? 0;
-  const hasCommitted = committed > 0 && inventoryLevel!.available === 0;
-  const isAtFitting = hasCommitted;
+
   const colorOptionsValues = [
     ...(colorOptions?.map((name) => ({ name, product: product.handle })) || []),
     ...(boundProduct?.flatMap(
@@ -146,7 +142,6 @@ export const ProductInfo = ({
           )}
           <div className="flex items-center gap-2">
             <h1 className="text-lg text-gray-800">{product.title}</h1>
-            {/* {isAtFitting && <Badge>{t('atTheFitting')}</Badge>} */}
           </div>
           {sku && (
             <p className="text-sm text-gray-500">
@@ -181,8 +176,6 @@ export const ProductInfo = ({
               const isZeroQty = qty === 0;
               const variantAtFitting =
                 variant?.currentlyNotInStock === false && isZeroQty;
-              // Zero-qty variants stay clickable (badge shows on select, cart disabled separately)
-              // Only variants unavailable for other reasons get disabled
               const isUnavailable = !availableForSale && !isZeroQty;
               const inventoryLevel = variant
                 ? inventoryLevels.find((inv) => inv.variantId === variant.id)
@@ -190,11 +183,9 @@ export const ProductInfo = ({
               const committed = inventoryLevel?.committed ?? 0;
               const hasCommitted =
                 committed > 0 && inventoryLevel!.available === 0;
-              // Cross line: truly unavailable (available=0 AND committed=0, not just reserved)
               const showCrossed =
                 isUnavailable ||
                 (isZeroQty && !variantAtFitting && !hasCommitted);
-              // Committed variants stay full opacity — they're reserved, not gone
               const showMuted = (isUnavailable || isZeroQty) && !hasCommitted;
               const btn = (
                 <Button
@@ -204,7 +195,7 @@ export const ProductInfo = ({
                       : 'outline'
                   }
                   className={cn(
-                    'rounded-md min-w-[56px] h-11 text-sm font-medium relative border-primary border capitalize',
+                    'rounded min-w-[56px] h-11 text-sm font-medium relative border-primary border capitalize',
                     {
                       'bg-primary text-white ring-2 ring-offset-1 ring-primary ':
                         size.toLowerCase() === s.toLowerCase(),
@@ -230,9 +221,9 @@ export const ProductInfo = ({
                 <Popover key={s}>
                   <PopoverTrigger asChild>{btn}</PopoverTrigger>
                   <PopoverContent className="w-56 text-sm p-3" side="top">
-                    <p className="font-medium">Розмір в резерві</p>
+                    <p className="font-medium">{t('reservedSizeTitle')}</p>
                     <p className="text-muted-foreground mt-1">
-                      Придбання товару можливо після зняття резерву 5-7 днів.
+                      {t('reservedSizeDescription')}
                     </p>
                   </PopoverContent>
                 </Popover>
@@ -323,22 +314,24 @@ export const ProductInfo = ({
             selectedVariant={product.variants.edges[0].node}
           />
         )}
-
-        <Button
-          variant="secondary"
-          className="w-full h-10 md:h-14 text-md rounded-md"
-          onClick={() => setQuickBuyOpen(true)}
-        >
-          {t('quickOrder')}
-        </Button>
-        <Button
-          variant="outline"
-          className="w-full h-10 md:h-12 text-sm rounded-md flex items-center gap-2"
-          onClick={() => setPriceSubscribeOpen(true)}
-        >
-          <Bell className="w-4 h-4" />
-          {t('priceSubscribeButton')}
-        </Button>
+        <ButtonGroup className='w-full'>
+          <Button
+            variant="outline"
+            className=" h-10 md:h-12 text-sm rounded flex items-center gap-2 w-1/2"
+            onClick={() => setQuickBuyOpen(true)}
+          >
+            {t('quickOrder')}
+          </Button>
+          <ButtonGroupSeparator />
+          <Button
+            variant="outline"
+            className=" h-10 md:h-12 text-sm rounded flex items-center gap-2 w-1/2"
+            onClick={() => setPriceSubscribeOpen(true)}
+          >
+            <Bell className="w-4 h-4" />
+            {t('priceSubscribeButton')}
+          </Button>
+        </ButtonGroup>
       </div>
       <QuickBuyModal
         product={product}

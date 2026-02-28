@@ -4,19 +4,7 @@ import { QuickView } from '@widgets/product-view';
 import { Suspense } from 'react';
 import { AuthModalSkeleton } from './AuthModalSkeleton';
 
-// export async function generateStaticParams() {
-//   const params = [];
-//   for (const locale of locales) {
-//     // for (const authView of Object.values(authViewPaths)) {
-//     params.push({ locale: locale });
-//     // }
-//   }
-//   return params;
-// }
 
-// export function generateStaticParams() {
-//   return Object.values(authViewPaths).map((path) => ({ authView: path }));
-// }
 const AuthSession = async ({
   params,
 }: {

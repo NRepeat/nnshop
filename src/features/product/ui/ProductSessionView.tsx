@@ -5,7 +5,7 @@ import {
 import { PathSync } from '@entities/path-sync/ui/path-sync';
 import { getReletedProducts } from '@entities/product/api/get-related-products';
 import { getNewProductsFiller } from '@entities/product/api/getNewProductsFiller';
-import { getInventoryLevels, VariantInventory } from '@entities/product/api/getInventoryLevels';
+import { getInventoryLevels } from '@entities/product/api/getInventoryLevels';
 import { getProduct } from '@entities/product/api/getProduct';
 
 import { Product } from '@shared/lib/shopify/types/storefront.types';
@@ -15,11 +15,11 @@ import { notFound, unstable_rethrow } from 'next/navigation';
 export const ProductSessionView = async ({
   handle,
   locale,
-  children
+  children,
 }: {
   handle: string;
   locale: string;
-  children:React.ReactNode
+  children: React.ReactNode;
 }) => {
   try {
     const { alternateHandle, originProduct: product } = await getProduct({
@@ -54,15 +54,18 @@ export const ProductSessionView = async ({
 
     const variantIds = product.variants.edges.map((e) => e.node.id);
 
-    const [relatedShopiyProductsData, boundProducts, attributesResults, inventoryLevels] =
-      await Promise.all([
-        getReletedProducts(relatedProductsIds, locale),
-        getReletedProducts(boundProductsData, locale),
-        Promise.all(parsedAttributeIDs.map((id) => getMetaobject(id))),
-        getInventoryLevels(variantIds),
-      ]);
+    const [
+      relatedShopiyProductsData,
+      boundProducts,
+      attributesResults,
+      inventoryLevels,
+    ] = await Promise.all([
+      getReletedProducts(relatedProductsIds, locale),
+      getReletedProducts(boundProductsData, locale),
+      Promise.all(parsedAttributeIDs.map((id) => getMetaobject(id))),
+      getInventoryLevels(variantIds),
+    ]);
 
-    // Fill related products up to 3 with shuffled "new"-tagged items from same productType
     if (relatedShopiyProductsData.length < 3 && product.productType) {
       const excludeIds = [
         product.id,

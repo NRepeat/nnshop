@@ -3,16 +3,14 @@ import { ProductViewSkeleton } from '@widgets/product-view/ui/ProductViewSkeleto
 
 export default function Loading() {
   return (
-    <div className="container space-y-16 my-10 h-fit min-h-screen">
+    <div className="container space-y-16 my-8 h-fit min-h-screen">
       {/* Breadcrumb skeleton — home / gender / brand / product */}
-      <div className="flex items-center gap-1.5">
-        <Skeleton className="h-4 w-16" />
-        <span className="text-muted-foreground/40 text-sm">/</span>
+      <div className="flex gap-2">
         <Skeleton className="h-4 w-20" />
-        <span className="text-muted-foreground/40 text-sm">/</span>
+        <Skeleton className="h-4 w-4" />
         <Skeleton className="h-4 w-24" />
-        <span className="text-muted-foreground/40 text-sm">/</span>
-        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-4 w-4" />
+        <Skeleton className="h-4 w-28" />
       </div>
 
       <ProductViewSkeleton />
