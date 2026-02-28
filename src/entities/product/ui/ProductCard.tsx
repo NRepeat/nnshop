@@ -72,10 +72,10 @@ export const ProductCard = ({
       const raw = variant.node.previewImage?.url || '';
       const sep = raw.includes('?') ? '&' : '?';
       return {
-        url: raw ? `${raw}${sep}width=600&height=600&crop=center` : '',
+        url: raw ? `${raw}${sep}width=600` : '',
         altText: variant.node.previewImage?.altText || '',
-        width: 600,
-        height: 600,
+        width: variant.node.previewImage?.width || 600,
+        height: variant.node.previewImage?.height || 600,
       };
     }) ?? []),
   ]
@@ -147,10 +147,10 @@ export const ProductCard = ({
                 <CarouselContent className="[&>div]:-ml-0 ">
                   {productImages.map((image, index) => (
                     <CarouselItem key={index} className=" relative">
-                      <div className="relative w-full  h-full aspect-square flex justify-center items-center rounded-t overflow-hidden">
+                      <div className="relative w-full  h-full aspect-square flex justify-center items-center rounded-t overflow-hidden bg-white">
                         <Image
                           key={index}
-                          className="object-cover w-[1000px] h-auto"
+                          className="object-contain w-full h-full"
                           src={image.url}
                           alt={image.altText || ''}
                           priority={index === 0 ? true : undefined}
@@ -224,9 +224,9 @@ export const ProductCard = ({
                   {t('new')}
                 </Badge>
               )}
-              <div className="relative aspect-square  md:h-full w-full flex justify-center items-center rounded-t overflow-hidden">
+              <div className="relative aspect-square  md:h-full w-full flex justify-center items-center rounded-t overflow-hidden bg-white">
                 <Image
-                  className="object-cover w-[1000px] h-auto"
+                  className="object-contain w-full h-full"
                   src={productImages[0]?.url || product.featuredImage?.url || ''}
                   alt={productImages[0]?.altText || product.featuredImage?.altText || ''}
                   fill
