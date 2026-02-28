@@ -80,6 +80,7 @@ export const ProductSessionView = async ({
       relatedShopiyProductsData.push(...(fillers as any[]));
     }
 
+    console.log(relatedShopiyProductsData,'relatedShopiyProductsData')
     const attributes = attributesResults.filter(
       (attr): attr is ProductMEtaobjectType => attr !== null,
     );

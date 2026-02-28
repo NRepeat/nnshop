@@ -14,9 +14,6 @@ export const PageContent = async ({
   return (
     <div className="flex flex-col h-fit min-h-screen">
       <HeroPageBuilder gender={gender} locale={locale} />
-      <Suspense fallback={null}>
-        <RecentlyViewedSection locale={locale} />
-      </Suspense>
       <NewsletterSection />
     </div>
   );

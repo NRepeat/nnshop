@@ -8,6 +8,7 @@ export const recordProductView = async (
   productHandle: string,
   productId: string,
 ): Promise<{ success: boolean; reason?: string }> => {
+  console.log('recordProductView', productHandle, productId);
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) {
     // Anonymous user not yet signed in (no cart action triggered yet) — skip silently

@@ -83,25 +83,28 @@ export const getProductsByHandles = async (
 ): Promise<Product[]> => {
   if (handles.length === 0) return [];
 
-  // Build a query with one alias per handle: p0: product(handle: $h0) { ... }
   const queryArgs = handles.map((_, i) => `$h${i}: String!`).join(', ');
-  const queryBody = handles.map((_, i) => `p${i}: product(handle: $h${i}) { ${PRODUCT_FIELDS} }`).join('\n');
+  const queryBody = handles
+    .map((_, i) => `p${i}: product(handle: $h${i}) { ${PRODUCT_FIELDS} }`)
+    .join('\n');
   const query = `#graphql\n  query getProductsByHandles(${queryArgs}) {\n    ${queryBody}\n  }`;
 
   const variables = Object.fromEntries(handles.map((h, i) => [`h${i}`, h]));
 
   try {
-    const response = await storefrontClient.request<Record<string, Product | null>, typeof variables>({
+    const response = await storefrontClient.request<
+      Record<string, Product | null>,
+      typeof variables
+    >({
       query,
       variables,
       language: locale.toUpperCase() as StorefrontLanguageCode,
       cache: 'no-store',
     });
-
-    // Collect in handle order, filtering nulls (product not found)
+   
     return handles
-      .map((_, i) => response[`p${i}`])
-      .filter((p): p is Product => p !== null && p !== undefined);
+      .map((_, i) => (response[`p${i}`]))
+      .filter((p) => !!p)
   } catch (error) {
     console.error('[getProductsByHandles] failed', {
       step: 'shopify-by-handles',
