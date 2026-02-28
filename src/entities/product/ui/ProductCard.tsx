@@ -146,7 +146,7 @@ export const ProductCard = ({
                       <div className="relative w-full  h-full aspect-square flex justify-center items-center rounded-t overflow-hidden">
                         <Image
                           key={index}
-                          className="object-contain w-[1000px] h-auto "
+                          className="object-contain w-[1000px] h-auto rounded-t"
                           src={image.url}
                           alt={image.altText || ''}
                           priority={index === 0 ? true : undefined}
@@ -222,7 +222,7 @@ export const ProductCard = ({
               )}
               <div className="relative aspect-square  md:h-full w-full flex justify-center items-center rounded-t overflow-hidden">
                 <Image
-                  className="object-contain w-[1000px] h-auto"
+                  className="object-contain w-[1000px] h-auto rounded-t"
                   src={productImages[0]?.url || product.featuredImage?.url || ''}
                   alt={productImages[0]?.altText || product.featuredImage?.altText || ''}
                   fill
