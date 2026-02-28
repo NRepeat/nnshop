@@ -14,6 +14,7 @@ import { NavigationTriggerClient } from './NavigationTriggerClient';
 import { Button } from '@shared/ui/button';
 import { NavigationContentLink } from './NavigationContentLink';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
+import { stripGenderFromHandle } from '../utils/strip-gender-from-handle';
 
 export const CurrentNavigationSession = async ({
   locale,
@@ -74,25 +75,10 @@ const genderSlugMap: Record<string, string[]> = {
     'cholovichi',
   ],
 };
-export const GENDER_SLUGS = [
-  'zhenskaya',
-  'zhenskie',
-  'zhinocha',
-  'zhinoche',
-  'zhinochi',
-  'cholovichi',
-  'cholovicha',
-  'muzhskaya',
-  'muzhskie',
-];
+
 
 const brandSlugs = ['brand', 'бренд', 'брендi', 'бренди'];
-export function stripGenderFromHandle(handle: string): string {
-  return handle
-    .split('-')
-    .filter((part) => !GENDER_SLUGS.includes(part))
-    .join('-');
-}
+
 function matchesGender(
   item: { url: string; title: string },
   gender: string,

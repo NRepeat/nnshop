@@ -4,9 +4,15 @@ import Image from 'next/image';
 import { Link } from '@shared/i18n/navigation';
 import Autoplay from 'embla-carousel-autoplay';
 import { Button } from '@shared/ui/button';
-import { Carousel, CarouselContent, CarouselItem } from '@shared/ui/carousel';
+import {
+  Carousel,
+  CarouselApi,
+  CarouselContent,
+  CarouselItem,
+} from '@shared/ui/carousel';
 import { urlFor } from '@shared/sanity/lib/image';
 import { HOME_PAGEResult } from '@shared/sanity/types';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 type HeroSliderProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
@@ -14,7 +20,6 @@ type HeroSliderProps = Extract<
 > & { gender?: string };
 
 type Slide = NonNullable<HeroSliderProps['slides']>[number];
-type SlideButton = NonNullable<NonNullable<Slide['buttons']>[number]>;
 
 export const HeroBanner = (props: HeroSliderProps) => {
   const { slides, gender } = props;
@@ -27,7 +32,9 @@ export const HeroBanner = (props: HeroSliderProps) => {
   ) => {
     if (url) return url;
     if (collection?.handle) {
-      return gender ? `/${gender}/${collection.handle}` : `/${collection.handle}`;
+      return gender
+        ? `/${gender}/${collection.handle}`
+        : `/${collection.handle}`;
     }
     return null;
   };
@@ -35,8 +42,6 @@ export const HeroBanner = (props: HeroSliderProps) => {
   const getSlideHref = (slide: Slide) =>
     resolveHref(slide.link?.url, slide.collection) ?? '/';
 
-  const getButtonHref = (btn: SlideButton) =>
-    resolveHref(btn.url, btn.collection) ?? '/';
 
   const renderImages = (slide: Slide, index: number) => (
     <>
@@ -75,25 +80,58 @@ export const HeroBanner = (props: HeroSliderProps) => {
         {hasButtons && slide.buttons && slide.buttons.length > 0 && (
           <div className="flex flex-wrap gap-3">
             {slide.buttons.map((btn) => (
-              <Link key={btn._key} href={getButtonHref(btn)}>
-                <Button
-                  variant={btn.variant ?? 'secondary'}
-                  className="min-w-[140px] h-11 md:h-13 text-sm uppercase tracking-widest"
-                >
-                  {btn.label}
-                </Button>
-              </Link>
+              <Button
+                variant={btn.variant ?? 'secondary'}
+                className="min-w-[140px] h-11 md:h-13 text-sm uppercase tracking-widest rounded"
+              >
+                {btn.label}
+              </Button>
             ))}
           </div>
         )}
       </div>
     </>
   );
+  const [api2, setApi2] = useState<CarouselApi>();
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+  const onInit = useCallback((api: CarouselApi) => {
+    if (!api) return;
+    setScrollSnaps(api.scrollSnapList());
+  }, []);
+  const onSelect = useCallback(
+    (api: CarouselApi) => {
+      if (!api) return;
+      if (api2) {
+        if (api === api2) {
+          api2.scrollTo(api2.selectedScrollSnap());
+          setSelectedIndex(api2.selectedScrollSnap());
+        }
+      }
+    },
+    [api2],
+  );
+  const initTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (api2) {
+      api2.on('select', onSelect);
+      api2.on('reInit', onSelect);
+      initTimerRef.current = setTimeout(() => onInit(api2), 0);
+    }
 
+    return () => {
+      if (initTimerRef.current) clearTimeout(initTimerRef.current);
+      if (api2) {
+        api2.off('select', onSelect);
+        api2.off('reInit', onSelect);
+      }
+    };
+  }, [api2, onSelect, onInit]);
   return (
     <div className="hero-banner relative w-full overflow-hidden mx-auto 3xl:max-w-400">
       <Carousel
         opts={{ loop: true, active: true }}
+        setApi={setApi2}
         plugins={[
           Autoplay({
             delay: 8000,
@@ -110,11 +148,14 @@ export const HeroBanner = (props: HeroSliderProps) => {
                 className="pl-0 relative w-full text-pretty font-light leading-tight tracking-tight text-left text-2xl md:text-4xl"
               >
                 {hasButtons ? (
-                  /* When buttons are present, slide is a plain div; buttons handle navigation */
-                  <div className="group relative flex w-full h-full justify-center">
+                  <Link
+                    prefetch
+                    href={getSlideHref(slide)}
+                    className="group relative flex w-full h-full justify-center"
+                  >
                     {renderImages(slide, index)}
                     {renderOverlay(slide, true)}
-                  </div>
+                  </Link>
                 ) : (
                   /* No buttons — entire slide is clickable */
                   <Link
@@ -130,6 +171,17 @@ export const HeroBanner = (props: HeroSliderProps) => {
             );
           })}
         </CarouselContent>
+        <div className="flex justify-center gap-2 mt-4">
+          {scrollSnaps.map((_, index) => (
+            <Button
+              key={index}
+              className={`w-2 h-[3px]  py-0 px-3  ${
+                index === selectedIndex ? 'bg-primary' : 'bg-gray-300'
+              }`}
+              onClick={() => api2?.scrollTo(index)}
+            />
+          ))}
+        </div>
       </Carousel>
     </div>
   );

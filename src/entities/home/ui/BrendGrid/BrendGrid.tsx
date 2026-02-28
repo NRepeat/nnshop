@@ -28,7 +28,7 @@ export function BrandGrid({ barnds, locale, gender }: BrandGridProps) {
 
   return (
     <section className="container  ">
-      <div className="px-4 mx-auto py-4 md:py-8">
+      <div className="py-8">
         {/*{
           <h2 className="mb-16 text-center  max-w-4xl text-pretty font-light text-lg md:text-3xl">
             {'Популярні бренди'}

@@ -16,6 +16,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@shared/ui/button';
 import Link from 'next/link';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
+import { ProductCard } from '@entities/product/ui/ProductCard';
+import { Product } from '@shared/lib/shopify/types/storefront.types';
+import { stripGenderFromHandle } from '@features/header/navigation/utils/strip-gender-from-handle';
 
 type Preview = {
   _key: string;
@@ -48,6 +51,7 @@ export const SyncedCarousels = ({
   previews,
   gender,
 }: SyncedCarouselsProps) => {
+
   const [api1, setApi1] = useState<CarouselApi>();
   const initTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [api2, setApi2] = useState<CarouselApi>();
@@ -90,29 +94,36 @@ export const SyncedCarousels = ({
       }
     };
   }, [api1, api2, onSelect, onInit]);
-
+  const previewLinks = collectionsData.map((collection) =>
+    stripGenderFromHandle(collection?.alternateHandle || ''),
+  );
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2  md:gap-4 lg:gap-6 w-full container ">
-      <div className="py-8">
+    <div className="grid grid-cols-1 md:grid-cols-2  w-full container gap-2">
+      <div className="py-8 flex justify-start">
         <Carousel opts={{ loop: true }} setApi={setApi1}>
-          <CarouselContent className='[&>div]:-ml-0'>
+          <CarouselContent className="[&>div]:ml-0">
             {previews?.map(
-              (preview) =>
+              (preview, index) =>
                 preview &&
                 preview.asset && (
-                  <CarouselItem key={preview._key}>
+                  <CarouselItem key={preview._key} className="w-full ">
                     <Link
-                      href={gender ? `/${gender}/${preview.handle?.current}` : `/${preview.handle?.current}`}
+                      href={
+                        gender
+                          ? `/${gender}/${previewLinks[index]}`
+                          : `/${previewLinks[index]}`
+                      }
                       scroll
                       prefetch
+                      className=" w-full overflow-hidden flex justify-center"
                     >
                       <Image
                         src={urlFor(preview).url()}
                         alt={preview.alt || 'Preview image'}
-                        width={500}
-                        height={500}
+                        width={1000}
+                        height={1000}
                         sizes="(max-width: 768px) 100vw, 50vw"
-                        className="object-contain w-full max-h-[calc(500px)] md:max-h-[calc(700px)]"
+                        className="object-cover w-full max-h-[600px] max-w-[600px] rounded"
                       />
                     </Link>
                   </CarouselItem>
@@ -134,21 +145,18 @@ export const SyncedCarousels = ({
         <Carousel
           opts={{ loop: true }}
           setApi={setApi2}
-          className="flex h-full mb-12 flex-col justify-center items-center"
+          className="flex h-full mb-12 flex-col justify-center items-center "
         >
-          <div className="mb-12">
-            <p className="text-2xl font-bold text-center">{}</p>
-          </div>
-          <CarouselContent className="h-fit">
+          <CarouselContent className="h-fit [&>div]:ml-0 px-1 ">
             {collectionsData.filter(Boolean).map((collection, index) => (
-              <CarouselItem key={index}>
+              <CarouselItem key={index} className="mb-2">
                 <div className="w-full flex justify-center mb-8">
-                  <h3 className="text-2xl font-medium">
+                  <h3 className="text-3xl font-medium">
                     {collection?.collection?.collection?.title}
                   </h3>
                 </div>
-                <div className="grid grid-cols-3 md:grid-cols-3 gap-2 ml-2 px-4 md:px-2">
-                  {collection?.collection?.collection?.products?.edges
+                <div className="grid grid-cols-3 gap-[1px]">
+                  {collection?.collection?.collection?.products.edges
                     ?.slice(0, 3)
                     .map(
                       (
@@ -158,7 +166,7 @@ export const SyncedCarousels = ({
                       ) =>
                         product && (
                           <div key={product.node.handle} className="group">
-                            <Link
+                            {/* <Link
                               href={`/product/${product.node.handle}`}
                               scroll={true}
                               prefetch
@@ -174,20 +182,17 @@ export const SyncedCarousels = ({
                                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                                   className="object-contain transition-transform duration-300 group-hover:scale-105"
                                 />
-                                {/* {product.node.metafield &&
-                                  product.node.metafield.key === 'znizka' &&
-                                  product.node.metafield.value &&
-                                  Number(product.node.metafield.value) > 0 && (
-                                    <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-sm">
-                                      -{product.node.metafield.value}%
-                                    </div>
-                                  )} */}
                               </div>
-                            </Link>
-
-                            {/* Product Info */}
+                            </Link> */}
+                            <ProductCard
+                              product={product.node as any as Product}
+                              withCarousel={false}
+                              withQuick={false}
+                              className="px-1 py-2 hover:shadow rounded-b rounded-t"
+                            />
+                            {/*                         
                             <div className="space-y-1">
-                              {/* Vendor */}
+                       
                               <Link
                                 href={`/brand/${vendorToHandle(product.node.vendor)}`}
                               >
@@ -196,14 +201,14 @@ export const SyncedCarousels = ({
                                 </p>
                               </Link>
 
-                              {/* Title */}
+                    
                               <Link href={`/product/${product.node.handle}`}>
                                 <h4 className="text-sm font-medium text-gray-900 line-clamp-2 leading-tight hover:text-gray-700 transition-colors">
                                   {product.node.title}
                                 </h4>
                               </Link>
 
-                              {/* Price */}
+                           
                               <div className="flex items-center gap-2 pt-1">
                                 {product.node.metafield &&
                                 product.node.metafield.key === 'znizka' &&
@@ -249,7 +254,7 @@ export const SyncedCarousels = ({
                                   </span>
                                 )}
                               </div>
-                            </div>
+                            </div> */}
                           </div>
                         ),
                     )}
@@ -257,21 +262,12 @@ export const SyncedCarousels = ({
               </CarouselItem>
             ))}
           </CarouselContent>
-          {/*<CarouselNext
-            variant={'ghost'}
-            size={'icon'}
-            className="group-hover:flex  bg-background/70 rounded-full top-1/2 right-2 absolute hidden md:flex"
-          />
-          <CarouselPrevious
-            variant={'ghost'}
-            className="group-hover:flex  bg-background/70 rounded-full top-1/2 left-2 absolute hidden md:flex"
-          />*/}
           <div className="flex justify-center gap-2 mt-4">
             {scrollSnaps.map((_, index) => (
               <Button
                 key={index}
-                className={`w-2 h-2 p-1 px-3 rounded-full ${
-                  index === selectedIndex ? 'bg-gray-800' : 'bg-gray-300'
+                className={`w-2 h-[3px]  py-0 px-3  ${
+                  index === selectedIndex ? 'bg-primary' : 'bg-gray-300'
                 }`}
                 onClick={() => api2?.scrollTo(index)}
               />

@@ -27,9 +27,9 @@ const CardCarouselBase: React.FC<CardCarouselProps> = ({
   className = '',
 }) => {
   return (
-    <div className="w-full  space-y-16 select-none ">
+    <div className="w-full  space-y-4 select-none ">
       <Carousel opts={{ loop }} setApi={setApi}>
-        <CarouselContent>
+        <CarouselContent className='[&>div]:ml-0 py-1 [&>div]:gap-2'>
           {children
             ? children
             : items?.map((item, index) => (

@@ -76,7 +76,7 @@ export const FavSession = memo(({
       size="icon"
       disabled={isProcessing}
       className={cn(
-        'relative z-20 group hover:bg-transparent transition-opacity hover:[&>svg]:stroke-[#e31e24]',
+        'relative z-20 group hover:bg-transparent transition-opacity hover:[&>svg]:stroke-[#e31e24] h-fit w-fit',
         isProcessing && 'opacity-70 cursor-not-allowed',
       )}
     >

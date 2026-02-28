@@ -5,13 +5,14 @@ import { parseBody } from 'next-sanity/webhook';
 import { revalidateSecret } from '@/shared/sanity/env';
 
 // Types that require full layout revalidation (header, footer, etc.)
-const LAYOUT_TYPES = ['siteSettings', 'header', 'footer', 'infoBar'];
+const LAYOUT_TYPES = ['siteSettings', 'header', 'footer', 'infoBar', 'page'];
 
 export async function POST(req: NextRequest) {
-  console.log(req,"req")
+  console.log(req, 'req');
   try {
     const { body, isValidSignature } = await parseBody<{
       type: string;
+      path?: string;
       slug?: string;
     }>(req, revalidateSecret);
     if (!isValidSignature) {
@@ -26,11 +27,16 @@ export async function POST(req: NextRequest) {
 
     const revalidatedPaths: string[] = [];
     const revalidatedTags: string[] = [];
+    console.log(body, 'body');
 
     // Handle layout-related types (header, footer, siteSettings)
     if (body.type && LAYOUT_TYPES.includes(body.type)) {
       // Revalidate all layouts - this will refresh header/footer on all pages
-      revalidatePath('/', 'layout');
+      if (body?.path) {
+        revalidatePath(body.path, 'layout');
+      } else {
+        revalidatePath('/', 'layout');
+      }
       revalidatedPaths.push('/ (layout)');
 
       // Also revalidate the tag
@@ -58,9 +64,11 @@ export async function POST(req: NextRequest) {
 
     // Shopify: collection updates also invalidate the slugs list
     if (body.type === 'collection') {
-      revalidateTag('collections','default');
+      revalidateTag('collections', 'default');
       revalidatedTags.push('collections');
     }
+    console.log(revalidatedPaths, 'revalidatedPaths');
+    console.log(revalidatedTags, 'revalidatedTags');
     return NextResponse.json({
       status: 200,
       revalidated: true,

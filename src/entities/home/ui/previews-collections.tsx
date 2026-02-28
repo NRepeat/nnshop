@@ -25,7 +25,6 @@ export const PreviewsCollections = async (props: PreviewsCollectionsProps) => {
     .filter(Boolean);
   if (!collectionsDataReq) return null;
   const collectionsData = await Promise.all(collectionsDataReq);
-  // title can be a string (from coalesce), an array, or a localized object
   const localizedTitle = typeof title === 'string'
     ? title
     : Array.isArray(title)

@@ -429,7 +429,7 @@ export const HOME_PAGE =
              "id": store.id,
              handles,
              titles,
-             "image": { "url": store.imageUrl }
+             "image": { "url": coalesce(image.asset->url, store.imageUrl) }
            }
         },
         _type == "productCarousel" => {

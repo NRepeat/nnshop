@@ -7,6 +7,9 @@ export function vendorToHandle(vendor: string): string {
   if (!vendor) return '';
   return vendor
     .toLowerCase()
+    // Decompose accented characters (e.g. ō → o + combining macron) then strip diacritics
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
     // Remove zero-width characters and other invisible Unicode characters
     .replace(/[\u200B-\u200D\uFEFF]/g, '')
     .replace(/&/g, '-amp-') // Replace & with -amp-

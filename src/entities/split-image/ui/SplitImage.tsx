@@ -25,7 +25,7 @@ const TextContentComponent = ({
   mobile?: boolean;
 }) => (
   <div
-    className={`flex flex-col gap-6 ${
+    className={`flex flex-col gap-6 w-full ${
       mobile ? 'items-center text-white px-6' : 'items-start text-black'
     }`}
   >
@@ -43,13 +43,12 @@ const TextContentComponent = ({
 
     {linkUrl && linkUrl?.handle && (
       <Button
-        asChild
         variant="link"
-        className={`h-auto p-0 text-base uppercase tracking-widest transition-all hover:opacity-70 ${
+        className={`h-auto p-0 text-base uppercase tracking-widest transition-all group-hover:opacity-70 ${
           mobile ? 'text-white  border-white' : 'text-black  border-black'
         } rounded-md`}
       >
-        <Link  prefetch href={linkUrl.handle}>{linkUrl?.title}</Link>
+        {linkUrl?.title}
       </Button>
     )}
   </div>
@@ -57,55 +56,55 @@ const TextContentComponent = ({
 
 export function SplitImage(props: SplitGridProps) {
   const { title, image, orientation, collection, locale, gender } = props;
-
   const linkUrl =
     collection && collection?.id
       ? resolveCollectionLink(collection, locale, gender)
       : null;
   const ImageComponent = image ? (
-    <div className="group relative h-full w-full overflow-hidden bg-gray-100">
+    <div className="group relative h-[600px] w-[600px] overflow-hidden rounded bg-gray-100">
       <Image
-        className="transition-transform duration-700 ease-in-out group-hover:scale-105 h-[600px] w-[600px]"
+        className="transition-transform duration-700 ease-in-out group-hover:scale-105"
         src={urlFor(image).width(600).height(600).url()}
         fill
         alt={(title as unknown as string) || ''}
         priority
       />
+
+      <div className="pointer-events-none absolute inset-0 rounded inset-shadow-sm " />
     </div>
   ) : null;
-
   return (
     <section className="container">
       <div className="py-8 md:py-8">
-        <div
-          className="flex flex-col gap-8 md:flex-row md:items-center data-[orientation='imageRight']:md:flex-row-reverse"
-          data-orientation={stegaClean(orientation) || 'imageLeft'}
+        <Link
+          href={linkUrl && linkUrl.handle ? linkUrl.handle : ''}
+          className="block h-full w-full group"
+          prefetch
         >
-          <div className="relative aspect-square w-full overflow-hidden   md:w-[600px] max-h-[600px]">
-            {linkUrl && linkUrl.handle ? (
-              <Link href={linkUrl.handle} className="block h-full w-full" prefetch>
-                {ImageComponent}
-              </Link>
-            ) : (
-              ImageComponent
-            )}
+          <div
+            className="w-full flex flex-col gap-8 md:flex-row md:items-center  data-[orientation='imageRight']:md:flex-row-reverse"
+            data-orientation={stegaClean(orientation) || 'imageLeft'}
+          >
+            <div className="relative aspect-square w-full overflow-hidden    md:w-[600px] max-h-[600px]">
+              {ImageComponent}
 
-            <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[2px] md:hidden">
+              <div className=" absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[2px] md:hidden">
+                <TextContentComponent
+                  mobile
+                  title={title as string | null}
+                  linkUrl={linkUrl}
+                />
+              </div>
+            </div>
+
+            <div className="hidden w-full md:flex md:w-1/3 md:pl-12 data-[orientation='imageRight']:md:pl-0 data-[orientation='imageRight']:md:pr-12">
               <TextContentComponent
-                mobile
                 title={title as string | null}
                 linkUrl={linkUrl}
               />
             </div>
           </div>
-
-          <div className="hidden w-full md:flex md:w-1/3 md:pl-12 data-[orientation='imageRight']:md:pl-0 data-[orientation='imageRight']:md:pr-12">
-            <TextContentComponent
-              title={title as string | null}
-              linkUrl={linkUrl}
-            />
-          </div>
-        </div>
+        </Link>
       </div>
     </section>
   );

@@ -58,6 +58,15 @@ export default defineType({
       options: { field: 'store.slug.current' },
     }),
 
+    // Custom image
+    defineField({
+      name: 'image',
+      title: 'Custom Image',
+      type: 'image',
+      description: 'Override the Shopify collection image (used in homepage grid, carousels, etc.)',
+      options: { hotspot: true },
+      group: 'editorial',
+    }),
     // Vector
     defineField({
       name: 'vector',

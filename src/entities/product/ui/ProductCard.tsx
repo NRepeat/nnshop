@@ -6,6 +6,7 @@ import { Product } from '@shared/lib/shopify/types/storefront.types';
 import clsx from 'clsx';
 import {
   Carousel,
+  CarouselApi,
   CarouselContent,
   CarouselItem,
   CarouselNext,
@@ -20,6 +21,7 @@ import { FavSession } from '@features/header/ui/FavSession';
 import { cn } from '@shared/lib/utils';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 type ProductCardProps = {
   product: Product;
@@ -28,6 +30,7 @@ type ProductCardProps = {
   className?: string;
   withCarousel?: boolean;
   withQuick?: boolean;
+  withInnerShadow?: boolean;
 };
 
 export const ProductCard = ({
@@ -36,9 +39,9 @@ export const ProductCard = ({
   withCarousel = false,
   isFav,
   withQuick,
+  withInnerShadow,
 }: ProductCardProps) => {
   const t = useTranslations('ProductCard');
-  console.log(withQuick, 'withCarousel');
   const availableSizes = (() => {
     const sizeOption = product.options?.find((opt) =>
       ['size', 'розмір', 'размер'].includes(opt.name.toLowerCase()),
@@ -73,35 +76,77 @@ export const ProductCard = ({
     .splice(0, 5);
   const nav = useRouter();
   const isNew = product.tags.includes('новий') || product.tags.includes('new');
+  const [api2, setApi2] = useState<CarouselApi>();
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+  const onInit = useCallback((api: CarouselApi) => {
+    if (!api) return;
+    setScrollSnaps(api.scrollSnapList());
+  }, []);
+  const onSelect = useCallback(
+    (api: CarouselApi) => {
+      if (!api) return;
+      if (api2) {
+        if (api === api2) {
+          api2.scrollTo(api2.selectedScrollSnap());
+          setSelectedIndex(api2.selectedScrollSnap());
+        }
+      }
+    },
+    [api2],
+  );
+  const initTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (api2) {
+      api2.on('select', onSelect);
+      api2.on('reInit', onSelect);
+      initTimerRef.current = setTimeout(() => onInit(api2), 0);
+    }
+
+    return () => {
+      if (initTimerRef.current) clearTimeout(initTimerRef.current);
+      if (api2) {
+        api2.off('select', onSelect);
+        api2.off('reInit', onSelect);
+      }
+      setSelectedIndex(0);
+      setScrollSnaps([]);
+    };
+  }, [api2, onSelect, onInit]);
   return (
     <Card
       className={clsx(
-        'h-full shadow-none backdrop-blur-sm bg-transparent border border-background cursor-pointer py-1 group pb-4',
+        'h-full shadow-none  transition-shadow   backdrop-blur-sm bg-transparent border border-none cursor-pointer group md:min-h-[570px]',
         className,
       )}
     >
       <CardContent className="flex flex-col p-0 md:p-1 border-0 shadow-none h-full gap-4 bg-transparent">
+        {withInnerShadow && (
+          <div className="pointer-events-none absolute inset-0 rounded inset-shadow-sm " />
+        )}
         <Link href={`/product/${product.handle}`} prefetch>
           {withCarousel ? (
-            <Carousel className="relative" opts={{ align: 'center' }}>
-              <div className="group relative md:aspect-square w-full overflow-hidden">
+            <Carousel
+              className="relative"
+              opts={{ align: 'center' }}
+              setApi={setApi2}
+            >
+              <div className="group relative md:aspect-square w-full ">
                 {isNew && (
-                  <Badge className="absolute top-2 left-2 z-10">
+                  <Badge className="absolute rounded-md top-1.5  left-2 z-10 ">
                     {t('new')}
                   </Badge>
                 )}
                 <CarouselContent className="[&>div]:-ml-0">
                   {productImages.map((image, index) => (
                     <CarouselItem key={index} className=" relative">
-                      <div className="relative w-full h-full aspect-[3/4] md:aspect-square flex justify-center items-center">
+                      <div className="relative w-full h-full aspect-square flex justify-center items-center rounded-md overflow-hidden">
                         <Image
                           key={index}
-                          className="object-contain "
+                          className="object-cover w-[1000px] h-auto "
                           src={image.url}
                           alt={image.altText || ''}
-                          // loading="lazy"
-                          preload
-                          // priority={index === 0 ? true : undefined}
+                          priority={index === 0 ? true : undefined}
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           fill
                         />
@@ -112,22 +157,40 @@ export const ProductCard = ({
                 <CarouselNext
                   variant={'ghost'}
                   size={'icon'}
-                  className="group-hover:flex hidden md:hover:flex bg-background/70 rounded-full top-1/2 right-2 absolute"
+                  className="group-hover:flex  rounded-md rounded-bl-none  rounded-br-none  rounded-tr-none hidden w-12 md:hover:flex bg-background/40 bottom-0 right-0 absolute"
                 />
                 <CarouselPrevious
                   variant={'ghost'}
-                  className="group-hover:flex hidden md:hover:flex bg-background/70 rounded-full top-1/2 left-2 absolute"
+                  className="group-hover:flex hidden w-12 md:hover:flex bg-background/40  rounded-md rounded-bl-none  rounded-br-none rounded-tl-none bottom-0 left-0 absolute"
                 />
                 <div
-                  className={cn('absolute top-0  right-2   group-hover:block', {
-                    hidden: !isFav,
-                  })}
+                  className={cn(
+                    'absolute top-1.5  right-2 z-20   group-hover:block',
+                    {
+                      hidden: !isFav,
+                    },
+                  )}
                 >
                   <FavSession
                     fav={isFav}
                     productId={product.id}
                     handle={product.handle}
                   />
+                </div>
+                <div className="flex justify-center gap-2 mt-4 absolute bottom-0 left-1/2 -translate-x-1/2">
+                  {scrollSnaps.map((_, index) => (
+                    <Button
+                      key={index}
+                      className={`w-2 h-[5px]  py-0 px-3  ${
+                        index === selectedIndex ? 'bg-primary' : 'bg-gray-300'
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        api2?.scrollTo(index)
+                      }}
+                    />
+                  ))}
                 </div>
                 {withQuick && (
                   <div className=" bottom-0 left-2  flex w-full justify-end absolute rounded-md">
@@ -150,11 +213,13 @@ export const ProductCard = ({
           ) : (
             <div className="group relative aspect-square w-full overflow-hidden">
               {isNew && (
-                <Badge className="absolute top-2 left-2 z-10">{t('new')}</Badge>
+                <Badge className="absolute rounded-md top-0 left-0 z-10">
+                  {t('new')}
+                </Badge>
               )}
-              <div className="relative aspect-square  md:h-full w-full flex justify-center items-center">
+              <div className="relative aspect-square  md:h-full w-full flex justify-center items-center rounded-md overflow-hidden">
                 <Image
-                  className="object-contain"
+                  className="object-cover w-[1000px] h-[1000px]"
                   src={productImages[0].url}
                   alt={productImages[0].altText || ''}
                   fill
@@ -179,19 +244,14 @@ export const ProductCard = ({
             </div>
           )}
         </Link>
-        <div className="w-full pt-2 md:pt-1  flex flex-col gap-1 flex-1 md:px-2 max-h-fit">
+        <div className="w-full pl-1.5 pb-1   flex flex-col gap-1 flex-1 h-full">
           <Link href={`/brand/${vendorToHandle(product.vendor)}`}>
-            <span className="text-md font-bold hover:underline">
+            <span className="text-md font-bold group-hover:underline">
               {decodeHtmlEntities(product.vendor)}
             </span>
           </Link>
-          {/* {product.productType && (
-              <span className="text-xs text-muted-foreground">
-                {product.productType}
-              </span>
-            )} */}
           <div className="flex flex-col justify-between flex-1">
-            <div className=" w-full flex-col  justify-between flex pb-4">
+            <div className=" w-full flex-col  justify-between flex pb-4 ">
               <Link href={`/product/${product.handle}`}>
                 <p className="text-sm md:text-md font-light  text-pretty">
                   {decodeHtmlEntities(product?.title ?? '')}
