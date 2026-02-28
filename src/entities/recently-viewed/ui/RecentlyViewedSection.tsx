@@ -21,7 +21,6 @@ export const RecentlyViewedSection = async ({ locale }: RecentlyViewedSectionPro
     take: 10,
     select: { productHandle: true },
   });
-
   if (records.length === 0) return null;
 
   const handles = records.map((r) => r.productHandle);
@@ -36,7 +35,6 @@ export const RecentlyViewedSection = async ({ locale }: RecentlyViewedSectionPro
       key={product.id}
       product={product as Product}
       withCarousel={false}
-      withInnerShadow
       withQuick={false}
       className="hover:shadow rounded-b rounded-t pt-0 px-0"
     />
@@ -46,7 +44,7 @@ export const RecentlyViewedSection = async ({ locale }: RecentlyViewedSectionPro
     <div className="recently-viewed container">
       <div className="py-8 flex flex-col gap-8">
         <p className="text-3xl md:text-3xl text-center font-400">{t('title')}</p>
-        <CardCarousel items={items} scrollable={true} className="basis-1/2 md:basis-1/4" />
+        <CardCarousel items={items} scrollable={false} className="basis-1/2 md:basis-1/4" />
       </div>
     </div>
   );
