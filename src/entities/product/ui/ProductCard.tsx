@@ -68,12 +68,16 @@ export const ProductCard = ({
   })();
 
   const productImages = [
-    ...(product?.media?.edges?.map((variant) => ({
-      url: variant.node.previewImage?.url || '',
-      altText: variant.node.previewImage?.altText || '',
-      width: variant.node.previewImage?.width || 300,
-      height: variant.node.previewImage?.height || 300,
-    })) ?? []),
+    ...(product?.media?.edges?.map((variant) => {
+      const raw = variant.node.previewImage?.url || '';
+      const sep = raw.includes('?') ? '&' : '?';
+      return {
+        url: raw ? `${raw}${sep}width=600&height=600&crop=center` : '',
+        altText: variant.node.previewImage?.altText || '',
+        width: 600,
+        height: 600,
+      };
+    }) ?? []),
   ]
     .filter(Boolean)
     .splice(0, 5);
@@ -146,7 +150,7 @@ export const ProductCard = ({
                       <div className="relative w-full  h-full aspect-square flex justify-center items-center rounded-t overflow-hidden">
                         <Image
                           key={index}
-                          className="object-contain w-[1000px] h-auto rounded-t"
+                          className="object-cover w-[1000px] h-auto"
                           src={image.url}
                           alt={image.altText || ''}
                           priority={index === 0 ? true : undefined}
@@ -222,7 +226,7 @@ export const ProductCard = ({
               )}
               <div className="relative aspect-square  md:h-full w-full flex justify-center items-center rounded-t overflow-hidden">
                 <Image
-                  className="object-contain w-[1000px] h-auto rounded-t"
+                  className="object-cover w-[1000px] h-auto"
                   src={productImages[0]?.url || product.featuredImage?.url || ''}
                   alt={productImages[0]?.altText || product.featuredImage?.altText || ''}
                   fill
