@@ -17,6 +17,8 @@ import { JsonLd } from '@shared/ui/JsonLd';
 import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
 import { cookies } from 'next/headers';
 import { ProductCard } from '@entities/product/ui/ProductCard';
+import { ProductCardSkeleton } from '@entities/product/ui/ProductCardSkeleton';
+import { Skeleton } from '@shared/ui/skeleton';
 import { Suspense } from 'react';
 import { ViewTracker } from '@entities/recently-viewed/ui/ViewTracker';
 import { RecentlyViewedSection } from '@entities/recently-viewed/ui/RecentlyViewedSection';
@@ -65,7 +67,7 @@ export async function ProductView({
       url: `${BASE_URL}/${locale}/product/${product.handle}`,
     },
   ];
-
+  console.log(relatedProducts,'relatedProducts')
   return (
     <div className="container  space-y-16 my-8 h-fit min-h-screen">
       <JsonLd data={generateBreadcrumbJsonLd(breadcrumbItems)} />
@@ -107,7 +109,7 @@ export async function ProductView({
       />
       {relatedProducts && relatedProducts.length > 0 && (
         <div className="content-stretch flex flex-col gap-[30px] items-center px-0 py-[30px] relative w-full">
-          <p className="font-sans leading-[26px] not-italic relative shrink-0 text-[20px] text-black text-center w-full">
+          <p className="text-3xl md:text-3xl text-center font-400">
             {t('styleWith')}
           </p>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 mx-auto max-w-5xl py-0 w-full">
@@ -120,9 +122,26 @@ export async function ProductView({
       {/* Recently Viewed: fire-and-forget view recording */}
       <ViewTracker productHandle={product.handle} productId={product.id} />
       {/* Recently Viewed: server-rendered carousel, streams in after page load */}
-      <Suspense fallback={null}>
+      <Suspense fallback={<RecentlyViewedSkeleton />}>
         <RecentlyViewedSection locale={locale} />
       </Suspense>
+    </div>
+  );
+}
+
+function RecentlyViewedSkeleton() {
+  return (
+    <div className="recently-viewed container">
+      <div className="py-8 flex flex-col gap-8">
+        <Skeleton className="h-8 w-48 mx-auto" />
+        <div className="flex gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="basis-1/2 md:basis-1/4 shrink-0">
+              <ProductCardSkeleton />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
