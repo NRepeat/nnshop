@@ -60,6 +60,11 @@ export const linkAnonymousDataToUser = async ({
         where: { userId: anonymousUserId },
         data: { userId: newUserId },
       });
+
+      await tx.recentlyViewedProduct.updateMany({
+        where: { userId: anonymousUserId },
+        data: { userId: newUserId },
+      });
     });
   } catch (error) {
     console.error('[linkAnonymousData] transaction failed', {
