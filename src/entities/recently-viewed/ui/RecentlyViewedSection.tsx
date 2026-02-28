@@ -11,7 +11,9 @@ type RecentlyViewedSectionProps = {
   locale: string;
 };
 
-export const RecentlyViewedSection = async ({ locale }: RecentlyViewedSectionProps) => {
+export const RecentlyViewedSection = async ({
+  locale,
+}: RecentlyViewedSectionProps) => {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) return null;
 
@@ -25,7 +27,6 @@ export const RecentlyViewedSection = async ({ locale }: RecentlyViewedSectionPro
 
   const handles = records.map((r) => r.productHandle);
   const products = await getProductsByHandles(handles, locale);
-
   if (products.length === 0) return null;
 
   const t = await getTranslations({ locale, namespace: 'RecentlyViewed' });
@@ -43,8 +44,14 @@ export const RecentlyViewedSection = async ({ locale }: RecentlyViewedSectionPro
   return (
     <div className="recently-viewed container">
       <div className="py-8 flex flex-col gap-8">
-        <p className="text-3xl md:text-3xl text-center font-400">{t('title')}</p>
-        <CardCarousel items={items} scrollable={false} className="basis-1/2 md:basis-1/4" />
+        <p className="text-3xl md:text-3xl text-center font-400">
+          {t('title')}
+        </p>
+        <CardCarousel
+          items={items}
+          scrollable={false}
+          className="basis-1/2 md:basis-1/4"
+        />
       </div>
     </div>
   );
