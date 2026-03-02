@@ -1,3 +1,4 @@
+import { NewsletterSection } from '@features/newsletter/ui/NewsletterSection';
 import { locales } from '@shared/i18n/routing';
 
 export async function generateStaticParams() {
@@ -13,5 +14,10 @@ export default async function CollectionLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <NewsletterSection />
+    </>
+  );
 }

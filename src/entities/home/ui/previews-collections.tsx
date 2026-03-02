@@ -26,7 +26,7 @@ export const PreviewsCollections = async (props: PreviewsCollectionsProps) => {
     .filter(Boolean);
   if (!collectionsDataReq) return null;
   const collectionsData = await Promise.all(collectionsDataReq);
-  const customTitles = items?.map((col) =>
+  const customTitles = items?.filter(Boolean).map((col) =>
     col.customTitle?.[locale as 'uk' | 'ru'] ?? col.customTitle?.uk ?? null
   ) ?? [];
   const localizedTitle = typeof title === 'string'

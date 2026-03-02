@@ -179,7 +179,7 @@ const GET_COLLECTION_SLUGS = `
 export const getCollectionSlugs = async () => {
   'use cache';
   cacheLife('default');
-  cacheTag('collections');
+  cacheTag('collection');
 
   const handlesSet = new Set<string>();
   const locales: StorefrontLanguageCode[] = ['RU', 'UK'];

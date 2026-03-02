@@ -1,6 +1,9 @@
 import { sanityFetch, client } from '@/shared/sanity/lib/client';
 import { normalizeLocaleForSanity } from '@shared/lib/locale';
-import { POST_BY_LANGUAGE_QUERY, POSTS_SLUGS_QUERY } from '@/shared/sanity/lib/query';
+import {
+  POST_BY_LANGUAGE_QUERY,
+  POSTS_SLUGS_QUERY,
+} from '@/shared/sanity/lib/query';
 import { setRequestLocale } from 'next-intl/server';
 import { Metadata } from 'next';
 import { generatePageMetadata } from '@shared/lib/seo/generateMetadata';
@@ -22,7 +25,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 
   if (!post) {
-    return generatePageMetadata({ title: 'Блог | Mio Mio' }, locale, `/blog/${slug}`);
+    return generatePageMetadata(
+      { title: 'Блог | Mio Mio' },
+      locale,
+      `/blog/${slug}`,
+    );
   }
 
   return generatePageMetadata(
@@ -38,7 +45,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export async function generateStaticParams() {
   const posts = await client.fetch(POSTS_SLUGS_QUERY);
-  return posts.map((post: { slug: string | null }) => ({ slug: post.slug ?? '' }));
+  return posts.map((post: { slug: string | null }) => ({
+    slug: post.slug ?? '',
+  }));
 }
 
 export default async function BlogPostPage({ params }: Props) {
@@ -56,8 +65,10 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound();
 
   return (
-    <div className="container py-8">
-      <Post {...post} currentLocale={locale} />
+    <div className="  space-y-12 my-8 h-fit min-h-screen">
+      <div className="container">
+        <Post {...post} currentLocale={locale} />
+      </div>
     </div>
   );
 }

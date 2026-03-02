@@ -161,7 +161,7 @@ export const POST_QUERY =
   },
   relatedPosts[]{
     _key,
-    ...@->{_id, title, slug, language}
+    ...@->{_id, title, slug, language, mainImage, publishedAt}
   },
   "seo": {
   "title": coalesce(seo.title, title, ""),
@@ -194,7 +194,7 @@ export const POST_BY_LANGUAGE_QUERY =
   },
   relatedPosts[]{
     _key,
-    ...@->{_id, title, slug, language}
+    ...@->{_id, title, slug, language, mainImage, publishedAt}
   },
   "seo": {
   "title": coalesce(seo.title, title, ""),
@@ -251,7 +251,7 @@ export const POST_WITH_FALLBACK_QUERY =
   },
   relatedPosts[]{
     _key,
-    ...@->{_id, title, slug, language}
+    ...@->{_id, title, slug, language, mainImage, publishedAt}
   },
   "seo": {
   "title": coalesce(seo.title, title, ""),
@@ -454,7 +454,15 @@ export const HOME_PAGE =
               publishedAt,
               language,
               "categories": coalesce(categories[]->{_id, slug, title}, []),
-              author->{ name, image }
+              author->{ name, image },
+              "localizedVersion": *[_type == "translation.metadata" && references(^._id)][0].translations[_key == $language][0].value->{
+                _id,
+                title,
+                slug,
+                mainImage,
+                publishedAt,
+                language
+              }
             }
           },
           _type == "splitImage" => {
@@ -482,13 +490,16 @@ export const HOME_PAGE =
               _key,
               _type,
               "title": coalesce(title[$language], title.uk, title.ru),
-              "collections": collections[]->{
-                title,
-                "handle": store.slug.current,
-                "id": store.id,
-                handles,
-                titles,
-                "image": { "url": store.imageUrl }
+              previews,
+              "collections": collections[]{
+                _key,
+                customTitle,
+                "collection": collection->{
+                  _id,
+                  store{ slug{ current }, title },
+                  handles,
+                  titles
+                }
               }
             },
         _type == "brandGridBlock" => {
@@ -574,6 +585,97 @@ export const HOME_PAGE =
           "id": store.id,
           handles,
           titles
+              }
+            },
+            _type == "sharedSectionRef" => {
+              _key,
+              _type,
+              section->{
+                _id,
+                internalTitle,
+                content[]{
+                  ...,
+                  _type == "popularPosts" => {
+                    ...,
+                    "title": coalesce(title[$language], title.uk, title.ru),
+                    "posts": posts[]->{
+                      _id,
+                      title,
+                      slug,
+                      mainImage,
+                      publishedAt,
+                      language,
+                      "categories": coalesce(categories[]->{_id, slug, title}, []),
+                      author->{ name, image },
+                      "localizedVersion": *[_type == "translation.metadata" && references(^._id)][0].translations[_key == $language][0].value->{
+                        _id,
+                        title,
+                        slug,
+                        mainImage,
+                        publishedAt,
+                        language
+                      }
+                    }
+                  },
+                  _type == "collectionsWithPreviews" => {
+                    _key,
+                    _type,
+                    "title": coalesce(title[$language], title.uk, title.ru),
+                    previews,
+                    "collections": collections[]{
+                      _key,
+                      customTitle,
+                      "collection": collection->{
+                        _id,
+                        store{ slug{ current }, title },
+                        handles,
+                        titles
+                      }
+                    }
+                  },
+                  _type == "brandGridBlock" => {
+                    ...,
+                    "title": coalesce(title[$language], title.uk, title.ru),
+                    "barnds": barnds[]{
+                      ...,
+                      "collectionData": collection->{ _id, store{ slug{ current }, title } }
+                    }
+                  },
+                  _type == "splitImage" => {
+                    ...,
+                    "title": coalesce(title[$language], title.uk, title.ru),
+                    "collection": collection->{
+                      title,
+                      "handle": store.slug.current,
+                      "id": store.id,
+                      handles,
+                      titles
+                    }
+                  },
+                  _type == "features" => {
+                    _key,
+                    _type,
+                    "features": features[]{
+                      _key,
+                      _type,
+                      "title": coalesce(title[$language], title.uk, title.ru),
+                      "text": coalesce(text[$language], text.uk, text.ru)
+                    }
+                  },
+                  _type == "collectionsCarousel" => {
+                    ...,
+                    "title": coalesce(title[$language], title.uk, title.ru),
+                    "action_text": coalesce(action_text[$language], action_text.uk, action_text.ru),
+                    "collections": collections[]->{
+                      title,
+                      "handle": store.slug.current,
+                      "id": store.id,
+                      handles,
+                      titles,
+                      "image": { "url": store.imageUrl }
+                    }
+                  }
+                }
               }
             }
     }
