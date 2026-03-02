@@ -1,5 +1,7 @@
 import { elegantEaseType } from './blocks/elegantEaseType';
 import { productCommentsType } from './blocks/productCommentsType';
+import { sharedSectionType } from './sharedSectionType';
+import { sharedSectionRef } from './blocks/sharedSectionRefType';
 import { type SchemaTypeDefinition } from 'sanity';
 import { contentBlocksType } from './contentBlocksType';
 import { blockCatalogType } from './blockCatalogType';
@@ -47,6 +49,8 @@ import { footerSettings } from './shopify/shemas/objects/global/footer';
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
     // Reusable block types
+    sharedSectionType,
+    sharedSectionRef,
     contentBlocksType,
     blockCatalogType,
 

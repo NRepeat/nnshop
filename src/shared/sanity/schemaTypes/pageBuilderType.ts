@@ -4,6 +4,7 @@ export const pageBuilderType = defineType({
   name: 'pageBuilder',
   type: 'array',
   of: [
+    defineArrayMember({ type: 'sharedSectionRef' }),
     defineArrayMember({ type: 'heroSlider' }),
     defineArrayMember({ type: 'mainCollectionGrid' }),
     defineArrayMember({ type: 'hero' }),
