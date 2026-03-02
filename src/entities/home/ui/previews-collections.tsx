@@ -16,7 +16,8 @@ export const PreviewsCollections = async (props: PreviewsCollectionsProps) => {
     customTitle?: { uk?: string; ru?: string };
   }>;
   const collectionsDataReq = items
-    ?.map((col) => {
+    ?.filter(Boolean)
+    .map((col) => {
       const handle = col.collection?.store?.slug?.current;
       if (handle) {
         return getCollection({ handle, first: 12, locale });
