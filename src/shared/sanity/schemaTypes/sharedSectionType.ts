@@ -42,17 +42,11 @@ export const sharedSectionType = defineType({
   preview: {
     select: {
       title: 'internalTitle',
-      b0: 'content[0]._type',
-      b1: 'content[1]._type',
-      b2: 'content[2]._type',
-      b3: 'content[3]._type',
-      b4: 'content[4]._type',
     },
-    prepare({ title, b0, b1, b2, b3, b4 }) {
-      const blocks = [b0, b1, b2, b3, b4].filter(Boolean) as string[];
+    prepare({ title }) {
       return {
         title: title ?? 'Untitled section',
-        subtitle: blocks.length > 0 ? blocks.join(' · ') : 'No blocks yet',
+        subtitle: 'Shared Section',
       };
     },
   },
