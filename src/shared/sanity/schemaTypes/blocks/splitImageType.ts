@@ -31,6 +31,12 @@ export const splitImageType = defineType({
     //   validation: (Rule) => Rule.max(1),
     // }),
     defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'localizedString',
+      description: 'Replaces the collection name shown as button text',
+    }),
+    defineField({
       name: 'image',
       type: 'image',
     }),

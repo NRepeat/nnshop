@@ -41,15 +41,36 @@ export const collectionsWithPreviews = defineType({
       type: 'array',
       of: [
         defineField({
-          name: 'collection',
-          title: 'Collection',
-          type: 'reference',
-          to: [{ type: 'collection' }],
+          name: 'collectionItem',
+          title: 'Collection Item',
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'collection',
+              title: 'Collection',
+              type: 'reference',
+              to: [{ type: 'collection' }],
+            }),
+            defineField({
+              name: 'customTitle',
+              title: 'Custom Title',
+              type: 'localizedString',
+              description: 'Overrides the Shopify collection title in the carousel',
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'collection.store.title',
+              customTitle: 'customTitle',
+            },
+            prepare({ title, customTitle }) {
+              return {
+                title: customTitle?.uk || customTitle?.ru || title || 'Collection',
+              };
+            },
+          },
         }),
       ],
-      options: {
-        layout: 'grid',
-      },
     }),
   ],
   preview: {

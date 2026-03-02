@@ -14,6 +14,7 @@ type SplitGridProps = Extract<
 const TextContentComponent = ({
   title,
   linkUrl,
+  description,
   mobile = false,
 }: {
   title: string | null;
@@ -22,6 +23,7 @@ const TextContentComponent = ({
     handle?: string | null;
     image?: { url?: string | null } | null;
   } | null;
+  description?: string | null;
   mobile?: boolean;
 }) => (
   <div
@@ -48,7 +50,7 @@ const TextContentComponent = ({
           mobile ? 'text-white  border-white' : 'text-black  border-black'
         } rounded-md`}
       >
-        {linkUrl?.title}
+        {description || linkUrl?.title}
       </Button>
     )}
   </div>
@@ -56,6 +58,10 @@ const TextContentComponent = ({
 
 export function SplitImage(props: SplitGridProps) {
   const { title, image, orientation, collection, locale, gender } = props;
+  const description = (props as any).description;
+  const localizedDescription = description
+    ? (description[locale as 'uk' | 'ru'] ?? description.uk ?? null)
+    : null;
   const linkUrl =
     collection && collection?.id
       ? resolveCollectionLink(collection, locale, gender)
@@ -64,7 +70,7 @@ export function SplitImage(props: SplitGridProps) {
     <div className="group relative w-full h-full aspect-square overflow-hidden rounded bg-gray-100 ">
       <Image
         className="transition-transform duration-700 ease-in-out group-hover:scale-105"
-        src={urlFor(image).width(600).height(600).url()}
+        src={urlFor(image).width(1500).height(1500).url()}
         fill
         alt={(title as unknown as string) || ''}
         priority
@@ -93,6 +99,7 @@ export function SplitImage(props: SplitGridProps) {
                   mobile
                   title={title as string | null}
                   linkUrl={linkUrl}
+                  description={localizedDescription}
                 />
               </div>
             </div>
@@ -101,6 +108,7 @@ export function SplitImage(props: SplitGridProps) {
               <TextContentComponent
                 title={title as string | null}
                 linkUrl={linkUrl}
+                description={localizedDescription}
               />
             </div>
           </div>

@@ -43,12 +43,14 @@ type SyncedCarouselsProps = {
   )[];
   previews: Preview[] | undefined | null;
   title: string | undefined;
+  customTitles?: (string | null)[];
   gender?: string;
 };
 
 export const SyncedCarousels = ({
   collectionsData,
   previews,
+  customTitles,
   gender,
 }: SyncedCarouselsProps) => {
   const [api1, setApi1] = useState<CarouselApi>();
@@ -151,7 +153,7 @@ export const SyncedCarousels = ({
               <CarouselItem key={index} className="pl-1 ">
                 <div className="w-full flex justify-center mb-8">
                   <h3 className="text-3xl font-medium">
-                    {collection?.collection?.collection?.title}
+                    {customTitles?.[index] || collection?.collection?.collection?.title}
                   </h3>
                 </div>
                 <div className="grid grid-cols-3 gap-1 md:gap-2 pb-1">

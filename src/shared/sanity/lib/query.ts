@@ -654,6 +654,7 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
         },
         _type == "splitImage" => {
           ...,
+          description,
           link[]{
             ...,
             reference->{
@@ -665,6 +666,18 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
                 _type == "collection" => store.slug.current,
                 _type == "page" => slug.current
               )
+            }
+          }
+        },
+        _type == "collectionsWithPreviews" => {
+          ...,
+          collections[]{
+            ...,
+            collection->{
+              _id,
+              store{ slug{ current }, title },
+              handles,
+              titles
             }
           }
         },
@@ -769,6 +782,7 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
         },
         _type == "splitImage" => {
           ...,
+          description,
           link[]{
             ...,
             reference->{
@@ -780,6 +794,18 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
                 _type == "collection" => store.slug.current,
                 _type == "page" => slug.current
               )
+            }
+          }
+        },
+        _type == "collectionsWithPreviews" => {
+          ...,
+          collections[]{
+            ...,
+            collection->{
+              _id,
+              store{ slug{ current }, title },
+              handles,
+              titles
             }
           }
         },

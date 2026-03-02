@@ -11,20 +11,23 @@ export type PreviewsCollectionsProps = Extract<
 export const PreviewsCollections = async (props: PreviewsCollectionsProps) => {
   const { collections, previews, locale, title, gender } = props;
 
-  const collectionsDataReq = collections
+  const items = collections as unknown as Array<{
+    collection?: { store?: { slug?: { current?: string }; title?: string }; handles?: Record<string, string>; titles?: Record<string, string> };
+    customTitle?: { uk?: string; ru?: string };
+  }>;
+  const collectionsDataReq = items
     ?.map((col) => {
-      const collectionHandle = col.handle;
-      if (collectionHandle) {
-        return getCollection({
-          handle: collectionHandle,
-          first: 12,
-          locale,
-        });
+      const handle = col.collection?.store?.slug?.current;
+      if (handle) {
+        return getCollection({ handle, first: 12, locale });
       }
     })
     .filter(Boolean);
   if (!collectionsDataReq) return null;
   const collectionsData = await Promise.all(collectionsDataReq);
+  const customTitles = items?.map((col) =>
+    col.customTitle?.[locale as 'uk' | 'ru'] ?? col.customTitle?.uk ?? null
+  ) ?? [];
   const localizedTitle = typeof title === 'string'
     ? title
     : Array.isArray(title)
@@ -35,6 +38,7 @@ export const PreviewsCollections = async (props: PreviewsCollectionsProps) => {
       collectionsData={collectionsData}
       previews={previews}
       title={localizedTitle}
+      customTitles={customTitles}
       gender={gender}
     />
   );
