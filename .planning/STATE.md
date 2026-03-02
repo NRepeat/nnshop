@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-02-23)
 Phase: 8 of 7 (Recently Viewed + Newsletter)
 Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-02-28 — Completed 08-03 (NewsletterForm, NewsletterSection, home page wiring, anonymous merge patch)
+Last activity: 2026-03-02 - Completed quick task 1: add isBrand checkbox to Sanity collection schema and update frontend
 
 Progress: [█████░░░░░] 50%
 
@@ -124,6 +124,12 @@ None yet.
 ### Blockers/Concerns
 
 None yet.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 1 | add isBrand checkbox to Sanity collection schema and update frontend | 2026-03-02 | dbebcd4 | [1-add-isbrand-checkbox-to-sanity-collectio](./quick/1-add-isbrand-checkbox-to-sanity-collectio/) |
 
 ## Session Continuity
 
