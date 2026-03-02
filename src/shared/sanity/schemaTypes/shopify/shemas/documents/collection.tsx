@@ -86,6 +86,14 @@ export default defineType({
       description: 'If disabled, page title will be displayed instead',
       group: 'editorial',
     }),
+    // Is Brand
+    defineField({
+      name: 'isBrand',
+      title: 'Is Brand',
+      type: 'boolean',
+      description: 'When enabled, this collection is treated as a brand — the frontend routes to /brand/[slug] instead of the gender collection layout.',
+      group: 'editorial',
+    }),
     // Hero
     defineField({
       name: 'hero',
