@@ -6492,6 +6492,14 @@
         },
         "optional": true
       },
+      "customTitle": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "localizedString"
+        },
+        "optional": true
+      },
       "isBrand": {
         "type": "objectAttribute",
         "value": {

@@ -115,6 +115,9 @@ export const CollectionGrid = async ({
   }
 
   const { collection, alternateHandle } = currentData;
+  const displayTitle =
+    sanityCollection?.customTitle?.[locale as 'uk' | 'ru'] ||
+    collection.collection?.title;
   const rawProducts =
     collection.collection?.products.edges
       .map((edge) => edge.node)
@@ -155,7 +158,7 @@ export const CollectionGrid = async ({
             url: `${BASE_URL}/${locale}/${gender}`,
           },
           {
-            name: collection.collection?.title ?? slug,
+            name: displayTitle ?? slug,
             url: `${BASE_URL}/${locale}/${gender}/${slug}`,
           },
         ])}
@@ -174,7 +177,7 @@ export const CollectionGrid = async ({
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{collection.collection?.title}</BreadcrumbPage>
+              <BreadcrumbPage>{displayTitle}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -182,7 +185,7 @@ export const CollectionGrid = async ({
         <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row justify-between lg:items-end gap-6">
           <div className="flex flex-col gap-3.5 w-full">
             <h1 className="text-2xl font-bold">
-              {collection.collection?.title}
+              {displayTitle}
             </h1>
             {collection.collection?.products.filters && (
               <Suspense fallback={null}>

@@ -1179,6 +1179,7 @@ export type Collection = {
     _type: 'image';
   };
   showHero?: boolean;
+  customTitle?: LocalizedString;
   isBrand?: boolean;
   hero?: HeroCollection;
   modules?: Array<
@@ -3395,9 +3396,10 @@ export type FOOTER_QUERYResult = {
   } | null;
 } | null;
 // Variable: COLLECTION_IS_BRAND_QUERY
-// Query: *[_type == "collection" && store.slug.current == $handle][0]{ isBrand }
+// Query: *[_type == "collection" && store.slug.current == $handle][0]{ isBrand, customTitle }
 export type COLLECTION_IS_BRAND_QUERYResult = {
   isBrand: boolean | null;
+  customTitle: LocalizedString | null;
 } | null;
 
 // Query TypeMap
@@ -3427,6 +3429,6 @@ declare module '@sanity/client' {
     '\n*[_type in ["page", "post"] && defined(slug.current)] {\n    "href": select(\n      _type == "page" => "/" + slug.current,\n      _type == "post" => select(\n        defined(language) => "/" + language + "/posts/" + slug.current,\n        "/posts/" + slug.current\n      ),\n      slug.current\n    ),\n    _updatedAt,\n    language\n}\n': SITEMAP_QUERYResult;
     '\n  *[_type == \'siteSettings\'][0]{\n    infoBar {\n      ...,\n      telephone,\n      viberPhone,\n      "text": coalesce(text[$locale], text.uk, text.ru, ""),\n      link {\n        ...,\n        "collectionData": reference-> {\n          title,\n          "handle": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    header {\n      ...,\n      categoryLinks[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      },\n      mainCategory[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    brandsNavigation {\n      topBrands,\n      collections[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    }\n  }\n': HEADER_QUERYResult;
     "\n  *[_type == 'siteSettings'][0]{\n    footerSettings {\n      socialLinks[] {\n        platform,\n        url\n      },\n      workingHours {\n        uk,\n        ru\n      },\n      address {\n        uk,\n        ru\n      },\n      paymentMethods\n    }\n  }\n": FOOTER_QUERYResult;
-    '*[_type == "collection" && store.slug.current == $handle][0]{ isBrand }': COLLECTION_IS_BRAND_QUERYResult;
+    '*[_type == "collection" && store.slug.current == $handle][0]{ isBrand, customTitle }': COLLECTION_IS_BRAND_QUERYResult;
   }
 }

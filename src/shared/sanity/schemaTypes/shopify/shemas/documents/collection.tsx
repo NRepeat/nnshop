@@ -86,6 +86,14 @@ export default defineType({
       description: 'If disabled, page title will be displayed instead',
       group: 'editorial',
     }),
+    // Custom title (overrides Shopify title on frontend)
+    defineField({
+      name: 'customTitle',
+      title: 'Custom Title',
+      type: 'localizedString',
+      description: 'Overrides the Shopify collection title on the frontend. Leave empty to use the Shopify title.',
+      group: 'editorial',
+    }),
     // Is Brand
     defineField({
       name: 'isBrand',
