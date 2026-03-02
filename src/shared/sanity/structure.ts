@@ -14,6 +14,19 @@ export const structure: StructureResolver = (S, context) => {
       S.documentTypeListItem('author').title('Authors'),
       S.documentTypeListItem('page').title('Pages'),
       S.documentTypeListItem('faq').title('FAQs'),
+      S.documentTypeListItem('sharedSection')
+        .title('Shared Sections')
+        .child(
+          S.documentList()
+            .title('Shared Sections')
+            .filter('_type == "sharedSection"')
+            .child((documentId) =>
+              S.document()
+                .documentId(documentId)
+                .schemaType('sharedSection')
+                .views([S.view.form()]),
+            ),
+        ),
       S.listItem()
         .id('siteSettings')
         .schemaType('siteSettings')
@@ -39,6 +52,7 @@ export const structure: StructureResolver = (S, context) => {
             'page',
             'faq',
             'siteSettings',
+            'sharedSection',
           ].includes(item.getId()!)
         );
       }),
