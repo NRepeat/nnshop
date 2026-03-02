@@ -130,9 +130,10 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 1 | add isBrand checkbox to Sanity collection schema and update frontend | 2026-03-02 | dbebcd4 | [1-add-isbrand-checkbox-to-sanity-collectio](./quick/1-add-isbrand-checkbox-to-sanity-collectio/) |
+| 3 | add reusable shared section block type to pageBuilder | 2026-03-02 | 608aaab | [3-add-reusable-shared-section-block-type-t](./quick/3-add-reusable-shared-section-block-type-t/) |
 
 ## Session Continuity
 
-Last session: 2026-02-28
-Stopped at: Completed 08-03-PLAN.md — NewsletterForm, NewsletterSection, home page wiring, anonymous merge patch
+Last session: 2026-03-02
+Stopped at: Completed quick task 3 — sharedSection document type, sharedSectionRef pageBuilder block, GROQ dereference, HeroPageBuilder recursive rendering
 Resume file: None
