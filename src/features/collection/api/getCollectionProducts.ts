@@ -8,11 +8,13 @@ export async function getCollectionProducts({
   slug,
   locale,
   searchParams,
+  gender,
 }: {
   info?: PageInfo;
   slug: string;
   locale: string;
   searchParams?: { [key: string]: string | string[] | undefined };
+  gender?: string;
 }) {
   const collectionData = await getCollection({
     handle: slug,
@@ -20,6 +22,7 @@ export async function getCollectionProducts({
     locale: locale,
     after: info?.endCursor || undefined,
     searchParams: searchParams,
+    gender,
   });
   if (!collectionData) {
     throw new Error('Collection not found');

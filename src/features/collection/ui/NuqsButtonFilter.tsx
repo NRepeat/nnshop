@@ -13,12 +13,14 @@ import { Spinner } from '@shared/ui/Spinner';
 
 type Props = {
   filter: Filter;
+  initialFilter?: Filter;
   showCount?: boolean;
   isSizeFilter?: boolean;
 };
 
 export function NuqsButtonFilter({
   filter,
+  initialFilter,
   showCount = true,
   isSizeFilter = false,
 }: Props) {
@@ -47,9 +49,14 @@ export function NuqsButtonFilter({
     });
   };
 
+  const displayValues = (initialFilter ?? filter).values.map((v) => {
+    const live = filter.values.find((fv) => fv.label === v.label);
+    return live ?? { ...v, count: 0 };
+  });
+
   const sortedValues = isSizeFilter
-    ? [...filter.values]
-    : [...filter.values].sort((a, b) => a.label.localeCompare(b.label));
+    ? displayValues
+    : [...displayValues].sort((a, b) => a.label.localeCompare(b.label));
   return (
     <div className="grid grid-cols-4 gap-2 px-1">
       {sortedValues.map((value) => {

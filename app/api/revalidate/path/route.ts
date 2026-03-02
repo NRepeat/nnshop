@@ -27,7 +27,6 @@ export async function POST(req: NextRequest) {
 
     const revalidatedPaths: string[] = [];
     const revalidatedTags: string[] = [];
-    console.log(body, 'body');
 
     // Handle layout-related types (header, footer, siteSettings)
     if (body.type && LAYOUT_TYPES.includes(body.type)) {
@@ -47,6 +46,7 @@ export async function POST(req: NextRequest) {
     // Handle slug-based revalidation
     if (body.slug) {
       revalidateTag(body.slug, 'max');
+      revalidatePath(body.slug);
       revalidatedTags.push(body.slug);
     }
 

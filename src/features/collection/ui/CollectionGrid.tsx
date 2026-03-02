@@ -75,18 +75,23 @@ export const CollectionGrid = async ({
   const { locale, slug, gender } = awaitedParams;
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
   const resolvedHandle = resolveCollectionHandle(slug, gender);
+  // When the handle wasn't gender-resolved (e.g. brand collections), auto-filter by gender
+  const autoGender = resolvedHandle === slug && (gender === 'man' || gender === 'woman')
+    ? gender
+    : undefined;
   const collectionPromises = [
     getCollection({
       handle: resolvedHandle,
       first: 18,
       locale: locale,
       searchParams: awaitedSearchParams,
+      gender: autoGender,
     }),
   ];
 
   if (hasFilters) {
     collectionPromises.push(
-      getCollection({ handle: resolvedHandle, first: 18, locale: locale }),
+      getCollection({ handle: resolvedHandle, first: 18, locale: locale, gender: autoGender }),
     );
   }
 
@@ -190,6 +195,8 @@ export const CollectionGrid = async ({
             initialPageInfo={pageInfo as PageInfo}
             // @ts-ignore
             initialProducts={productsWithFav as Product[]}
+            handle={resolvedHandle}
+            gender={autoGender}
           />
         </div>
       </div>

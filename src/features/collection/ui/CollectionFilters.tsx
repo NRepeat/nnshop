@@ -73,6 +73,9 @@ export function CollectionFilters({ filters, initialFilters }: Props) {
               </AccordionTrigger>
               <AccordionContent>
                 {(() => {
+                  const initialFilter = initialFilters?.find(
+                    (f) => f.id === filter.id,
+                  );
                   if (filter.type === 'PRICE_RANGE') {
                     return (
                       <NuqsPriceRangeFilter
@@ -82,7 +85,12 @@ export function CollectionFilters({ filters, initialFilters }: Props) {
                     );
                   }
                   if (filter.id === 'filter.p.m.custom.color') {
-                    return <NuqsColorFilter filter={filter} />;
+                    return (
+                      <NuqsColorFilter
+                        filter={filter}
+                        initialFilter={initialFilter}
+                      />
+                    );
                   }
                   if (filter.id === 'filter.p.m.custom.rozmir' || filter.label === 'Розмір' || filter.label === 'Размер') {
                     return (
@@ -90,11 +98,17 @@ export function CollectionFilters({ filters, initialFilters }: Props) {
                         filter={filter}
                         showCount={false}
                         isSizeFilter={true}
+                        initialFilter={initialFilter}
                       />
                     );
                   }
                   if (filter.type === 'LIST') {
-                    return <NuqsListFilter filter={filter} />;
+                    return (
+                      <NuqsListFilter
+                        filter={filter}
+                        initialFilter={initialFilter}
+                      />
+                    );
                   }
 
                   return filter.type;

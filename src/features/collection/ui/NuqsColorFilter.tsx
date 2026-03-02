@@ -12,11 +12,12 @@ import { toFilterSlug } from '@shared/lib/filterSlug';
 
 type Props = {
   filter: Filter;
+  initialFilter?: Filter;
 };
 
 
 
-export function NuqsColorFilter({ filter }: Props) {
+export function NuqsColorFilter({ filter, initialFilter }: Props) {
   const filterKey = filter.id.split('.').pop() || filter.id;
   const [isPending, startTransition] = useTransition();
   const [changingFilter, setChangingFilter] = useState<string | null>(null);
@@ -43,9 +44,14 @@ export function NuqsColorFilter({ filter }: Props) {
     });
   };
 
+  const displayValues = (initialFilter ?? filter).values.map((v) => {
+    const live = filter.values.find((fv) => fv.label === v.label);
+    return live ?? { ...v, count: 0 };
+  });
+
   return (
     <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 p-1">
-      {[...filter.values]
+      {[...displayValues]
         .sort((a, b) => a.label.localeCompare(b.label))
         .map((value) => {
           const isChecked = selectedValues.includes(toFilterSlug(value.label));

@@ -227,6 +227,11 @@ export const getCollectionFilters = async ({
   return collection.collection?.products.filters;
 };
 
+const GENDER_SLUG_PATTERNS: Record<string, string[]> = {
+  man: ['cholov'],
+  woman: ['zhinoch'],
+};
+
 export const getCollection = async ({
   handle,
   searchParams,
@@ -235,6 +240,7 @@ export const getCollection = async ({
   last,
   before,
   locale,
+  gender,
 }: {
   handle: string;
   searchParams?: { [key: string]: string | string[] | undefined };
@@ -243,11 +249,12 @@ export const getCollection = async ({
   last?: number;
   before?: string;
   locale: string;
+  gender?: string;
 }) => {
   'use cache';
   cacheLife('default');
   cacheTag(`collection:${handle}`);
-  console.log('getCollection',handle)
+  cacheTag(handle);
   if (!locale) {
     throw new Error('getCollection: locale is required');
   }
@@ -257,40 +264,57 @@ export const getCollection = async ({
   }
 
   const filters: ProductFilter[] = [];
-  if (searchParams) {
+  const needsFilterDefs = !!(searchParams || gender);
+  if (needsFilterDefs) {
     const filterDefinitions = await getCollectionFilters({ handle, locale });
 
     if (filterDefinitions) {
-      for (const [key, value] of Object.entries(searchParams)) {
-        if (key === 'minPrice' || key === 'maxPrice' || key === 'sort') {
-          continue;
-        }
+      if (searchParams) {
+        for (const [key, value] of Object.entries(searchParams)) {
+          if (key === 'minPrice' || key === 'maxPrice' || key === 'sort') {
+            continue;
+          }
 
-        const definition = filterDefinitions.find((f) =>
-          f.id.endsWith(`.${key}`),
+          const definition = filterDefinitions.find((f) =>
+            f.id.endsWith(`.${key}`),
+          );
+          if (definition) {
+            const values = Array.isArray(value)
+              ? value
+              : (value as string).split(';');
+            values.forEach((v) => {
+              const filterValue = definition.values.find(
+                (def) => toFilterSlug(def.label) === v,
+              );
+              if (filterValue) {
+                filters.push(JSON.parse(filterValue.input));
+              }
+            });
+          }
+        }
+      }
+
+      // Auto-inject gender filter when on a gendered path
+      if (gender && GENDER_SLUG_PATTERNS[gender]) {
+        const patterns = GENDER_SLUG_PATTERNS[gender];
+        const genderDef = filterDefinitions.find((f) =>
+          f.id === 'filter.p.m.custom.gender',
         );
-        if (definition) {
-          const values = Array.isArray(value)
-            ? value
-            : (value as string).split(';');
-          values.forEach((v) => {
-            const filterValue = definition.values.find(
-              (def) => toFilterSlug(def.label) === v,
-            );
-            if (filterValue) {
-              filters.push(JSON.parse(filterValue.input));
-            }
-          });
+        if (genderDef) {
+          const match = genderDef.values.find((v) =>
+            patterns.some((p) => toFilterSlug(v.label).includes(p)),
+          );
+          if (match) filters.push(JSON.parse(match.input));
         }
       }
     }
 
-    if (searchParams.minPrice || searchParams.maxPrice) {
+    if (searchParams?.minPrice || searchParams?.maxPrice) {
       const priceFilter: ProductFilter = { price: {} };
-      if (searchParams.minPrice) {
+      if (searchParams?.minPrice) {
         priceFilter.price!.min = parseFloat(searchParams.minPrice as string);
       }
-      if (searchParams.maxPrice) {
+      if (searchParams?.maxPrice) {
         priceFilter.price!.max = parseFloat(searchParams.maxPrice as string);
       }
       filters.push(priceFilter);
@@ -325,6 +349,7 @@ export const getCollection = async ({
 
   const isDefaultSort = !sort || sort === 'trending';
   const isNewSort = sort === 'created-desc';
+  const isPriceSort = sort === 'price-asc' || sort === 'price-desc';
   let collection: GetCollectionQuery;
 
   if (isDefaultSort) {
@@ -488,6 +513,89 @@ export const getCollection = async ({
       collection.collection.products.edges = slicedEdges;
       collection.collection.products.pageInfo = {
         hasNextPage: startIndex + pageSize < sortedEdges.length,
+        hasPreviousPage: startIndex > 0,
+        endCursor:
+          slicedEdges.length > 0
+            ? slicedEdges[slicedEdges.length - 1].node.id
+            : null,
+        startCursor: slicedEdges.length > 0 ? slicedEdges[0].node.id : null,
+      };
+    }
+  } else if (isPriceSort) {
+    // Fetch all products and sort by effective price (accounts for znizka discount metafield)
+    const allEdges: any[] = [];
+    let cursor: string | null = null;
+    let hasNextPage = true;
+    let firstBatch: GetCollectionQuery | null = null;
+
+    while (hasNextPage) {
+      const batch: GetCollectionQuery = await storefrontClient.request<
+        GetCollectionQuery,
+        {
+          handle: string;
+          filters?: ProductFilter[];
+          first?: number;
+          after?: string;
+          sortKey?: string;
+          reverse?: boolean;
+        }
+      >({
+        query: GetCollectionWithProducts,
+        variables: {
+          handle,
+          filters,
+          first: 250,
+          after: cursor ?? undefined,
+          sortKey: 'PRICE',
+          reverse: false,
+        },
+        language: locale.toUpperCase() as StorefrontLanguageCode,
+      });
+
+      if (!firstBatch) firstBatch = batch;
+      const products = batch.collection?.products;
+      if (!products) break;
+
+      allEdges.push(...products.edges);
+      hasNextPage = products.pageInfo.hasNextPage;
+      cursor = products.pageInfo.endCursor ?? null;
+    }
+
+    // Sort by effective price: maxVariantPrice * (1 - znizka/100)
+    allEdges.sort((a: any, b: any) => {
+      const getEffectivePrice = (edge: any): number => {
+        const base = parseFloat(edge.node.priceRange?.maxVariantPrice?.amount ?? '0');
+        const znizka =
+          edge.node.metafield?.key === 'znizka' && edge.node.metafield?.value
+            ? parseFloat(edge.node.metafield.value)
+            : 0;
+        return znizka > 0 ? base * (1 - znizka / 100) : base;
+      };
+      const diff = getEffectivePrice(a) - getEffectivePrice(b);
+      return sort === 'price-desc' ? -diff : diff;
+    });
+
+    const cursorToIndex = new Map<string, number>();
+    allEdges.forEach((edge, index) => cursorToIndex.set(edge.node.id, index));
+
+    const pageSize = first || last || 20;
+    let startIndex = 0;
+    if (after) {
+      const afterIndex = cursorToIndex.get(after);
+      startIndex = afterIndex !== undefined ? afterIndex + 1 : 0;
+    } else if (before) {
+      const beforeIndex = cursorToIndex.get(before);
+      startIndex =
+        beforeIndex !== undefined ? Math.max(0, beforeIndex - pageSize) : 0;
+    }
+
+    const slicedEdges = allEdges.slice(startIndex, startIndex + pageSize);
+
+    collection = firstBatch!;
+    if (collection.collection) {
+      collection.collection.products.edges = slicedEdges;
+      collection.collection.products.pageInfo = {
+        hasNextPage: startIndex + pageSize < allEdges.length,
         hasPreviousPage: startIndex > 0,
         endCursor:
           slicedEdges.length > 0

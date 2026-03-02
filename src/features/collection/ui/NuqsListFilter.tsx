@@ -13,9 +13,10 @@ import { Spinner } from '@/shared/ui/Spinner';
 
 type Props = {
   filter: Filter;
+  initialFilter?: Filter;
 };
 
-export function NuqsListFilter({ filter }: Props) {
+export function NuqsListFilter({ filter, initialFilter }: Props) {
   const [isPending, startTransition] = useTransition();
   const [changingFilter, setChangingFilter] = useState<string | null>(null);
   const filterKey = filter.id.split('.').pop() || filter.id;
@@ -38,7 +39,12 @@ export function NuqsListFilter({ filter }: Props) {
     });
   };
 
-  const shouldCollapse = filter.values.length > 6;
+  const displayValues = (initialFilter ?? filter).values.map((v) => {
+    const live = filter.values.find((fv) => fv.label === v.label);
+    return live ?? { ...v, count: 0 };
+  });
+
+  const shouldCollapse = displayValues.length > 6;
 
   return (
     <div
@@ -47,8 +53,7 @@ export function NuqsListFilter({ filter }: Props) {
       })}
     >
       <ul className="space-y-2">
-        {[...filter.values]
-          .map((value) => {
+        {displayValues.map((value) => {
             const isChecked = selectedValues.includes(toFilterSlug(value.label));
             const isChanging = changingFilter === toFilterSlug(value.label);
 
@@ -67,7 +72,7 @@ export function NuqsListFilter({ filter }: Props) {
                   )}
                   <span
                     className={cn('text-md', {
-                      'text-muted-foreground ': value.count === 0 && !isChecked,
+                      'text-muted-foreground': value.count === 0 && !isChecked,
                     })}
                   >
                     {value.label} ({value.count})

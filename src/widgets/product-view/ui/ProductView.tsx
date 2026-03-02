@@ -17,9 +17,6 @@ import { JsonLd } from '@shared/ui/JsonLd';
 import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
 import { cookies } from 'next/headers';
 import { ProductCard } from '@entities/product/ui/ProductCard';
-import { ProductCardSkeleton } from '@entities/product/ui/ProductCardSkeleton';
-import { Skeleton } from '@shared/ui/skeleton';
-import { Suspense } from 'react';
 import { ViewTracker } from '@entities/recently-viewed/ui/ViewTracker';
 import { RecentlyViewedSection } from '@entities/recently-viewed/ui/RecentlyViewedSection';
 
@@ -121,27 +118,8 @@ export async function ProductView({
       )}
       {/* Recently Viewed: fire-and-forget view recording */}
       <ViewTracker productHandle={product.handle} productId={product.id} />
-      {/* Recently Viewed: server-rendered carousel, streams in after page load */}
-      <Suspense fallback={<RecentlyViewedSkeleton />}>
-        <RecentlyViewedSection locale={locale} />
-      </Suspense>
-    </div>
-  );
-}
-
-function RecentlyViewedSkeleton() {
-  return (
-    <div className="recently-viewed container">
-      <div className="py-8 flex flex-col gap-8">
-        <Skeleton className="h-8 w-48 mx-auto" />
-        <div className="flex gap-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="basis-1/2 md:basis-1/4 shrink-0">
-              <ProductCardSkeleton />
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Recently Viewed: client-side carousel */}
+      <RecentlyViewedSection />
     </div>
   );
 }

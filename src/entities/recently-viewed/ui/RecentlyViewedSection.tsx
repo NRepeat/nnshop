@@ -1,40 +1,52 @@
-import { auth } from '@features/auth/lib/auth';
-import { headers } from 'next/headers';
-import { prisma } from '@shared/lib/prisma';
-import { getTranslations } from 'next-intl/server';
+'use client';
+
+import { useEffect, useState, useTransition } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { CardCarousel } from '@entities/home/ui/cardCarousel';
 import { ProductCard } from '@entities/product/ui/ProductCard';
-import { getProductsByHandles } from '../api/get-products-by-handles';
+import { ProductCardSkeleton } from '@entities/product/ui/ProductCardSkeleton';
+import { Skeleton } from '@shared/ui/skeleton';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 
-type RecentlyViewedSectionProps = {
-  locale: string;
-};
+export const RecentlyViewedSection = () => {
+  const locale = useLocale();
+  const t = useTranslations('RecentlyViewed');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isPending, startTransition] = useTransition();
 
-export const RecentlyViewedSection = async ({
-  locale,
-}: RecentlyViewedSectionProps) => {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user?.id) return null;
+  useEffect(() => {
+    startTransition(async () => {
+      try {
+        const res = await fetch(`/api/recently-viewed?locale=${locale}`);
+        const data: Product[] = await res.json();
+        if (Array.isArray(data) && data.length > 0) setProducts(data);
+      } catch {}
+    });
+  }, [locale]);
 
-  const records = await prisma.recentlyViewedProduct.findMany({
-    where: { userId: session.user.id },
-    orderBy: { viewedAt: 'desc' },
-    take: 10,
-    select: { productHandle: true },
-  });
-  if (records.length === 0) return null;
+  if (!isPending && products.length === 0) return null;
 
-  const handles = records.map((r) => r.productHandle);
-  const products = await getProductsByHandles(handles, locale);
-  if (products.length === 0) return null;
-
-  const t = await getTranslations({ locale, namespace: 'RecentlyViewed' });
+  if (isPending) {
+    return (
+      <div className="recently-viewed container">
+        <div className="py-8 flex flex-col gap-8">
+          <Skeleton className="h-8 w-56 mx-auto" />
+          <div className="flex gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="basis-1/2 md:basis-1/4 shrink-0">
+                <ProductCardSkeleton />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const items = products.map((product) => (
     <ProductCard
       key={product.id}
-      product={product as Product}
+      product={product}
       withCarousel={false}
       withQuick={false}
       className="hover:shadow rounded-b rounded-t pt-0 px-0"

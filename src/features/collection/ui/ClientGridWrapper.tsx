@@ -3,7 +3,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { ClientGrid } from './ClientGrid';
 import LoadMore from './LoadMore';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
-import { useParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { ArrowUp } from 'lucide-react';
 import { Button } from '@shared/ui/button';
@@ -11,9 +10,13 @@ import { Button } from '@shared/ui/button';
 export const ClientGridWrapper = ({
   initialPageInfo,
   initialProducts,
+  handle,
+  gender,
 }: {
   initialProducts: (Product & { isFav: boolean })[];
   initialPageInfo: PageInfo;
+  handle: string;
+  gender?: string;
 }) => {
   const locale = useLocale();
   const [products, setProducts] =
@@ -46,10 +49,6 @@ export const ClientGridWrapper = ({
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  const params = useParams();
-  const handle = Array.isArray(params.slug)
-    ? params.slug.join('/')
-    : (params.slug as string);
   return (
     <div className="flex h-full w-full justify-between">
       <div className="flex flex-col w-full items-end justify-between">
@@ -62,6 +61,7 @@ export const ClientGridWrapper = ({
                 onDataLoadedAction={handleDataLoaded}
                 locale={locale}
                 handle={handle}
+                gender={gender}
               />
             </Suspense>
           </div>

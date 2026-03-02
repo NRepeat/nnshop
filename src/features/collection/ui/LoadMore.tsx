@@ -14,11 +14,13 @@ export default function LoadMore({
   locale,
   onDataLoadedAction,
   initialPageInfo,
+  gender,
 }: {
   locale: string;
   handle: string;
   initialPageInfo: PageInfo;
   onDataLoadedAction: (products: Product[], pageInfo: PageInfo) => void;
+  gender?: string;
 }) {
   const t = useTranslations('LoadMore');
   const [pageInfo, setPageInfo] = useState<PageInfo>(initialPageInfo);
@@ -43,6 +45,7 @@ export default function LoadMore({
         locale,
         slug: handle,
         searchParams: params,
+        gender,
       });
 
       if (result) {
@@ -53,7 +56,7 @@ export default function LoadMore({
         );
       }
     });
-  }, [pageInfo, isPending, searchParams, locale, handle, onDataLoadedAction]);
+  }, [pageInfo, isPending, searchParams, locale, handle, gender, onDataLoadedAction]);
 
   useEffect(() => {
     if (inView && !isPending && pageInfo?.hasNextPage) {
