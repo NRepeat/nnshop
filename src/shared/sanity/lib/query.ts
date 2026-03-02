@@ -676,6 +676,22 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
             body,
             "text": pt::text(body)
           }
+        },
+        _type == "sharedSectionRef" => {
+          section->{
+            _id,
+            internalTitle,
+            content[]{
+              ...,
+              _type == "brandGridBlock" => {
+                barnds[]{
+                  ...,
+                  asset->{ _id, url, metadata{dimensions} },
+                  collection->{ _id, store{ slug{ current }, title } }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -774,6 +790,22 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
             title,
             body,
             "text": pt::text(body)
+          }
+        },
+        _type == "sharedSectionRef" => {
+          section->{
+            _id,
+            internalTitle,
+            content[]{
+              ...,
+              _type == "brandGridBlock" => {
+                barnds[]{
+                  ...,
+                  asset->{ _id, url, metadata{dimensions} },
+                  collection->{ _id, store{ slug{ current }, title } }
+                }
+              }
+            }
           }
         }
       }
