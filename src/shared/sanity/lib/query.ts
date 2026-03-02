@@ -904,3 +904,7 @@ export const FOOTER_QUERY = defineQuery(`
     }
   }
 `);
+
+export const COLLECTION_IS_BRAND_QUERY = defineQuery(
+  `*[_type == "collection" && store.slug.current == $handle][0]{ isBrand }`
+);

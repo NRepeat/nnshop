@@ -1,6 +1,8 @@
 import { getCollection } from '@entities/collection/api/getCollection';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
+import { sanityFetch } from '@shared/sanity/lib/client';
+import { COLLECTION_IS_BRAND_QUERY } from '@shared/sanity/lib/query';
 import { ClientGridWrapper } from './ClientGridWrapper';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
 import {
@@ -75,6 +77,17 @@ export const CollectionGrid = async ({
   const { locale, slug, gender } = awaitedParams;
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
   const resolvedHandle = resolveCollectionHandle(slug, gender);
+
+  const sanityCollection = await sanityFetch({
+    query: COLLECTION_IS_BRAND_QUERY,
+    params: { handle: resolvedHandle },
+    tags: [`collection:${resolvedHandle}`],
+  });
+
+  if (sanityCollection?.isBrand) {
+    redirect(`/${locale}/brand/${resolvedHandle}`);
+  }
+
   // When the handle wasn't gender-resolved (e.g. brand collections), auto-filter by gender
   const autoGender = resolvedHandle === slug && (gender === 'man' || gender === 'woman')
     ? gender
