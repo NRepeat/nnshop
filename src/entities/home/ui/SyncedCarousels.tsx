@@ -10,15 +10,12 @@ import {
   type CarouselApi,
 } from '@shared/ui/carousel';
 import { GetCollectionQuery } from '@shared/lib/shopify/types/storefront.generated';
-import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@shared/ui/button';
-import Link from 'next/link';
-import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
+import { Link } from '@shared/i18n/navigation';
 import { ProductCard } from '@entities/product/ui/ProductCard';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
-import { stripGenderFromHandle } from '@features/header/navigation/utils/strip-gender-from-handle';
 
 type Preview = {
   _key: string;
@@ -96,7 +93,7 @@ export const SyncedCarousels = ({
     };
   }, [api1, api2, onSelect, onInit]);
   const previewLinks = collectionsData.map((collection) =>
-    stripGenderFromHandle(collection?.alternateHandle || ''),
+    (collection?.collection?.collection?.handle || collection?.alternateHandle || ''),
   );
   return (
     <div className="grid grid-cols-1 md:grid-cols-2  w-full container gap-2">

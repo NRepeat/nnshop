@@ -140,7 +140,7 @@ export class StorefrontClient implements ShopifyClient {
     variables,
     language,
     signal,
-    cache = 'force-cache',
+    cache = 'no-store',
     revalidate,
     tags,
   }: {

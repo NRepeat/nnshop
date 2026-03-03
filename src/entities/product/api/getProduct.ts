@@ -132,7 +132,7 @@ export const getProduct = async ({
   'use cache';
   cacheLife("default");
   cacheTag(`product:${handle}`);
-  cacheTag(`${handle}`);
+  cacheTag(handle);
   try {
     const targetLocale = locale === 'ru' ? 'UK' : 'RU';
     const product = await storefrontClient.request<

@@ -2,6 +2,8 @@
 import { Button } from '@shared/ui/button';
 import { cookieFenderSet } from '../api/setCookieGender';
 import { cn } from '@shared/lib/utils';
+import { usePathname } from '@shared/i18n/navigation';
+import { genders } from '@shared/i18n/routing';
 
 export const NavButton = ({
   children,
@@ -14,15 +16,16 @@ export const NavButton = ({
   gender?: string;
   className?: string;
 }) => {
+  const pathname = usePathname();
+
   const onClick = async (genderValue: string) => {
     if (genderValue) {
       await cookieFenderSet(genderValue);
     }
   };
 
-  // Default to 'woman' when gender is undefined
-  const activeGender = gender || 'woman';
-  const isActive = activeGender === slug;
+  const genderInUrl = pathname.split('/').find((segment) => genders.includes(segment));
+  const isActive = genderInUrl ? genderInUrl === slug : (gender || 'woman') === slug;
 
   return (
     <Button

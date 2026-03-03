@@ -77,7 +77,7 @@ export const CollectionGrid = async ({
   const { locale, slug, gender } = awaitedParams;
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
   const resolvedHandle = resolveCollectionHandle(slug, gender);
-
+  console.log(resolvedHandle);
   const sanityCollection = await sanityFetch({
     query: COLLECTION_IS_BRAND_QUERY,
     params: { handle: resolvedHandle },

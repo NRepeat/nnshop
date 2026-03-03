@@ -48,7 +48,7 @@ const renderBlock = (
 ): React.ReactNode => {
   switch (block._type) {
     case 'heroSlider':
-      return <HeroBanner key={block._key} {...block} gender={gender} />;
+      return <HeroBanner key={block._key} {...(block as any)} gender={gender} />;
 
     case 'mainCollectionGrid':
       return (
@@ -59,7 +59,7 @@ const renderBlock = (
           <MainCollectionGrid
             locale={locale}
             gender={gender}
-            {...block}
+            {...(block as any)}
           />
         </Suspense>
       );
@@ -70,22 +70,22 @@ const renderBlock = (
           key={block._key}
           locale={locale}
           gender={gender}
-          {...block}
+          {...(block as any)}
         />
       );
 
     case 'splitImage':
       return (
         <Suspense key={block._key} fallback={<SplitImageSkeleton />}>
-          <SplitImage locale={locale} gender={gender} {...block} />
+          <SplitImage locale={locale} gender={gender} {...(block as any)} />
         </Suspense>
       );
 
     case 'features':
-      return <Features key={block._key} locale={locale} {...block} />;
+      return <Features key={block._key} locale={locale} {...(block as any)} />;
 
     case 'brandGridBlock':
-      return <BrandGrid key={block._key} locale={locale} gender={gender} {...block} />;
+      return <BrandGrid key={block._key} locale={locale} gender={gender} {...(block as any)} />;
 
     case 'collectionsWithPreviews':
       return (
@@ -93,15 +93,15 @@ const renderBlock = (
           key={block._key}
           locale={locale}
           gender={gender}
-          {...block}
+          {...(block as any)}
         />
       );
 
     case 'hero':
-      return <Hero key={block._key} {...block} />;
+      return <Hero key={block._key} {...(block as any)} />;
 
     case 'faqs':
-      return <FAQs key={block._key} {...block} />;
+      return <FAQs key={block._key} {...(block as any)} />;
 
     case 'similarProducts':
       return block.collection ? (
@@ -197,7 +197,7 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
   }
   return (
     <main className="flex flex-col">
-      {content.map((block) => renderBlock(block, locale, gender))}
+      {(content as PageContent[]).map((block) => renderBlock(block, locale, gender))}
     </main>
   );
 };

@@ -1,6 +1,7 @@
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { GetMainMenuQuery } from '@shared/lib/shopify/types/storefront.generated';
+import { cacheLife, cacheTag } from 'next/cache';
 
 function decodeHtmlEntities(text: string): string {
   return text
@@ -39,6 +40,9 @@ const query = `#graphql
 `;
 
 export const getMainMenu = async ({ locale }: { locale: string }) => {
+  'use cache';
+  cacheLife('days');
+  cacheTag('menu');
   const responce = await storefrontClient.request<
     GetMainMenuQuery,
     {

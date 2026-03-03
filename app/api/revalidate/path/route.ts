@@ -5,7 +5,14 @@ import { parseBody } from 'next-sanity/webhook';
 import { revalidateSecret } from '@/shared/sanity/env';
 
 // Types that require full layout revalidation (header, footer, etc.)
-const LAYOUT_TYPES = ['siteSettings', 'header', 'footer', 'infoBar', 'page'];
+const LAYOUT_TYPES = [
+  'siteSettings',
+  'header',
+  'footer',
+  'infoBar',
+  'page',
+  'product',
+];
 
 export async function POST(req: NextRequest) {
   console.log(req, 'req');
@@ -41,6 +48,9 @@ export async function POST(req: NextRequest) {
       // Also revalidate the tag
       revalidateTag(body.type, 'max');
       revalidatedTags.push(body.type);
+      if (body.type === 'product') {
+        revalidatePath('/product/' + body.slug, 'page');
+      }
     }
 
     // Handle slug-based revalidation

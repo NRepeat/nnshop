@@ -1,6 +1,7 @@
 import { getCollection } from '@entities/collection/api/getCollection';
 import { getLocalizedString } from '@shared/sanity/utils/getLocalizedString';
 import { HOME_PAGEResult } from '@shared/sanity/types';
+import { stegaClean } from 'next-sanity';
 import { SyncedCarousels } from './SyncedCarousels';
 
 export type PreviewsCollectionsProps = Extract<
@@ -10,7 +11,6 @@ export type PreviewsCollectionsProps = Extract<
 
 export const PreviewsCollections = async (props: PreviewsCollectionsProps) => {
   const { collections, previews, locale, title, gender } = props;
-
   const items = collections as unknown as Array<{
     collection?: { store?: { slug?: { current?: string }; title?: string }; handles?: Record<string, string>; titles?: Record<string, string> };
     customTitle?: { uk?: string; ru?: string };
@@ -18,7 +18,8 @@ export const PreviewsCollections = async (props: PreviewsCollectionsProps) => {
   const collectionsDataReq = items
     ?.filter(Boolean)
     .map((col) => {
-      const handle = col.collection?.store?.slug?.current;
+      const rawHandle = col.collection?.handles?.[locale as 'uk' | 'ru'] || col.collection?.store?.slug?.current;
+      const handle = stegaClean(rawHandle);
       if (handle) {
         return getCollection({ handle, first: 12, locale });
       }

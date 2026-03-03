@@ -52,57 +52,59 @@ export default async function BrandsPage({ params }: Props) {
   ];
 
   return (
-    <div className="container py-10 mt-2 md:mt-10 min-h-screen">
-      <Breadcrumbs items={breadcrumbItems} />
+    <div className=" mt-8 md:mt-8 h-fit min-h-screen">
+      <div className="container">
+        <Breadcrumbs items={breadcrumbItems} />
 
-      {/* Page Header */}
-      <div className="my-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">{t('title')}</h1>
-        <p className="text-gray-500 text-sm">{t('description')}</p>
-      </div>
-
-      {/* Alphabet Index */}
-      <div className="flex flex-wrap gap-2 mb-8 border-b pb-4">
-        {letters.map((letter) => (
-          <a
-            key={letter}
-            href={`#letter-${letter}`}
-            className="text-sm font-medium hover:text-primary transition-colors px-2 py-1"
-          >
-            {letter}
-          </a>
-        ))}
-      </div>
-
-      {/* Brands List */}
-      {brands.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-gray-500">{t('empty')}</p>
+        {/* Page Header */}
+        <div className="my-8">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">{t('title')}</h1>
+          <p className="text-gray-500 text-sm">{t('description')}</p>
         </div>
-      ) : (
-        <div className="space-y-10">
+
+        {/* Alphabet Index */}
+        <div className="flex flex-wrap gap-2 mb-8 border-b pb-4">
           {letters.map((letter) => (
-            <div
+            <Link
               key={letter}
-              id={`letter-${letter}`}
-              className="scroll-mt-[125px] scroll-smooth"
+              href={`#letter-${letter}`}
+              className="text-sm font-medium hover:underline transition-colors px-3 py-1"
             >
-              <h2 className="text-2xl font-bold mb-4">{letter}</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-2">
-                {groupedBrands[letter].map((brand) => (
-                  <Link
-                    key={brand}
-                    href={`/brand/${vendorToHandle(brand)}`}
-                    className="text-sm hover:text-primary hover:underline transition-colors py-1"
-                  >
-                    {brand}
-                  </Link>
-                ))}
-              </div>
-            </div>
+              {letter}
+            </Link>
           ))}
         </div>
-      )}
+
+        {/* Brands List */}
+        {brands.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-gray-500">{t('empty')}</p>
+          </div>
+        ) : (
+          <div className="space-y-10">
+            {letters.map((letter) => (
+              <div
+                key={letter}
+                id={`letter-${letter}`}
+                className="scroll-mt-[125px] scroll-smooth"
+              >
+                <h2 className="text-2xl font-bold mb-4">{letter}</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-2">
+                  {groupedBrands[letter].map((brand) => (
+                    <Link
+                      key={brand}
+                      href={`/brand/${vendorToHandle(brand)}`}
+                      className="text-sm hover:text-primary hover:underline transition-colors py-1"
+                    >
+                      {brand}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
