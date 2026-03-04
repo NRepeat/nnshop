@@ -126,16 +126,28 @@
 }
 
 @media screen and (max-width: 767px) {
+  .modalOverlay {
+    align-items: flex-end;
+  }
+
   .modal {
     width: 100vw;
-    height: 100vh;
+    height: 90dvh;
+    border-radius: 12px 12px 0 0;
   }
 
   .modalHeader {
-    display: none;
+    height: 48px;
+    line-height: 48px;
+    padding: 0 16px;
+  }
+
+  .modalHeader h2 {
+    font-size: 16px;
+    line-height: 48px;
   }
 
   .modalIframe {
-    height: 100%;
+    height: calc(100% - 49px);
   }
 }
