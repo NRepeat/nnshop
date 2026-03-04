@@ -35,12 +35,12 @@ export default function NovaPoshtaButton({
             longitude: position.coords.longitude.toString(),
           });
         },
-        (error) => {
-          console.error('Помилка отримання геолокації:', error);
+        () => {
+          // Geolocation denied or unavailable — widget defaults to Kyiv
         },
       );
     } else {
-      console.error('Ваш браузер не підтримує геолокацію.');
+      // Geolocation not supported — widget defaults to Kyiv
     }
   }, []);
 
@@ -129,7 +129,6 @@ export default function NovaPoshtaButton({
         setSelectedDepartmentId(department.id);
         setSelectedDepartment(department);
         if (onDepartmentSelect) {
-          console.log('onDepartmentSelect-----------------', department);
           onDepartmentSelect(department);
         }
 
