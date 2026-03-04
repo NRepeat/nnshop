@@ -116,6 +116,7 @@ Recent decisions affecting current work:
 ### Roadmap Evolution
 
 - Phase 8 added: Recently Viewed Products section and Newsletter subscription section
+- Phase 9 added: ФРОНТ — убрать доставку из чекаута, НП виджет, статусы заказов, корзина, швидке замовлення, related products, дисконт, телефон/вайбер, меню, логотипы брендов, тест стежити за ціною
 
 ### Pending Todos
 
