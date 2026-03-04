@@ -6,7 +6,6 @@ import { getDeliveryInfo } from '@features/checkout/delivery/api/getDeliveryInfo
 import { getPaymentInfo } from '@features/checkout/payment/api/getPaymentInfo';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
-import { Card, CardContent } from '@shared/ui/card';
 
 type Props = {
   params: Promise<{ locale: string; orderId: string }>;
@@ -123,18 +122,16 @@ export default async function SuccessReceipt(props: Props) {
   const { locale } = await props.params;
 
   return (
-    <Card className='h-fit rounded p-4'>
-      <CardContent className="hidden md:flex px-0 py-0 flex-col gap-3 rounded ">
-        <Suspense fallback={<ReceiptSkeleton />}>
-          <ContactCard locale={locale} />
-        </Suspense>
-        <Suspense fallback={<ReceiptSkeleton />}>
-          <DeliveryCard locale={locale} />
-        </Suspense>
-        <Suspense fallback={<ReceiptSkeleton />}>
-          <PaymentCard locale={locale} />
-        </Suspense>
-      </CardContent>
-    </Card>
+    <div className="flex flex-col gap-3">
+      <Suspense fallback={<ReceiptSkeleton />}>
+        <ContactCard locale={locale} />
+      </Suspense>
+      <Suspense fallback={<ReceiptSkeleton />}>
+        <DeliveryCard locale={locale} />
+      </Suspense>
+      <Suspense fallback={<ReceiptSkeleton />}>
+        <PaymentCard locale={locale} />
+      </Suspense>
+    </div>
   );
 }

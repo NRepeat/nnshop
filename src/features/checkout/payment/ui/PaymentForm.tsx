@@ -94,8 +94,12 @@ export default function PaymentForm({
       // The createOrder function already saved it to DB, find it
       await savePaymentInfo(data, createdOrder.id);
 
-      // 3. Reset the cart
-      await resetCartSession();
+      // 3. Reset the cart (best-effort — order already exists in Shopify)
+      try {
+        await resetCartSession();
+      } catch (resetError) {
+        console.error('[PaymentForm] resetCartSession failed (non-blocking):', resetError);
+      }
 
       // 4a. LiqPay disabled temporarily — skip and redirect to success page directly
       // if (data.paymentMethod === 'pay-now' && data.paymentProvider === 'bank-transfer') {
