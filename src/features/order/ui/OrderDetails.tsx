@@ -125,11 +125,11 @@ export const OrderDetails = async ({
                 })}
               </p>
             </div>
-            <OrderStatusBadge status={order.displayFulfillmentStatus} />
+            <OrderStatusBadge status={order.fulfillmentStatus} />
           </div>
         </CardHeader>
         <CardContent className=''>
-          <OrderTimeline status={order.displayFulfillmentStatus} />
+          <OrderTimeline status={order.fulfillmentStatus} />
         </CardContent>
       </Card>
 

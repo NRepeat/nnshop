@@ -41,7 +41,7 @@ export async function getOrderById(
     id: order.id,
     name: order.name,
     processedAt: order.createdAt,
-    displayFulfillmentStatus: order.fulfillmentStatus,
+    fulfillmentStatus: order.fulfillmentStatus,
     financialStatus: order.financialStatus,
     email: order.email ?? '',
     shippingAddress: order.shippingAddress ?? {},
