@@ -178,9 +178,7 @@ export async function OrderSummary({
   const totalAmount = hasApplicableDiscount ? shopifyTotal : subtotal;
   // Effective discount = difference between what user sees (znizka prices) and what they pay
   const discountAmount = hasApplicableDiscount ? Math.max(0, subtotal - shopifyTotal) : 0;
-  // Shipping fee: 20 + 2% of goods total
-  const shippingFee = Math.round(20 + totalAmount * 0.02);
-  const grandTotal = totalAmount + shippingFee;
+  const grandTotal = totalAmount;
 
   const content = (
     <>
@@ -214,12 +212,6 @@ export async function OrderSummary({
           </>
         )}
 
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-500">{t('shipping')}</span>
-          <span className="text-gray-500">
-            {formatPrice(shippingFee)} {currencySymbol}
-          </span>
-        </div>
         <div className="flex justify-between text-base font-medium pt-2 border-t border-gray-100">
           <span className="text-gray-900">{t('total')}</span>
           <span className="text-gray-900">
