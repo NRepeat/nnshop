@@ -13,6 +13,7 @@ import {
   AccordionTrigger,
 } from '@shared/ui/accordion';
 import { cn } from '@shared/lib/utils';
+import { DiscountCodeInput } from '@features/cart/ui/DiscountCodeInput';
 
 interface OrderSummaryProps {
   locale: string;
@@ -187,6 +188,11 @@ export async function OrderSummary({
         {items.map((item) => (
           <OrderItemCard key={item.id} item={item} currency={currency} />
         ))}
+      </div>
+
+      {/* Discount Code Input */}
+      <div className="px-4 pt-3">
+        <DiscountCodeInput discountCodes={discountCodes} />
       </div>
 
       {/* Totals */}
