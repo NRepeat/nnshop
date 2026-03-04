@@ -64,7 +64,6 @@ export async function ProductView({
       url: `${BASE_URL}/${locale}/product/${product.handle}`,
     },
   ];
-  console.log(relatedProducts,'relatedProducts')
   return (
     <div className="container  space-y-16 my-8 h-fit min-h-screen">
       <JsonLd data={generateBreadcrumbJsonLd(breadcrumbItems)} />

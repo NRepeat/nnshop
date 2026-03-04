@@ -143,7 +143,6 @@ export const getProduct = async ({
       variables: { handle },
       language: locale.toUpperCase() as StorefrontLanguageCode,
     });
-    console.log(product)
     if (!product.product) {
       console.warn(`Product not found: ${handle}`);
       return {
