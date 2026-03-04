@@ -23,6 +23,7 @@ export default function NovaPoshtaButton({
     latitude: '',
     longitude: '',
   });
+  const coordinatesRef = useRef({ latitude: '', longitude: '' });
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -30,10 +31,12 @@ export default function NovaPoshtaButton({
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setCoordinates({
+          const coords = {
             latitude: position.coords.latitude.toString(),
             longitude: position.coords.longitude.toString(),
-          });
+          };
+          setCoordinates(coords);
+          coordinatesRef.current = coords;
         },
         () => {
           // Geolocation denied or unavailable — widget defaults to Kyiv
@@ -66,19 +69,22 @@ export default function NovaPoshtaButton({
         const domain =
           typeof window !== 'undefined' ? window.location.hostname : '';
 
-        const data = {
-          placeName: 'Київ',
-          latitude: coordinates.latitude,
-          longitude: coordinates.longitude,
-          domain: domain,
-          id: selectedDepartmentId,
-          ...queryParams,
-        };
-
         const handleLoad = () => {
-          if (iframeRef.current?.contentWindow) {
-            iframeRef.current.contentWindow.postMessage(data, '*');
-          }
+          // Delay postMessage so the widget's JS has time to initialize its listener
+          setTimeout(() => {
+            if (iframeRef.current?.contentWindow) {
+              const coords = coordinatesRef.current;
+              const data = {
+                placeName: 'Київ',
+                latitude: coords.latitude,
+                longitude: coords.longitude,
+                domain: domain,
+                id: selectedDepartmentId,
+                ...queryParams,
+              };
+              iframeRef.current.contentWindow.postMessage(data, '*');
+            }
+          }, 300);
         };
 
         iframeRef.current.addEventListener('load', handleLoad);
