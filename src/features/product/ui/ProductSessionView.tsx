@@ -55,38 +55,32 @@ export const ProductSessionView = async ({
 
     const variantIds = product.variants.edges.map((e) => e.node.id);
 
-    const [boundProducts, attributesResults, inventoryLevels] =
-      await Promise.all([
-        getReletedProducts(boundProductsData, locale),
-        Promise.all(parsedAttributeIDs.map((id) => getMetaobject(id))),
-        getInventoryLevels(variantIds),
-      ]);
+    const [
+      relatedShopiyProductsData,
+      boundProducts,
+      attributesResults,
+      inventoryLevels,
+    ] = await Promise.all([
+      getReletedProducts(relatedProductsIds, locale),
+      getReletedProducts(boundProductsData, locale),
+      Promise.all(parsedAttributeIDs.map((id) => getMetaobject(id))),
+      getInventoryLevels(variantIds),
+    ]);
 
-    // 1. SKU-based primary lookup (up to 3)
-    const sku = product.variants.edges[0]?.node?.sku ?? '';
-    let relatedProducts: any[] = [];
+    const relatedProducts = [...relatedShopiyProductsData];
 
-    if (sku.trim()) {
-      const skuProducts = await getProductsBySku(sku, product.id, locale, 3);
-      relatedProducts = skuProducts;
+    if (relatedProducts.length < 3 && product.productType) {
+      const sku = product.variants.edges[0]?.node?.sku ?? '';
+      if (sku.trim()) {
+        const excludeIds = [product.id, ...relatedProducts.map((p) => p.id)];
+        const skuFillers = await getProductsBySku(sku, product.id, locale, 3 - relatedProducts.length);
+        const freshSkuFillers = skuFillers.filter(
+          (p: any) => !excludeIds.includes(p.id),
+        );
+        relatedProducts.push(...freshSkuFillers);
+      }
     }
 
-    // 2. Fill remaining slots from recommended_products metafield
-    if (relatedProducts.length < 3 && relatedProductsIds.length > 0) {
-      const excludeIds = [product.id, ...relatedProducts.map((p) => p.id)];
-      const metafieldProducts = await getReletedProducts(
-        relatedProductsIds,
-        locale,
-      );
-      const freshMetafieldProducts = metafieldProducts.filter(
-        (p) => !excludeIds.includes(p.id),
-      );
-      relatedProducts.push(
-        ...freshMetafieldProducts.slice(0, 3 - relatedProducts.length),
-      );
-    }
-
-    // 3. Fill remaining slots from product type
     if (relatedProducts.length < 3 && product.productType) {
       const excludeIds = [product.id, ...relatedProducts.map((p) => p.id)];
       const fillers = await getNewProductsFiller({
