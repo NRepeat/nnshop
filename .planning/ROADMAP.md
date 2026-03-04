@@ -160,3 +160,26 @@ Plans:
 - [ ] 08-02-PLAN.md — Recently Viewed UI (ViewTracker, RecentlyViewedSection) + product page integration
 - [ ] 08-03-PLAN.md — Newsletter UI (NewsletterForm, NewsletterSection) + home page integration + anonymous merge patch
 - [ ] 08-04-PLAN.md — Build verification + human-verify checkpoint
+
+### Phase 9: ФРОНТ
+убрать доставку из чекаута
+проверить виджет НП геолокация
+в личном кабинете при статусе "Оброблено" плашечку оброблено в зеленый, Скасовано, Відмова від отримання - в червоний
+обновления статуса "Отменен"
+при добавлении товара в корзину отображать корзину
+швидке замовлення - добавить код страны по умолчанию
+линковка релейтед продактс - одинаковый sku
+применение дисконта к заказу
+телефон сменить на 097 217 92 92 + добавить значок вайбера
+меню навигации
+логотип брендов GHOUD AGL
+
+тест "стежити за ціною"
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 8
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 9 to break down)
