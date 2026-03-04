@@ -13,7 +13,7 @@ export interface Order {
   id: string;
   name: string;
   processedAt: string;
-  displayFulfillmentStatus: string;
+  fulfillmentStatus: string;
   financialStatus?: string;
   email: string;
   shippingAddress?: Address;

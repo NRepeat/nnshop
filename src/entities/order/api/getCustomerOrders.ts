@@ -28,7 +28,7 @@ export type CustomerOrder = {
   id: string;
   name: string;
   createdAt: string;
-  displayFulfillmentStatus: string;
+  fulfillmentStatus: string;
   financialStatus: string;
   totalPriceSet: { shopMoney: { amount: string; currencyCode: string } };
   subtotalPriceSet?: { shopMoney: { amount: string; currencyCode: string } };
@@ -63,7 +63,7 @@ export async function getCustomerOrders(
     id: order.id,
     name: order.name,
     createdAt: order.createdAt,
-    displayFulfillmentStatus: order.fulfillmentStatus,
+    fulfillmentStatus: order.fulfillmentStatus,
     financialStatus: order.financialStatus,
     totalPriceSet: {
       shopMoney: order.total ?? { amount: '0', currencyCode: 'UAH' },

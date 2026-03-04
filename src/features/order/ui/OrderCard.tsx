@@ -19,7 +19,7 @@ type OrderCardProps = {
     id: string;
     name: string;
     createdAt?: string;
-    displayFulfillmentStatus: string;
+    fulfillmentStatus: string;
     totalPriceSet: {
       shopMoney: {
         amount: string;
@@ -79,7 +79,7 @@ export const OrderCard = ({ order }: OrderCardProps) => {
         <CardHeader className="pb-2 px-0">
           <div className="flex items-center justify-between gap-2">
             <span className="font-semibold text-lg">{order.name}</span>
-            <OrderStatusBadge status={order.displayFulfillmentStatus} />
+            <OrderStatusBadge status={order.fulfillmentStatus} />
           </div>
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : ''}</span>

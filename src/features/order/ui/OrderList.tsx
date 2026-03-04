@@ -18,7 +18,7 @@ type Order = {
   id: string;
   name: string;
   createdAt?: string;
-  displayFulfillmentStatus: string;
+  fulfillmentStatus: string;
   totalPriceSet: {
     shopMoney: {
       amount: string;
