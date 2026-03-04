@@ -49,56 +49,28 @@ export default function NovaPoshtaButton({
     }
   }, []);
 
-  const getQueryParams = () => {
-    if (typeof window === 'undefined') return {};
-
-    const params = new URLSearchParams(window.location.search);
-    const queryParams: Record<string, string> = {};
-
-    params.forEach((value, key) => {
-      queryParams[key] = value;
-    });
-
-    return queryParams;
+  const buildWidgetUrl = (coords: { latitude: string; longitude: string }) => {
+    const apiKey = process.env.NEXT_PUBLIC_NP_WIDGET_API_KEY || '';
+    const params: Record<string, string> = { apiKey };
+    if (coords.latitude && coords.longitude) {
+      params.latitude = coords.latitude;
+      params.longitude = coords.longitude;
+    }
+    const qs = new URLSearchParams(params).toString();
+    const url = `https://widget.novapost.com/division/index.html?${qs}`;
+    console.log('[NP] buildWidgetUrl:', url);
+    return url;
   };
 
   const openFrame = () => {
-    console.log('[NP] openFrame — coordinatesRef at open time:', coordinatesRef.current);
+    const coords = coordinatesRef.current;
+    console.log('[NP] openFrame — coords:', coords);
     setIsModalOpen(true);
 
     openTimerRef.current = setTimeout(() => {
       if (iframeRef.current) {
-        const queryParams = getQueryParams();
-        const domain =
-          typeof window !== 'undefined' ? window.location.hostname : '';
-
-        const handleLoad = () => {
-          setTimeout(() => {
-            if (iframeRef.current?.contentWindow) {
-              const coords = coordinatesRef.current;
-              const hasCoords = coords.latitude !== '' && coords.longitude !== '';
-              const data = {
-                placeName: hasCoords ? '' : 'Київ',
-                latitude: coords.latitude,
-                longitude: coords.longitude,
-                domain: domain,
-                id: selectedDepartmentId,
-                ...queryParams,
-              };
-              console.log('[NP] postMessage on iframe load (+300ms):', data);
-              iframeRef.current.contentWindow.postMessage(data, '*');
-            }
-          }, 300);
-        };
-
-        iframeRef.current.addEventListener('load', handleLoad);
-        console.log('[NP] setting iframe src');
-        iframeRef.current.src =
-          'https://widget.novapost.com/division/index.html';
-
-        return () => {
-          iframeRef.current?.removeEventListener('load', handleLoad);
-        };
+        const url = buildWidgetUrl(coords);
+        iframeRef.current.src = url;
       }
     }, 100);
   };
@@ -110,6 +82,18 @@ export default function NovaPoshtaButton({
       iframeRef.current.src = '';
     }
   };
+
+  // If geolocation resolves while modal is open and iframe was loaded without coords — reload with coords
+  useEffect(() => {
+    if (!isModalOpen) return;
+    if (coordinates.latitude === '' || coordinates.longitude === '') return;
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+    const currentSrc = iframe.src;
+    if (currentSrc.includes('latitude=')) return; // already has coords
+    console.log('[NP] coords arrived while modal open — reloading iframe with coords');
+    iframe.src = buildWidgetUrl(coordinates);
+  }, [coordinates, isModalOpen]);
 
   const handleFrameMessage = useCallback(
     (event: MessageEvent) => {
@@ -170,28 +154,6 @@ export default function NovaPoshtaButton({
     };
   }, []);
 
-  // If geolocation resolves while the modal is already open, re-send coordinates
-  useEffect(() => {
-    if (!isModalOpen) return;
-    if (coordinates.latitude === '' || coordinates.longitude === '') return;
-    console.log('[NP] coordinates arrived while modal open — re-sending postMessage:', coordinates);
-    const iframe = iframeRef.current;
-    if (!iframe?.contentWindow) return;
-    const domain = typeof window !== 'undefined' ? window.location.hostname : '';
-    const queryParams = getQueryParams();
-    iframe.contentWindow.postMessage(
-      {
-        placeName: '',
-        latitude: coordinates.latitude,
-        longitude: coordinates.longitude,
-        domain,
-        id: selectedDepartmentId,
-        ...queryParams,
-      },
-      '*',
-    );
-  }, [coordinates, isModalOpen]);
-
   useEffect(() => {
     if (isModalOpen) {
       window.addEventListener('message', handleFrameMessage);
@@ -199,12 +161,7 @@ export default function NovaPoshtaButton({
         window.removeEventListener('message', handleFrameMessage);
       };
     }
-  }, [
-    isModalOpen,
-    selectedDepartmentId,
-    onDepartmentSelect,
-    handleFrameMessage,
-  ]);
+  }, [isModalOpen, selectedDepartmentId, onDepartmentSelect, handleFrameMessage]);
 
   return (
     <>
