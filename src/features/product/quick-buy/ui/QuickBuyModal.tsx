@@ -88,7 +88,7 @@ export const QuickBuyModal = ({
     mode: 'onChange',
     defaultValues: {
       name: '',
-      phone: '+38',
+      phone: '+380',
     },
   });
 
@@ -103,7 +103,7 @@ export const QuickBuyModal = ({
       setStep(hasSizes ? 1 : 2);
       setSelectedSize(null);
       setIsSuccess(false);
-      form.reset({ name: '', phone: '+38' });
+      form.reset({ name: '', phone: '+380' });
     }
   }, [open, hasSizes, form]);
 

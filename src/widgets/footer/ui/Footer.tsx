@@ -21,6 +21,12 @@ const InstagramIcon = () => (
   </svg>
 );
 
+const ViberIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M11.4 0C5.1 0 0 5.1 0 11.4c0 3.2 1.3 6 3.4 8.1L1.2 24l4.7-2.1C7.7 23.3 9.5 24 11.4 24 17.7 24 22.8 18.9 22.8 12.6 22.8 5.7 17.7.6 11.4 0z"/>
+  </svg>
+);
+
 const VisaIcon = () => (
   <svg width="48" height="30" viewBox="0 0 48 30" fill="none">
     <rect width="48" height="30" rx="4" fill="#1A1F71" />
@@ -194,6 +200,16 @@ export const Footer = async ({ locale }: { locale: string }) => {
                     {phone2}
                   </a>
                 </div>
+              </div>
+
+              <div className="flex items-center gap-2 text-white/60 text-sm">
+                <ViberIcon />
+                <a
+                  href="viber://chat?number=%2B380972179292"
+                  className="hover:text-white transition-colors"
+                >
+                  Viber: {phone1}
+                </a>
               </div>
 
               <div className="flex items-center gap-2 text-white/60 text-sm">
