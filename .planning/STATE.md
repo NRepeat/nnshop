@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-02-28T20:31:06Z"
+last_updated: "2026-03-04T08:43:10.342Z"
 progress:
-  total_phases: 7
+  total_phases: 8
   completed_phases: 5
-  total_plans: 23
-  completed_plans: 19
+  total_plans: 29
+  completed_plans: 22
 ---
 
 # Project State
@@ -62,6 +62,7 @@ Progress: [█████░░░░░] 50%
 | Phase 08 P01 | 2 | 3 tasks | 8 files |
 | Phase 08 P02 | 2 | 3 tasks | 3 files |
 | Phase 08 P03 | 2 | 2 tasks | 4 files |
+| Phase 09-sku-097-217-92-92-ghoud-agl P01 | 5 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -112,6 +113,8 @@ Recent decisions affecting current work:
 - [08-02]: RecentlyViewedSection guards three null cases: no session, empty DB records, empty Shopify products
 - [08-03]: z.input<typeof newsletterSchema> used as TFieldValues for useForm — Zod .default() makes input type optional but output required; using input type prevents resolver TS mismatch
 - [08-03]: NewsletterSection heading hardcoded Ukrainian — consistent with CONTEXT.md screenshot; form strings remain i18n via useTranslations
+- [Phase 09-01]: grandTotal = totalAmount (no shippingFee) in OrderSummary — shipping removed from receipt sidebar per user decision
+- [Phase 09-01]: cartAmount = goodsTotal (no shippingFee) in Payment — payment amount no longer includes shipping calculation
 
 ### Roadmap Evolution
 
