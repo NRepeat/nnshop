@@ -1,11 +1,11 @@
 import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
-import { User, Truck, CreditCard } from 'lucide-react';
+import { User, CreditCard } from 'lucide-react';
 import getContactInfo from '@features/checkout/contact-info/api/get-contact-info';
-import { getDeliveryInfo } from '@features/checkout/delivery/api/getDeliveryInfo';
 import { getPaymentInfo } from '@features/checkout/payment/api/getPaymentInfo';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
+import { Card, CardContent } from '@shared/ui/card';
 
 type Props = {
   params: Promise<{ locale: string; orderId: string }>;
@@ -52,46 +52,6 @@ async function ContactCard({ locale }: { locale: string }) {
   );
 }
 
-async function DeliveryCard({ locale }: { locale: string }) {
-  const session = await auth.api.getSession({ headers: await headers() });
-
-  const [deliveryInfo, t] = await Promise.all([
-    getDeliveryInfo(session),
-    getTranslations({ locale, namespace: 'ReceiptPage' }),
-  ]);
-
-  if (!deliveryInfo) return null;
-
-  const isNovaPoshta = !!deliveryInfo.novaPoshtaDepartment;
-
-  return (
-    <div className="flex items-center gap-3 rounded border border-gray-100 bg-white p-4">
-      <div className="flex size-10 shrink-0 items-center justify-center rounded bg-orange-50 text-orange-600">
-        <Truck className="size-5" />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="mb-1 text-xs font-medium text-gray-400">
-          {t('delivery_information')}
-        </p>
-        {isNovaPoshta ? (
-          <p className="truncate text-sm text-gray-900">
-            {deliveryInfo.novaPoshtaDepartment!.shortName}
-          </p>
-        ) : (
-          <>
-            <p className="truncate text-sm text-gray-900">
-              {deliveryInfo.address}
-            </p>
-            <p className="truncate text-sm text-gray-500">
-              {deliveryInfo.city}, {deliveryInfo.country}
-            </p>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
 async function PaymentCard({ locale }: { locale: string }) {
   const [paymentInfo, t, tr] = await Promise.all([
     getPaymentInfo(),
@@ -122,16 +82,15 @@ export default async function SuccessReceipt(props: Props) {
   const { locale } = await props.params;
 
   return (
-    <div className="flex flex-col gap-3">
-      <Suspense fallback={<ReceiptSkeleton />}>
-        <ContactCard locale={locale} />
-      </Suspense>
-      <Suspense fallback={<ReceiptSkeleton />}>
-        <DeliveryCard locale={locale} />
-      </Suspense>
-      <Suspense fallback={<ReceiptSkeleton />}>
-        <PaymentCard locale={locale} />
-      </Suspense>
-    </div>
+    <Card className="hidden md:flex  p-4 rounded h-fit">
+      <CardContent className="flex-col gap-3 p-0 flex">
+        <Suspense fallback={<ReceiptSkeleton />}>
+          <ContactCard locale={locale} />
+        </Suspense>
+        <Suspense fallback={<ReceiptSkeleton />}>
+          <PaymentCard locale={locale} />
+        </Suspense>
+      </CardContent>
+    </Card>
   );
 }
