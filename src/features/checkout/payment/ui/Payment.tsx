@@ -55,9 +55,7 @@ export default async function Payment({
       // Use the minimum of the two to ensure the customer always pays the lower amount
       const shopifyTotal = Number(cartResult.cart.cost.totalAmount.amount);
       const goodsTotal = hasApplicableDiscount ? Math.min(localTotal, shopifyTotal) : localTotal;
-      // Add shipping: 20 + 2% of goods total
-      const shippingFee = Math.round(20 + goodsTotal * 0.02);
-      cartAmount = goodsTotal + shippingFee;
+      cartAmount = goodsTotal;
     }
 
     const completeCheckoutData = await getCompleteCheckoutData(session);
