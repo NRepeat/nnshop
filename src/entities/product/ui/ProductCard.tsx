@@ -43,7 +43,6 @@ export const ProductCard = ({
   withInnerShadow,
   withSizes = true,
 }: ProductCardProps) => {
-  console.log(product,'-------');
   const t = useTranslations('ProductCard');
   const availableSizes = (() => {
     const sizeOption = product.options?.find((opt) =>

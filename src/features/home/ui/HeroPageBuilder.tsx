@@ -101,7 +101,7 @@ const renderBlock = (
       return <Hero key={block._key} {...(block as any)} />;
 
     case 'faqs':
-      return <FAQs key={block._key} {...(block as any)} />;
+      return <FAQs key={block._key} locale={locale} {...(block as any)} />;
 
     case 'similarProducts':
       return block.collection ? (

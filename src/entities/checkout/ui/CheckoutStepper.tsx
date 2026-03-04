@@ -123,7 +123,7 @@ export const CheckoutStepper = ({ completedSteps }: CheckoutStepperProps) => {
               </div>
               <span
                 className={cn(
-                  'text-xs mt-2 text-center',
+                  'text-xs mt-2 text-start',
                   isCompleted || isActive
                     ? 'text-foreground font-medium'
                     : 'text-muted-foreground'

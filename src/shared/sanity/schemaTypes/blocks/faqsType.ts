@@ -2,18 +2,49 @@ import { defineField, defineType } from 'sanity';
 import { HelpCircleIcon } from '@sanity/icons';
 export const faqsType = defineType({
   name: 'faqs',
-  title: 'FAQs',
+  title: 'FAQs / Icon Benefits',
   type: 'object',
   fields: [
     defineField({
       name: 'title',
-      type: 'string',
+      title: 'Title',
+      type: 'localizedString',
     }),
     defineField({
-      name: 'faqs',
-      title: 'FAQs',
+      name: 'subtitle',
+      title: 'Subtitle',
+      type: 'localizedString',
+    }),
+    defineField({
+      name: 'items',
+      title: 'Items',
       type: 'array',
-      of: [{ type: 'reference', to: [{ type: 'faq' }] }],
+      of: [
+        defineField({
+          name: 'item',
+          title: 'Item',
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'icon',
+              title: 'Icon',
+              type: 'image',
+              options: { hotspot: false },
+            }),
+            defineField({
+              name: 'label',
+              title: 'Label',
+              type: 'localizedString',
+            }),
+          ],
+          preview: {
+            select: { label: 'label' },
+            prepare({ label }) {
+              return { title: label?.uk || label?.ru || 'Item' };
+            },
+          },
+        }),
+      ],
     }),
   ],
   icon: HelpCircleIcon,
@@ -23,8 +54,8 @@ export const faqsType = defineType({
     },
     prepare({ title }) {
       return {
-        title,
-        subtitle: 'FAQs',
+        title: title?.uk || title?.ru || 'FAQs',
+        subtitle: 'FAQs / Icon Benefits',
       };
     },
   },

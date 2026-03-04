@@ -395,12 +395,7 @@ export const PAGE_QUERY =
     },
     _type == "faqs" => {
       ...,
-      faqs[]->{
-        _id,
-        title,
-        body,
-        "text": pt::text(body)
-      }
+      items[]{ _key, icon, label }
     }
   }
 }`);

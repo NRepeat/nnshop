@@ -2,6 +2,7 @@
 
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
@@ -33,19 +34,26 @@ export function FilterSheet({ filters, initialFilters }: Props) {
           </p>
         </Button>
       </SheetTrigger>
-      <SheetContent  className="gap-5 w-full  md:min-w-[450px]">
-        <SheetHeader className="w-full  flex justify-center items-center py-5 border-b border-b-muted">
+      <SheetContent className="gap-0 w-full md:min-w-[450px] flex flex-col p-0">
+        <SheetHeader className="w-full flex justify-center items-center py-5 border-b border-b-muted px-5">
           <SheetTitle className="text-base font-400">
             {t('filters.title')}
           </SheetTitle>
         </SheetHeader>
-        <div className="overflow-auto px-5 overflow-y-scroll">
+        <div className="flex-1 overflow-y-auto px-5 py-4">
           {filters && (
             <CollectionFilters
               filters={filters}
               initialFilters={initialFilters}
             />
           )}
+        </div>
+        <div className="sticky bottom-0 bg-background border-t border-muted px-5 py-4">
+          <SheetClose asChild>
+            <Button className="w-full" size="lg">
+              {t('filters.apply')}
+            </Button>
+          </SheetClose>
         </div>
       </SheetContent>
     </Sheet>

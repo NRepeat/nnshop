@@ -5,6 +5,7 @@ import { HOME_PAGEResult } from '@/shared/sanity/types';
 import { Button } from '@/shared/ui/button';
 import { stegaClean } from 'next-sanity';
 import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link';
+import { getLocalizedString } from '@shared/sanity/utils/getLocalizedString';
 
 type SplitGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
@@ -62,6 +63,7 @@ export function SplitImage(props: SplitGridProps) {
   const localizedDescription = description
     ? (description[locale as 'uk' | 'ru'] ?? description.uk ?? null)
     : null;
+  const localizedTitle = getLocalizedString(title as any, locale) ?? (typeof title === 'string' ? title : null);
   const linkUrl =
     collection && collection?.id
       ? resolveCollectionLink(collection, locale, gender)
@@ -72,7 +74,7 @@ export function SplitImage(props: SplitGridProps) {
         className="transition-transform duration-700 ease-in-out group-hover:scale-105"
         src={urlFor(image).width(1500).height(1500).url()}
         fill
-        alt={(title as unknown as string) || ''}
+        alt={localizedTitle || ''}
         priority
       />
 
@@ -97,7 +99,7 @@ export function SplitImage(props: SplitGridProps) {
               <div className="rounded absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[2px] md:hidden">
                 <TextContentComponent
                   mobile
-                  title={title as string | null}
+                  title={localizedTitle}
                   linkUrl={linkUrl}
                   description={localizedDescription}
                 />
@@ -106,7 +108,7 @@ export function SplitImage(props: SplitGridProps) {
 
             <div className="hidden w-full md:flex md:w-1/3 md:pl-12 data-[orientation='imageRight']:md:pl-0 data-[orientation='imageRight']:md:pr-12">
               <TextContentComponent
-                title={title as string | null}
+                title={localizedTitle}
                 linkUrl={linkUrl}
                 description={localizedDescription}
               />

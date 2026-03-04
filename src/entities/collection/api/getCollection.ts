@@ -28,6 +28,7 @@ const GetCollectionWithProducts = `#graphql
       title
       handle
       description
+      
       image {
         url
         altText
@@ -42,6 +43,7 @@ const GetCollectionWithProducts = `#graphql
         after: $after
         before: $before
       ) {
+        
         pageInfo {
           hasNextPage
           hasPreviousPage
@@ -49,6 +51,7 @@ const GetCollectionWithProducts = `#graphql
           startCursor
         }
         edges {
+        
           node {
             id
             title
@@ -265,6 +268,7 @@ export const getCollection = async ({
   }
 
   const filters: ProductFilter[] = [];
+  const sizeFilterLabels: string[] = [];
   const needsFilterDefs = !!(searchParams || gender);
   if (needsFilterDefs) {
     const filterDefinitions = await getCollectionFilters({ handle, locale });
@@ -288,14 +292,22 @@ export const getCollection = async ({
                 (def) => toFilterSlug(def.label) === v,
               );
               if (filterValue) {
-                filters.push(JSON.parse(filterValue.input));
+                const parsed = JSON.parse(filterValue.input);
+                filters.push(parsed);
+                const SIZE_KEYS = ['rozmir', 'rozmer', 'size'];
+                const SIZE_OPTION_NAMES = ['розмір', 'размер', 'size'];
+                const isSizeFilter =
+                  (parsed.productMetafield && SIZE_KEYS.some((k) => parsed.productMetafield.key?.toLowerCase().includes(k))) ||
+                  (parsed.variantOption && SIZE_OPTION_NAMES.some((n) => parsed.variantOption.name?.toLowerCase().includes(n)));
+                if (isSizeFilter) {
+                  sizeFilterLabels.push(filterValue.label);
+                }
               }
             });
           }
         }
       }
 
-      // Auto-inject gender filter when on a gendered path
       if (gender && GENDER_SLUG_PATTERNS[gender]) {
         const patterns = GENDER_SLUG_PATTERNS[gender];
         const genderDef = filterDefinitions.find((f) =>
@@ -322,6 +334,7 @@ export const getCollection = async ({
     }
   }
 
+
   let sortKey = 'RELEVANCE';
   let reverse: boolean = false;
 
@@ -339,7 +352,6 @@ export const getCollection = async ({
     case 'created-desc':
       sortKey = 'CREATED';
       reverse = true;
-      // handled separately below — "new"-tagged products first
       break;
     case 'trending':
     default:
@@ -354,13 +366,11 @@ export const getCollection = async ({
   let collection: GetCollectionQuery;
 
   if (isDefaultSort) {
-    // For trending/popular sort: fetch all products and sort by sort_order metafield
     const allEdges: any[] = [];
     let cursor: string | null = null;
     let hasNextPage = true;
     let firstBatch: GetCollectionQuery | null = null;
 
-    // Fetch all products from Shopify
     while (hasNextPage) {
       const batch: GetCollectionQuery = await storefrontClient.request<
         GetCollectionQuery,
@@ -408,39 +418,43 @@ export const getCollection = async ({
       return aVal - bVal;
     });
 
-    // Create cursor-to-index mapping
-    const cursorToIndex = new Map<string, number>();
-    allEdges.forEach((edge, index) => {
-      cursorToIndex.set(edge.node.id, index);
-    });
+    const _SIZE_OPT = ['size', 'розмір', 'размер'];
+    const filteredEdges = sizeFilterLabels.length > 0
+      ? allEdges.filter((edge: any) => {
+          const sizeOptIndex = edge.node.options?.findIndex((opt: any) =>
+            _SIZE_OPT.includes(opt.name.toLowerCase())
+          ) ?? -1;
+          if (sizeOptIndex === -1) return true;
+          const available = new Set(
+            edge.node.variants?.edges
+              ?.filter((v: any) => v.node.availableForSale)
+              .map((v: any) => v.node.selectedOptions?.[sizeOptIndex]?.value)
+              .filter(Boolean)
+          );
+          return sizeFilterLabels.some((lbl) => available.has(lbl));
+        })
+      : allEdges;
 
-    // Determine the page slice
+    // Determine the page slice using offset-based cursor
     const pageSize = first || last || 20;
-    let startIndex = 0;
+    const startIndex = after
+      ? parseInt(after, 10)
+      : before
+        ? Math.max(0, parseInt(before, 10) - pageSize)
+        : 0;
 
-    if (after) {
-      // Find the index by cursor (which is actually the product ID)
-      const afterIndex = cursorToIndex.get(after);
-      startIndex = afterIndex !== undefined ? afterIndex + 1 : 0;
-    } else if (before) {
-      const beforeIndex = cursorToIndex.get(before);
-      startIndex =
-        beforeIndex !== undefined ? Math.max(0, beforeIndex - pageSize) : 0;
-    }
-
-    const slicedEdges = allEdges.slice(startIndex, startIndex + pageSize);
+    const slicedEdges = filteredEdges.slice(startIndex, startIndex + pageSize);
 
     collection = firstBatch!;
     if (collection.collection) {
       collection.collection.products.edges = slicedEdges;
       collection.collection.products.pageInfo = {
-        hasNextPage: startIndex + pageSize < allEdges.length,
+        hasNextPage: startIndex + pageSize < filteredEdges.length,
         hasPreviousPage: startIndex > 0,
-        endCursor:
-          slicedEdges.length > 0
-            ? slicedEdges[slicedEdges.length - 1].node.id
-            : null,
-        startCursor: slicedEdges.length > 0 ? slicedEdges[0].node.id : null,
+        endCursor: startIndex + pageSize < filteredEdges.length
+          ? String(startIndex + pageSize)
+          : null,
+        startCursor: String(startIndex),
       };
     }
   } else if (isNewSort) {
@@ -493,33 +507,44 @@ export const getCollection = async ({
     );
     const sortedEdges = [...newEdges, ...restEdges];
 
-    const cursorToIndex = new Map<string, number>();
-    sortedEdges.forEach((edge, index) => cursorToIndex.set(edge.node.id, index));
+    // Post-filter: only show products with an available variant for the selected size(s)
+    const _SIZE_OPT2 = ['size', 'розмір', 'размер'];
+    const filteredEdges = sizeFilterLabels.length > 0
+      ? sortedEdges.filter((edge: any) => {
+          const sizeOptIndex = edge.node.options?.findIndex((opt: any) =>
+            _SIZE_OPT2.includes(opt.name.toLowerCase())
+          ) ?? -1;
+          if (sizeOptIndex === -1) return true;
+          const available = new Set(
+            edge.node.variants?.edges
+              ?.filter((v: any) => v.node.availableForSale)
+              .map((v: any) => v.node.selectedOptions?.[sizeOptIndex]?.value)
+              .filter(Boolean)
+          );
+          return sizeFilterLabels.some((lbl) => available.has(lbl));
+        })
+      : sortedEdges;
 
+    // Determine the page slice using offset-based cursor
     const pageSize = first || last || 20;
-    let startIndex = 0;
-    if (after) {
-      const afterIndex = cursorToIndex.get(after);
-      startIndex = afterIndex !== undefined ? afterIndex + 1 : 0;
-    } else if (before) {
-      const beforeIndex = cursorToIndex.get(before);
-      startIndex =
-        beforeIndex !== undefined ? Math.max(0, beforeIndex - pageSize) : 0;
-    }
+    const startIndex = after
+      ? parseInt(after, 10)
+      : before
+        ? Math.max(0, parseInt(before, 10) - pageSize)
+        : 0;
 
-    const slicedEdges = sortedEdges.slice(startIndex, startIndex + pageSize);
+    const slicedEdges = filteredEdges.slice(startIndex, startIndex + pageSize);
 
     collection = firstBatch!;
     if (collection.collection) {
       collection.collection.products.edges = slicedEdges;
       collection.collection.products.pageInfo = {
-        hasNextPage: startIndex + pageSize < sortedEdges.length,
+        hasNextPage: startIndex + pageSize < filteredEdges.length,
         hasPreviousPage: startIndex > 0,
-        endCursor:
-          slicedEdges.length > 0
-            ? slicedEdges[slicedEdges.length - 1].node.id
-            : null,
-        startCursor: slicedEdges.length > 0 ? slicedEdges[0].node.id : null,
+        endCursor: startIndex + pageSize < filteredEdges.length
+          ? String(startIndex + pageSize)
+          : null,
+        startCursor: String(startIndex),
       };
     }
   } else if (isPriceSort) {
@@ -576,33 +601,44 @@ export const getCollection = async ({
       return sort === 'price-desc' ? -diff : diff;
     });
 
-    const cursorToIndex = new Map<string, number>();
-    allEdges.forEach((edge, index) => cursorToIndex.set(edge.node.id, index));
+    // Post-filter: only show products with an available variant for the selected size(s)
+    const _SIZE_OPT3 = ['size', 'розмір', 'размер'];
+    const filteredEdges = sizeFilterLabels.length > 0
+      ? allEdges.filter((edge: any) => {
+          const sizeOptIndex = edge.node.options?.findIndex((opt: any) =>
+            _SIZE_OPT3.includes(opt.name.toLowerCase())
+          ) ?? -1;
+          if (sizeOptIndex === -1) return true;
+          const available = new Set(
+            edge.node.variants?.edges
+              ?.filter((v: any) => v.node.availableForSale)
+              .map((v: any) => v.node.selectedOptions?.[sizeOptIndex]?.value)
+              .filter(Boolean)
+          );
+          return sizeFilterLabels.some((lbl) => available.has(lbl));
+        })
+      : allEdges;
 
+    // Determine the page slice using offset-based cursor
     const pageSize = first || last || 20;
-    let startIndex = 0;
-    if (after) {
-      const afterIndex = cursorToIndex.get(after);
-      startIndex = afterIndex !== undefined ? afterIndex + 1 : 0;
-    } else if (before) {
-      const beforeIndex = cursorToIndex.get(before);
-      startIndex =
-        beforeIndex !== undefined ? Math.max(0, beforeIndex - pageSize) : 0;
-    }
+    const startIndex = after
+      ? parseInt(after, 10)
+      : before
+        ? Math.max(0, parseInt(before, 10) - pageSize)
+        : 0;
 
-    const slicedEdges = allEdges.slice(startIndex, startIndex + pageSize);
+    const slicedEdges = filteredEdges.slice(startIndex, startIndex + pageSize);
 
     collection = firstBatch!;
     if (collection.collection) {
       collection.collection.products.edges = slicedEdges;
       collection.collection.products.pageInfo = {
-        hasNextPage: startIndex + pageSize < allEdges.length,
+        hasNextPage: startIndex + pageSize < filteredEdges.length,
         hasPreviousPage: startIndex > 0,
-        endCursor:
-          slicedEdges.length > 0
-            ? slicedEdges[slicedEdges.length - 1].node.id
-            : null,
-        startCursor: slicedEdges.length > 0 ? slicedEdges[0].node.id : null,
+        endCursor: startIndex + pageSize < filteredEdges.length
+          ? String(startIndex + pageSize)
+          : null,
+        startCursor: String(startIndex),
       };
     }
   } else {
@@ -655,7 +691,6 @@ export const getCollection = async ({
     variables: { id: collectionId },
     language: targetLocale as StorefrontLanguageCode,
   });
-
   return {
     collection,
     alternateHandle: alternateRequest.collection?.handle ?? '',
