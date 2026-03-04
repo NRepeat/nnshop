@@ -9,6 +9,7 @@ import { Product } from '@shared/types/product/types';
 import { useTranslations } from 'next-intl';
 import clsx from 'clsx';
 import { authClient } from '@features/auth/lib/auth-client';
+import { useCartUIStore } from '@shared/store/use-cart-ui-store';
 
 function SubmitButton({
   variant = 'default',
@@ -61,6 +62,7 @@ export function AddToCartButton({
 }) {
   const [isPending, setIsPending] = useState(false);
   const t = useTranslations('ProductPage');
+  const { openCart } = useCartUIStore();
 
   const isProductAvailable = selectedVariant
     ? selectedVariant?.quantityAvailable !== 0
@@ -104,6 +106,7 @@ export function AddToCartButton({
 
       if (result.success) {
         toast.success(t('addedToCart'));
+        openCart();
         onSuccess?.();
       } else {
         const errorMessage =
