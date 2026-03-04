@@ -139,7 +139,7 @@ export const ProductCard = ({
             >
               <div className="group relative md:aspect-square w-full ">
                 {isNew && (
-                  <Badge className="absolute rounded-md top-1  left-1 z-10 ">
+                  <Badge className="absolute rounded top-1  left-1 z-10 ">
                     {t('new')}
                   </Badge>
                 )}
@@ -163,11 +163,11 @@ export const ProductCard = ({
                 <CarouselNext
                   variant={'ghost'}
                   size={'icon'}
-                  className="group-hover:flex  rounded-md rounded-bl-none  rounded-br-none  rounded-tr-none hidden w-12 md:hover:flex bg-background/40 bottom-0 right-0 absolute"
+                  className="group-hover:flex  rounded rounded-bl-none  rounded-br-none  rounded-tr-none hidden w-12 md:hover:flex bg-background/40 bottom-0 right-0 absolute"
                 />
                 <CarouselPrevious
                   variant={'ghost'}
-                  className="group-hover:flex hidden w-12 md:hover:flex bg-background/40  rounded-md rounded-bl-none  rounded-br-none rounded-tl-none bottom-0 left-0 absolute"
+                  className="group-hover:flex hidden w-12 md:hover:flex bg-background/40  rounded rounded-bl-none  rounded-br-none rounded-tl-none bottom-0 left-0 absolute"
                 />
                 <div
                   className={cn(
@@ -199,10 +199,10 @@ export const ProductCard = ({
                   ))}
                 </div>
                 {withQuick && (
-                  <div className=" bottom-0 left-2  flex w-full justify-end absolute rounded-md">
+                  <div className=" bottom-0 left-2  flex w-full justify-end absolute rounded">
                     <Button
                       variant={'ghost'}
-                      className="group-hover:flex hidden bg-background/70 rounded-md"
+                      className="group-hover:flex hidden bg-background/70 rounded"
                       onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -219,7 +219,7 @@ export const ProductCard = ({
           ) : (
             <div className="group relative aspect-square w-full overflow-hidden">
               {isNew && (
-                <Badge className="absolute rounded-md top-1  left-1 z-10 ">
+                <Badge className="absolute rounded top-1  left-1 z-10 ">
                   {t('new')}
                 </Badge>
               )}
@@ -236,7 +236,7 @@ export const ProductCard = ({
                 <div className=" bottom-2 left-1/2 -translate-x-1/2 hidden group-hover:block absolute">
                   <Button
                     variant={'ghost'}
-                    className="bg-background/70 rounded-md"
+                    className="bg-background/70 rounded"
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
@@ -308,7 +308,7 @@ export const ProductCard = ({
                     )}
                   </span>
 
-                  <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded-md">
+                  <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
                     -{product.metafield.value}%
                   </span>
                 </div>

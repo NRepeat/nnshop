@@ -67,7 +67,7 @@ All changes are surgical edits within existing files. No new files needed.
   src={image.url}
   alt={image.altText || ''}
   fill
-  className="object-contain rounded-md max-h-[60vh]"
+  className="object-contain rounded max-h-[60vh]"
   onClick={open}
   priority={index === 0}          // ADD: injects preload link tag
   fetchPriority={index === 0 ? 'high' : 'auto'}   // keep (belt+suspenders)
@@ -334,7 +334,7 @@ console.log(quiqView,"quiqView")  // <- debug log in render path
   src={image.url}
   alt={image.altText || ''}
   fill
-  className="object-contain rounded-md max-h-[60vh]"
+  className="object-contain rounded max-h-[60vh]"
   onClick={open}
   priority={index === 0}
   fetchPriority={index === 0 ? 'high' : 'auto'}
@@ -356,7 +356,7 @@ function AccordionTrigger({ className, children, ...props }) {
         <AccordionPrimitive.Trigger
           data-slot="accordion-trigger"
           className={cn(
-            'focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180',
+            'focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded py-4 text-left text-sm font-medium transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180',
             className,
           )}
           {...props}

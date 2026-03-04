@@ -15,7 +15,7 @@ export const BrandCard = ({ brand, productCount }: BrandCardProps) => {
   return (
     <Link
       href={`/brand/${brandSlug}`}
-      className="group relative bg-white border border-gray-200 rounded-md p-6 hover:border-gray-300 hover:shadow-md transition-all duration-200"
+      className="group relative bg-white border border-gray-200 rounded p-6 hover:border-gray-300 hover:shadow-md transition-all duration-200"
     >
       <div className="flex items-center justify-between">
         <div className="flex-1">

@@ -47,11 +47,11 @@ const TextContentComponent = ({
     {linkUrl && linkUrl?.handle && (
       <Button
         variant="link"
-        className={`h-auto p-0 text-base uppercase tracking-widest group-hover:underline  duration-300 decoration-transparent group-hover:decoration-primary  transition-all group-hover:opacity-70 ${
+        className={`h-auto p-0 text-base uppercase flex-wrap  text-wrap tracking-widest group-hover:underline  duration-300 decoration-transparent group-hover:decoration-primary  transition-all group-hover:opacity-70 ${
           mobile ? 'text-white  border-white' : 'text-black  border-black'
-        } rounded-md`}
+        } rounded`}
       >
-        {description || linkUrl?.title}
+        <span className="max-w-full text-pretty text-start">{description || linkUrl?.title}</span>
       </Button>
     )}
   </div>
@@ -63,7 +63,9 @@ export function SplitImage(props: SplitGridProps) {
   const localizedDescription = description
     ? (description[locale as 'uk' | 'ru'] ?? description.uk ?? null)
     : null;
-  const localizedTitle = getLocalizedString(title as any, locale) ?? (typeof title === 'string' ? title : null);
+  const localizedTitle =
+    getLocalizedString(title as any, locale) ??
+    (typeof title === 'string' ? title : null);
   const linkUrl =
     collection && collection?.id
       ? resolveCollectionLink(collection, locale, gender)

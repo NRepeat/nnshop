@@ -56,7 +56,15 @@ export default function LoadMore({
         );
       }
     });
-  }, [pageInfo, isPending, searchParams, locale, handle, gender, onDataLoadedAction]);
+  }, [
+    pageInfo,
+    isPending,
+    searchParams,
+    locale,
+    handle,
+    gender,
+    onDataLoadedAction,
+  ]);
 
   useEffect(() => {
     if (inView && !isPending && pageInfo?.hasNextPage) {
@@ -68,17 +76,17 @@ export default function LoadMore({
 
   return (
     <div className="mt-10 flex flex-col items-center gap-6 p-4 min-h-[100px]">
-      <div className="h-4 w-full flex justify-center">
-        {isPending && (
+      {isPending && (
+        <div className="h-4 w-full flex justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
-        )}
-      </div>
+        </div>
+      )}
 
       <Button
-        variant="outline"
+        variant="default"
         onClick={handleLoadMore}
         disabled={isPending}
-        className="px-8"
+        className="px-8 rounded"
       >
         {t('showMore')}
       </Button>

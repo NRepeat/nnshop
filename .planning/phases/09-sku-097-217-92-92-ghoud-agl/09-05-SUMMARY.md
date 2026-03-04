@@ -60,7 +60,7 @@ Each task was committed atomically:
 
 1. **Task 1: Add DiscountCodeInput to OrderSummary** - `672add4` (feat)
 
-**Plan metadata:** (docs commit follows)
+**Plan metadata:** `b167419` (docs: complete discount-code-in-checkout plan)
 
 ## Files Created/Modified
 - `src/features/checkout/receipt/ui/OrderSummary.tsx` - Added DiscountCodeInput import and JSX usage between items list and totals
@@ -90,3 +90,9 @@ None - no external service configuration required.
 ---
 *Phase: 09-sku-097-217-92-92-ghoud-agl*
 *Completed: 2026-03-04*
+
+## Self-Check: PASSED
+
+- FOUND: `src/features/checkout/receipt/ui/OrderSummary.tsx`
+- FOUND: commit `672add4` (feat: add DiscountCodeInput to checkout OrderSummary sidebar)
+- FOUND: commit `b167419` (docs: complete plan metadata)

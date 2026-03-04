@@ -58,7 +58,7 @@ export function NuqsButtonFilter({
     ? displayValues
     : [...displayValues].sort((a, b) => a.label.localeCompare(b.label));
   return (
-    <div className="grid grid-cols-4 gap-2 px-1">
+    <div className="grid grid-cols-4 gap-2 p-1">
       {sortedValues.map((value) => {
         const isSelected = selectedValues.includes(toFilterSlug(value.label));
         const isChanging = changingFilter === toFilterSlug(value.label);

@@ -147,6 +147,7 @@ export const BrandGrid = async ({
             initialPageInfo={pageInfo as PageInfo}
             // @ts-ignore
             initialProducts={productsWithFav as Product[]}
+            handle={decodedSlug}
           />
         </div>
       </div>

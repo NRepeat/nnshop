@@ -105,7 +105,7 @@ export const DiscountCodeInput = ({
             <div
               key={discount.code}
               className={cn(
-                'flex items-center justify-between rounded-md border px-3 py-2 text-sm',
+                'flex items-center justify-between rounded border px-3 py-2 text-sm',
                 discount.applicable
                   ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950'
                   : 'border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950',

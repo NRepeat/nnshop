@@ -63,12 +63,12 @@ export function LanguageSwitcher({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="rounded-md gap-2"
+        className="rounded gap-2"
         align={align}
         side={side}
       >
         <DropdownMenuItem
-          className={cn('rounded-md', {
+          className={cn('rounded', {
             'bg-gray-200': selectedLocale === 'uk',
           })}
           onClick={() => changeLocale('uk')}
@@ -76,7 +76,7 @@ export function LanguageSwitcher({
           {t('uk')}
         </DropdownMenuItem>
         <DropdownMenuItem
-          className={cn('rounded-md', {
+          className={cn('rounded', {
             'bg-gray-200': selectedLocale === 'ru',
           })}
           onClick={() => changeLocale('ru')}

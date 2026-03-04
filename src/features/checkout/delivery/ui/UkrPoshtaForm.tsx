@@ -58,7 +58,7 @@ export default function UkrPoshtaForm() {
                     placeholder={t('enterCountryRegion')}
                     {...field}
                     className={clsx(
-                      'h-12 px-4 rounded-md border transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
+                      'h-12 px-4 rounded border transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
                       form.formState.isSubmitted &&
                         form.formState.errors.country
                         ? 'border-red-500 focus-visible:ring-red-500'
@@ -93,7 +93,7 @@ export default function UkrPoshtaForm() {
                         onChange={field.onChange}
                         value={typeof field.value === 'string' ? field.value : ''}
                         className={clsx(
-                          'h-12 px-4 rounded-md border transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
+                          'h-12 px-4 rounded border transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
                           form.formState.isSubmitted &&
                             form.getFieldState(item.name).invalid
                             ? 'border-red-500 focus-visible:ring-red-500'
@@ -130,7 +130,7 @@ export default function UkrPoshtaForm() {
                         onChange={field.onChange}
                         value={typeof field.value === 'string' ? field.value : ''}
                         className={clsx(
-                          'h-12 px-4 rounded-md border transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
+                          'h-12 px-4 rounded border transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
                           form.formState.isSubmitted &&
                             form.getFieldState(item.name).invalid
                             ? 'border-red-500 focus-visible:ring-red-500'

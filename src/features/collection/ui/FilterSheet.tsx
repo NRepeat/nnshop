@@ -24,8 +24,8 @@ export function FilterSheet({ filters, initialFilters }: Props) {
     <Sheet>
       <SheetTrigger asChild>
         <Button
-          variant="link"
-          className="   flex flex-row items-center justify-center "
+          variant="default"
+          className="   rounded flex flex-row items-center justify-center "
         >
           <p>
             <span className="whitespace-nowrap transform mb-2">

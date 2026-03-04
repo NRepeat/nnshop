@@ -30,7 +30,7 @@ export default function Loading() {
             <CardContent>
               <div className="flex gap-2 mt-2">
                 {[...Array(4)].map((_, j) => (
-                  <Skeleton key={j} className="w-14 h-14 rounded-md" />
+                  <Skeleton key={j} className="w-14 h-14 rounded" />
                 ))}
               </div>
               <Skeleton className="h-4 w-28 mt-3" />

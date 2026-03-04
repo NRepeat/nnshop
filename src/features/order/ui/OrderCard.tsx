@@ -116,7 +116,7 @@ export const OrderCard = ({ order }: OrderCardProps) => {
               {lineItems.map(({ node: item }, index) => (
                 <div
                   key={item.image?.url ?? `item-${index}`}
-                  className="relative w-14 h-14 rounded-md overflow-hidden bg-muted"
+                  className="relative w-14 h-14 rounded overflow-hidden bg-muted"
                 >
                   {item.image?.url ? (
                     <Image
@@ -134,7 +134,7 @@ export const OrderCard = ({ order }: OrderCardProps) => {
                 </div>
               ))}
               {hasMoreItems && (
-                <div className="w-14 h-14 rounded-md bg-muted flex items-center justify-center text-sm text-muted-foreground">
+                <div className="w-14 h-14 rounded bg-muted flex items-center justify-center text-sm text-muted-foreground">
                   +{(order.lineItems?.edges.length || 0) - 4}
                 </div>
               )}

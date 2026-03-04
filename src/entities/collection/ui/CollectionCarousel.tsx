@@ -62,8 +62,8 @@ const CollectionsCarousel = (props: {
             <CarouselItem key={index} className="pl-1 basis-1/2 md:basis-1/3">
               <Link href={gender ? `/${gender}/${collection.store?.slug?.current}` : `/${collection.store?.slug?.current}`}>
                 <div className="p-1 h-full">
-                  <Card className="h-full rounded-md p-0 border-0 shadow-none bg-transparent">
-                    <CardContent className="relative flex flex-col  rounded-md p-0 border-0 shadow-none h-full justify-between">
+                  <Card className="h-full rounded p-0 border-0 shadow-none bg-transparent">
+                    <CardContent className="relative flex flex-col  rounded p-0 border-0 shadow-none h-full justify-between">
                       <div className=" w-full flex justify-center items-center overflow-hidden  border-sidebar-ring ">
                         <Image
                           className="h-auto w-full "
@@ -89,11 +89,11 @@ const CollectionsCarousel = (props: {
         </CarouselContent>
         <div className="w-full justify-end gap-4 mt-4 hidden md:flex">
           <CarouselPrevious
-            className=" rounded-md p-6 hover:bg-card"
+            className=" rounded p-6 hover:bg-card"
             variant={'ghost'}
           />
           <CarouselNext
-            className="rounded-md p-6 hover:bg-card"
+            className="rounded p-6 hover:bg-card"
             variant={'ghost'}
           />
         </div>

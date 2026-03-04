@@ -70,7 +70,7 @@
 .modal {
   position: relative;
   width: 80%;
-  height: 80%;
+  height: 70%;
   background-color: white;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -132,7 +132,7 @@
 
   .modal {
     width: 100vw;
-    height: 90dvh;
+    height: 70vh !important;
     border-radius: 12px 12px 0 0;
   }
 

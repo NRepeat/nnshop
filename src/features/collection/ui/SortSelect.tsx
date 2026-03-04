@@ -12,6 +12,7 @@ import {
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useTransition, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { Button } from '@shared/ui/button';
 
 type SortSelectProps = {
   defaultValue?: string;
@@ -48,31 +49,24 @@ export function SortSelect({ defaultValue }: SortSelectProps) {
       onValueChange={handleSortChange}
       disabled={isPending}
     >
-      <SelectTrigger className="w-[160px]  md:w-[160px] min-w-fit rounded-md">
-        <div className="flex items-center gap-x-2">
+      <SelectTrigger className="w-[160px]  md:w-[160px] min-w-fit rounded">
+        <Button asChild variant={'outline'} className="flex items-center gap-x-2 border bg-primary">
           <SelectValue placeholder={t('sortBy')} />
-          {/*{currentSort === 'price-asc' && <ChevronUpIcon className="size-4" />}
-          {currentSort === 'price-desc' && (
-            <ChevronDownIcon className="size-4" />
-          )}
-          {currentSort === 'created-desc' && (
-            <ChevronDownIcon className="size-4" />
-          )}*/}
-        </div>
+        </Button>
       </SelectTrigger>
-      <SelectContent className="rounded-md">
+      <SelectContent className="rounded">
         <SelectGroup>
           <SelectLabel>{t('sortBy')}</SelectLabel>
-          <SelectItem className="rounded-md" value="trending">
+          <SelectItem className="rounded" value="trending">
             {t('trending')}
           </SelectItem>
-          <SelectItem className="rounded-md" value="price-asc">
+          <SelectItem className="rounded" value="price-asc">
             {t('priceLowToHigh')}
           </SelectItem>
-          <SelectItem className="rounded-md" value="price-desc">
+          <SelectItem className="rounded" value="price-desc">
             {t('priceHighToLow')}
           </SelectItem>
-          <SelectItem className="rounded-md" value="created-desc">
+          <SelectItem className="rounded" value="created-desc">
             {t('newest')}
           </SelectItem>
         </SelectGroup>

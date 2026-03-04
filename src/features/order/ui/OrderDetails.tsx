@@ -257,7 +257,7 @@ export const OrderDetails = async ({
                     key={`${item.title}-${item.variant?.title}`}
                     className="flex items-start gap-4"
                   >
-                    <div className="relative w-16 h-16 rounded-md overflow-hidden bg-muted shrink-0">
+                    <div className="relative w-16 h-16 rounded overflow-hidden bg-muted shrink-0">
                       {item.image?.url ? (
                         <Image
                           src={item.image.url}

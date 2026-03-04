@@ -1,7 +1,7 @@
 'use client';
 
 import { useQueryState, parseAsInteger } from 'nuqs';
-import { useTransition, useState, useEffect } from 'react';
+import { useTransition, useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@shared/ui/button';
 import { Spinner } from '@/shared/ui/Spinner';
@@ -33,25 +33,36 @@ export function NuqsPriceRangeFilter({ filter, initialFilterPrice }: Props) {
 
   const [min, setMin] = useState(minPrice ?? minPossible);
   const [max, setMax] = useState(maxPrice ?? maxPossible);
-  const applyPriceFilter = () => {
-    setMinPrice(min);
-    setMaxPrice(max);
-  };
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clearPriceFilter = () => {
     setMinPrice(null);
     setMaxPrice(null);
   };
-  const isPristine = min === minPrice && max === maxPrice;
+
   const hasFilterInUrl = minPrice !== null || maxPrice !== null;
+
+  const handleSliderChange = (value: number[]) => {
+    setMin(value[0]);
+    setMax(value[1]);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setMinPrice(value[0]);
+      setMaxPrice(value[1]);
+    }, 600);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
+
   return (
     <div className="flex flex-col mt-5 gap-2 px-0.5">
       <Slider
         value={[min, max]}
-        onValueChange={(value) => {
-          setMin(value[0]);
-          setMax(value[1]);
-        }}
+        onValueChange={handleSliderChange}
         min={minPossible}
         max={maxPossible}
         step={1}
@@ -61,26 +72,16 @@ export function NuqsPriceRangeFilter({ filter, initialFilterPrice }: Props) {
         <span>{min}</span>
         <span>{max}</span>
       </div>
-      <div className="flex items-center space-x-2">
+      {hasFilterInUrl && (
         <Button
-          onClick={applyPriceFilter}
-          variant={'ghost'}
-          disabled={isPristine || isPending}
-          className="w-full rounded"
+          variant="secondary"
+          onClick={clearPriceFilter}
+          className="w-full"
+          disabled={isPending}
         >
-          {isPending ? <Spinner /> : t('apply')}
+          {isPending ? <Spinner /> : t('clear')}
         </Button>
-        {hasFilterInUrl && (
-          <Button
-            variant="secondary"
-            onClick={clearPriceFilter}
-            className="w-full"
-            disabled={isPending}
-          >
-            {isPending ? <Spinner /> : t('clear')}
-          </Button>
-        )}
-      </div>
+      )}
     </div>
   );
 }

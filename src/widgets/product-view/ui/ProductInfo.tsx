@@ -259,7 +259,7 @@ export const ProductInfo = ({
                 >
                   <div
                     className={cn(
-                      ' border p-1 transition-all rounded-md flex justify-center items-center',
+                      ' border p-1 transition-all rounded flex justify-center items-center',
                       c.product === product.handle
                         ? 'border-black'
                         : ' border-gray-200 group-hover:border-gray-300',
@@ -267,7 +267,7 @@ export const ProductInfo = ({
                   >
                     <div
                       className={cn(
-                        'w-8 h-8 rounded-md',
+                        'w-8 h-8 rounded',
                         COLOR_MAP[c.name] || 'bg-gray-200',
                       )}
                       title={c.name}

@@ -226,14 +226,14 @@ const Navigation = async ({
                       <NavigationContentLink
                         key={letter}
                         href={`/brands#letter-${letter}`}
-                        className="border-none text-base font-medium hover:text-primary hover:bg-accent transition-colors text-center rounded-md w-9 h-9 flex items-center justify-center"
+                        className="border-none text-base font-medium hover:text-primary hover:bg-accent transition-colors text-center rounded w-9 h-9 flex items-center justify-center"
                       >
                         {letter}
                       </NavigationContentLink>
                     ))}
                     <NavigationContentLink
                       href="/brands"
-                      className="border-none   text-base font-medium hover:text-primary hover:bg-accent transition-colors text-center rounded-md w-9 h-9 flex items-center justify-center"
+                      className="border-none   text-base font-medium hover:text-primary hover:bg-accent transition-colors text-center rounded w-9 h-9 flex items-center justify-center"
                     >
                       #
                     </NavigationContentLink>

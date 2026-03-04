@@ -40,8 +40,11 @@ function ReceiptSkeleton() {
   return (
     <div className="hidden md:flex flex-col gap-3">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="rounded-md flex items-center gap-3  border border-gray-100 bg-white p-4 animate-pulse">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-gray-100" />
+        <div
+          key={i}
+          className="rounded flex items-center gap-3  border border-gray-100 bg-white p-4 animate-pulse"
+        >
+          <div className="flex size-10 shrink-0 items-center justify-center rounded bg-gray-100" />
           <div className="flex flex-col gap-2 w-full">
             <div className="h-3 w-24 rounded-full bg-gray-100" />
             <div className="h-3 w-40 rounded-full bg-gray-100" />
@@ -76,13 +79,13 @@ async function CheckoutLayoutContent({
   const completedSteps = await getCompletedSteps();
 
   return (
-    <div className="min-h-screen flex flex-col mt-8">
-      <CheckoutStepper completedSteps={completedSteps} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 mb-10 container flex-1 h-fit min-h-screen">
-        {children}
-        <Suspense fallback={<ReceiptSkeleton />}>
-          {receipt}
-        </Suspense>
+    <div className="container mb-6">
+      <div className="flex flex-col mt-8 space-y-8">
+        <CheckoutStepper completedSteps={completedSteps} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+          {children}
+          <Suspense fallback={<ReceiptSkeleton />}>{receipt}</Suspense>
+        </div>
       </div>
     </div>
   );

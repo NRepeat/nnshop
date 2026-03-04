@@ -110,7 +110,7 @@ const Gallery = ({
                             src={image.url}
                             alt={image.altText || ''}
                             fill
-                            className="object-contain rounded-md max-h-[60vh]"
+                            className="object-contain rounded max-h-[60vh]"
                             onClick={open}
                             priority={index === 0}
                             fetchPriority={index === 0 ? 'high' : 'auto'}
@@ -157,7 +157,7 @@ const Gallery = ({
                   >
                     <div
                       className={
-                        'aspect-square relative border rounded-md overflow-hidden ' +
+                        'aspect-square relative border rounded overflow-hidden ' +
                         (index === selectedIndex
                           ? 'border-primary'
                           : 'border-transparent opacity-50')

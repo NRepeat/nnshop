@@ -49,7 +49,10 @@ export const Thank = async ({
   let shopifyOrder = null;
   if (dbOrder?.shopifyOrderId) {
     try {
-      shopifyOrder = await getOrderById(dbOrder.shopifyOrderId, locale.toUpperCase());
+      shopifyOrder = await getOrderById(
+        dbOrder.shopifyOrderId,
+        locale.toUpperCase(),
+      );
     } catch {
       // non-blocking — page still shows without line items
     }
@@ -91,18 +94,26 @@ export const Thank = async ({
                       />
                     </div>
                   )}
-                  <div className="min-w-0 flex-1">
+                  <div className="flex-1">
                     <p className="truncate text-sm font-medium text-gray-900">
                       {item.title}
                     </p>
-                    {item.variant?.title && item.variant.title !== 'Default Title' && (
-                      <p className="text-xs text-gray-500">{item.variant.title}</p>
-                    )}
-                    <p className="text-xs text-gray-500">× {item.quantity}</p>
+
+                    <div className="text-xs text-nowrap  w-full flex-row flex text-gray-500">
+                      {item.variant?.title &&
+                        item.variant.title !== 'Default Title' && (
+                          <p className="text-xs text-gray-500">
+                            {item.variant.title}
+                          </p>
+                        )}{' '}
+                      <span>×</span> <span>{item.quantity}</span>
+                    </div>
                   </div>
                   {item.variant?.price && (
                     <p className="shrink-0 text-sm font-medium text-gray-900">
-                      {Math.round(Number(item.variant.price.amount) * item.quantity)}{' '}
+                      {Math.round(
+                        Number(item.variant.price.amount) * item.quantity,
+                      )}{' '}
                       {getCurrencySymbol(item.variant.price.currencyCode)}
                     </p>
                   )}

@@ -136,7 +136,7 @@ export default function PaymentForm({
       <Form {...form}>
         {form.formState.isSubmitted &&
           Object.keys(form.formState.errors).length > 0 && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+            <div className="p-4 bg-red-50 border border-red-200 rounded">
               <h4 className="text-red-800 font-medium text-sm mb-2">
                 {t('pleaseFixErrors')}
               </h4>
@@ -175,7 +175,7 @@ export default function PaymentForm({
 
         <div className="space-y-3">
           <Button
-            className="w-full h-12 bg-green-800 rounded-md"
+            className="w-full h-12 bg-green-800 rounded"
             disabled={isMerging || isLoading}
             onClick={async () => {
               await onSubmit({

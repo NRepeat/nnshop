@@ -138,15 +138,17 @@ export default async function PaymentReceipt(props: Props) {
   return (
     <>
       {/* Mobile: Collapsible Order Summary */}
-      <div className="md:hidden">
-        <Suspense fallback={<OrderSummarySkeleton />}>
-          <OrderSummary locale={locale} collapsible />
-        </Suspense>
-      </div>
+      <Card className="md:hidden p-4 rounded h-fit">
+        <CardContent className='px-0'>
+          <Suspense fallback={<OrderSummarySkeleton />}>
+            <OrderSummary locale={locale} collapsible />
+          </Suspense>
+        </CardContent>
+      </Card>
 
       {/* Desktop: Full sidebar */}
-      <Card className='p-4 rounded'>
-        <CardContent className="hidden md:flex flex-col gap-3 p-0">
+      <Card className="hidden md:flex  p-4 rounded h-fit">
+        <CardContent className="flex-col gap-3 p-0 flex">
           <Suspense fallback={<OrderSummarySkeleton />}>
             <OrderSummary locale={locale} />
           </Suspense>

@@ -246,7 +246,7 @@ export const QuickBuyModal = ({
                       selectedSize === s.toLowerCase() ? 'default' : 'outline'
                     }
                     className={cn(
-                      'rounded-md min-w-[50px] relative border-primary border',
+                      'rounded min-w-[50px] relative border-primary border',
                       {
                         'bg-primary text-white ring-2 ring-offset-1 ring-primary':
                           selectedSize === s.toLowerCase(),

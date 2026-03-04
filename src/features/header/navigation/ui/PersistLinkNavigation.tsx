@@ -5,9 +5,7 @@ import { Suspense } from 'react';
 import { cookieFenderGet } from '../api/setCookieGender';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
-import { ButtonGroup } from '@shared/ui/button-group';
 import clsx from 'clsx';
-import { Separator } from '@shared/ui/separator';
 
 export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   const { locale } = props;
@@ -42,7 +40,7 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
           const label = t.has(link.slug) ? t(link.slug) : link.slug;
           return (
               <li key={link.slug} className="flex p-0">
-                <Link href={`/${locale}/${link.slug}`}>
+                <Link href={`/${locale}/${link.slug}`} prefetch>
                   <Suspense
                     fallback={
                       <NavButton
