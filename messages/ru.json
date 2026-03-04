@@ -555,7 +555,8 @@
     "order_id": "Ваш номер заказа:",
     "order_confirmation": "Подтверждение заказа",
     "order_confirmation_text": "Вы скоро получите электронное письмо с деталями вашего заказа.",
-    "continue_shopping": "Продолжить покупки"
+    "continue_shopping": "Продолжить покупки",
+    "total": "Итого"
   },
   "CheckoutSteps": {
     "info": "Контактная информация",

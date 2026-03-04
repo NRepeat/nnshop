@@ -60,7 +60,7 @@ export const Thank = async ({
   const currencySymbol = total ? getCurrencySymbol(total.currencyCode) : '';
 
   return (
-    <div className="flex justify-center dark:bg-gray-900">
+    <div className="flex justify-center ">
       <Card className="w-full max-w-full p-0 shadow-none">
         <CardHeader className="px-0">
           <CardTitle className="text-3xl font-bold">{t('title')}</CardTitle>
@@ -110,7 +110,7 @@ export const Thank = async ({
               ))}
               {total && (
                 <div className="flex justify-between border-t border-gray-100 pt-3 text-sm font-semibold text-gray-900">
-                  <span>Разом</span>
+                  <span>{t('total')}</span>
                   <span>
                     {Math.round(Number(total.amount))} {currencySymbol}
                   </span>
