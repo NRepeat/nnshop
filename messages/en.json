@@ -425,6 +425,10 @@
     "novaPoshtaDelivery": "Fast and reliable delivery",
     "ukrPoshta": "UkrPoshta",
     "ukrPoshtaDelivery": "Traditional postal service",
+    "selfPickup": "Self-pickup",
+    "selfPickupDelivery": "Pick up from a store in Zaporizhzhia",
+    "selfPickupChoosePoint": "Choose a pickup point",
+    "selfPickupDescription": "Choose a convenient store to pick up your order.",
     "departmentIdRequired": "Department ID is required",
     "departmentNameRequired": "Department name is required",
     "fillAllFields": "Please fill in all required fields for the selected delivery method",
@@ -526,8 +530,10 @@
     "status": {
       "fulfilled": "Fulfilled",
       "unfulfilled": "Processing",
+      "inProgress": "Shipped",
       "onHold": "On Hold",
-      "partiallyFulfilled": "Partially Fulfilled"
+      "partiallyFulfilled": "Partially Fulfilled",
+      "cancelled": "Cancelled"
     },
     "timeline": {
       "ordered": "Ordered",

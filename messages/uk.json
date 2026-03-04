@@ -487,6 +487,10 @@
     "novaPoshtaDelivery": "Швидка та надійна доставка",
     "ukrPoshta": "Укрпошта",
     "ukrPoshtaDelivery": "Традиційна поштова служба",
+    "selfPickup": "Самовивіз",
+    "selfPickupDelivery": "Забрати з магазину в Запоріжжі",
+    "selfPickupChoosePoint": "Оберіть точку самовивозу",
+    "selfPickupDescription": "Оберіть зручний магазин для самостійного отримання замовлення.",
     "departmentIdRequired": "Потрібен ID відділення",
     "departmentNameRequired": "Потрібна назва відділення",
     "fillAllFields": "Будь ласка, заповніть усі необхідні поля для обраного способу доставки",
@@ -613,8 +617,10 @@
     "status": {
       "fulfilled": "Виконано",
       "unfulfilled": "В обробці",
+      "inProgress": "Відправлено",
       "onHold": "Призупинено",
-      "partiallyFulfilled": "Частково виконано"
+      "partiallyFulfilled": "Частково виконано",
+      "cancelled": "Скасовано"
     },
     "financialStatus": {
       "PAID": "Оплачено",
