@@ -15,7 +15,6 @@ import { Button } from '@shared/ui/button';
 import { NavigationContentLink } from './NavigationContentLink';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 import { stripGenderFromHandle } from '../utils/strip-gender-from-handle';
-import { ButtonGroup } from '@shared/ui/button-group';
 
 export const CurrentNavigationSession = async ({
   locale,
@@ -180,7 +179,7 @@ const Navigation = async ({
   });
   return (
     <NavigationClient key={locale} className=" pt-2 w-full">
-      <ButtonGroup>
+      <>
         {menu}
 
         {brandsMenuItem && (
@@ -191,9 +190,9 @@ const Navigation = async ({
             <NavigationMenuContent className="px-4">
               <div className="flex gap-10 py-8 px-6">
                 <div className="flex-1">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
                     {t('topBrands')}
-                  </h3>
+                  </p>
                   <ul className="grid grid-cols-2 gap-x-8 gap-y-1">
                     {topBrands.slice(0, 10).map((brand) => (
                       <li key={brand} className='w-full'>
@@ -243,7 +242,7 @@ const Navigation = async ({
             </NavigationMenuContent>
           </NavigationMenuItem>
         )}
-      </ButtonGroup>
+      </>
     </NavigationClient>
   );
 };

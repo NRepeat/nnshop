@@ -627,5 +627,23 @@
     "code_applied": "Discount code applied",
     "order_note": "Order note",
     "order_note_placeholder": "Enter your order note"
+  },
+  "ContactForm": {
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "nameRequired": "Please enter your name",
+    "email": "Email",
+    "emailPlaceholder": "your@email.com",
+    "emailRequired": "Please enter your email",
+    "emailInvalid": "Please enter a valid email",
+    "phone": "Phone (optional)",
+    "phonePlaceholder": "+380...",
+    "message": "Message",
+    "messagePlaceholder": "Your question or message...",
+    "messageRequired": "Please enter a message",
+    "send": "Send",
+    "sending": "Sending...",
+    "successMessage": "Thank you! Your message has been sent.",
+    "errorMessage": "Something went wrong. Please try again."
   }
 }

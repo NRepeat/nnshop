@@ -1,3 +1,5 @@
+import { PortableText } from 'next-sanity';
+import { components as portableTextComponents } from '@shared/sanity/components/portableText';
 import { Features } from '@entities/feature';
 import {
   HeroBanner,
@@ -155,11 +157,10 @@ const renderBlock = (
       return <ProductComments key={block._key} />;
 
     case 'contentPageBlock':
-      // Content page block - render portable text
       return (
         <section key={block._key} className="container py-8">
           <div className="prose max-w-none">
-            {/* Portable text content would be rendered here */}
+            {block.body && <PortableText value={block.body as any} components={portableTextComponents} />}
           </div>
         </section>
       );

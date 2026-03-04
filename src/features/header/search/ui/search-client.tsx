@@ -96,6 +96,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
         className={className}
         variant="ghost"
         size="icon"
+        aria-label={t('title')}
         onClick={() => setIsOpen((prev) => !prev)}
       >
         <Search className="w-5 h-5" />
@@ -138,6 +139,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
                   <Button
                     variant="ghost"
                     size="icon"
+                    aria-label="Close search"
                     onClick={() => setIsOpen((prev) => !prev)}
                   >
                     <X className="w-6 h-6" />

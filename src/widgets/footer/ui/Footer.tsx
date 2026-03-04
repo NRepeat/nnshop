@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { sanityFetch } from '@shared/sanity/lib/client';
 import { FOOTER_QUERY } from '@shared/sanity/lib/query';
 import { Phone, Mail } from 'lucide-react';
-import { Input } from '@shared/ui/input';
+import { FooterNewsletterForm } from './FooterNewsletterForm';
 
 // Inline brand icons (lucide-react has no brand icons)
 const FacebookIcon = () => (
@@ -120,21 +120,7 @@ export const Footer = async ({ locale }: { locale: string }) => {
             {/* Newsletter */}
             <div className="flex flex-col gap-2">
               <p className="text-sm font-semibold text-white">{t('subscribe_title')}</p>
-              <form className="flex">
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder={t('subscribe_placeholder')}
-                  className="flex-1 rounded-r-none bg-transparent border border-white/30 text-sm text-white placeholder-white/40 px-3 py-2 focus:outline-none focus:border-white/60 min-w-0"
-                />
-                <button
-                  type="submit"
-                  className="bg-white rounded rounded-l-none text-black text-sm font-medium px-4 py-2 hover:bg-white/90 transition-colors whitespace-nowrap"
-                >
-                  {t('subscribe_button')}
-                </button>
-              </form>
+              <FooterNewsletterForm />
             </div>
 
             {/* Payment icons */}
@@ -193,10 +179,10 @@ export const Footer = async ({ locale }: { locale: string }) => {
               <div className="flex items-start gap-2 text-white/60 text-sm">
                 <Phone className="w-4 h-4 mt-0.5 shrink-0" />
                 <div className="flex flex-col gap-0.5">
-                  <a href={`tel:${phone1.replace(/-/g, '')}`} className="hover:text-white transition-colors">
+                  <a href={`tel:${phone1.replace(/-/g, '')}`} className="inline-flex items-center min-h-6 hover:text-white transition-colors">
                     {phone1}
                   </a>
-                  <a href={`tel:${phone2.replace(/-/g, '')}`} className="hover:text-white transition-colors">
+                  <a href={`tel:${phone2.replace(/-/g, '')}`} className="inline-flex items-center min-h-6 hover:text-white transition-colors">
                     {phone2}
                   </a>
                 </div>

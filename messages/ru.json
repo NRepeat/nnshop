@@ -576,6 +576,7 @@
     "subscribe_title": "Подписаться на рассылку",
     "subscribe_placeholder": "Ваш e-mail",
     "subscribe_button": "Подписаться",
+    "subscribe_success": "Спасибо! Вы подписаны.",
     "working_hours": "с 10:00 до 19:00, сб-вс до 17:00",
     "phone1": "097-217-92-92",
     "phone2": "066-217-92-92",
@@ -737,5 +738,23 @@
     "submit": "Подписаться",
     "success": "Спасибо! Вы подписаны",
     "emailError": "Введите корректный email"
+  },
+  "ContactForm": {
+    "name": "Имя",
+    "namePlaceholder": "Ваше имя",
+    "nameRequired": "Введите ваше имя",
+    "email": "Email",
+    "emailPlaceholder": "your@email.com",
+    "emailRequired": "Введите email",
+    "emailInvalid": "Введите корректный email",
+    "phone": "Телефон (необязательно)",
+    "phonePlaceholder": "+380...",
+    "message": "Сообщение",
+    "messagePlaceholder": "Ваш вопрос или сообщение...",
+    "messageRequired": "Введите сообщение",
+    "send": "Отправить",
+    "sending": "Отправляется...",
+    "successMessage": "Спасибо! Ваше сообщение отправлено.",
+    "errorMessage": "Что-то пошло не так. Попробуйте ещё раз."
   }
 }

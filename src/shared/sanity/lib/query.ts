@@ -262,7 +262,7 @@ export const POST_WITH_FALLBACK_QUERY =
 }`);
 
 export const PAGE_QUERY =
-  defineQuery(`*[_type == "page" && slug.current == $slug][0]{
+  defineQuery(`*[_type == "page" && slug == $slug][0]{
   ...,
   "seo": {
   "title": coalesce(seo.title, title, ""),
@@ -273,25 +273,13 @@ export const PAGE_QUERY =
   content[]{
     ...,
     _type == "contentPageBlock" => {
-      body {
-        en[]{
+      body[]{
+        ...,
+        markDefs[]{
           ...,
-          markDefs[]{
+          _type == "link" => {
             ...,
-            _type == "link" => {
-              ...,
-              "href": string(@.href)
-            }
-          }
-        },
-        uk[]{
-          ...,
-          markDefs[]{
-            ...,
-            _type == "link" => {
-              ...,
-              "href": string(@.href)
-            }
+            "href": string(@.href)
           }
         }
       }

@@ -74,6 +74,7 @@ export const FavSession = memo(({
       }}
       variant="ghost"
       size="icon"
+      aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
       disabled={isProcessing}
       className={cn(
         'relative z-20 group hover:bg-transparent transition-opacity hover:[&>svg]:stroke-[#e31e24] h-fit w-fit',

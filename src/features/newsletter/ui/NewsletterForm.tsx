@@ -14,7 +14,10 @@ import {
 import { Input } from '@shared/ui/input';
 import { Button } from '@shared/ui/button';
 import { subscribeToNewsletter } from '../api/subscribe';
-import { newsletterSchema, NewsletterFormData } from '../schema/newsletterSchema';
+import {
+  newsletterSchema,
+  NewsletterFormData,
+} from '../schema/newsletterSchema';
 import { z } from 'zod';
 
 type NewsletterFieldValues = z.input<typeof newsletterSchema>;
@@ -40,7 +43,10 @@ export const NewsletterForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-6"
+      >
         {/* Gender radio */}
         <FormField
           control={form.control}
@@ -55,7 +61,7 @@ export const NewsletterForm = () => {
                       value="woman"
                       checked={field.value === 'woman'}
                       onChange={() => field.onChange('woman')}
-                      className="w-4 h-4 accent-black"
+                      className="w-4 h-4 accent-primary bg-primary"
                     />
                     <span className="text-sm">{t('forHer')}</span>
                   </label>
@@ -96,8 +102,9 @@ export const NewsletterForm = () => {
           />
           <Button
             type="submit"
+            // variant={'default'}
             disabled={form.formState.isSubmitting}
-            className="bg-black text-white hover:bg-black/90 shrink-0"
+            className=" shrink-0 rounded"
           >
             {t('submit')}
           </Button>

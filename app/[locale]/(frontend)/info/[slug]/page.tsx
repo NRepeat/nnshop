@@ -7,6 +7,7 @@ import { Metadata } from 'next';
 import { generatePageMetadata } from '@shared/lib/seo/generateMetadata';
 import { PortableText, type PortableTextBlock } from 'next-sanity';
 import { components } from '@/shared/sanity/components/portableText';
+import { ContactForm } from '@features/contact/ui/ContactForm';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -41,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${title} | Mio Mio`,
     },
     locale,
-    `/info/${slug}`
+    `/info/${slug}`,
   );
 }
 
@@ -70,26 +71,33 @@ export default async function InfoPage({ params }: Props) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
   const sanityLocale = await normalizeLocaleForSanity(locale);
-
+  if (slug === 'contacts') {
+    return (
+      <div className="container my-10 min-h-screen">
+        <ContactForm />
+      </div>
+    );
+  }
   const pageContent = await sanityFetch({
     query: PAGE_QUERY,
     params: { language: sanityLocale, slug },
     revalidate: 3600,
   });
+
   return (
-    <article className="container prose md:prose-lg lg:prose-xl mb-10 h-fit min-h-screen">
-      {pageContent?.content?.map((block) => {
-        if (block._type !== 'contentPageBlock') return null;
-        const body = block.body as Record<string, PortableTextBlock[] | null> | undefined;
-        if (!body) return null;
-        const value = body[sanityLocale] ?? body.uk;
-        if (!value) return null;
-        return (
-          <div key={block._key}>
-            <PortableText value={value} components={components} />
-          </div>
-        );
-      })}
-    </article>
+    <div className="container flex">
+      <article className=" prose md:prose-lg lg:prose-lg my-8 h-fit  min-w-6xl min-h-screen ">
+        {pageContent?.content?.map((block) => {
+          if (block._type !== 'contentPageBlock') return null;
+          const body = block.body as PortableTextBlock[] | null | undefined;
+          if (!body) return null;
+          return (
+            <div key={block._key} className="w-full">
+              <PortableText value={body} components={components} />
+            </div>
+          );
+        })}
+      </article>
+    </div>
   );
 }

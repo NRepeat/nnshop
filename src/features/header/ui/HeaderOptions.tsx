@@ -11,16 +11,17 @@ export const HeaderOptions = ({ locale }: { locale: string }) => {
   return (
     <div className="col-span-1 flex justify-end gap-1 items-center px-1">
       <SearchSession className="h-full hidden md:block" />
-      <Link href={'/favorites'} className="hidden md:block">
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Favorites"
-          className="group hover:[&>svg]:stroke-[#e31e24]"
-        >
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Favorites"
+        className="hidden md:inline-flex hover:[&>svg]:stroke-[#e31e24]"
+        asChild
+      >
+        <Link href={'/favorites'}>
           <Heart />
-        </Button>
-      </Link>
+        </Link>
+      </Button>
       <Suspense
         fallback={
           <Suspense>

@@ -62,7 +62,7 @@ export const HeroBanner = (props: HeroSliderProps) => {
           width={2560}
           height={1040}
           priority={index === 0}
-          className={`${slide.mobileImage?.asset ? 'hidden md:block' : 'block'} w-full`}
+          className={`${slide.mobileImage?.asset ? 'hidden md:block' : 'block'} w-full max-h-[75vh] object-cover`}
         />
       )}
     </>
@@ -128,7 +128,7 @@ export const HeroBanner = (props: HeroSliderProps) => {
     };
   }, [api2, onSelect, onInit]);
   return (
-    <div className="hero-banner relative w-full overflow-hidden mx-auto 3xl:max-w-400">
+    <div className="hero-banner relative w-full overflow-hidden 3xl:max-w-400">
       <Carousel
         opts={{ loop: true, active: true }}
         setApi={setApi2}
