@@ -74,8 +74,9 @@ export default function NovaPoshtaButton({
           setTimeout(() => {
             if (iframeRef.current?.contentWindow) {
               const coords = coordinatesRef.current;
+              const hasCoords = coords.latitude !== '' && coords.longitude !== '';
               const data = {
-                placeName: 'Київ',
+                placeName: hasCoords ? '' : 'Київ',
                 latitude: coords.latitude,
                 longitude: coords.longitude,
                 domain: domain,
