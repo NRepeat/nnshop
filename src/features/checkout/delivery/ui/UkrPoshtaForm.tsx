@@ -14,20 +14,16 @@ import { useTranslations } from 'next-intl';
 import clsx from 'clsx';
 import { DeliveryInfo } from '../model/deliverySchema';
 
-type FieldConfig = { name: Path<DeliveryInfo>; label: string; placeholder: string };
+type FieldConfig = { name: Path<DeliveryInfo>; label: string; placeholder: string; autoComplete: string };
 
 const addressFields: FieldConfig[] = [
-  { name: 'address', label: 'address', placeholder: 'enterStreetAddress' },
-  {
-    name: 'apartment',
-    label: 'apartment',
-    placeholder: 'enterApartmentNumber',
-  },
+  { name: 'address', label: 'address', placeholder: 'enterStreetAddress', autoComplete: 'address-line1' },
+  { name: 'apartment', label: 'apartment', placeholder: 'enterApartmentNumber', autoComplete: 'address-line2' },
 ];
 
 const locationFields: FieldConfig[] = [
-  { name: 'city', label: 'city', placeholder: 'enterCity' },
-  { name: 'postalCode', label: 'postalCode', placeholder: 'enterPostalCode' },
+  { name: 'city', label: 'city', placeholder: 'enterCity', autoComplete: 'address-level2' },
+  { name: 'postalCode', label: 'postalCode', placeholder: 'enterPostalCode', autoComplete: 'postal-code' },
 ];
 
 export default function UkrPoshtaForm() {
@@ -56,6 +52,7 @@ export default function UkrPoshtaForm() {
                 <div className="relative">
                   <Input
                     placeholder={t('enterCountryRegion')}
+                    autoComplete="country-name"
                     {...field}
                     className={clsx(
                       'h-12 px-4 rounded border transition-all duration-200 focus:ring-2 focus:ring-[#325039]/20',
@@ -87,6 +84,7 @@ export default function UkrPoshtaForm() {
                     <div className="relative">
                       <Input
                         placeholder={t(item.placeholder)}
+                        autoComplete={item.autoComplete}
                         name={field.name}
                         ref={field.ref}
                         onBlur={field.onBlur}

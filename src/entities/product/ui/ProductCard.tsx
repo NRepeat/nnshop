@@ -71,10 +71,10 @@ export const ProductCard = ({
       const raw = variant.node.previewImage?.url || '';
       const sep = raw.includes('?') ? '&' : '?';
       return {
-        url: raw ? `${raw}${sep}width=600&height=600&pad_color=ffffff` : '',
+        url: raw ? `${raw}${sep}width=400&height=400&pad_color=ffffff` : '',
         altText: variant.node.previewImage?.altText || '',
-        width: 600,
-        height: 600,
+        width: 400,
+        height: 400,
       };
     }) ?? []),
   ]

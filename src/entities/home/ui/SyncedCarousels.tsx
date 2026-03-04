@@ -116,10 +116,10 @@ export const SyncedCarousels = ({
                       className=" w-full overflow-hidden flex justify-center h-full"
                     >
                       <Image
-                        src={urlFor(preview).url()}
+                        src={urlFor(preview).width(800).height(800).auto('format').quality(80).url()}
                         alt={preview.alt || 'Preview image'}
-                        width={1000}
-                        height={1000}
+                        width={800}
+                        height={800}
                         sizes="(max-width: 768px) 100vw, 50vw"
                         className="object-cover w-full max-h-[600px] max-w-[600px] rounded"
                       />

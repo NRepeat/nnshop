@@ -69,7 +69,7 @@ export default function ContactInfoForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" autoComplete="on">
         {form.formState.isSubmitted &&
           Object.keys(form.formState.errors).length > 0 && (
             <div className="p-4 bg-red-50 border border-red-200 rounded">
@@ -98,6 +98,7 @@ export default function ContactInfoForm({
                 <FormControl>
                   <Input
                     placeholder={t('enterYourName')}
+                    autoComplete="given-name"
                     {...field}
                     className={clsx(
                       form.formState.isSubmitted &&
@@ -122,6 +123,7 @@ export default function ContactInfoForm({
                 <FormControl>
                   <Input
                     placeholder={t('enterYourLastName')}
+                    autoComplete="family-name"
                     {...field}
                     className={clsx(
                       form.formState.isSubmitted &&
@@ -148,6 +150,7 @@ export default function ContactInfoForm({
                 <Input
                   type="email"
                   placeholder={t('enterYourEmail')}
+                  autoComplete="email"
                   {...field}
                   className={clsx(
                     form.formState.isSubmitted &&
@@ -200,6 +203,7 @@ export default function ContactInfoForm({
                   <Input
                     type="tel"
                     placeholder="+380 50 123 45 67"
+                    autoComplete="tel"
                     {...field}
                     className={clsx(
                       form.formState.isSubmitted &&

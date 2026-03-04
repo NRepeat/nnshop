@@ -47,20 +47,20 @@ export const HeroBanner = (props: HeroSliderProps) => {
     <>
       {slide.mobileImage?.asset && (
         <Image
-          src={urlFor(slide.mobileImage.asset).url()}
+          src={urlFor(slide.mobileImage.asset).width(800).height(1200).auto('format').quality(75).url()}
           alt={slide.description || 'Banner mobile'}
-          width={600}
-          height={900}
+          width={800}
+          height={1200}
           priority={index === 0}
           className="block md:hidden object-cover w-full max-h-[60vh]"
         />
       )}
       {slide.image?.asset && (
         <Image
-          src={urlFor(slide.image.asset, 2560, 1040).url()}
+          src={urlFor(slide.image.asset).width(1920).height(780).fit('crop').auto('format').quality(75).url()}
           alt={slide.description || 'Banner desktop'}
-          width={2560}
-          height={1040}
+          width={1920}
+          height={780}
           priority={index === 0}
           className={`${slide.mobileImage?.asset ? 'hidden md:block' : 'block'} w-full max-h-[75vh] object-cover`}
         />

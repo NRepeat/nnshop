@@ -87,6 +87,7 @@ export default async function InfoPage({ params }: Props) {
   return (
     <div className="container flex">
       <article className=" prose md:prose-lg lg:prose-lg my-8 h-fit  min-w-6xl min-h-screen ">
+        {/* @ts-ignore */}
         {pageContent?.content?.map((block) => {
           if (block._type !== 'contentPageBlock') return null;
           const body = block.body as PortableTextBlock[] | null | undefined;

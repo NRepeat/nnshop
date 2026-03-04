@@ -127,7 +127,7 @@ const OrderPageSession = async ({
 
   const orderId = `gid://shopify/Order/${id}`;
   const order = await getOrderById(id, locale.toUpperCase());
-
+  console.log(order,'order')
   if (!order) {
     notFound();
   }

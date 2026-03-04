@@ -101,7 +101,7 @@ const Content = async ({
           {discountAmount > 0 && (
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('discount')}</span>
-              <span className="text-green-600 dark:text-green-400">
+              <span className="text-green-600">
                 -
                 {Math.round(discountAmount)
                   .toString()
