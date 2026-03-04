@@ -159,6 +159,27 @@ export default function NovaPoshtaButton({
     };
   }, []);
 
+  // If geolocation resolves while the modal is already open, re-send coordinates
+  useEffect(() => {
+    if (!isModalOpen) return;
+    if (coordinates.latitude === '' || coordinates.longitude === '') return;
+    const iframe = iframeRef.current;
+    if (!iframe?.contentWindow) return;
+    const domain = typeof window !== 'undefined' ? window.location.hostname : '';
+    const queryParams = getQueryParams();
+    iframe.contentWindow.postMessage(
+      {
+        placeName: '',
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+        domain,
+        id: selectedDepartmentId,
+        ...queryParams,
+      },
+      '*',
+    );
+  }, [coordinates, isModalOpen]);
+
   useEffect(() => {
     if (isModalOpen) {
       window.addEventListener('message', handleFrameMessage);
