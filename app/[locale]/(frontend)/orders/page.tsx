@@ -94,8 +94,8 @@ export async function OrdersPageSession({ params, searchParams }: Props) {
     });
   } else if (sortBy === 'status') {
     sortedOrders.sort((a, b) => {
-      const statusA = a.displayFulfillmentStatus;
-      const statusB = b.displayFulfillmentStatus;
+      const statusA = a.fulfillmentStatus;
+      const statusB = b.fulfillmentStatus;
       if (statusA < statusB) return order === 'asc' ? -1 : 1;
       if (statusA > statusB) return order === 'asc' ? 1 : -1;
       return 0;

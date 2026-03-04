@@ -11,6 +11,7 @@ import { Form } from '@shared/ui/form';
 import { saveDeliveryInfo } from '../api/saveDeliveryInfo';
 import NovaPoshtaForm from './NovaPoshtaForm';
 import UkrPoshtaForm from './UkrPoshtaForm';
+import SelfPickupForm from './SelfPickupForm';
 import DeliveryMethodSelection from './DeliveryMethodSelection';
 import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -40,6 +41,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
       apartment: defaultValues?.apartment || '',
       city: defaultValues?.city || '',
       postalCode: defaultValues?.postalCode || '',
+      selfPickupPoint: defaultValues?.selfPickupPoint || '',
     },
   });
 
@@ -100,6 +102,8 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
           )}
 
           {selectedDeliveryMethod === 'ukrPoshta' && <UkrPoshtaForm />}
+
+          {selectedDeliveryMethod === 'selfPickup' && <SelfPickupForm />}
 
           <div className="">
             <Button

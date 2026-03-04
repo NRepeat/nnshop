@@ -43,13 +43,19 @@ export async function saveDeliveryInfo(
 
     // Persist delivery info to DB in a transaction (DB-only operations).
     await prisma.$transaction(async (tx) => {
+      // For self-pickup, store the pickup point ID in the address field
+      const addressValue =
+        data.deliveryMethod === 'selfPickup'
+          ? (data.selfPickupPoint ?? null)
+          : (data.address ?? null);
+
       const updatedDeliveryInfo = await tx.deliveryInformation.upsert({
         where: { userId: user.id },
         create: {
           userId: user.id,
           deliveryMethod: data.deliveryMethod,
           country: data.country,
-          address: data.address,
+          address: addressValue,
           apartment: data.apartment,
           city: data.city,
           postalCode: data.postalCode,
@@ -57,7 +63,7 @@ export async function saveDeliveryInfo(
         update: {
           deliveryMethod: data.deliveryMethod,
           country: data.country,
-          address: data.address,
+          address: addressValue,
           apartment: data.apartment,
           city: data.city,
           postalCode: data.postalCode,
@@ -85,7 +91,8 @@ export async function saveDeliveryInfo(
             longitude: data.novaPoshtaDepartment.coordinates?.longitude,
           },
         });
-      } else if (data.deliveryMethod === 'ukrPoshta') {
+      } else {
+        // ukrPoshta or selfPickup — no Nova Poshta department needed
         await tx.novaPoshtaDepartment.deleteMany({
           where: { deliveryInformationId: updatedDeliveryInfo.id },
         });

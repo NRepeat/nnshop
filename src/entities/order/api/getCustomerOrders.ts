@@ -28,6 +28,7 @@ export type CustomerOrder = {
   id: string;
   name: string;
   createdAt: string;
+  cancelledAt?: string | null;
   fulfillmentStatus: string;
   financialStatus: string;
   totalPriceSet: { shopMoney: { amount: string; currencyCode: string } };
@@ -63,7 +64,8 @@ export async function getCustomerOrders(
     id: order.id,
     name: order.name,
     createdAt: order.createdAt,
-    fulfillmentStatus: order.fulfillmentStatus,
+    cancelledAt: order.cancelledAt ?? null,
+    fulfillmentStatus: order.cancelledAt ? 'СКАСОВАНО' : order.fulfillmentStatus,
     financialStatus: order.financialStatus,
     totalPriceSet: {
       shopMoney: order.total ?? { amount: '0', currencyCode: 'UAH' },

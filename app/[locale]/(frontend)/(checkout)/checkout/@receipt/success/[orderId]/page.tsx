@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { User, CreditCard } from 'lucide-react';
 import getContactInfo from '@features/checkout/contact-info/api/get-contact-info';
 import { getPaymentInfo } from '@features/checkout/payment/api/getPaymentInfo';
+import DeliveryInfoSection from '@features/checkout/receipt/ui/DeliveryInfo';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
 import { Card, CardContent } from '@shared/ui/card';
@@ -86,6 +87,9 @@ export default async function SuccessReceipt(props: Props) {
       <CardContent className="flex-col gap-3 p-0 flex">
         <Suspense fallback={<ReceiptSkeleton />}>
           <ContactCard locale={locale} />
+        </Suspense>
+        <Suspense fallback={<ReceiptSkeleton />}>
+          <DeliveryInfoSection locale={locale} />
         </Suspense>
         <Suspense fallback={<ReceiptSkeleton />}>
           <PaymentCard locale={locale} />

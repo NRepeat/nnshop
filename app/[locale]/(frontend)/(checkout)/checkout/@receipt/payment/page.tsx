@@ -7,6 +7,7 @@ import {
   OrderSummary,
   OrderSummarySkeleton,
 } from '@features/checkout/receipt/ui/OrderSummary';
+import DeliveryInfoSection from '@features/checkout/receipt/ui/DeliveryInfo';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
 import { Card, CardContent } from '@shared/ui/card';
@@ -104,6 +105,9 @@ export default async function PaymentReceipt(props: Props) {
           </Suspense>
           <Suspense fallback={<ReceiptSkeleton />}>
             <ContactCard locale={locale} />
+          </Suspense>
+          <Suspense fallback={<ReceiptSkeleton />}>
+            <DeliveryInfoSection locale={locale} />
           </Suspense>
           <EmptyCard
             icon={<CreditCard className="size-5" />}

@@ -15,6 +15,7 @@ import { headers } from 'next/headers';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { formatPhoneForShopify } from '@features/checkout/schema/contactInfoSchema';
+import { getPickupPoint } from '@features/checkout/delivery/lib/pickup-points';
 
 type OrderResult = {
   id: string;
@@ -207,16 +208,35 @@ export async function createOrder(
     const selectedDelivery = cart.delivery?.addresses?.find(
       (a) => a.selected,
     )?.address;
-    const shippingAddress = {
-      address1: selectedDelivery?.address1 || '',
-      city: selectedDelivery?.city || '',
-      country: selectedDelivery?.countryCode || '',
-      firstName: completeCheckoutData.contactInfo.name || '',
-      lastName: completeCheckoutData.contactInfo.lastName || '',
-      phone: formattedPhone,
-      zip: selectedDelivery?.zip || '',
-      address2: selectedDelivery?.address2 || undefined,
-    };
+
+    // For self-pickup, build address from DB delivery info (cart address may lag)
+    const deliveryMethod = completeCheckoutData.deliveryInfo?.deliveryMethod;
+    let shippingAddress: any;
+    if (deliveryMethod === 'selfPickup') {
+      const point = completeCheckoutData.deliveryInfo?.selfPickupPoint
+        ? getPickupPoint(completeCheckoutData.deliveryInfo.selfPickupPoint)
+        : null;
+      shippingAddress = {
+        address1: point ? `Самовивіз: ${point.name}, ${point.address}` : 'Самовивіз',
+        city: point?.city || 'Запоріжжя',
+        country: 'UA',
+        firstName: completeCheckoutData.contactInfo.name || '',
+        lastName: completeCheckoutData.contactInfo.lastName || '',
+        phone: formattedPhone,
+        zip: '69000',
+      };
+    } else {
+      shippingAddress = {
+        address1: selectedDelivery?.address1 || '',
+        city: selectedDelivery?.city || '',
+        country: selectedDelivery?.countryCode || '',
+        firstName: completeCheckoutData.contactInfo.name || '',
+        lastName: completeCheckoutData.contactInfo.lastName || '',
+        phone: formattedPhone,
+        zip: selectedDelivery?.zip || '',
+        address2: selectedDelivery?.address2 || undefined,
+      };
+    }
     order.shippingAddress = shippingAddress;
 
     // Build order note
@@ -229,6 +249,16 @@ export async function createOrder(
       noteLines.push(
         `Промокод: ${applicableDiscounts.map((d) => d.code).join(', ')}`,
       );
+    }
+
+    if (deliveryMethod === 'selfPickup') {
+      const point = completeCheckoutData.deliveryInfo?.selfPickupPoint
+        ? getPickupPoint(completeCheckoutData.deliveryInfo.selfPickupPoint)
+        : null;
+      const pickupLabel = point
+        ? `${point.name} — ${point.fullAddress}`
+        : 'Самовивіз';
+      noteLines.push(`🏪 Самовивіз: ${pickupLabel}`);
     }
 
     if (paymentMethod) {

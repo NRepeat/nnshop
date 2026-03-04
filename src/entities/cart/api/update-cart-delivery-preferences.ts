@@ -8,6 +8,7 @@ import { revalidateTag } from 'next/cache';
 import { headers } from 'next/headers';
 import { DeliveryInfo } from '@features/checkout/delivery/model/deliverySchema';
 import { ContactInformation } from '~/generated/prisma/client';
+import { getPickupPoint } from '@features/checkout/delivery/lib/pickup-points';
 
 const CART_DELIVERY_ADDRESSES_ADD_MUTATION = `
   #graphql
@@ -116,6 +117,23 @@ export async function updateCartDeliveryPreferences(
       };
       console.log(
         'updateCartDeliveryPreferences: Constructed deliveryAddressInput for UkrPoshta:',
+        JSON.stringify(deliveryAddressInput),
+      );
+    } else if (deliveryInfo.deliveryMethod === 'selfPickup') {
+      const point = deliveryInfo.selfPickupPoint
+        ? getPickupPoint(deliveryInfo.selfPickupPoint)
+        : null;
+      deliveryAddressInput = {
+        address1: point ? `Самовивіз: ${point.name}, ${point.address}` : 'Самовивіз',
+        city: point?.city || 'Запоріжжя',
+        countryCode: 'UA',
+        firstName: contactInfo.name || '',
+        lastName: contactInfo.lastName || '',
+        phone: contactInfo.phone || '',
+        zip: '69000',
+      };
+      console.log(
+        'updateCartDeliveryPreferences: Constructed deliveryAddressInput for SelfPickup:',
         JSON.stringify(deliveryAddressInput),
       );
     } else {

@@ -29,14 +29,17 @@ export async function getDeliveryInfo(
       return null;
     }
 
+    const isSelfPickup = prismaDeliveryInfo.deliveryMethod === 'selfPickup';
+
     const deliveryInfo: DeliveryInfo = {
       deliveryMethod:
         prismaDeliveryInfo.deliveryMethod as DeliveryInfo['deliveryMethod'],
       country: prismaDeliveryInfo.country || undefined,
-      address: prismaDeliveryInfo.address || undefined,
+      address: isSelfPickup ? undefined : (prismaDeliveryInfo.address || undefined),
       apartment: prismaDeliveryInfo.apartment || undefined,
       city: prismaDeliveryInfo.city || undefined,
       postalCode: prismaDeliveryInfo.postalCode || undefined,
+      selfPickupPoint: isSelfPickup ? (prismaDeliveryInfo.address || undefined) : undefined,
       novaPoshtaDepartment: prismaDeliveryInfo.novaPoshtaDepartment
         ? {
             id: prismaDeliveryInfo.novaPoshtaDepartment.id,

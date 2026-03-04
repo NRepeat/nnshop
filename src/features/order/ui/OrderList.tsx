@@ -18,6 +18,7 @@ type Order = {
   id: string;
   name: string;
   createdAt?: string;
+  cancelledAt?: string | null;
   fulfillmentStatus: string;
   totalPriceSet: {
     shopMoney: {
