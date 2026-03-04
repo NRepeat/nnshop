@@ -115,6 +115,33 @@ export async function createOrder(
 
     const currencyCode = cart.cost.totalAmount.currencyCode || 'UAH';
 
+    // Calculate znizka-discounted subtotal (same logic as Payment.tsx)
+    let localTotal = 0;
+    for (const edge of cart.lines.edges as any[]) {
+      const line = edge.node;
+      const price = parseFloat(line.cost.amountPerQuantity.amount);
+      const sale =
+        Number(
+          line.merchandise.product.metafields?.find(
+            (m: any) => m?.key === 'znizka',
+          )?.value || '0',
+        ) || 0;
+      const discountedPrice = sale > 0 ? price * (1 - sale / 100) : price;
+      localTotal += discountedPrice * line.quantity;
+    }
+
+    const applicableDiscounts = (cart.discountCodes ?? []).filter(
+      (d) => d.applicable,
+    );
+    const hasApplicableDiscount = applicableDiscounts.length > 0;
+    const shopifyTotal = Number(cart.cost.totalAmount.amount);
+    const goodsTotal = hasApplicableDiscount
+      ? Math.min(localTotal, shopifyTotal)
+      : localTotal;
+
+    // Scale line item prices so order total matches what the customer pays
+    const discountRatio = localTotal > 0 ? goodsTotal / localTotal : 1;
+
     const lineItems = cart.lines.edges
       .map((edge: any) => {
         const lineItem = edge.node;
@@ -139,23 +166,14 @@ export async function createOrder(
           quantity: lineItem.quantity,
         };
 
-        // Apply discount via priceSet if exists
-        if (sale > 0) {
-          const discountedPrice = amountPerQuantity * (1 - sale / 100);
-          item.priceSet = {
-            shopMoney: {
-              amount: discountedPrice.toFixed(2),
-              currencyCode,
-            },
-          };
-        } else {
-          item.priceSet = {
-            shopMoney: {
-              amount: amountPerQuantity.toFixed(2),
-              currencyCode,
-            },
-          };
-        }
+        const basePrice =
+          sale > 0 ? amountPerQuantity * (1 - sale / 100) : amountPerQuantity;
+        item.priceSet = {
+          shopMoney: {
+            amount: (basePrice * discountRatio).toFixed(2),
+            currencyCode,
+          },
+        };
 
         return item;
       })
@@ -166,25 +184,6 @@ export async function createOrder(
       currency: currencyCode,
       financialStatus: 'PENDING',
     };
-
-    // Add discount codes from cart if present
-    if (cart.discountCodes && cart.discountCodes.length > 0) {
-      const applicableDiscounts = cart.discountCodes.filter(
-        (d) => d.applicable,
-      );
-      if (applicableDiscounts.length > 0) {
-        // Save discount codes as custom attributes for reference
-        if (!order.customAttributes) {
-          order.customAttributes = [];
-        }
-        applicableDiscounts.forEach((discount, index) => {
-          order.customAttributes.push({
-            key: `discount_code_${index + 1}`,
-            value: discount.code,
-          });
-        });
-      }
-    }
 
     if (!completeCheckoutData) {
       throw new Error('Checkout data is missing');
@@ -224,6 +223,12 @@ export async function createOrder(
     const noteLines: string[] = [];
     if (cart.note) {
       noteLines.push(cart.note);
+    }
+
+    if (applicableDiscounts.length > 0) {
+      noteLines.push(
+        `Промокод: ${applicableDiscounts.map((d) => d.code).join(', ')}`,
+      );
     }
 
     if (paymentMethod) {
