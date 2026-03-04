@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-04T08:43:10.342Z"
+last_updated: "2026-03-04T08:44:17.440Z"
 progress:
   total_phases: 8
   completed_phases: 5
   total_plans: 29
-  completed_plans: 22
+  completed_plans: 26
 ---
 
 # Project State
@@ -63,6 +63,9 @@ Progress: [█████░░░░░] 50%
 | Phase 08 P02 | 2 | 3 tasks | 3 files |
 | Phase 08 P03 | 2 | 2 tasks | 4 files |
 | Phase 09-sku-097-217-92-92-ghoud-agl P01 | 5 | 2 tasks | 2 files |
+| Phase 09-sku-097-217-92-92-ghoud-agl P03 | 2 | 2 tasks | 2 files |
+| Phase 09 P04 | 3 | 2 tasks | 4 files |
+| Phase 09-sku-097-217-92-92-ghoud-agl P02 | 6 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -115,6 +118,11 @@ Recent decisions affecting current work:
 - [08-03]: NewsletterSection heading hardcoded Ukrainian — consistent with CONTEXT.md screenshot; form strings remain i18n via useTranslations
 - [Phase 09-01]: grandTotal = totalAmount (no shippingFee) in OrderSummary — shipping removed from receipt sidebar per user decision
 - [Phase 09-01]: cartAmount = goodsTotal (no shippingFee) in Payment — payment amount no longer includes shipping calculation
+- [Phase 09-03]: openCart() placed after toast.success and before onSuccess — consistent with Phase 3 confirmed-success pattern
+- [Phase 09-03]: QuickBuyModal phone reset to '+38' not empty on reopen — UA country code pre-fill guides users; validation requires complete number
+- [Phase 09-04]: SKU-based related product matching inserted as second-priority filler between manual metafield IDs and productType filler
+- [Phase 09-04]: console.log removed from ProductSessionView, ProductView, getProduct.ts — Phase 1 violations cleared
+- [Phase 09-02]: OrderStatusBadge uses cn() with bg-green-100/bg-red-100 Tailwind classes; ОТМЕНЕН maps to red (isRed) per CONTEXT.md; ON_HOLD stays red consistent with original destructive variant; geolocation errors silent (widget defaults to Kyiv); console.log with department PII removed; origin-check console.warn retained
 
 ### Roadmap Evolution
 
