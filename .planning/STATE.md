@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-04T08:44:26.247Z"
+last_updated: "2026-03-05T09:57:11.717Z"
 progress:
-  total_phases: 8
+  total_phases: 9
   completed_phases: 5
-  total_plans: 29
-  completed_plans: 26
+  total_plans: 31
+  completed_plans: 27
 ---
 
 # Project State
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-23)
 
 **Core value:** The checkout-to-order flow works reliably and securely for every user — anonymous or authenticated — without data leaks, silent failures, or broken UI.
-**Current focus:** Phase 6 — UI Polish
+**Current focus:** Phase 10 — SEO Fixes
 
 ## Current Position
 
-Phase: 8 of 7 (Recently Viewed + Newsletter)
-Plan: 3 of 4 in current phase
+Phase: 10 (SEO fixes — commercial meta templates)
+Plan: 1 of 2 in current phase completed
 Status: In progress
-Last activity: 2026-03-02 - Completed quick task 1: add isBrand checkbox to Sanity collection schema and update frontend
+Last activity: 2026-03-05 - Completed 10-01-PLAN.md — commercial SEO templates for product, collection, and brand pages
 
 Progress: [█████░░░░░] 50%
 
@@ -67,6 +67,7 @@ Progress: [█████░░░░░] 50%
 | Phase 09 P04 | 3 | 2 tasks | 4 files |
 | Phase 09-sku-097-217-92-92-ghoud-agl P02 | 6 | 2 tasks | 2 files |
 | Phase 09-sku-097-217-92-92-ghoud-agl P05 | 2 | 1 tasks | 1 files |
+| Phase 10-seo-fixes-update-meta-title-and-description-to-commercial-template-test-shopify-handles-fix-errors P01 | 3 | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -125,11 +126,15 @@ Recent decisions affecting current work:
 - [Phase 09-04]: console.log removed from ProductSessionView, ProductView, getProduct.ts — Phase 1 violations cleared
 - [Phase 09-02]: OrderStatusBadge uses cn() with bg-green-100/bg-red-100 Tailwind classes; ОТМЕНЕН maps to red (isRed) per CONTEXT.md; ON_HOLD stays red consistent with original destructive variant; geolocation errors silent (widget defaults to Kyiv); console.log with department PII removed; origin-check console.warn retained
 - [Phase 09-05]: DiscountCodeInput placed in shared content JSX variable in OrderSummary — renders in both collapsible (mobile) and static (desktop) views without duplication
+- [Phase 10-01]: generateProductMetadata filter(Boolean) on [productType, vendor, title] handles empty strings without leading spaces
+- [Phase 10-01]: Brand page null guard: check collection.collection (inner Shopify object) not outer collection wrapper from getCollection
+- [Phase 10-01]: generateCollectionMetadata description param kept in signature for backward compat but ignored — use commercial templates instead
 
 ### Roadmap Evolution
 
 - Phase 8 added: Recently Viewed Products section and Newsletter subscription section
-- Phase 9 added: ФРОНТ — убрать доставку из чекаута, НП виджет, статусы заказов, корзина, швидке замовлення, related products, дисконт, телефон/вайбер, меню, логотипы брендов, тест стежити за ціною
+- Phase 9 added: ФРОНТ — убрати доставку з чекауту, НП віджет, статуси замовлень, корзина, швидке замовлення, related products, дисконт, телефон/вайбер, меню, логотипи брендів, тест стежити за ціною
+- Phase 10 added: SEO fixes — update meta title and description to commercial template, test Shopify handles, fix errors
 
 ### Pending Todos
 
