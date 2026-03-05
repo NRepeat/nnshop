@@ -18,7 +18,7 @@ export function generatePageMetadata(
   const canonicalUrl = `${BASE_URL}/${locale}${normalizedPath}`;
 
   return {
-    title: seo.title || 'Mio Mio',
+    title: { absolute: seo.title || 'Mio Mio' },
     description: seo.description,
     robots: seo.noIndex ? 'noindex, nofollow' : 'index, follow',
     alternates: {
@@ -60,8 +60,8 @@ export function generateProductMetadata(
   const titleParts = [product.productType, product.vendor, product.title].filter(Boolean);
   const title = `${titleParts.join(' ')} | MioMio`;
   const description = isUk
-    ? 'Фото, характеристики та доступні розміри в наявності. Зручне оформлення замовлення онлайн і доставка по Україні ✔️'
-    : 'Фото, характеристики и доступные размеры в наличии. Удобное оформление заказа онлайн и доставка по Украине ✔️';
+    ? `Купити ${product.title} в MioMio — фото, характеристики та доступні розміри в наявності. Зручне оформлення замовлення онлайн і доставка по Україні ✔️`
+    : `Купить ${product.title} в MioMio — фото, характеристики и доступные размеры в наличии. Удобное оформление заказа онлайн и доставка по Украине ✔️`;
 
   return generatePageMetadata(
     { title, description, image: product.featuredImage?.url },
@@ -85,9 +85,13 @@ export function generateCollectionMetadata(
   const title = isUk
     ? `Купити ${collection.title} | MioMio`
     : `Купить ${collection.title} | MioMio`;
+  const genderWord = isUk
+    ? { woman: 'жіноче ', man: 'чоловіче ' }
+    : { woman: 'женское ', man: 'мужское ' };
+  const genderPrefix = gender ? (genderWord[gender as 'woman' | 'man'] ?? '') : '';
   const description = isUk
-    ? `Обирайте ${collection.title} в MioMio: актуальні моделі, популярні бренди та зручна доставка по Україні.`
-    : `Выбирайте ${collection.title} в MioMio: актуальные модели, популярные бренды и доставка по Украине.`;
+    ? `Обирайте ${genderPrefix}${collection.title} в MioMio: актуальні моделі, популярні бренди та зручна доставка по Україні.`
+    : `Выбирайте ${genderPrefix}${collection.title} в MioMio: актуальные модели, популярные бренды и доставка по Украине.`;
 
   return generatePageMetadata(
     { title, description, image: collection.image?.url },

@@ -4,6 +4,11 @@ import { RecentlyViewedSection } from '@entities/recently-viewed/ui/RecentlyView
 import { NewsletterSection } from '@features/newsletter/ui/NewsletterSection';
 import { Locale } from '@shared/i18n/routing';
 
+const genderH1: Record<string, Record<string, string>> = {
+  uk: { woman: 'Жіноче взуття', man: 'Чоловіче взуття' },
+  ru: { woman: 'Женская обувь', man: 'Мужская обувь' },
+};
+
 export const PageContent = async ({
   params,
 }: {
@@ -13,6 +18,7 @@ export const PageContent = async ({
 
   return (
     <div className="flex flex-col h-fit min-h-screen">
+      <h1 className="sr-only">{genderH1[locale]?.[gender] ?? ''}</h1>
       <HeroPageBuilder gender={gender} locale={locale} />
     </div>
   );

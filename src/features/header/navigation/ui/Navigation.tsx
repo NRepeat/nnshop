@@ -122,7 +122,12 @@ const Navigation = async ({
         : [sub.title],
     ) || [];
 
-  const withGender = (url: string) => `/${gender}${stripGenderFromHandle(url)}`;
+  const withGender = (url: string) => {
+    const stripped = stripGenderFromHandle(url);
+    // Avoid /woman/woman — menu item that points to the gender home itself
+    if (stripped === `/${gender}`) return `/${gender}`;
+    return `/${gender}${stripped}`;
+  };
 
   const menu = items.map((item, index) => {
     if (item.items.length > 0) {

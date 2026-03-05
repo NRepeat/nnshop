@@ -71,9 +71,11 @@ export default async function InfoPage({ params }: Props) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
   const sanityLocale = await normalizeLocaleForSanity(locale);
+  const pageTitle = pageTitles[locale]?.[slug] ?? slug;
   if (slug === 'contacts') {
     return (
       <div className="container my-10 min-h-screen">
+        <h1 className="sr-only">{pageTitle}</h1>
         <ContactForm />
       </div>
     );
@@ -87,6 +89,7 @@ export default async function InfoPage({ params }: Props) {
   return (
     <div className="container flex">
       <article className=" prose md:prose-lg lg:prose-lg my-8 h-fit  min-w-6xl min-h-screen ">
+        <h1>{pageTitle}</h1>
         {/* @ts-ignore */}
         {pageContent?.content?.map((block) => {
           if (block._type !== 'contentPageBlock') return null;

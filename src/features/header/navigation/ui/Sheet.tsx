@@ -26,7 +26,12 @@ const MenuSheet = async ({ locale }: { locale: string }) => {
   const items = await getMainMenu({ locale });
   const meinMenu = items.map((item) => {
     const gender = detectGender(item);
-    const withGender = (url: string) => (gender ? `/${gender}${url}` : url);
+    const withGender = (url: string) => {
+      if (!gender) return url;
+      // Avoid /woman/woman — menu item that points to the gender home itself
+      if (url === `/${gender}`) return `/${gender}`;
+      return `/${gender}${url}`;
+    };
 
     return {
       label: item.title,
