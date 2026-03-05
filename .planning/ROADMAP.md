@@ -183,3 +183,14 @@ Plans:
 
 Plans:
 - [ ] TBD (run /gsd:plan-phase 9 to break down)
+
+### Phase 10: SEO fixes — update meta title and description to commercial template, test Shopify handles, fix errors
+
+**Goal:** Commercial SEO templates applied to product, collection, and brand pages; old miomio.com.ua product handles audited against Shopify store
+**Requirements**: SEO-10-01, SEO-10-02
+**Depends on:** Phase 9
+**Plans:** 2 plans
+
+Plans:
+- [ ] 10-01-PLAN.md — Update generateMetadata.ts (product/collection/brand templates) + brand page integration
+- [ ] 10-02-PLAN.md — Write handle audit script (scripts/test-handles.mjs) + human checkpoint to review missing handles
