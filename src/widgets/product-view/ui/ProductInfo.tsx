@@ -141,7 +141,7 @@ export const ProductInfo = ({
             </Link>
           )}
           <div className="flex items-center gap-2">
-            <h1 className="text-lg text-gray-800">{product.title}</h1>
+            <p className="text-lg text-gray-800">{product.title}</p>
           </div>
           {sku && (
             <p className="text-sm text-gray-500">

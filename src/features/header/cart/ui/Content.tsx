@@ -53,13 +53,11 @@ const Content = async ({
     <SheetContent className="w-full sm:min-w-[500px] font-light ">
       <div className="h-full overflow-hidden flex flex-col">
         <SheetHeader className="pt-6 pb-6 px-4 border-b border-muted">
-          <SheetTitle className="font-sans">
+          <SheetTitle className="font-sans flex items-center gap-2">
             <ShoppingCart className="h-6 w-6" />
+            {t('title')}
           </SheetTitle>
         </SheetHeader>
-        {/* <SheetHeader className="sticky top-0">
-          <SheetTitle>{t('title')}</SheetTitle>
-        </SheetHeader> */}
         <div className="overflow-auto flex-1">
           <div className="flex flex-col space-y-2 px-4">
             {mockProducts.map((product) => (
