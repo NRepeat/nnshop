@@ -189,7 +189,7 @@ Plans:
 **Goal:** Commercial SEO templates applied to product, collection, and brand pages; old miomio.com.ua product handles audited against Shopify store
 **Requirements**: SEO-10-01, SEO-10-02
 **Depends on:** Phase 9
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [ ] 10-01-PLAN.md — Update generateMetadata.ts (product/collection/brand templates) + brand page integration
