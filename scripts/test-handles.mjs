@@ -1,8 +1,8 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { writeFileSync } from 'fs';
 import { resolve } from 'path';
 import dotenv from 'dotenv';
 
-// Load env files — .env first, then .env.local overrides
+// Load env — .env first, then .env.local overrides
 dotenv.config({ path: resolve(process.cwd(), '.env') });
 dotenv.config({ path: resolve(process.cwd(), '.env.local'), override: true });
 
@@ -17,79 +17,112 @@ if (!DOMAIN || !TOKEN || !VERSION) {
 
 const API_URL = `https://${DOMAIN}/api/${VERSION}/graphql.json`;
 
-const TSV_FILE = resolve(
-  process.cwd(),
-  '.planning/02-2026 _ Додаток до аналізу нового сайту _ https___www.miomio.com.ua_ - Description outside head.tsv'
-);
-
-// Parse TSV — first column is Address, skip header row
-const raw = readFileSync(TSV_FILE, 'utf-8');
-const lines = raw.split('\n').slice(1); // skip header
-
-const handles = lines
-  .map(line => line.split('\t')[0]?.trim())
-  .filter(Boolean)
-  .map(url => {
-    const parts = url.split('/product/');
-    return parts.length > 1 ? decodeURIComponent(parts[1].split('?')[0]) : null;
-  })
-  .filter(Boolean);
-
-console.log(`Testing ${handles.length} handles against ${API_URL}`);
-
-const QUERY = `
-  query CheckHandle($handle: String!) {
-    product(handle: $handle) {
-      id
-      handle
+const PRODUCTS_QUERY = `
+  query GetProducts($cursor: String) {
+    products(first: 250, after: $cursor) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        handle
+        title
+        vendor
+        productType
+      }
     }
   }
 `;
 
-async function checkHandle(handle) {
+async function fetchPage(cursor = null) {
   const res = await fetch(API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Shopify-Storefront-Private-Token': TOKEN,
     },
-    body: JSON.stringify({ query: QUERY, variables: { handle } }),
+    body: JSON.stringify({ query: PRODUCTS_QUERY, variables: { cursor } }),
   });
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status} for handle: ${handle}`);
-  }
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const json = await res.json();
-  return json.data?.product ?? null;
+  if (json.errors) throw new Error(JSON.stringify(json.errors));
+  return json.data.products;
 }
 
 const delay = ms => new Promise(r => setTimeout(r, ms));
 
-const ok = [];
-const missing = [];
+// Paginate through all products
+const all = [];
+let cursor = null;
+let page = 1;
 
-for (let i = 0; i < handles.length; i++) {
-  const handle = handles[i];
-  try {
-    const product = await checkHandle(handle);
-    if (product) {
-      ok.push(handle);
-      process.stdout.write(`[${i + 1}/${handles.length}] OK: ${handle}\n`);
-    } else {
-      missing.push(handle);
-      process.stdout.write(`[${i + 1}/${handles.length}] MISSING: ${handle}\n`);
-    }
-  } catch (err) {
-    missing.push(handle);
-    process.stdout.write(`[${i + 1}/${handles.length}] ERROR: ${handle} — ${err.message}\n`);
-  }
-  // Rate-limit: 2 req/s (conservative — avoid Shopify 429)
-  if (i < handles.length - 1) await delay(500);
+console.log(`Fetching all products from ${API_URL}...\n`);
+
+do {
+  process.stdout.write(`Page ${page}... `);
+  const { pageInfo, nodes } = await fetchPage(cursor);
+  all.push(...nodes);
+  console.log(`${nodes.length} products (total so far: ${all.length})`);
+  cursor = pageInfo.hasNextPage ? pageInfo.endCursor : null;
+  page++;
+  if (cursor) await delay(300);
+} while (cursor);
+
+console.log(`\nTotal products: ${all.length}\n`);
+
+// Classify each product by data completeness for the commercial template:
+// Full:      productType + vendor + title  → "{productType} {vendor} {title} | MioMio"
+// NoType:    vendor + title (no productType) → "{vendor} {title} | MioMio"
+// NoVendor:  productType + title (no vendor) → "{productType} {title} | MioMio"
+// TitleOnly: title only (no type, no vendor) → "{title} | MioMio"
+
+const full = [];
+const noType = [];
+const noVendor = [];
+const titleOnly = [];
+
+for (const p of all) {
+  const hasType = p.productType && p.productType.trim() !== '';
+  const hasVendor = p.vendor && p.vendor.trim() !== '';
+  if (hasType && hasVendor) full.push(p);
+  else if (!hasType && hasVendor) noType.push(p);
+  else if (hasType && !hasVendor) noVendor.push(p);
+  else titleOnly.push(p);
 }
 
-writeFileSync(resolve(process.cwd(), 'scripts/handles-ok.txt'), ok.join('\n'), 'utf-8');
-writeFileSync(resolve(process.cwd(), 'scripts/handles-missing.txt'), missing.join('\n'), 'utf-8');
+// Output helpers
+const fmt = p => `${p.handle}\t${p.vendor || '(empty)'}\t${p.productType || '(empty)'}\t${p.title}`;
+const header = 'handle\tvendor\tproductType\ttitle';
 
-console.log(`\nDone. OK: ${ok.length}, Missing: ${missing.length}`);
-console.log('Results written to:');
-console.log('  scripts/handles-ok.txt');
-console.log('  scripts/handles-missing.txt');
+writeFileSync(
+  resolve(process.cwd(), 'scripts/handles-full.txt'),
+  [header, ...full.map(fmt)].join('\n'),
+  'utf-8'
+);
+writeFileSync(
+  resolve(process.cwd(), 'scripts/handles-no-type.txt'),
+  [header, ...noType.map(fmt)].join('\n'),
+  'utf-8'
+);
+writeFileSync(
+  resolve(process.cwd(), 'scripts/handles-no-vendor.txt'),
+  [header, ...noVendor.map(fmt)].join('\n'),
+  'utf-8'
+);
+writeFileSync(
+  resolve(process.cwd(), 'scripts/handles-title-only.txt'),
+  [header, ...titleOnly.map(fmt)].join('\n'),
+  'utf-8'
+);
+
+console.log('=== SEO Template Coverage Report ===\n');
+console.log(`✓ Full template ({type} {vendor} {title} | MioMio):  ${full.length}`);
+console.log(`⚠ Missing productType ({vendor} {title} | MioMio):   ${noType.length}`);
+console.log(`⚠ Missing vendor ({type} {title} | MioMio):          ${noVendor.length}`);
+console.log(`✗ Title only ({title} | MioMio):                      ${titleOnly.length}`);
+console.log(`\nTotal: ${all.length}`);
+console.log('\nOutput files:');
+console.log('  scripts/handles-full.txt       — full commercial template');
+console.log('  scripts/handles-no-type.txt    — missing productType (needs fix in Shopify)');
+console.log('  scripts/handles-no-vendor.txt  — missing vendor (needs fix in Shopify)');
+console.log('  scripts/handles-title-only.txt — missing both type and vendor (needs fix in Shopify)');
