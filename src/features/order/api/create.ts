@@ -225,7 +225,25 @@ export async function createOrder(
         phone: formattedPhone,
         zip: '69000',
       };
+    } else if (deliveryMethod === 'novaPoshta') {
+      // Prefer DB department data — more reliable than cart sync
+      const dept = completeCheckoutData.deliveryInfo?.novaPoshtaDepartment;
+      const npAddress2 =
+        dept?.addressParts?.street && dept?.addressParts?.building
+          ? `${dept.addressParts.street}, ${dept.addressParts.building}`
+          : selectedDelivery?.address2 || undefined;
+      shippingAddress = {
+        address1: dept?.shortName || selectedDelivery?.address1 || '',
+        city: dept?.addressParts?.city || selectedDelivery?.city || '',
+        country: 'UA',
+        firstName: completeCheckoutData.contactInfo.name || '',
+        lastName: completeCheckoutData.contactInfo.lastName || '',
+        phone: formattedPhone,
+        zip: '00000',
+        address2: npAddress2,
+      };
     } else {
+      // ukrPoshta — use cart-synced address
       shippingAddress = {
         address1: selectedDelivery?.address1 || '',
         city: selectedDelivery?.city || '',

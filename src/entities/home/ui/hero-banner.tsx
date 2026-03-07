@@ -79,8 +79,9 @@ export const HeroBanner = (props: HeroSliderProps) => {
         )}
         {hasButtons && slide.buttons && slide.buttons.length > 0 && (
           <div className="flex flex-wrap gap-3">
-            {slide.buttons.map((btn) => (
+            {slide.buttons.map((btn, btnIndex) => (
               <Button
+                key={`${btn.label}-${btnIndex}`}
                 variant={btn.variant ?? 'secondary'}
                 className="min-w-[140px] h-11 md:h-13 text-sm uppercase tracking-widest rounded"
               >

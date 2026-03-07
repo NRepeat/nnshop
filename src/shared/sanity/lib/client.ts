@@ -13,7 +13,7 @@ export const client = createClient({
   projectId,
   dataset,
   stega: {
-    enabled: true,
+    enabled: process.env.NODE_ENV === 'development',
     studioUrl,
   },
   apiVersion,

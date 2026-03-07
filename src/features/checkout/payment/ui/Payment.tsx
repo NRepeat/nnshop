@@ -36,7 +36,10 @@ export default async function Payment({
       userId: session.user.id,
       locale,
     })) as GetCartQuery | null;
-    if (cartResult && cartResult.cart) {
+    if (!cartResult?.cart || !cartResult.cart.lines.edges.length) {
+      redirect('/cart');
+    }
+    {
       currency = cartResult.cart.cost.totalAmount.currencyCode;
       const lines = cartResult.cart.lines.edges;
       // Calculate znizka-discounted subtotal
@@ -51,11 +54,13 @@ export default async function Payment({
         localTotal += discountedPrice * line.quantity;
       }
       const hasApplicableDiscount = cartResult.cart.discountCodes?.some((d) => d.applicable);
-      // If a discount code is applied, Shopify's total is authoritative (code applied to full prices)
       // Use the minimum of the two to ensure the customer always pays the lower amount
       const shopifyTotal = Number(cartResult.cart.cost.totalAmount.amount);
       const goodsTotal = hasApplicableDiscount ? Math.min(localTotal, shopifyTotal) : localTotal;
       cartAmount = goodsTotal;
+    }
+    if (cartAmount <= 0) {
+      redirect('/cart');
     }
 
     const completeCheckoutData = await getCompleteCheckoutData(session);

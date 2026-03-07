@@ -16,9 +16,10 @@ import { Filter } from '@shared/lib/shopify/types/storefront.types';
 type Props = {
   filters: Filter[] | undefined;
   initialFilters: Filter[] | undefined;
+  hideVendor?: boolean;
 };
 
-export function FilterSheet({ filters, initialFilters }: Props) {
+export function FilterSheet({ filters, initialFilters, hideVendor }: Props) {
   const t = useTranslations('CollectionPage');
   return (
     <Sheet>
@@ -45,6 +46,7 @@ export function FilterSheet({ filters, initialFilters }: Props) {
             <CollectionFilters
               filters={filters}
               initialFilters={initialFilters}
+              hideVendor={hideVendor}
             />
           )}
         </div>

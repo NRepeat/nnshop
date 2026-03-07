@@ -194,3 +194,13 @@ Plans:
 Plans:
 - [ ] 10-01-PLAN.md — Update generateMetadata.ts (product/collection/brand templates) + brand page integration
 - [ ] 10-02-PLAN.md — Write handle audit script (scripts/test-handles.mjs) + human checkpoint to review missing handles
+
+### Phase 11: Analyze project and prepare for production — integrate PostHog monitoring
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 10
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 11 to break down)

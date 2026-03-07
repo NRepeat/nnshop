@@ -88,7 +88,7 @@ export default async function InfoPage({ params }: Props) {
 
   return (
     <div className="container flex">
-      <article className=" prose md:prose-lg lg:prose-lg my-8 h-fit  min-w-6xl min-h-screen ">
+      <article className=" prose-sm md:prose-lg lg:prose-lg my-8 h-fit  md:min-w-6xl min-h-screen ">
         <h1>{pageTitle}</h1>
         {/* @ts-ignore */}
         {pageContent?.content?.map((block) => {

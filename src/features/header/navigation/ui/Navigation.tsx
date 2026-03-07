@@ -38,7 +38,7 @@ export const CurrentNavigationSessionSkilet = () => {
   const menu = meinMenu.map((item, index) => {
     return (
       <NavigationMenuItem
-        key={item.title}
+        key={`${item.title}-${index}`}
         className={` ${index === meinMenu.length - 1 ? 'block' : 'block'}`}
       >
         <Skeleton className="w-[100px] h-[30px]" />
@@ -139,7 +139,10 @@ const Navigation = async ({
                 key={subItem.url + subItem.title + gender}
                 className=" group "
               >
-                <NavigationTriggerClient className="hover:underline  duration-300 decoration-transparent hover:decoration-primary  transition-all">
+                <NavigationTriggerClient
+                  href={withGender(subItem.url)}
+                  className="hover:underline  duration-300 decoration-transparent hover:decoration-primary  transition-all"
+                >
                   {subItem.title}
                 </NavigationTriggerClient>
                 <NavigationMenuContent className="px-4">
@@ -147,8 +150,11 @@ const Navigation = async ({
                     <div className="flex-1">
                       <ul className="grid grid-cols-2 gap-x-8 gap-y-1">
                         {subItem.items.map((child) => (
-                          <li key={child.title + gender}    className='w-full'>
-                            <NavigationItemClient href={withGender(child.url)}    className='w-full'>
+                          <li key={child.title + gender} className="w-full">
+                            <NavigationItemClient
+                              href={withGender(child.url)}
+                              className="w-full"
+                            >
                               <Button
                                 variant={'ghost'}
                                 className="hover:underline  duration-300 decoration-transparent hover:decoration-primary  transition-all text-base font-normal font-sans w-full justify-start px-2  border-none h-9"
@@ -200,9 +206,9 @@ const Navigation = async ({
                   </p>
                   <ul className="grid grid-cols-2 gap-x-8 gap-y-1">
                     {topBrands.slice(0, 10).map((brand) => (
-                      <li key={brand} className='w-full'>
+                      <li key={brand} className="w-full">
                         <NavigationItemClient
-                        className='w-full'
+                          className="w-full"
                           href={`/brand/${vendorToHandle(brand)}`}
                         >
                           <Button
@@ -224,7 +230,6 @@ const Navigation = async ({
                   </div>
                 </div>
                 <div className="border-l border-muted pl-8 shrink-0">
-              
                   <div className="grid grid-cols-7 gap-x-2 gap-y-2">
                     {Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map((letter) => (
                       <NavigationContentLink

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useRouter } from '@shared/i18n/navigation';
@@ -62,12 +62,18 @@ export default function PaymentForm({
   const [liqpayOrderId, setLiqpayOrderId] = useState<string | null>(null);
   const { data: session } = useSession();
   const [isMerging, setIsMerging] = useState(false);
+  const prevUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!session?.user?.id) return;
-    setIsMerging(true);
-    const timer = setTimeout(() => setIsMerging(false), 1500);
-    return () => clearTimeout(timer);
+    const userId = session?.user?.id ?? null;
+    // Only lock when user identity changes (anonymous → identified session merge)
+    if (prevUserIdRef.current !== null && prevUserIdRef.current !== userId) {
+      setIsMerging(true);
+      const timer = setTimeout(() => setIsMerging(false), 1500);
+      prevUserIdRef.current = userId;
+      return () => clearTimeout(timer);
+    }
+    prevUserIdRef.current = userId;
   }, [session?.user?.id]);
 
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
@@ -177,16 +183,8 @@ export default function PaymentForm({
           <Button
             className="w-full h-12 bg-green-800 rounded"
             disabled={isMerging || isLoading}
-            onClick={async () => {
-              await onSubmit({
-                amount: form.getValues('amount'),
-                currency: form.getValues('currency'),
-                orderId: form.getValues('orderId'),
-                paymentMethod: form.getValues('paymentMethod'),
-                paymentProvider: form.getValues('paymentProvider'),
-                description: form.getValues('description'),
-              });
-            }}
+            // @ts-ignore
+            onClick={form.handleSubmit(onSubmit)}
           >
             {isMerging ? (
               <div className="flex items-center gap-3">

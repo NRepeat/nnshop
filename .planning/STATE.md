@@ -137,6 +137,7 @@ Recent decisions affecting current work:
 - Phase 8 added: Recently Viewed Products section and Newsletter subscription section
 - Phase 9 added: ФРОНТ — убрати доставку з чекауту, НП віджет, статуси замовлень, корзина, швидке замовлення, related products, дисконт, телефон/вайбер, меню, логотипи брендів, тест стежити за ціною
 - Phase 10 added: SEO fixes — update meta title and description to commercial template, test Shopify handles, fix errors
+- Phase 11 added: Analyze project and prepare for production — integrate PostHog monitoring
 
 ### Pending Todos
 

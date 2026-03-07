@@ -17,6 +17,7 @@ import { useParams } from 'next/navigation';
 type Props = {
   filters: Filter[];
   initialFilters?: Filter[];
+  hideVendor?: boolean;
 };
 
 const FILTER_LABEL_KEYS: Record<string, string> = {
@@ -27,9 +28,10 @@ const FILTER_LABEL_KEYS: Record<string, string> = {
   'filter.p.m.custom.brand': 'filters.labels.brand',
   'filter.p.m.custom.material': 'filters.labels.material',
   'filter.p.m.custom.pidkladka': 'filters.labels.pidkladka',
+  'filter.p.vendor': 'filters.labels.brand',
 };
 
-export function CollectionFilters({ filters, initialFilters }: Props) {
+export function CollectionFilters({ filters, initialFilters, hideVendor }: Props) {
   const t = useTranslations('CollectionPage');
   const params = useParams();
   const hasGender = !!params.gender;
@@ -42,7 +44,7 @@ export function CollectionFilters({ filters, initialFilters }: Props) {
 
     const filteredAndSorted = filters
       .filter((filter) => {
-        if (filter.id === 'filter.p.vendor') return false;
+        if (filter.id === 'filter.p.vendor' && hideVendor) return false;
         if (filter.id === 'filter.p.m.custom.gender' && hasGender) return false;
         if (filter.type === 'PRICE_RANGE') return true;
         return filter.values.length > 0;

@@ -23,8 +23,8 @@ export const NavigationClient = ({
       <NavigationMenu
         value={value}
         onValueChange={setValue}
-        skipDelayDuration={100}
-        delayDuration={100}
+        skipDelayDuration={0}
+        delayDuration={0}
         className="w-full navigation-menu-wrapper"
         viewport={true}
       >

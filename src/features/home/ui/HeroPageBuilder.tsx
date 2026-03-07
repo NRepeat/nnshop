@@ -7,6 +7,8 @@ import {
   ProductCarousel,
   MainCollectionGridSkeleton,
   PopularPosts,
+  ProductCarouselSkeleton,
+  PreviewsCollectionsSkeleton,
 } from '@entities/home/ui';
 import { BrandGrid } from '@entities/home/ui/BrendGrid/BrendGrid';
 import { PreviewsCollections } from '@entities/home/ui/previews-collections';
@@ -68,12 +70,13 @@ const renderBlock = (
 
     case 'productCarousel':
       return (
-        <ProductCarousel
-          key={block._key}
-          locale={locale}
-          gender={gender}
-          {...(block as any)}
-        />
+        <Suspense key={block._key} fallback={<ProductCarouselSkeleton />}>
+          <ProductCarousel
+            locale={locale}
+            gender={gender}
+            {...(block as any)}
+          />
+        </Suspense>
       );
 
     case 'splitImage':
@@ -91,12 +94,13 @@ const renderBlock = (
 
     case 'collectionsWithPreviews':
       return (
-        <PreviewsCollections
-          key={block._key}
-          locale={locale}
-          gender={gender}
-          {...(block as any)}
-        />
+        <Suspense key={block._key} fallback={<PreviewsCollectionsSkeleton />}>
+          <PreviewsCollections
+            locale={locale}
+            gender={gender}
+            {...(block as any)}
+          />
+        </Suspense>
       );
 
     case 'hero':

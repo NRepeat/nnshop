@@ -17,7 +17,11 @@
     "format:check": "prettier --check .",
     "prepare": "husky",
     "graphql-codegen": "graphql-codegen",
-    "typegen": "sanity schema extract --path=./src/shared/sanity/extract.json && sanity typegen generate"
+    "typegen": "sanity schema extract --path=./src/shared/sanity/extract.json && sanity typegen generate",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
     "@captchafox/react": "^1.10.0",
@@ -99,6 +103,7 @@
     "@graphql-codegen/client-preset": "^5.1.1",
     "@hookform/resolvers": "^5.2.2",
     "@next/eslint-plugin-next": "16.1.0",
+    "@playwright/test": "^1.58.2",
     "@prisma/client": "^7.0.0",
     "@shopify/api-codegen-preset": "^1.2.1",
     "@tailwindcss/postcss": "^4",

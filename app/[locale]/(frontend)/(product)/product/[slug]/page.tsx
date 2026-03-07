@@ -16,6 +16,7 @@ import { generateProductMetadata } from '@shared/lib/seo/generateMetadata';
 import { generateProductJsonLd } from '@shared/lib/seo/jsonld';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { connection } from 'next/server';
+import { ProductViewSkeleton } from '@widgets/product-view/ui/ProductViewSkeleton';
 
 
 type Props = {
@@ -58,21 +59,23 @@ export default async function ProductPage({ params }: Props) {
   return (
     <>
       <JsonLd data={generateProductJsonLd(product, locale)} />
-      <ProductSessionView handle={handle} locale={locale}>
-        <Suspense
-          fallback={
-            <Button
-              variant="ghost"
-              size="icon"
-              className="group animate-pulse bg-gray-200 dark:bg-gray-700"
-            >
-              <Heart className="h-4 w-4" />
-            </Button>
-          }
-        >
-          <ProductSession handle={product.id} product={product as Product} />
-        </Suspense>
-      </ProductSessionView>
+      <Suspense fallback={<ProductViewSkeleton />}>
+        <ProductSessionView handle={handle} locale={locale}>
+          <Suspense
+            fallback={
+              <Button
+                variant="ghost"
+                size="icon"
+                className="group animate-pulse bg-gray-200 dark:bg-gray-700"
+              >
+                <Heart className="h-4 w-4" />
+              </Button>
+            }
+          >
+            <ProductSession handle={product.id} product={product as Product} />
+          </Suspense>
+        </ProductSessionView>
+      </Suspense>
     </>
   );
 }

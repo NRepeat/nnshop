@@ -96,7 +96,7 @@ export const BrandGrid = async ({
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/${locale}`}>
+              <BreadcrumbLink  href={`/${locale}`}>
                 {t('nav.home')}
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -138,6 +138,7 @@ export const BrandGrid = async ({
             <FilterSheet
               filters={collection.collection?.products.filters}
               initialFilters={initialFilters}
+              hideVendor
             />
           </div>
         </div>

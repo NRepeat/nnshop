@@ -1,15 +1,19 @@
+'use client';
 
 import { NavigationMenuTrigger } from '@shared/ui/navigation-menu';
 import { cn } from '@shared/lib/utils';
+import { Link } from '@shared/i18n/navigation';
 
 interface NavigationTriggerClientProps {
   children: React.ReactNode;
   className?: string;
+  href?: string;
 }
 
 export const NavigationTriggerClient = ({
   children,
   className,
+  href,
 }: NavigationTriggerClientProps) => {
   return (
     <NavigationMenuTrigger
@@ -19,7 +23,9 @@ export const NavigationTriggerClient = ({
         className,
       )}
     >
-      {children}
+      <Link href={href || ''} prefetch>
+        {children}
+      </Link>
     </NavigationMenuTrigger>
   );
 };

@@ -24,17 +24,16 @@ export function ProductViewProvider({
 }) {
   if (!product) throw new Error('Product not found');
   const images = product.images.edges.map((edge) => edge.node).filter(Boolean);
-  const colorOptions = product.options.find(
-    (option) => option.name.toLowerCase() === 'Колір'.toLowerCase(),
-  )?.values;
-  const boundProductColorOptions = boundProducts.filter((product) =>
-    product.options.find(
-      (option) => option.name.toLowerCase() === 'Колір'.toLowerCase(),
-    ),
+  const COLOR_NAMES = ['колір', 'цвет', 'color'];
+  const SIZE_NAMES = ['розмір', 'размер', 'size'];
+  const isColorOption = (name: string) => COLOR_NAMES.includes(name.toLowerCase());
+  const isSizeOption = (name: string) => SIZE_NAMES.includes(name.toLowerCase());
+
+  const colorOptions = product.options.find((o) => isColorOption(o.name))?.values;
+  const boundProductColorOptions = boundProducts.filter((p) =>
+    p.options.some((o) => isColorOption(o.name)),
   );
-  const sizeOptions = product.options.find(
-    (option) => option.name.toLowerCase() === 'Розмір'.toLowerCase(),
-  )?.values;
+  const sizeOptions = product.options.find((o) => isSizeOption(o.name))?.values;
 
   const [size, setSize] = useQueryState('size');
   let selectedVariant = undefined;

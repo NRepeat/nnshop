@@ -117,12 +117,13 @@ export const ProductInfo = ({
     product.metafields.find((m) => m?.key === 'znizka')?.value || '0';
   const sku = product.variants.edges[0].node.sku;
 
+  const COLOR_NAMES = ['колір', 'цвет', 'color'];
   const colorOptionsValues = [
     ...(colorOptions?.map((name) => ({ name, product: product.handle })) || []),
     ...(boundProduct?.flatMap(
       (p) =>
         p.options
-          .find((o) => o.name === 'Колір')
+          .find((o) => COLOR_NAMES.includes(o.name.toLowerCase()))
           ?.optionValues.map((v) => ({ name: v.name, product: p.handle })) ||
         [],
     ) || []),
@@ -251,7 +252,7 @@ export const ProductInfo = ({
               return (
                 <Link
                   prefetch
-                  key={c.name}
+                  key={c.product}
                   href={`/product/${c.product}`}
                   className={cn('group', {
                     'pointer-events-none opacity-50': !availableForSale,

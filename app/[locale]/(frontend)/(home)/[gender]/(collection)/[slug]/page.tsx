@@ -6,7 +6,6 @@ import { Metadata } from 'next';
 import { getCollection, getCollectionSlugs } from '@entities/collection/api/getCollection';
 import { generateCollectionMetadata } from '@shared/lib/seo/generateMetadata';
 import { setRequestLocale } from 'next-intl/server';
-import { NewsletterSection } from '@features/newsletter/ui/NewsletterSection';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -62,7 +61,6 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       <Suspense fallback={<CollectionGridSkeleton />}>
         <CollectionGrid params={params} searchParams={searchParams} />
       </Suspense>
-      
     </div>
   );
 }

@@ -1,57 +1,120 @@
 import { getTranslations } from 'next-intl/server';
 import { getMainMenu } from '../api/getMainMenu';
 import NavigationSheet from './NavigationSheet';
+import { cookies } from 'next/headers';
+import { stripGenderFromHandle } from '../utils/strip-gender-from-handle';
 
 const genderSlugMap: Record<string, string[]> = {
-  woman: ['woman', 'women', 'female', 'жен', 'женщин', 'жінк', 'zhinok', 'zhinoch'],
-  man: ['man', 'men', 'male', 'муж', 'мужчин', 'чолов', 'cholovik'],
+  woman: [
+    'woman',
+    'women',
+    'female',
+    'жен',
+    'женщин',
+    'жінк',
+    'zhinok',
+    'zhinoch',
+    'zhinochi',
+  ],
+  man: [
+    'man',
+    'men',
+    'male',
+    'муж',
+    'мужчин',
+    'чолов',
+    'cholovik',
+    'cholovichi',
+  ],
 };
 
-function detectGender(item: { url: string; title: string }): string | null {
+const brandSlugs = ['brand', 'бренд', 'брендi', 'бренди'];
+
+function matchesGender(
+  item: { url: string; title: string },
+  gender: string,
+): boolean {
   const slug = item.url.split('/').pop()?.toLowerCase() || '';
   const title = item.title.toLowerCase();
-  for (const [gender, slugs] of Object.entries(genderSlugMap)) {
-    if (slugs.some((s) => slug.includes(s) || title.includes(s))) {
-      return gender;
-    }
-  }
-  return null;
+  const slugs = genderSlugMap[gender] || [];
+  return slugs.some((s) => slug.includes(s) || title.includes(s));
+}
+
+function isBrandsItem(item: { url: string; title: string }): boolean {
+  const slug = item.url.split('/').pop()?.toLowerCase() || '';
+  const title = item.title.toLowerCase();
+  return brandSlugs.some((s) => slug.includes(s) || title.includes(s));
 }
 
 const MenuSheet = async ({ locale }: { locale: string }) => {
+  const cookie = await cookies();
+  const gender = cookie.get('gender')?.value || 'woman';
+  
   const t = await getTranslations({
     locale,
     namespace: 'Header.nav.drawer',
   });
-  const items = await getMainMenu({ locale });
-  const meinMenu = items.map((item) => {
-    const gender = detectGender(item);
-    const withGender = (url: string) => {
-      if (!gender) return url;
-      // Avoid /woman/woman — menu item that points to the gender home itself
-      if (url === `/${gender}`) return `/${gender}`;
-      return `/${gender}${url}`;
-    };
+  
+  const allItems = await getMainMenu({ locale });
+  
+  const brandsMenuItem = allItems.find((item) => isBrandsItem(item));
 
-    return {
-      label: item.title,
+  // Filter by gender, excluding brands item to avoid duplicate keys
+  const meinMenuRaw = allItems.filter(
+    (item) => matchesGender(item, gender) && !isBrandsItem(item),
+  );
+  
+  const items =
+    meinMenuRaw.length > 0
+      ? meinMenuRaw
+      : allItems.filter((i) => !isBrandsItem(i)).slice(0, 1);
+
+  const withGender = (url: string) => {
+    const stripped = stripGenderFromHandle(url);
+    // Avoid /woman/woman — menu item that points to the gender home itself
+    if (stripped === `/${gender}`) return `/${gender}`;
+    return `/${gender}${stripped}`;
+  };
+
+  const menuItems = items.flatMap((item) => {
+    return item.items.map((subItem) => ({
+      label: subItem.title,
       menu: [
         {
-          ...item,
-          items: item.items.map((subItem) => ({
+          ...subItem,
+          url: withGender(subItem.url),
+          items: subItem.items.map((child) => ({
+            ...child,
+            url: withGender(child.url),
+          })),
+        },
+      ],
+    }));
+  });
+
+  // Add brands menu item if it exists
+  if (brandsMenuItem) {
+    menuItems.push({
+      label: brandsMenuItem.title,
+      menu: [
+        {
+          ...brandsMenuItem,
+          items: brandsMenuItem.items.map((subItem) => ({
             ...subItem,
-            url: withGender(subItem.url),
+            url: subItem.url,
             items: subItem.items.map((subSubItem) => ({
               ...subSubItem,
-              url: withGender(subSubItem.url),
+              url: subSubItem.url,
             })),
           })),
         },
       ],
-    };
-  });
+    });
+  }
+
   return (
-    <NavigationSheet meinMenu={meinMenu} title={t('title')} locale={locale} />
+    // @ts-ignore
+    <NavigationSheet meinMenu={menuItems} title={t('title')} locale={locale} />
   );
 };
 

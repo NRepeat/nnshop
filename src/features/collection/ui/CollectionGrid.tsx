@@ -20,10 +20,10 @@ import { SearchParams } from '~/app/[locale]/(frontend)/(home)/[gender]/(collect
 import { headers } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
 import { PathSync } from '@entities/path-sync/ui/path-sync';
-import { isProductFavorite } from '@features/product/api/isProductFavorite';
 import { auth } from '@features/auth/lib/auth';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
+import { prisma } from '@shared/lib/prisma';
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
 
 const GENDERED_HANDLES = new Set([
@@ -77,32 +77,26 @@ export const CollectionGrid = async ({
   const { locale, slug, gender } = awaitedParams;
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
   const resolvedHandle = resolveCollectionHandle(slug, gender);
-  const sanityCollection = await sanityFetch({
-    query: COLLECTION_IS_BRAND_QUERY,
-    params: { handle: resolvedHandle },
-    tags: [`collection:${resolvedHandle}`],
-  });
 
-  if (sanityCollection?.isBrand) {
-    redirect(`/${locale}/brand/${resolvedHandle}`);
-  }
-
-  const collectionPromises = [
+  const [sanityCollection, currentData, session] = await Promise.all([
+    sanityFetch({
+      query: COLLECTION_IS_BRAND_QUERY,
+      params: { handle: resolvedHandle },
+      tags: [`collection:${resolvedHandle}`],
+    }),
     getCollection({
       handle: resolvedHandle,
       first: 18,
       locale: locale,
       searchParams: awaitedSearchParams,
     }),
-  ];
+    auth.api.getSession({ headers: await headers() }),
+  ]);
 
-  if (hasFilters) {
-    collectionPromises.push(
-      getCollection({ handle: resolvedHandle, first: 18, locale: locale }),
-    );
+  if (sanityCollection?.isBrand) {
+    redirect(`/${locale}/brand/${resolvedHandle}`);
   }
 
-  const [currentData, initialData] = await Promise.all(collectionPromises);
   if (!currentData?.collection) {
     return notFound();
   }
@@ -111,6 +105,7 @@ export const CollectionGrid = async ({
   const displayTitle =
     sanityCollection?.customTitle?.[locale as 'uk' | 'ru'] ||
     collection.collection?.title;
+
   const rawProducts =
     collection.collection?.products.edges
       .map((edge) => edge.node)
@@ -120,19 +115,35 @@ export const CollectionGrid = async ({
           Number(edge.priceRange.maxVariantPrice.amount) > 0,
       ) || [];
 
-  const session = await auth.api.getSession({ headers: await headers() });
-  const productsWithFav = await Promise.all(
-    rawProducts.map(async (product) => {
-      const isFav = await isProductFavorite(product.id, session);
-      return {
-        ...product,
-        isFav,
-      };
-    }),
-  );
-  const initialFilters = hasFilters
-    ? initialData?.collection?.collection?.products.filters
-    : collection.collection?.products.filters;
+  // Batch check favorites
+  let favoriteProductIds = new Set<string>();
+  if (session?.user?.id) {
+    const favorites = await prisma.favoriteProduct.findMany({
+      where: {
+        userId: session.user.id,
+        productId: { in: rawProducts.map((p) => p.id) },
+      },
+      select: { productId: true },
+    });
+    favoriteProductIds = new Set(favorites.map((f) => f.productId));
+  }
+
+  const productsWithFav = rawProducts.map((product) => ({
+    ...product,
+    isFav: favoriteProductIds.has(product.id),
+  }));
+
+  // Only fetch initialData if we actually have filters to avoid extra request
+  let initialFilters = collection.collection?.products.filters;
+  if (hasFilters) {
+    const initialData = await getCollection({
+      handle: resolvedHandle,
+      first: 1, // Minimize payload since we only need filters
+      locale: locale,
+    });
+    initialFilters = initialData?.collection?.collection?.products.filters;
+  }
+
   const targetLocale = locale === 'ru' ? 'uk' : 'ru';
   const paths = {
     [locale]: `/${gender}/${slug}`,

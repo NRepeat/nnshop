@@ -3,6 +3,7 @@ import { HeroPageBuilder } from '@features/home/ui/HeroPageBuilder';
 import { RecentlyViewedSection } from '@entities/recently-viewed/ui/RecentlyViewedSection';
 import { NewsletterSection } from '@features/newsletter/ui/NewsletterSection';
 import { Locale } from '@shared/i18n/routing';
+import { setRequestLocale } from 'next-intl/server';
 
 const genderH1: Record<string, Record<string, string>> = {
   uk: { woman: 'Жіноче взуття', man: 'Чоловіче взуття' },
@@ -15,11 +16,18 @@ export const PageContent = async ({
   params: Promise<{ locale: Locale; gender: string }>;
 }) => {
   const { locale, gender } = await params;
+  setRequestLocale(locale);
 
   return (
     <div className="flex flex-col h-fit min-h-screen">
       <h1 className="sr-only">{genderH1[locale]?.[gender] ?? ''}</h1>
       <HeroPageBuilder gender={gender} locale={locale} />
+      <Suspense fallback={null}>
+        <RecentlyViewedSection />
+      </Suspense>
+      <Suspense fallback={null}>
+        <NewsletterSection />
+      </Suspense>
     </div>
   );
 };

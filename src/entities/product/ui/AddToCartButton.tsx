@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@shared/ui/button';
 import addToCart from '../api/add-to-cart';
@@ -10,6 +10,7 @@ import { useTranslations } from 'next-intl';
 import clsx from 'clsx';
 import { authClient } from '@features/auth/lib/auth-client';
 import { useCartUIStore } from '@shared/store/use-cart-ui-store';
+import { useRouter } from 'next/navigation';
 
 function SubmitButton({
   variant = 'default',
@@ -61,8 +62,21 @@ export function AddToCartButton({
   onSuccess?: () => void;
 }) {
   const [isPending, setIsPending] = useState(false);
+  const [isRefreshing, startRefresh] = useTransition();
+  const [shouldOpenCart, setShouldOpenCart] = useState(false);
+  const scrollYRef = useRef(0);
+  const router = useRouter();
   const t = useTranslations('ProductPage');
   const { openCart } = useCartUIStore();
+
+  // Open cart only after refresh completes, then restore scroll position
+  useEffect(() => {
+    if (!isRefreshing && shouldOpenCart) {
+      window.scrollTo({ top: scrollYRef.current, behavior: 'instant' });
+      openCart();
+      setShouldOpenCart(false);
+    }
+  }, [isRefreshing, shouldOpenCart, openCart]);
 
   const isProductAvailable = selectedVariant
     ? selectedVariant?.quantityAvailable !== 0
@@ -106,7 +120,11 @@ export function AddToCartButton({
 
       if (result.success) {
         toast.success(t('addedToCart'));
-        openCart();
+        scrollYRef.current = window.scrollY;
+        setShouldOpenCart(true);
+        startRefresh(() => {
+          router.refresh();
+        });
         onSuccess?.();
       } else {
         const errorMessage =

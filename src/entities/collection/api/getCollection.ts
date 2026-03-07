@@ -61,6 +61,7 @@ const GetCollectionWithProducts = `#graphql
             vendor
             totalInventory
             tags
+            createdAt
             metafield(namespace:"custom",key:"znizka"){
                        value
                        namespace
@@ -235,6 +236,55 @@ const GENDER_SLUG_PATTERNS: Record<string, string[]> = {
   woman: ['zhinoch'],
 };
 
+async function fetchAllCollectionEdges({
+  handle,
+  locale,
+  filters,
+  sortKey,
+  reverse,
+}: {
+  handle: string;
+  locale: string;
+  filters: ProductFilter[];
+  sortKey: string;
+  reverse: boolean;
+}): Promise<{ edges: any[]; firstBatch: GetCollectionQuery | null }> {
+  'use cache';
+  cacheLife('hours');
+  cacheTag(`collection:${handle}`);
+  cacheTag(handle);
+
+  const allEdges: any[] = [];
+  let cursor: string | null = null;
+  let hasNextPage = true;
+  let firstBatch: GetCollectionQuery | null = null;
+
+  while (hasNextPage) {
+    const batch: GetCollectionQuery = await storefrontClient.request<GetCollectionQuery, any>({
+      query: GetCollectionWithProducts,
+      variables: {
+        handle,
+        filters,
+        first: 250,
+        after: cursor ?? undefined,
+        sortKey,
+        reverse,
+      },
+      language: locale.toUpperCase() as StorefrontLanguageCode,
+    });
+
+    if (!firstBatch) firstBatch = batch;
+    const products = batch.collection?.products;
+    if (!products) break;
+
+    allEdges.push(...products.edges);
+    hasNextPage = products.pageInfo.hasNextPage;
+    cursor = products.pageInfo.endCursor ?? null;
+  }
+
+  return { edges: allEdges, firstBatch };
+}
+
 export const getCollection = async ({
   handle,
   searchParams,
@@ -366,46 +416,15 @@ export const getCollection = async ({
   let collection: GetCollectionQuery;
 
   if (isDefaultSort) {
-    const allEdges: any[] = [];
-    let cursor: string | null = null;
-    let hasNextPage = true;
-    let firstBatch: GetCollectionQuery | null = null;
+    const { edges: allEdges, firstBatch } = await fetchAllCollectionEdges({
+      handle,
+      locale,
+      filters,
+      sortKey: 'RELEVANCE',
+      reverse: false,
+    });
 
-    while (hasNextPage) {
-      const batch: GetCollectionQuery = await storefrontClient.request<
-        GetCollectionQuery,
-        {
-          handle: string;
-          filters?: ProductFilter[];
-          first?: number;
-          after?: string;
-          sortKey?: string;
-          reverse?: boolean;
-        }
-      >({
-        query: GetCollectionWithProducts,
-        variables: {
-          handle,
-          filters,
-          first: 250,
-          after: cursor ?? undefined,
-          sortKey: 'RELEVANCE',
-          reverse: false,
-        },
-        language: locale.toUpperCase() as StorefrontLanguageCode,
-      });
-
-      if (!firstBatch) firstBatch = batch;
-
-      const products = batch.collection?.products;
-      if (!products) break;
-
-      allEdges.push(...products.edges);
-      hasNextPage = products.pageInfo.hasNextPage;
-      cursor = products.pageInfo.endCursor ?? null;
-    }
-
-    // Sort all products by sort_order metafield (lower value = higher position)
+    // Sort all products: 1) by sort_order metafield (lower = higher position), 2) by createdAt desc (newest first)
     allEdges.sort((a: any, b: any) => {
       const aVal =
         a.node.sortOrder?.value != null
@@ -415,7 +434,11 @@ export const getCollection = async ({
         b.node.sortOrder?.value != null
           ? parseFloat(b.node.sortOrder.value)
           : Infinity;
-      return aVal - bVal;
+      if (aVal !== bVal) return aVal - bVal;
+      // Secondary sort: newest first
+      const aDate = a.node.createdAt ? new Date(a.node.createdAt).getTime() : 0;
+      const bDate = b.node.createdAt ? new Date(b.node.createdAt).getTime() : 0;
+      return bDate - aDate;
     });
 
     const _SIZE_OPT = ['size', 'розмір', 'размер'];
@@ -458,54 +481,25 @@ export const getCollection = async ({
       };
     }
   } else if (isNewSort) {
-    // Fetch all products sorted by creation date desc, then put "new"-tagged products first
-    const allEdges: any[] = [];
-    let cursor: string | null = null;
-    let hasNextPage = true;
-    let firstBatch: GetCollectionQuery | null = null;
+    // Fetch all products sorted by creation date desc; "new" tag is secondary tiebreaker
+    const { edges: allEdges, firstBatch } = await fetchAllCollectionEdges({
+      handle,
+      locale,
+      filters,
+      sortKey: 'CREATED',
+      reverse: true,
+    });
 
-    while (hasNextPage) {
-      const batch: GetCollectionQuery = await storefrontClient.request<
-        GetCollectionQuery,
-        {
-          handle: string;
-          filters?: ProductFilter[];
-          first?: number;
-          after?: string;
-          sortKey?: string;
-          reverse?: boolean;
-        }
-      >({
-        query: GetCollectionWithProducts,
-        variables: {
-          handle,
-          filters,
-          first: 250,
-          after: cursor ?? undefined,
-          sortKey: 'CREATED',
-          reverse: true,
-        },
-        language: locale.toUpperCase() as StorefrontLanguageCode,
-      });
-
-      if (!firstBatch) firstBatch = batch;
-      const products = batch.collection?.products;
-      if (!products) break;
-
-      allEdges.push(...products.edges);
-      hasNextPage = products.pageInfo.hasNextPage;
-      cursor = products.pageInfo.endCursor ?? null;
-    }
-
-    // "new"-tagged products first, rest after — each group preserves CREATED desc order
-    const newEdges = allEdges.filter((e: any) =>
-      (e.node.tags as string[]).some((t) => t.toLowerCase() === 'new'),
-    );
-    const restEdges = allEdges.filter(
-      (e: any) =>
-        !(e.node.tags as string[]).some((t) => t.toLowerCase() === 'new'),
-    );
-    const sortedEdges = [...newEdges, ...restEdges];
+    // Primary: createdAt desc; secondary: "new"-tagged first when dates are equal
+    allEdges.sort((a: any, b: any) => {
+      const aDate = a.node.createdAt ? new Date(a.node.createdAt).getTime() : 0;
+      const bDate = b.node.createdAt ? new Date(b.node.createdAt).getTime() : 0;
+      if (bDate !== aDate) return bDate - aDate;
+      const aIsNew = (a.node.tags as string[]).some((t) => t.toLowerCase() === 'new') ? 1 : 0;
+      const bIsNew = (b.node.tags as string[]).some((t) => t.toLowerCase() === 'new') ? 1 : 0;
+      return bIsNew - aIsNew;
+    });
+    const sortedEdges = allEdges;
 
     // Post-filter: only show products with an available variant for the selected size(s)
     const _SIZE_OPT2 = ['size', 'розмір', 'размер'];
@@ -549,43 +543,13 @@ export const getCollection = async ({
     }
   } else if (isPriceSort) {
     // Fetch all products and sort by effective price (accounts for znizka discount metafield)
-    const allEdges: any[] = [];
-    let cursor: string | null = null;
-    let hasNextPage = true;
-    let firstBatch: GetCollectionQuery | null = null;
-
-    while (hasNextPage) {
-      const batch: GetCollectionQuery = await storefrontClient.request<
-        GetCollectionQuery,
-        {
-          handle: string;
-          filters?: ProductFilter[];
-          first?: number;
-          after?: string;
-          sortKey?: string;
-          reverse?: boolean;
-        }
-      >({
-        query: GetCollectionWithProducts,
-        variables: {
-          handle,
-          filters,
-          first: 250,
-          after: cursor ?? undefined,
-          sortKey: 'PRICE',
-          reverse: false,
-        },
-        language: locale.toUpperCase() as StorefrontLanguageCode,
-      });
-
-      if (!firstBatch) firstBatch = batch;
-      const products = batch.collection?.products;
-      if (!products) break;
-
-      allEdges.push(...products.edges);
-      hasNextPage = products.pageInfo.hasNextPage;
-      cursor = products.pageInfo.endCursor ?? null;
-    }
+    const { edges: allEdges, firstBatch } = await fetchAllCollectionEdges({
+      handle,
+      locale,
+      filters,
+      sortKey: 'PRICE',
+      reverse: false,
+    });
 
     // Sort by effective price: maxVariantPrice * (1 - znizka/100)
     allEdges.sort((a: any, b: any) => {
@@ -676,6 +640,11 @@ export const getCollection = async ({
   }
 
   const targetLocale = locale === 'ru' ? 'UK' : 'RU';
+  
+  // The alternate handle fetch can be done in parallel if we restructuring, 
+  // but for now let's at least ensure it's not blocking if possible or requested.
+  // Actually, let's keep it simple for now as the main bottleneck was the sequential await in Grid.
+  
   const alternateRequest = await storefrontClient.request<
     {
       collection: { handle: string };
