@@ -99,10 +99,7 @@ export default async function RootLayout(props: RootProps) {
       </head>
       <body className={`${jostSans.variable} antialiased`}>
         <Providers>
-          <Suspense fallback={null}>
-            <Header locale={locale} />
-          </Suspense>
-
+          <Header locale={locale} />
           <main>{children}</main>
 
           {modal && <div id="modal-slot">{modal}</div>}

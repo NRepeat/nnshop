@@ -69,6 +69,12 @@ export const getMainMenu = async ({ locale }: { locale: string }) => {
               id: subItem.resourceId,
               title: decodeHtmlEntities(subItem.title),
               url: `/${subItem.url?.split('/').pop()}`,
+              items:
+                subItem.items?.map((child) => ({
+                  id: child.resourceId,
+                  title: decodeHtmlEntities(child.title),
+                  url: `/${child.url?.split('/').pop()}`,
+                })) || [],
             })) || [],
         })) || [],
     })) || [];

@@ -1024,6 +1024,28 @@ export const HEADER_QUERY = defineQuery(`
           titles
         }
       }
+    },
+    navImages {
+      woman[]{
+        _key,
+        url,
+        menuIndex,
+        "imageUrl": image.asset->url,
+        "imageWidth": image.asset->metadata.dimensions.width,
+        "imageHeight": image.asset->metadata.dimensions.height,
+        "collectionHandle": collection->store.slug.current,
+        "collectionTitle": collection->store.title,
+      },
+      man[]{
+        _key,
+        url,
+        menuIndex,
+        "imageUrl": image.asset->url,
+        "imageWidth": image.asset->metadata.dimensions.width,
+        "imageHeight": image.asset->metadata.dimensions.height,
+        "collectionHandle": collection->store.slug.current,
+        "collectionTitle": collection->store.title,
+      }
     }
   }
 `);

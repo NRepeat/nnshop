@@ -97,6 +97,7 @@ export const Header = async ({ locale }: { locale: string }) => {
           <Suspense fallback={<CurrentNavigationSessionSkilet />}>
             <CurrentNavigationSession
               locale={locale}
+              navImages={headerData?.navImages}
             />
           </Suspense>
         </div>

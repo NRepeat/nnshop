@@ -5,27 +5,48 @@ import {
   NavigationMenuLink,
 } from '@shared/ui/navigation-menu';
 import { getMainMenu } from '../api/getMainMenu';
+import { getCollectionImages } from '../api/getCollectionImages';
 import { getTranslations } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import { NavigationClient } from './NavigationClient';
 import { Skeleton } from '@shared/ui/skeleton';
 import { NavigationItemClient } from './NavigationItemClient';
 import { NavigationTriggerClient } from './NavigationTriggerClient';
-import { Button } from '@shared/ui/button';
 import { NavigationContentLink } from './NavigationContentLink';
-import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
+import { NavDropdownContent } from './NavDropdownContent';
 import { stripGenderFromHandle } from '../utils/strip-gender-from-handle';
+import { Button } from '@shared/ui/button';
+
+type NavImage = {
+  _key?: string | null;
+  url?: string | null;
+  menuIndex?: number | null;
+  imageUrl?: string | null;
+  imageWidth?: number | null;
+  imageHeight?: number | null;
+  collectionHandle?: string | null;
+  collectionTitle?: string | null;
+};
+
+type NavImages = {
+  woman?: NavImage[] | null;
+  man?: NavImage[] | null;
+} | null;
 
 export const CurrentNavigationSession = async ({
   locale,
   gender,
+  navImages,
 }: {
   locale: string;
   gender?: string;
+  navImages?: NavImages;
 }) => {
   const cookie = await cookies();
   const currentGender = gender || cookie.get('gender')?.value || 'woman';
-  return <Navigation gender={currentGender} locale={locale} />;
+  return (
+    <Navigation gender={currentGender} locale={locale} navImages={navImages} />
+  );
 };
 
 export const CurrentNavigationSessionSkilet = () => {
@@ -97,16 +118,28 @@ function isBrandsItem(item: { url: string; title: string }): boolean {
 const Navigation = async ({
   gender,
   locale,
+  navImages,
 }: {
   gender: string;
   locale: string;
+  navImages?: NavImages;
 }) => {
-  const allItems = await getMainMenu({ locale });
-  const t = await getTranslations({ locale, namespace: 'BrandsPage' });
+  const [allItems, t] = await Promise.all([
+    getMainMenu({ locale }),
+    getTranslations({ locale, namespace: 'BrandsPage' }),
+  ]);
 
   // Filter by gender
   const meinMenu = allItems.filter((item) => matchesGender(item, gender));
   const items = meinMenu.length > 0 ? meinMenu : allItems.slice(0, 1);
+
+  // Collect all child handles to prefetch their featured images
+  const allChildHandles = items.flatMap((item) =>
+    item.items
+      .filter((sub) => !isBrandsItem(sub))
+      .flatMap((sub) => sub.items.map((child) => child.url.replace(/^\//, ''))),
+  );
+  const collectionImages = await getCollectionImages(allChildHandles, locale).catch(() => ({} as Record<string, string | null>));
 
   // Find brands item nested inside the gender category's sub-items
   const brandsMenuItem = items
@@ -116,8 +149,8 @@ const Navigation = async ({
   const topBrands =
     brandsMenuItem?.items?.flatMap((sub) =>
       sub.items?.length > 0
-        ? sub.items.map((child) => child.title)
-        : [sub.title],
+        ? sub.items.map((child) => ({ title: child.title, url: child.url }))
+        : [{ title: sub.title, url: sub.url }],
     ) || [];
 
   const withGender = (url: string) => {
@@ -131,44 +164,52 @@ const Navigation = async ({
     if (item.items.length > 0) {
       return (
         <React.Fragment key={item.url + item.title}>
-          {item.items.filter((subItem) => !isBrandsItem(subItem)).map((subItem) => {
-            return (
-              <NavigationMenuItem
-                key={subItem.url + subItem.title + gender}
-                className=" group "
-              >
-                <NavigationTriggerClient
-                  href={withGender(subItem.url)}
-                  className="hover:underline  duration-300 decoration-transparent hover:decoration-primary  transition-all"
+          {item.items
+            .filter((subItem) => !isBrandsItem(subItem))
+            .map((subItem, subIndex) => {
+              const genderImages = navImages?.[gender as 'woman' | 'man'] ?? [];
+              const navImage =
+                genderImages.find((img) => img.menuIndex != null && img.menuIndex === subIndex)
+                ?? genderImages[subIndex];
+              const defaultImage = navImage?.imageUrl
+                ? {
+                    imageUrl: navImage.imageUrl,
+                    imageWidth: navImage.imageWidth,
+                    imageHeight: navImage.imageHeight,
+                    href: navImage.collectionHandle
+                      ? `/${gender}/${navImage.collectionHandle}`
+                      : (navImage.url ?? '#'),
+                    alt: navImage.collectionTitle ?? '',
+                  }
+                : null;
+
+              const childItems = subItem.items.map((child) => ({
+                title: child.title,
+                url: withGender(child.url),
+                collectionImageUrl: collectionImages[child.url.replace(/^\//, '')] ?? null,
+              }));
+
+              return (
+                <NavigationMenuItem
+                  key={subItem.url + subItem.title + gender}
+                  className="group"
                 >
-                  {subItem.title}
-                </NavigationTriggerClient>
-                <NavigationMenuContent className="px-4">
-                  <div className="flex gap-10 py-8 px-6">
-                    <div className="flex-1">
-                      <ul className="grid grid-cols-2 gap-x-8 gap-y-1">
-                        {subItem.items.map((child) => (
-                          <li key={child.title + gender} className="w-full">
-                            <NavigationItemClient
-                              href={withGender(child.url)}
-                              className="w-full"
-                            >
-                              <Button
-                                variant={'ghost'}
-                                className="hover:underline  duration-300 decoration-transparent hover:decoration-primary  transition-all text-base font-normal font-sans w-full justify-start px-2  border-none h-9"
-                              >
-                                {child.title}
-                              </Button>
-                            </NavigationItemClient>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            );
-          })}
+                  <NavigationTriggerClient
+                    href={withGender(subItem.url)}
+                    className="hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all"
+                  >
+                    {subItem.title}
+                  </NavigationTriggerClient>
+                  <NavigationMenuContent className="px-4">
+                    <NavDropdownContent
+                      children={childItems}
+                      defaultImage={defaultImage}
+                      gender={gender}
+                    />
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              );
+            })}
         </React.Fragment>
       );
     } else {
@@ -206,16 +247,16 @@ const Navigation = async ({
                 </p>
                 <ul className="grid grid-cols-2 gap-x-8 gap-y-1">
                   {topBrands.slice(0, 10).map((brand) => (
-                    <li key={brand} className="w-full">
+                    <li key={brand.title} className="w-full">
                       <NavigationItemClient
                         className="w-full"
-                        href={`/brand/${vendorToHandle(brand)}`}
+                        href={`/brend${brand.url}`}
                       >
                         <Button
                           variant={'ghost'}
                           className="text-base font-normal font-sans w-full justify-start px-2 hover:underline transition-colors border-none h-9"
                         >
-                          {brand}
+                          {brand.title}
                         </Button>
                       </NavigationItemClient>
                     </li>
