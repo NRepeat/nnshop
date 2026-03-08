@@ -22,7 +22,6 @@ export const RemoveItemButton = ({
     e.preventDefault()
     e.stopPropagation()
     startTransition(async () => {
-      console.log('Removing item from cart...');
       const result = await removeProductFromCart(cartId, itemId);
       if (result.success) {
         toast.success(t('removeSuccess'));

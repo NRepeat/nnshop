@@ -16,10 +16,9 @@ export const ViewTracker = ({ productHandle, productId }: ViewTrackerProps) => {
       if (!session?.user) {
         await authClient.signIn.anonymous();
       }
-      
+
       recordProductView(productHandle, productId);
     };
-    console.log(productHandle, productId, 'productHandle, productId');
     track();
   }, [productHandle, productId]);
 

@@ -19,7 +19,6 @@ export function ActiveFilterChip({
   label,
   filter,
 }: Props) {
-  console.log(filter, 'filter');
   const [isPending, startTransition] = useTransition();
 
   const [selectedValues, setSelectedValues] = useQueryState(

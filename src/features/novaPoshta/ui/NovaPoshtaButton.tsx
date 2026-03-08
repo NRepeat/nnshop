@@ -28,7 +28,6 @@ export default function NovaPoshtaButton({
   const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    console.log('[NP] geolocation check — supported:', !!navigator.geolocation);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -36,16 +35,13 @@ export default function NovaPoshtaButton({
             latitude: position.coords.latitude.toString(),
             longitude: position.coords.longitude.toString(),
           };
-          console.log('[NP] geolocation resolved:', coords);
           setCoordinates(coords);
           coordinatesRef.current = coords;
         },
-        (err) => {
-          console.log('[NP] geolocation denied/unavailable, code:', err.code, err.message);
+        () => {
+          // Geolocation denied or unavailable — widget defaults to Kyiv
         },
       );
-    } else {
-      console.log('[NP] geolocation not supported — defaulting to Kyiv');
     }
   }, []);
 
@@ -57,14 +53,11 @@ export default function NovaPoshtaButton({
       params.longitude = coords.longitude;
     }
     const qs = new URLSearchParams(params).toString();
-    const url = `https://widget.novapost.com/division/index.html?${qs}`;
-    console.log('[NP] buildWidgetUrl:', url);
-    return url;
+    return `https://widget.novapost.com/division/index.html?${qs}`;
   };
 
   const openFrame = () => {
     const coords = coordinatesRef.current;
-    console.log('[NP] openFrame — coords:', coords);
     setIsModalOpen(true);
 
     openTimerRef.current = setTimeout(() => {
@@ -76,7 +69,6 @@ export default function NovaPoshtaButton({
   };
 
   const closeFrame = () => {
-    console.log('[NP] closeFrame');
     setIsModalOpen(false);
     if (iframeRef.current) {
       iframeRef.current.src = '';
@@ -91,18 +83,14 @@ export default function NovaPoshtaButton({
     if (!iframe) return;
     const currentSrc = iframe.src;
     if (currentSrc.includes('latitude=')) return; // already has coords
-    console.log('[NP] coords arrived while modal open — reloading iframe with coords');
     iframe.src = buildWidgetUrl(coordinates);
   }, [coordinates, isModalOpen]);
 
   const handleFrameMessage = useCallback(
     (event: MessageEvent) => {
       if (event.origin !== 'https://widget.novapost.com') {
-        console.warn('[NP] message from unknown origin:', event.origin);
         return;
       }
-
-      console.log('[NP] message from widget:', event.data);
 
       if (event.data && typeof event.data === 'object') {
         const departmentData = event.data;
@@ -122,8 +110,6 @@ export default function NovaPoshtaButton({
           department.shortName || 'Обрати відділення або поштомат';
         const newSelectedDescription = `${department.addressParts?.city || ''} вул. ${department.addressParts?.street || ''}, ${department.addressParts?.building || ''}`;
 
-        console.log('[NP] department selected:', { id: department.id, shortName: department.shortName });
-
         setSelectedText(newSelectedText);
         setSelectedDescription(newSelectedDescription);
         setSelectedDepartmentId(department.id);
@@ -137,12 +123,10 @@ export default function NovaPoshtaButton({
       }
 
       if (event.data === 'closeFrame') {
-        console.log('[NP] widget sent closeFrame');
         closeFrame();
         return;
       }
 
-      console.log('[NP] unknown message, closing frame');
       closeFrame();
     },
     [onDepartmentSelect],

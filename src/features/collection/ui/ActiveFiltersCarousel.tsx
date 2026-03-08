@@ -26,7 +26,6 @@ export function ActiveFiltersCarousel({ filters }: { filters: Filter[] }) {
       });
     }
   });
-  console.log(activeFilters);
   if (activeFilters.length === 0) {
     return null;
   }
