@@ -8,12 +8,12 @@ import { PostHogProvider } from '@shared/lib/posthog/PostHogProvider';
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <NextIntlClientProvider>
-      <PostHogProvider>
-        <NuqsAdapter>
+      <NuqsAdapter>
+        <PostHogProvider>
           {children}
           <Toaster position="bottom-center" />
-        </NuqsAdapter>
-      </PostHogProvider>
+        </PostHogProvider>
+      </NuqsAdapter>
     </NextIntlClientProvider>
   );
 }
