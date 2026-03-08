@@ -4,8 +4,6 @@ import {
 } from '@entities/metaobject/api/get-metaobject';
 import { PathSync } from '@entities/path-sync/ui/path-sync';
 import { getReletedProducts } from '@entities/product/api/get-related-products';
-import { getNewProductsFiller } from '@entities/product/api/getNewProductsFiller';
-import { getProductsBySku } from '@entities/product/api/getProductsBySku';
 import { getInventoryLevels } from '@entities/product/api/getInventoryLevels';
 import { getProduct } from '@entities/product/api/getProduct';
 
@@ -68,29 +66,6 @@ export const ProductSessionView = async ({
     ]);
 
     const relatedProducts = [...relatedShopiyProductsData];
-
-    if (relatedProducts.length < 3 && product.productType) {
-      const sku = product.variants.edges[0]?.node?.sku ?? '';
-      if (sku.trim()) {
-        const excludeIds = [product.id, ...relatedProducts.map((p) => p.id)];
-        const skuFillers = await getProductsBySku(sku, product.id, locale, 3 - relatedProducts.length);
-        const freshSkuFillers = skuFillers.filter(
-          (p: any) => !excludeIds.includes(p.id),
-        );
-        relatedProducts.push(...freshSkuFillers);
-      }
-    }
-
-    if (relatedProducts.length < 3 && product.productType) {
-      const excludeIds = [product.id, ...relatedProducts.map((p) => p.id)];
-      const fillers = await getNewProductsFiller({
-        productType: product.productType,
-        excludeIds,
-        locale,
-        count: 3 - relatedProducts.length,
-      });
-      relatedProducts.push(...(fillers as any[]));
-    }
 
     const attributes = attributesResults.filter(
       (attr): attr is ProductMEtaobjectType => attr !== null,
