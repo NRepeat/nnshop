@@ -31,13 +31,6 @@ export const createShopifyCustomerToken = async (
       res.customerAccessTokenCreate?.customerUserErrors &&
       res.customerAccessTokenCreate?.customerUserErrors.length > 0
     ) {
-      console.log(
-        JSON.stringify(
-          res.customerAccessTokenCreate?.customerUserErrors,
-          null,
-          2,
-        ),
-      );
       throw new Error('Error create shopify customer token');
     }
     if (
@@ -53,7 +46,7 @@ export const createShopifyCustomerToken = async (
       });
     }
   } catch (error) {
-    console.log('🚀 ~ createShopifyCustomer ~ error:', error);
+    console.error('[createShopifyCustomerToken] error:', error);
     throw new Error('Error create shopify customer');
   }
 };

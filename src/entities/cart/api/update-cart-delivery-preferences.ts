@@ -59,9 +59,6 @@ export async function updateCartDeliveryPreferences(
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
-      console.warn(
-        'updateCartDeliveryPreferences: Session not found, throwing error.',
-      );
       throw new Error('Session not found');
     }
     const sessionCart = await prisma.cart.findFirst({
@@ -71,11 +68,6 @@ export async function updateCartDeliveryPreferences(
       },
     });
     if (!sessionCart) {
-      console.warn(
-        'updateCartDeliveryPreferences: Cart not found for userId:',
-        session.user.id,
-        ', throwing error.',
-      );
       throw new Error('Cart not found');
     }
 
@@ -100,10 +92,6 @@ export async function updateCartDeliveryPreferences(
         address2: fullAddress || undefined,
       };
 
-      console.log(
-        'updateCartDeliveryPreferences: Constructed deliveryAddressInput for Nova Poshta:',
-        JSON.stringify(deliveryAddressInput),
-      );
     } else if (deliveryInfo.deliveryMethod === 'ukrPoshta') {
       deliveryAddressInput = {
         address1: deliveryInfo.address || '',
@@ -115,10 +103,6 @@ export async function updateCartDeliveryPreferences(
         zip: deliveryInfo.postalCode || '',
         address2: deliveryInfo.apartment || undefined,
       };
-      console.log(
-        'updateCartDeliveryPreferences: Constructed deliveryAddressInput for UkrPoshta:',
-        JSON.stringify(deliveryAddressInput),
-      );
     } else if (deliveryInfo.deliveryMethod === 'selfPickup') {
       const point = deliveryInfo.selfPickupPoint
         ? getPickupPoint(deliveryInfo.selfPickupPoint)
@@ -132,15 +116,7 @@ export async function updateCartDeliveryPreferences(
         phone: contactInfo.phone || '',
         zip: '69000',
       };
-      console.log(
-        'updateCartDeliveryPreferences: Constructed deliveryAddressInput for SelfPickup:',
-        JSON.stringify(deliveryAddressInput),
-      );
     } else {
-      console.warn(
-        'updateCartDeliveryPreferences: Unsupported delivery method:',
-        deliveryInfo.deliveryMethod,
-      );
       return {
         success: false,
         errors: ['Unsupported delivery method'],
@@ -194,11 +170,6 @@ export async function updateCartDeliveryPreferences(
       },
     });
 
-    console.log(
-      'updateCartDeliveryPreferences: Shopify cartDeliveryAddressesAdd response:',
-      JSON.stringify(response),
-    );
-
     if (response.cartDeliveryAddressesAdd.userErrors.length > 0) {
       console.error(
         'updateCartDeliveryPreferences: Shopify user errors adding delivery address:',
@@ -225,9 +196,6 @@ export async function updateCartDeliveryPreferences(
     revalidateTag(CART_TAGS.CART, { expire: 0 });
     revalidateTag(CART_TAGS.CART_SESSION, { expire: 0 });
 
-    console.log(
-      'updateCartDeliveryPreferences: Cart delivery address added successfully!',
-    );
     return {
       success: true,
       cart: response.cartDeliveryAddressesAdd.cart,

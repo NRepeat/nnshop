@@ -171,7 +171,7 @@ export const getCart = async ({
       error instanceof DOMException && error.name === 'AbortError' ||
       error instanceof Error && error.name === 'AbortError';
     if (!isAbort) {
-      console.log('🚀 ~ getCart ~ error:', error);
+      console.error('[getCart] error:', error);
     }
     // Return null instead of throwing to prevent page crashes
     return null;

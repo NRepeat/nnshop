@@ -32,7 +32,6 @@ export default defineField({
       title: 'title',
     },
     prepare(selection) {
-      console.log(selection);
       const {
         reference,
         referenceProductPriceRange,

@@ -131,12 +131,6 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
       ],
     };
 
-    // Log the input for debugging
-    console.log(
-      'Quick Order - Creating order with input:',
-      JSON.stringify(order, null, 2),
-    );
-
     // Create order in Shopify
     const orderResponse = await adminClient.client.request<
       {
@@ -156,11 +150,6 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
         options: { sendReceipt: false, inventoryBehaviour: 'DECREMENT_IGNORING_POLICY' },
       },
     });
-
-    console.log(
-      'Quick Order - Shopify response:',
-      JSON.stringify(orderResponse, null, 2),
-    );
 
     const { order: createdOrder, userErrors } = orderResponse.orderCreate;
 

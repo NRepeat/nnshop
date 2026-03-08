@@ -137,7 +137,6 @@ export async function applyDiscountCode(code: string): Promise<{
         discountCodes: newCodes,
       },
     });
-    console.log(JSON.stringify(response, null, 2), 'cartDiscountCodesUpdate');
     if (response.cartDiscountCodesUpdate.userErrors.length > 0) {
       return {
         success: false,

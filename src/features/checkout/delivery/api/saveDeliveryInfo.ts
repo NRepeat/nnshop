@@ -109,15 +109,8 @@ export async function saveDeliveryInfo(
       );
 
       if (!cartUpdateResult.success) {
-        console.warn(
-          'Failed to update Shopify cart delivery preferences:',
-          cartUpdateResult.errors,
-        );
         // Delivery info saved to DB but Shopify cart address not updated.
-        // The order will still use DB data at order-creation time, so this is
-        // non-fatal, but log it clearly.
-      } else {
-        console.log('Delivery preferences synced to Shopify cart successfully.');
+        // The order will still use DB data at order-creation time, so this is non-fatal.
       }
     }
 

@@ -13,11 +13,6 @@ export const addToFavorites = async (productId: string, userId: string) => {
       return false;
     }
 
-    console.log(
-      `Adding product ${productId} to favorites for user ${userId}`,
-      session,
-    );
-
     // TODO: Implement actual favorite adding logic here
     // Anonymous and authenticated users can add favorites
 
