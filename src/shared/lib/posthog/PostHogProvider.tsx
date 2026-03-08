@@ -12,7 +12,8 @@ interface PostHogProviderProps {
 export function PostHogProvider({ children, bootstrap }: PostHogProviderProps) {
   if (typeof window !== 'undefined' && !posthog.__loaded) {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+      api_host: '/ingest',
+      ui_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
       capture_pageview: false,
       autocapture: true,
       capture_exceptions: true,
