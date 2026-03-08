@@ -11,6 +11,7 @@ import clsx from 'clsx';
 import { authClient } from '@features/auth/lib/auth-client';
 import { useCartUIStore } from '@shared/store/use-cart-ui-store';
 import { useRouter } from 'next/navigation';
+import { usePostHog } from 'posthog-js/react';
 
 function SubmitButton({
   variant = 'default',
@@ -68,6 +69,7 @@ export function AddToCartButton({
   const router = useRouter();
   const t = useTranslations('ProductPage');
   const { openCart } = useCartUIStore();
+  const posthog = usePostHog();
 
   // Open cart only after refresh completes, then restore scroll position
   useEffect(() => {
@@ -120,6 +122,11 @@ export function AddToCartButton({
 
       if (result.success) {
         toast.success(t('addedToCart'));
+        posthog?.capture('add_to_cart', {
+          product_id: product.id,
+          variant_id: variantId,
+          quantity: 1,
+        });
         scrollYRef.current = window.scrollY;
         setShouldOpenCart(true);
         startRefresh(() => {
