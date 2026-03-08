@@ -6,6 +6,8 @@ import { Header } from '@widgets/header/ui/Header';
 import { Footer } from '@widgets/footer/ui/Footer';
 import { locales } from '@shared/i18n/routing';
 import { setRequestLocale } from 'next-intl/server';
+import { auth as betterAuth } from '@features/auth/lib/auth';
+import { headers } from 'next/headers';
 import { DisableDraftMode } from '@shared/sanity/components/live/DisableDraftMode';
 import { SanityLive } from '@shared/sanity/lib/live';
 import { VisualEditing } from 'next-sanity/visual-editing';
@@ -13,7 +15,6 @@ import { draftMode } from 'next/headers';
 import { Suspense } from 'react';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { generateOrganizationJsonLd } from '@shared/lib/seo/jsonld';
-import { ScrollToTop } from '@shared/ui/ScrollToTop';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { PostHogPageView } from '@shared/lib/posthog/PostHogPageView';
@@ -72,6 +73,12 @@ export default async function RootLayout(props: RootProps) {
   const { locale } = await params;
 
   setRequestLocale(locale);
+
+  const session = await betterAuth.api.getSession({ headers: await headers() });
+  const bootstrap = session?.user
+    ? { distinctId: session.user.id, isIdentified: true }
+    : undefined;
+
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
@@ -83,7 +90,7 @@ export default async function RootLayout(props: RootProps) {
         />
       </head>
       <body className={`${jostSans.variable} antialiased`}>
-        <Providers>
+        <Providers bootstrap={bootstrap}>
           <Suspense fallback={null}>
             <PostHogPageView />
           </Suspense>
