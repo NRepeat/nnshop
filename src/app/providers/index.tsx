@@ -5,15 +5,10 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { NextIntlClientProvider } from 'next-intl';
 import { PostHogProvider } from '@shared/lib/posthog/PostHogProvider';
 
-interface ProvidersProps {
-  children: ReactNode;
-  bootstrap?: { distinctId: string; isIdentified: boolean };
-}
-
-export function Providers({ children, bootstrap }: ProvidersProps) {
+export function Providers({ children }: { children: ReactNode }) {
   return (
     <NextIntlClientProvider>
-      <PostHogProvider bootstrap={bootstrap}>
+      <PostHogProvider>
         <NuqsAdapter>
           {children}
           <Toaster position="bottom-center" />

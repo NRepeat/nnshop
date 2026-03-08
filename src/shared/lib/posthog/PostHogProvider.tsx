@@ -4,12 +4,7 @@ import posthog from 'posthog-js';
 import { PostHogProvider as PHProvider } from 'posthog-js/react';
 import { ReactNode } from 'react';
 
-interface PostHogProviderProps {
-  children: ReactNode;
-  bootstrap?: { distinctId: string; isIdentified: boolean };
-}
-
-export function PostHogProvider({ children, bootstrap }: PostHogProviderProps) {
+export function PostHogProvider({ children }: { children: ReactNode }) {
   if (typeof window !== 'undefined' && !posthog.__loaded) {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
       api_host: '/ingest',
@@ -17,9 +12,6 @@ export function PostHogProvider({ children, bootstrap }: PostHogProviderProps) {
       capture_pageview: false,
       autocapture: true,
       capture_exceptions: false,
-      bootstrap: bootstrap
-        ? { distinctID: bootstrap.distinctId, isIdentifiedID: bootstrap.isIdentified }
-        : undefined,
     });
   }
 
