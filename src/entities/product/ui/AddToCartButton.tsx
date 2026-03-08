@@ -123,7 +123,7 @@ export function AddToCartButton({
       if (result.success) {
         toast.success(t('addedToCart'));
         posthog?.capture('add_to_cart', {
-          product_id: product.id,
+          product_id: product?.id,
           variant_id: variantId,
           quantity: 1,
         });
