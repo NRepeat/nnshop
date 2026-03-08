@@ -2,10 +2,12 @@
 
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { toast } from 'sonner';
 import { useRouter } from '@shared/i18n/navigation';
-import { getContactInfoSchema, ContactInfoFormData } from '../schema/contactInfoSchema';
+import {
+  getContactInfoSchema,
+  ContactInfoFormData,
+} from '../schema/contactInfoSchema';
 import {
   Form,
   FormControl,
@@ -64,6 +66,9 @@ export default function ContactInfoForm({
     try {
       const result = await saveContactInfo(data);
       if (result) {
+        posthog?.capture('checkout_contact_info_saved', {
+          $current_url: window.location.href,
+        });
         toast.success(t('contactInformationSaved'));
         router.push(`/checkout/delivery`);
       } else {
@@ -77,7 +82,11 @@ export default function ContactInfoForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" autoComplete="on">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8"
+        autoComplete="on"
+      >
         {form.formState.isSubmitted &&
           Object.keys(form.formState.errors).length > 0 && (
             <div className="p-4 bg-red-50 border border-red-200 rounded">
@@ -235,7 +244,7 @@ export default function ContactInfoForm({
                 <Checkbox
                   checked={field.value}
                   onCheckedChange={field.onChange}
-                  className='h-6 w-6'
+                  className="h-6 w-6"
                 />
               </FormControl>
               <FormLabel className="text-sm font-normal cursor-pointer ">

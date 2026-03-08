@@ -56,18 +56,15 @@ const MenuSheet = async ({ locale }: { locale: string }) => {
   });
   
   const allItems = await getMainMenu({ locale });
-  
-  const brandsMenuItem = allItems.find((item) => isBrandsItem(item));
 
-  // Filter by gender, excluding brands item to avoid duplicate keys
-  const meinMenuRaw = allItems.filter(
-    (item) => matchesGender(item, gender) && !isBrandsItem(item),
-  );
-  
-  const items =
-    meinMenuRaw.length > 0
-      ? meinMenuRaw
-      : allItems.filter((i) => !isBrandsItem(i)).slice(0, 1);
+  // Filter by gender
+  const meinMenuRaw = allItems.filter((item) => matchesGender(item, gender));
+  const items = meinMenuRaw.length > 0 ? meinMenuRaw : allItems.slice(0, 1);
+
+  // Find brands item nested inside the gender category's sub-items
+  const brandsMenuItem = items
+    .flatMap((item) => item.items)
+    .find((subItem) => isBrandsItem(subItem));
 
   const withGender = (url: string) => {
     const stripped = stripGenderFromHandle(url);
@@ -77,36 +74,32 @@ const MenuSheet = async ({ locale }: { locale: string }) => {
   };
 
   const menuItems = items.flatMap((item) => {
-    return item.items.map((subItem) => ({
-      label: subItem.title,
-      menu: [
-        {
-          ...subItem,
-          url: withGender(subItem.url),
-          items: subItem.items.map((child) => ({
-            ...child,
-            url: withGender(child.url),
-          })),
-        },
-      ],
-    }));
+    return item.items
+      .filter((subItem) => !isBrandsItem(subItem))
+      .map((subItem) => ({
+        label: subItem.title,
+        menu: [
+          {
+            ...subItem,
+            url: withGender(subItem.url),
+            items: subItem.items.map((child) => ({
+              ...child,
+              url: withGender(child.url),
+            })),
+          },
+        ],
+      }));
   });
 
-  // Add brands menu item if it exists
+  // Add brands as a simple link (no expandable sub-items on mobile)
   if (brandsMenuItem) {
     menuItems.push({
       label: brandsMenuItem.title,
       menu: [
         {
           ...brandsMenuItem,
-          items: brandsMenuItem.items.map((subItem) => ({
-            ...subItem,
-            url: subItem.url,
-            items: subItem.items.map((subSubItem) => ({
-              ...subSubItem,
-              url: subSubItem.url,
-            })),
-          })),
+          url: '/brands',
+          items: [],
         },
       ],
     });

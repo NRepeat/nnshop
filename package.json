@@ -105,6 +105,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@next/eslint-plugin-next": "16.1.0",
     "@playwright/test": "^1.58.2",
+    "@posthog/nextjs-config": "^1.8.19",
     "@prisma/client": "^7.0.0",
     "@shopify/api-codegen-preset": "^1.2.1",
     "@tailwindcss/postcss": "^4",

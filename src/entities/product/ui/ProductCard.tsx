@@ -129,7 +129,7 @@ export const ProductCard = ({
       <Link
         href={`/product/${product.handle}`}
         prefetch
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-10"
         aria-label={product.title}
       />
       <CardContent className="flex flex-col px-1 md:px-2 pt-2 border-0 shadow-none h-full gap-4 bg-transparent">
@@ -223,7 +223,7 @@ export const ProductCard = ({
               </div>
             </Carousel>
           ) : (
-            <div className="group relative aspect-square w-full overflow-hidden">
+            <Link href={`/product/${product.handle}`} prefetch className="group relative aspect-square w-full overflow-hidden block">
               {isNew && (
                 <Badge className="absolute rounded top-1  left-1 z-10 ">
                   {t('new')}
@@ -267,7 +267,7 @@ export const ProductCard = ({
                     handle={product.handle}
                   />
                 </div>
-            </div>
+            </Link>
           )}
         </div>
         <div className="w-full pl-1 md:pl-3 pb-1   flex flex-col gap-1 flex-1 h-full">

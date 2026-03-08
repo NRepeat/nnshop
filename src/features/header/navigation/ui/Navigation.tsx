@@ -104,17 +104,15 @@ const Navigation = async ({
   const allItems = await getMainMenu({ locale });
   const t = await getTranslations({ locale, namespace: 'BrandsPage' });
 
-  // Find brands item from Shopify menu
-  const brandsMenuItem = allItems.find((item) => isBrandsItem(item));
+  // Filter by gender
+  const meinMenu = allItems.filter((item) => matchesGender(item, gender));
+  const items = meinMenu.length > 0 ? meinMenu : allItems.slice(0, 1);
 
-  // Filter by gender, excluding brands item to avoid duplicate keys
-  const meinMenu = allItems.filter(
-    (item) => matchesGender(item, gender) && !isBrandsItem(item),
-  );
-  const items =
-    meinMenu.length > 0
-      ? meinMenu
-      : allItems.filter((i) => !isBrandsItem(i)).slice(0, 1);
+  // Find brands item nested inside the gender category's sub-items
+  const brandsMenuItem = items
+    .flatMap((item) => item.items)
+    .find((subItem) => isBrandsItem(subItem));
+
   const topBrands =
     brandsMenuItem?.items?.flatMap((sub) =>
       sub.items?.length > 0
@@ -133,7 +131,7 @@ const Navigation = async ({
     if (item.items.length > 0) {
       return (
         <React.Fragment key={item.url + item.title}>
-          {item.items.map((subItem) => {
+          {item.items.filter((subItem) => !isBrandsItem(subItem)).map((subItem) => {
             return (
               <NavigationMenuItem
                 key={subItem.url + subItem.title + gender}
@@ -193,65 +191,66 @@ const Navigation = async ({
       <>
         {menu}
 
-        {brandsMenuItem && (
-          <NavigationMenuItem className="group">
-            <NavigationTriggerClient>
-              {brandsMenuItem.title}
-            </NavigationTriggerClient>
-            <NavigationMenuContent className="px-4">
-              <div className="flex gap-10 py-8 px-6">
-                <div className="flex-1">
-                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
-                    {t('topBrands')}
-                  </p>
-                  <ul className="grid grid-cols-2 gap-x-8 gap-y-1">
-                    {topBrands.slice(0, 10).map((brand) => (
-                      <li key={brand} className="w-full">
-                        <NavigationItemClient
-                          className="w-full"
-                          href={`/brand/${vendorToHandle(brand)}`}
-                        >
-                          <Button
-                            variant={'ghost'}
-                            className="text-base font-normal font-sans w-full justify-start px-2 hover:underline transition-colors border-none h-9"
-                          >
-                            {brand}
-                          </Button>
-                        </NavigationItemClient>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-3 ">
-                    <NavigationItemClient href="/brands">
-                      <span className="text-base font-medium underline hover:text-primary transition-colors">
-                        {t('allBrands')} →
-                      </span>
-                    </NavigationItemClient>
-                  </div>
-                </div>
-                <div className="border-l border-muted pl-8 shrink-0">
-                  <div className="grid grid-cols-7 gap-x-2 gap-y-2">
-                    {Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map((letter) => (
-                      <NavigationContentLink
-                        key={letter}
-                        href={`/brands#letter-${letter}`}
-                        className="border-none text-base font-medium hover:text-primary hover:bg-accent transition-colors text-center rounded w-9 h-9 flex items-center justify-center"
+        <NavigationMenuItem className="group">
+          <NavigationTriggerClient
+            href="/brands"
+            className="hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all"
+          >
+            {t('title')}
+          </NavigationTriggerClient>
+          <NavigationMenuContent className="px-4">
+            <div className="flex gap-10 py-8 px-6">
+              <div className="flex-1">
+                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
+                  {t('topBrands')}
+                </p>
+                <ul className="grid grid-cols-2 gap-x-8 gap-y-1">
+                  {topBrands.slice(0, 10).map((brand) => (
+                    <li key={brand} className="w-full">
+                      <NavigationItemClient
+                        className="w-full"
+                        href={`/brand/${vendorToHandle(brand)}`}
                       >
-                        {letter}
-                      </NavigationContentLink>
-                    ))}
-                    <NavigationContentLink
-                      href="/brands"
-                      className="border-none   text-base font-medium hover:text-primary hover:bg-accent transition-colors text-center rounded w-9 h-9 flex items-center justify-center"
-                    >
-                      #
-                    </NavigationContentLink>
-                  </div>
+                        <Button
+                          variant={'ghost'}
+                          className="text-base font-normal font-sans w-full justify-start px-2 hover:underline transition-colors border-none h-9"
+                        >
+                          {brand}
+                        </Button>
+                      </NavigationItemClient>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-3">
+                  <NavigationItemClient href="/brands">
+                    <span className="text-base font-medium underline hover:text-primary transition-colors">
+                      {t('allBrands')} →
+                    </span>
+                  </NavigationItemClient>
                 </div>
               </div>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        )}
+              <div className="border-l border-muted pl-8 shrink-0">
+                <div className="grid grid-cols-7 gap-x-2 gap-y-2">
+                  {Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map((letter) => (
+                    <NavigationContentLink
+                      key={letter}
+                      href={`/brands#letter-${letter}`}
+                      className="border-none text-base font-medium hover:text-primary hover:bg-accent transition-colors text-center rounded w-9 h-9 flex items-center justify-center"
+                    >
+                      {letter}
+                    </NavigationContentLink>
+                  ))}
+                  <NavigationContentLink
+                    href="/brands"
+                    className="border-none text-base font-medium hover:text-primary hover:bg-accent transition-colors text-center rounded w-9 h-9 flex items-center justify-center"
+                  >
+                    #
+                  </NavigationContentLink>
+                </div>
+              </div>
+            </div>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
       </>
     </NavigationClient>
   );

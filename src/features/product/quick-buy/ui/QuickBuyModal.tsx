@@ -17,11 +17,7 @@ import { cn } from '@shared/lib/utils';
 import { CrossedLine } from '@shared/ui/crossed-line';
 import { compareSizes } from '@shared/lib/sort-sizes';
 import { VariantInventory } from '@entities/product/api/getInventoryLevels';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@shared/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@shared/ui/popover';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -38,6 +34,7 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { createQuickOrder } from '../api/create-quick-order';
 import { Loader2, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { usePostHog } from 'posthog-js/react';
 export const isValidPhone = (phone: string) => {
   try {
     const phoneNumber = parsePhoneNumberFromString(phone);
@@ -74,6 +71,7 @@ export const QuickBuyModal = ({
 }: QuickBuyModalProps) => {
   const t = useTranslations('ProductPage');
   const formSchema = createFormSchema(t);
+  const posthog = usePostHog();
 
   const hasSizes = sizeOptions && sizeOptions.length > 0;
 
@@ -119,7 +117,9 @@ export const QuickBuyModal = ({
     setStep(1);
   };
 
-  const onSubmit = async (values: z.infer<ReturnType<typeof createFormSchema>>) => {
+  const onSubmit = async (
+    values: z.infer<ReturnType<typeof createFormSchema>>,
+  ) => {
     // Find the selected variant
     let variantId: string;
 
@@ -128,8 +128,8 @@ export const QuickBuyModal = ({
         edge.node.selectedOptions.some(
           (option) =>
             ['розмір', 'размер', 'size'].includes(option.name.toLowerCase()) &&
-            option.value.toLowerCase() === selectedSize.toLowerCase()
-        )
+            option.value.toLowerCase() === selectedSize.toLowerCase(),
+        ),
       )?.node;
 
       if (!variant) {
@@ -148,20 +148,23 @@ export const QuickBuyModal = ({
     }
 
     // Get discount percentage
-    const discountPercentage = Number(
-      product.metafields.find((m) => m?.key === 'znizka')?.value || '0'
-    ) || 0;
+    const discountPercentage =
+      Number(
+        product.metafields.find((m) => m?.key === 'znizka')?.value || '0',
+      ) || 0;
 
     // Get the variant to extract price
-    const selectedVariant = hasSizes && selectedSize
-      ? product.variants.edges.find((edge) =>
-          edge.node.selectedOptions.some(
-            (option) =>
-              ['розмір', 'размер', 'size'].includes(option.name.toLowerCase()) &&
-              option.value.toLowerCase() === selectedSize.toLowerCase()
-          )
-        )?.node
-      : product.variants.edges[0]?.node;
+    const selectedVariant =
+      hasSizes && selectedSize
+        ? product.variants.edges.find((edge) =>
+            edge.node.selectedOptions.some(
+              (option) =>
+                ['розмір', 'размер', 'size'].includes(
+                  option.name.toLowerCase(),
+                ) && option.value.toLowerCase() === selectedSize.toLowerCase(),
+            ),
+          )?.node
+        : product.variants.edges[0]?.node;
 
     const variantPrice = selectedVariant?.price?.amount || '0';
     const variantCurrency = selectedVariant?.price?.currencyCode || 'UAH';
@@ -173,12 +176,20 @@ export const QuickBuyModal = ({
         name: values.name,
         phone: values.phone,
         productTitle: product.title,
-        discountPercentage: discountPercentage > 0 ? discountPercentage : undefined,
+        discountPercentage:
+          discountPercentage > 0 ? discountPercentage : undefined,
         price: variantPrice,
         currencyCode: variantCurrency,
       });
 
       if (result.success) {
+        posthog?.capture('quick_order_placed', {
+          product_title: product.title,
+          product_id: product.id,
+          order_id: result.orderId,
+          order_name: result.orderName,
+          size: selectedSize,
+        });
         setIsSuccess(true);
         toast.success(t('orderSuccess', { orderName: result.orderName || '' }));
         closeTimerRef.current = setTimeout(() => {
@@ -220,8 +231,9 @@ export const QuickBuyModal = ({
                 const variant = product.variants.edges.find((edge) =>
                   edge.node.selectedOptions.some(
                     (option) =>
-                      ['розмір', 'размер', 'size'].includes(option.name.toLowerCase()) &&
-                      option.value.toLowerCase() === s.toLowerCase(),
+                      ['розмір', 'размер', 'size'].includes(
+                        option.name.toLowerCase(),
+                      ) && option.value.toLowerCase() === s.toLowerCase(),
                   ),
                 )?.node;
                 const availableForSale = variant?.availableForSale ?? false;
@@ -238,8 +250,7 @@ export const QuickBuyModal = ({
                 const showCrossed =
                   isUnavailable ||
                   (isZeroQty && !variantAtFitting && !hasCommitted);
-                const showMuted =
-                  (isUnavailable || isZeroQty) && !hasCommitted;
+                const showMuted = (isUnavailable || isZeroQty) && !hasCommitted;
                 const btn = (
                   <Button
                     variant={
@@ -329,14 +340,23 @@ export const QuickBuyModal = ({
         {!isSuccess && (
           <DialogFooter className="mt-4">
             {step === 1 && (
-              <Button onClick={handleNextStep} disabled={!selectedSize || isPending} className="w-full sm:w-auto">
+              <Button
+                onClick={handleNextStep}
+                disabled={!selectedSize || isPending}
+                className="w-full sm:w-auto"
+              >
                 {t('next')}
               </Button>
             )}
             {step === 2 && (
               <div className="flex w-full gap-2">
                 {hasSizes && (
-                  <Button variant="outline" onClick={handlePrevStep} disabled={isPending} className="flex-1">
+                  <Button
+                    variant="outline"
+                    onClick={handlePrevStep}
+                    disabled={isPending}
+                    className="flex-1"
+                  >
                     {t('back')}
                   </Button>
                 )}

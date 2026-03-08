@@ -442,8 +442,11 @@ export const getCollection = async ({
     });
 
     const _SIZE_OPT = ['size', 'розмір', 'размер'];
+    const availableEdges = allEdges.filter((edge: any) =>
+      edge.node.variants?.edges?.some((v: any) => v.node.availableForSale)
+    );
     const filteredEdges = sizeFilterLabels.length > 0
-      ? allEdges.filter((edge: any) => {
+      ? availableEdges.filter((edge: any) => {
           const sizeOptIndex = edge.node.options?.findIndex((opt: any) =>
             _SIZE_OPT.includes(opt.name.toLowerCase())
           ) ?? -1;
@@ -456,7 +459,7 @@ export const getCollection = async ({
           );
           return sizeFilterLabels.some((lbl) => available.has(lbl));
         })
-      : allEdges;
+      : availableEdges;
 
     // Determine the page slice using offset-based cursor
     const pageSize = first || last || 20;
@@ -503,8 +506,11 @@ export const getCollection = async ({
 
     // Post-filter: only show products with an available variant for the selected size(s)
     const _SIZE_OPT2 = ['size', 'розмір', 'размер'];
+    const availableEdges2 = sortedEdges.filter((edge: any) =>
+      edge.node.variants?.edges?.some((v: any) => v.node.availableForSale)
+    );
     const filteredEdges = sizeFilterLabels.length > 0
-      ? sortedEdges.filter((edge: any) => {
+      ? availableEdges2.filter((edge: any) => {
           const sizeOptIndex = edge.node.options?.findIndex((opt: any) =>
             _SIZE_OPT2.includes(opt.name.toLowerCase())
           ) ?? -1;
@@ -517,7 +523,7 @@ export const getCollection = async ({
           );
           return sizeFilterLabels.some((lbl) => available.has(lbl));
         })
-      : sortedEdges;
+      : availableEdges2;
 
     // Determine the page slice using offset-based cursor
     const pageSize = first || last || 20;
@@ -567,8 +573,11 @@ export const getCollection = async ({
 
     // Post-filter: only show products with an available variant for the selected size(s)
     const _SIZE_OPT3 = ['size', 'розмір', 'размер'];
+    const availableEdges3 = allEdges.filter((edge: any) =>
+      edge.node.variants?.edges?.some((v: any) => v.node.availableForSale)
+    );
     const filteredEdges = sizeFilterLabels.length > 0
-      ? allEdges.filter((edge: any) => {
+      ? availableEdges3.filter((edge: any) => {
           const sizeOptIndex = edge.node.options?.findIndex((opt: any) =>
             _SIZE_OPT3.includes(opt.name.toLowerCase())
           ) ?? -1;
@@ -581,7 +590,7 @@ export const getCollection = async ({
           );
           return sizeFilterLabels.some((lbl) => available.has(lbl));
         })
-      : allEdges;
+      : availableEdges3;
 
     // Determine the page slice using offset-based cursor
     const pageSize = first || last || 20;

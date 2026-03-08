@@ -1,4 +1,5 @@
 import { fetchRedirects } from '@/shared/sanity/lib/fetchRedirects';
+import { withPostHogConfig } from '@posthog/nextjs-config';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
@@ -57,14 +58,6 @@ const nextConfig: NextConfig = {
         destination: 'https://us-assets.i.posthog.com/static/:path*',
       },
       {
-        source: '/ingest/array/:path*',
-        destination: 'https://us-assets.i.posthog.com/array/:path*',
-      },
-      {
-        source: '/ingest/decide',
-        destination: 'https://us.i.posthog.com/decide',
-      },
-      {
         source: '/ingest/:path*',
         destination: 'https://us.i.posthog.com/:path*',
       },
@@ -92,4 +85,13 @@ const nextConfig: NextConfig = {
   },
 };
 const withNextIntl = createNextIntlPlugin('./src/shared/i18n/request.ts');
-export default withNextIntl(nextConfig);
+
+export default withPostHogConfig(withNextIntl(nextConfig), {
+  personalApiKey: process.env.POSTHOG_PERSONAL_API_KEY!,
+  projectId: process.env.POSTHOG_PROJECT_ID!,
+  host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+  sourcemaps: {
+    enabled: process.env.NODE_ENV === 'production',
+    deleteAfterUpload: true,
+  },
+});

@@ -4,6 +4,7 @@ import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
+import { captureServerEvent } from '@shared/lib/posthog/posthog-server';
 
 type QuickOrderInput = {
   variantId: string;
@@ -147,7 +148,10 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
       query: ORDER_CREATE_MUTATION,
       variables: {
         order,
-        options: { sendReceipt: false, inventoryBehaviour: 'DECREMENT_IGNORING_POLICY' },
+        options: {
+          sendReceipt: false,
+          inventoryBehaviour: 'DECREMENT_IGNORING_POLICY',
+        },
       },
     });
 
@@ -181,6 +185,17 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
         },
       });
     }
+
+    const distinctId = userId ?? 'anonymous';
+    await captureServerEvent(distinctId, 'quick_order_placed', {
+      order_id: createdOrder.id,
+      order_name: createdOrder.name,
+      product_title: orderData.productTitle,
+      variant_id: orderData.variantId,
+      price: orderData.price,
+      currency: orderData.currencyCode,
+      amount: createdOrder.totalPriceSet.shopMoney.amount,
+    });
 
     return {
       success: true,

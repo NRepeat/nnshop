@@ -15,6 +15,7 @@ import SelfPickupForm from './SelfPickupForm';
 import DeliveryMethodSelection from './DeliveryMethodSelection';
 import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { usePostHog } from 'posthog-js/react';
 
 interface DeliveryFormProps {
   defaultValues?: DeliveryInfo | null;
@@ -23,6 +24,7 @@ interface DeliveryFormProps {
 export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
   const router = useRouter();
   const t = useTranslations('DeliveryForm');
+  const posthog = usePostHog();
 
   const deliverySchema = getDeliverySchema(t);
 
@@ -60,6 +62,10 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
       const result = await saveDeliveryInfo(data);
 
       if (result.success) {
+        posthog?.capture('checkout_delivery_saved', {
+          delivery_method: data.deliveryMethod,
+          $current_url: window.location.href,
+        });
         toast.success(t('deliveryInformationSavedSuccessfully'));
         router.push('/checkout/payment');
       } else {

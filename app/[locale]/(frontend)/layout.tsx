@@ -100,12 +100,6 @@ export default async function RootLayout(props: RootProps) {
       <body className={`${jostSans.variable} antialiased`}>
         <Providers>
           <Suspense fallback={null}>
-            <PostHogPageView />
-          </Suspense>
-          <Suspense fallback={null}>
-            <PostHogIdentify />
-          </Suspense>
-          <Suspense fallback={null}>
             <Header locale={locale} />
           </Suspense>
 
