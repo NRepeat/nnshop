@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePostHog } from 'posthog-js/react';
 import { Button } from '@shared/ui/button';
 
 export default function Error({
@@ -10,9 +11,11 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const posthog = usePostHog();
+
   useEffect(() => {
-    console.error(error);
-  }, [error]);
+    posthog?.captureException(error);
+  }, [error, posthog]);
 
   return (
     <div className="container mx-auto flex h-[calc(100vh-200px)] items-center justify-center text-center">
@@ -23,9 +26,7 @@ export default function Error({
           Сталася помилка. Спробуйте ще раз.
         </p>
         {error.digest && (
-          <p className="mt-1 text-sm text-muted-foreground">
-            ID: {error.digest}
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">ID: {error.digest}</p>
         )}
         <div className="mt-8">
           <Button onClick={reset}>Спробувати знову</Button>

@@ -16,6 +16,7 @@ import { generateOrganizationJsonLd } from '@shared/lib/seo/jsonld';
 import { ScrollToTop } from '@shared/ui/ScrollToTop';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { PostHogPageView } from '@shared/lib/posthog/PostHogPageView';
 const jostSans = Jost({
   variable: '--font-jost-sans',
   subsets: ['latin'],
@@ -83,6 +84,9 @@ export default async function RootLayout(props: RootProps) {
       </head>
       <body className={`${jostSans.variable} antialiased`}>
         <Providers>
+          <Suspense fallback={null}>
+            <PostHogPageView />
+          </Suspense>
           <Header locale={locale} />
 
           <main>{children}</main>
