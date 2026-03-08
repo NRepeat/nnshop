@@ -16,7 +16,7 @@ export function PostHogProvider({ children, bootstrap }: PostHogProviderProps) {
       ui_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
       capture_pageview: false,
       autocapture: true,
-      capture_exceptions: true,
+      capture_exceptions: false,
       bootstrap: bootstrap
         ? { distinctID: bootstrap.distinctId, isIdentifiedID: bootstrap.isIdentified }
         : undefined,
