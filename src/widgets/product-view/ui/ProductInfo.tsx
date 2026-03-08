@@ -168,7 +168,7 @@ export const ProductInfo = ({
               const variant = product.variants.edges.find((edge) =>
                 edge.node.selectedOptions.some(
                   (option) =>
-                    option.name.toLowerCase() === 'розмір' &&
+                    ['розмір', 'размер', 'size'].includes(option.name.toLowerCase()) &&
                     option.value.toLowerCase() === s.toLowerCase(),
                 ),
               )?.node;

@@ -28,7 +28,7 @@ export const ProductQuickView = ({ product }: ProductQuickViewProps) => {
     (option) => option.name.toLowerCase() === 'color',
   )?.optionValues;
   const sizeOptions = product.options.find(
-    (option) => option.name.toLowerCase() === 'Розмір'.toLowerCase(),
+    (option) => ['розмір', 'размер', 'size'].includes(option.name.toLowerCase()),
   )?.values;
 
   type VariantNode = (typeof product.variants.edges)[0]['node'];
@@ -130,7 +130,7 @@ export const ProductQuickView = ({ product }: ProductQuickViewProps) => {
                   product.variants.edges.find((edge) =>
                     edge.node.selectedOptions.some(
                       (option) =>
-                        option.name.toLowerCase() === 'розмір' &&
+                        ['розмір', 'размер', 'size'].includes(option.name.toLowerCase()) &&
                         option.value.toLowerCase() === size.toLowerCase(),
                     ),
                   )?.node ?? null;
@@ -139,7 +139,7 @@ export const ProductQuickView = ({ product }: ProductQuickViewProps) => {
                   selectedVariant !== null &&
                   selectedVariant.selectedOptions.some(
                     (option) =>
-                      option.name.toLowerCase() === 'розмір' &&
+                      ['розмір', 'размер', 'size'].includes(option.name.toLowerCase()) &&
                       option.value.toLowerCase() === size.toLowerCase(),
                   );
 

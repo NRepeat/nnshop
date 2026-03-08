@@ -127,7 +127,7 @@ export const QuickBuyModal = ({
       const variant = product.variants.edges.find((edge) =>
         edge.node.selectedOptions.some(
           (option) =>
-            option.name.toLowerCase() === 'розмір' &&
+            ['розмір', 'размер', 'size'].includes(option.name.toLowerCase()) &&
             option.value.toLowerCase() === selectedSize.toLowerCase()
         )
       )?.node;
@@ -157,7 +157,7 @@ export const QuickBuyModal = ({
       ? product.variants.edges.find((edge) =>
           edge.node.selectedOptions.some(
             (option) =>
-              option.name.toLowerCase() === 'розмір' &&
+              ['розмір', 'размер', 'size'].includes(option.name.toLowerCase()) &&
               option.value.toLowerCase() === selectedSize.toLowerCase()
           )
         )?.node
@@ -220,7 +220,7 @@ export const QuickBuyModal = ({
                 const variant = product.variants.edges.find((edge) =>
                   edge.node.selectedOptions.some(
                     (option) =>
-                      option.name.toLowerCase() === 'розмір' &&
+                      ['розмір', 'размер', 'size'].includes(option.name.toLowerCase()) &&
                       option.value.toLowerCase() === s.toLowerCase(),
                   ),
                 )?.node;
