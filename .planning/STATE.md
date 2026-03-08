@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-05T09:58:43.662Z"
+last_updated: "2026-03-08T07:29:41.965Z"
 progress:
-  total_phases: 9
+  total_phases: 10
   completed_phases: 6
-  total_plans: 31
-  completed_plans: 28
+  total_plans: 36
+  completed_plans: 29
 ---
 
 # Project State
@@ -69,6 +69,7 @@ Progress: [█████░░░░░] 50%
 | Phase 09-sku-097-217-92-92-ghoud-agl P05 | 2 | 1 tasks | 1 files |
 | Phase 10-seo-fixes-update-meta-title-and-description-to-commercial-template-test-shopify-handles-fix-errors P01 | 3 | 3 tasks | 2 files |
 | Phase 10-seo-fixes P02 | 5 | 1 tasks | 1 files |
+| Phase 11-analyze-project-and-prepare-for-production-integrate-posthog-monitoring P01 | 5 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -131,6 +132,9 @@ Recent decisions affecting current work:
 - [Phase 10-01]: Brand page null guard: check collection.collection (inner Shopify object) not outer collection wrapper from getCollection
 - [Phase 10-01]: generateCollectionMetadata description param kept in signature for backward compat but ignored — use commercial templates instead
 - [Phase 10-02]: scripts/test-handles.mjs force-committed to git via b82caa3 despite scripts/ being in .gitignore — utility script for one-time SEO audit
+- [Phase 11-01]: SANITY_REVALIDATE_SECRET (no NEXT_PUBLIC_) is server-only — used in API routes and env.ts; intentionally unavailable in client bundle
+- [Phase 11-01]: robots.ts: disallow array covers /api/, /studio/, /uk/auth/, /ru/auth/, /checkout/ — all other paths crawlable
+- [Phase 11-01]: layout.tsx robots field omitted entirely — Next.js default allows indexing without explicit declaration
 
 ### Roadmap Evolution
 
