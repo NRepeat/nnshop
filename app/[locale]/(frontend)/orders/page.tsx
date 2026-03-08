@@ -45,8 +45,6 @@ const OrdersPageSkeleton = () => (
   </div>
 );
 
-export const dynamic = 'force-dynamic';
-
 type Props = {
   params: Promise<{ locale: string }>;
 
