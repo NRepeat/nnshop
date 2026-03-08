@@ -2,6 +2,7 @@
 import { prisma } from '@shared/lib/prisma';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { Session, User } from 'better-auth';
+import { captureServerEvent } from '@shared/lib/posthog/posthog-server';
 
 export const toggleFavoriteProduct = async (
   productId: string,
@@ -39,6 +40,12 @@ export const toggleFavoriteProduct = async (
     if (handle) {
       revalidatePath(`/${locale}/product/${handle}`, 'page');
     }
+
+    await captureServerEvent(
+      userId,
+      isFavorited ? 'product_favorited' : 'product_unfavorited',
+      { product_id: productId, product_handle: handle },
+    );
 
     return { success: true, isFavorited };
   } catch (error) {

@@ -1,12 +1,13 @@
 'use client';
 import { Button } from '@shared/ui/button';
-import { Search, X,  SearchIcon } from 'lucide-react';
+import { Search, X, SearchIcon } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { useDebounce } from 'use-debounce';
 import { PredictiveSearchQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { useRouter } from 'next/navigation';
+import { usePostHog } from 'posthog-js/react';
 import { Link } from '@shared/i18n/navigation';
 import {
   Empty,
@@ -32,9 +33,11 @@ export const SearchClient = ({ className }: { className?: string }) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const posthog = usePostHog();
 
   const handleSearch = () => {
     if (query) {
+      posthog?.capture('search_submitted', { query });
       router.push(`/search?q=${query}`);
       setIsOpen(false);
     }
@@ -194,7 +197,10 @@ export const SearchClient = ({ className }: { className?: string }) => {
                           className="group flex flex-col gap-2"
                           onClick={() => setIsOpen(false)}
                         >
-                           <ProductCard product={product as Product} withCarousel={false} />
+                          <ProductCard
+                            product={product as Product}
+                            withCarousel={false}
+                          />
                         </Link>
                       ))}
                     </div>

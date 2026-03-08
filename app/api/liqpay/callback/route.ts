@@ -3,6 +3,7 @@ import resetCartSession from '@features/cart/api/resetCartSession';
 import { savePaymentInfo } from '@features/checkout/payment/api/savePaymentInfo';
 import { PaymentInfo } from '@features/checkout/payment/schema/paymentSchema';
 import { prisma } from '@shared/lib/prisma';
+import { captureServerEvent } from '@shared/lib/posthog/posthog-server';
 import { NextRequest, NextResponse } from 'next/server';
 
 if (!process.env.LIQPAY_PUBLIC_KEY || !process.env.LIQPAY_PRIVATE_KEY) {
@@ -37,10 +38,7 @@ export async function POST(request: NextRequest) {
         where: { shopifyOrderId },
       });
       if (!order) {
-        return NextResponse.json(
-          { error: 'Order not found' },
-          { status: 404 },
-        );
+        return NextResponse.json({ error: 'Order not found' }, { status: 404 });
       }
 
       const paymentInfo: PaymentInfo = {
@@ -53,6 +51,14 @@ export async function POST(request: NextRequest) {
       };
       await savePaymentInfo(paymentInfo, order.id);
       await resetCartSession(order.id);
+      await captureServerEvent(order.userId, 'payment_completed', {
+        order_id: order.id,
+        shopify_order_id: shopifyOrderId,
+        amount: paymentData.amount,
+        currency: paymentData.currency,
+        payment_provider: 'liqpay',
+        liqpay_payment_id: paymentData.payment_id,
+      });
       return NextResponse.json(
         {
           message: 'Payment processed successfully',

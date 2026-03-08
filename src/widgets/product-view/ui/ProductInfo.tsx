@@ -11,7 +11,10 @@ import { Link } from '@shared/i18n/navigation';
 import { ProductPrice } from './Price';
 import { COLOR_MAP } from './collors';
 import dynamic from 'next/dynamic';
-const SizeChartDialog = dynamic(() => import('./SizeChartDialog').then(m => m.SizeChartDialog), { ssr: false });
+const SizeChartDialog = dynamic(
+  () => import('./SizeChartDialog').then((m) => m.SizeChartDialog),
+  { ssr: false },
+);
 import {
   Accordion,
   AccordionContent,
@@ -26,13 +29,13 @@ import { compareSizes } from '@shared/lib/sort-sizes';
 import { QuickBuyModal } from '@features/product/quick-buy/ui/QuickBuyModal';
 import { PriceSubscribeModal } from '@features/product/ui/PriceSubscribeModal';
 import { useState, useRef, useEffect } from 'react';
-import { Badge } from '@shared/ui/badge';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 import { Bell } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { VariantInventory } from '@entities/product/api/getInventoryLevels';
 import { Popover, PopoverContent, PopoverTrigger } from '@shared/ui/popover';
 import { ButtonGroup, ButtonGroupSeparator } from '@shared/ui/button-group';
+import { usePostHog } from 'posthog-js/react';
 
 const DetailsContent = ({
   attributes,
@@ -97,6 +100,7 @@ export const ProductInfo = ({
 }) => {
   const t = useTranslations('ProductPage');
   const locale = useLocale();
+  const posthog = usePostHog();
   const [isQuickBuyOpen, setQuickBuyOpen] = useState(false);
   const [isPriceSubscribeOpen, setPriceSubscribeOpen] = useState(false);
   const [isDescExpanded, setDescExpanded] = useState(false);
@@ -169,8 +173,9 @@ export const ProductInfo = ({
               const variant = product.variants.edges.find((edge) =>
                 edge.node.selectedOptions.some(
                   (option) =>
-                    ['розмір', 'размер', 'size'].includes(option.name.toLowerCase()) &&
-                    option.value.toLowerCase() === s.toLowerCase(),
+                    ['розмір', 'размер', 'size'].includes(
+                      option.name.toLowerCase(),
+                    ) && option.value.toLowerCase() === s.toLowerCase(),
                 ),
               )?.node;
               const availableForSale = variant?.availableForSale ?? false;
@@ -316,16 +321,26 @@ export const ProductInfo = ({
             selectedVariant={product.variants.edges[0].node}
           />
         )}
-        <ButtonGroup className='w-full'>
+        <ButtonGroup className="w-full">
           <Button
             variant="outline"
             className=" h-10 md:h-12 text-sm rounded flex items-center gap-2 w-1/2"
-            onClick={() => setQuickBuyOpen(true)}
+            onClick={() => {
+              posthog?.capture('quick_order_opened', {
+                product_handle: product.handle,
+                product_title: product.title,
+                size,
+              });
+              setQuickBuyOpen(true);
+            }}
             disabled={
               selectedVariant
-                ? selectedVariant.quantityAvailable === 0 && !selectedVariant.currentlyNotInStock
+                ? selectedVariant.quantityAvailable === 0 &&
+                  !selectedVariant.currentlyNotInStock
                 : product.variants.edges.every(
-                    (e) => e.node.quantityAvailable === 0 && !e.node.currentlyNotInStock,
+                    (e) =>
+                      e.node.quantityAvailable === 0 &&
+                      !e.node.currentlyNotInStock,
                   )
             }
           >

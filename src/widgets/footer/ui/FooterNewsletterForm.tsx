@@ -3,16 +3,19 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { subscribeToNewsletter } from '@features/newsletter/api/subscribe';
+import { usePostHog } from 'posthog-js/react';
 
 export const FooterNewsletterForm = () => {
   const t = useTranslations('Footer');
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const posthog = usePostHog();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
     await subscribeToNewsletter({ email, gender: 'woman' });
+    posthog?.capture('newsletter_subscribed', { email });
     setSubmitted(true);
   }
 

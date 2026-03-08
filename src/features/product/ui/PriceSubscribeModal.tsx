@@ -15,6 +15,7 @@ import { useTranslations } from 'next-intl';
 import { authClient } from '@features/auth/lib/auth-client';
 import { subscribeToPriceChanges } from '../api/subscribe-price';
 import { Bell } from 'lucide-react';
+import { usePostHog } from 'posthog-js/react';
 
 type Props = {
   open: boolean;
@@ -33,6 +34,7 @@ export function PriceSubscribeModal({
   const [email, setEmail] = useState('');
   const [isPending, startTransition] = useTransition();
   const { data: session } = authClient.useSession();
+  const posthog = usePostHog();
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -49,6 +51,10 @@ export function PriceSubscribeModal({
         shopifyVariantId,
       });
       if (result.success) {
+        posthog?.capture('price_alert_subscribed', {
+          product_id: shopifyProductId,
+          variant_id: shopifyVariantId,
+        });
         toast.success(t('priceSubscribeSuccess'));
         onOpenChange(false);
       } else {
