@@ -197,10 +197,14 @@ Plans:
 
 ### Phase 11: Analyze project and prepare for production — integrate PostHog monitoring
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Production-ready codebase with clean console logs, fixed robots.txt, renamed SANITY_REVALIDATE_SECRET, PostHog analytics integrated (pageview + checkout funnel + user identify), and security headers on all responses
+**Requirements**: PROD-11-01, PROD-11-02, PROD-11-03, PROD-11-04, PROD-11-05
 **Depends on:** Phase 10
-**Plans:** 0 plans
+**Plans:** 5 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 11 to break down)
+- [ ] 11-01-PLAN.md — Fix robots.ts (allow crawlers), rename NEXT_PUBLIC_SANITY_REVALIDATE_SECRET, remove noindex from layout
+- [ ] 11-02-PLAN.md — Remove console.log/debug logs from ~20 production files
+- [ ] 11-03-PLAN.md — Install posthog-js, create PostHogProvider + PostHogPageView + usePostHogIdentify, wire into app
+- [ ] 11-04-PLAN.md — Add checkout funnel events (product_viewed, add_to_cart, remove_from_cart, checkout_started, payment_initiated, order_placed)
+- [ ] 11-05-PLAN.md — Add security headers to next.config.ts + create .env.example + build verification checkpoint
