@@ -40,9 +40,33 @@ export function generateProductJsonLd(product: ShopifyProduct, locale: string) {
     images.unshift(product.featuredImage.url);
   }
 
-  const firstVariant = product.variants?.edges[0]?.node;
-  const isAvailable =
-    product.availableForSale ?? firstVariant?.availableForSale ?? false;
+  const variants = product.variants?.edges.map((e) => e.node) ?? [];
+  const isAvailable = product.availableForSale ?? variants.some((v) => v.availableForSale);
+  const productUrl = `${BASE_URL}/${locale}/product/${product.handle}`;
+  const currency = product.priceRange.minVariantPrice.currencyCode;
+
+  const offers =
+    variants.length > 1
+      ? {
+          '@type': 'AggregateOffer',
+          lowPrice: product.priceRange.minVariantPrice.amount,
+          priceCurrency: currency,
+          offerCount: variants.length,
+          availability: isAvailable
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+          url: productUrl,
+        }
+      : {
+          '@type': 'Offer',
+          price: product.priceRange.minVariantPrice.amount,
+          priceCurrency: currency,
+          sku: variants[0]?.sku || undefined,
+          availability: isAvailable
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+          url: productUrl,
+        };
 
   return {
     '@context': 'https://schema.org',
@@ -50,22 +74,14 @@ export function generateProductJsonLd(product: ShopifyProduct, locale: string) {
     name: product.title,
     description: product.description || undefined,
     image: images.length > 0 ? images : undefined,
-    sku: firstVariant?.sku || undefined,
-    url: `${BASE_URL}/${locale}/product/${product.handle}`,
+    sku: variants[0]?.sku || undefined,
+    url: productUrl,
     brand: product.vendor
       ? {
           '@type': 'Brand',
           name: product.vendor,
         }
       : undefined,
-    offers: {
-      '@type': 'Offer',
-      price: product.priceRange.minVariantPrice.amount,
-      priceCurrency: product.priceRange.minVariantPrice.currencyCode,
-      availability: isAvailable
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
-      url: `${BASE_URL}/${locale}/product/${product.handle}`,
-    },
+    offers,
   };
 }

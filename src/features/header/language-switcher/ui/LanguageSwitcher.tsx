@@ -9,7 +9,7 @@ import {
 } from '@/shared/ui/dropdown-menu';
 import { useTranslations } from 'use-intl';
 import { usePathname, useRouter } from '@shared/i18n/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { cn } from '@shared/lib/utils';
 import { usePathStore } from '@/shared/store/use-path-store';
 export const parseLocale = {
@@ -36,11 +36,13 @@ export function LanguageSwitcher({
   const localeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const alternatePaths = usePathStore((state) => state.alternatePaths);
   const router = useRouter();
+  const [, startTransition] = useTransition();
   const changeLocale = (newLocale: string) => {
     setSelectedLocale(newLocale);
     const targetPath = alternatePaths?.[newLocale] || pathname;
-    // router.replace(pathname, { locale: newLocale });
-    router.replace(targetPath, { locale: newLocale });
+    startTransition(() => {
+      router.replace(targetPath, { locale: newLocale });
+    });
   };
   useEffect(() => {
     if (locale && selectedLocale !== locale) {

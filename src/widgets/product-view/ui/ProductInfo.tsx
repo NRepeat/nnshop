@@ -28,7 +28,7 @@ import { CrossedLine } from '@shared/ui/crossed-line';
 import { compareSizes } from '@shared/lib/sort-sizes';
 import { QuickBuyModal } from '@features/product/quick-buy/ui/QuickBuyModal';
 import { PriceSubscribeModal } from '@features/product/ui/PriceSubscribeModal';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo, useTransition } from 'react';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 import { Bell } from 'lucide-react';
 import * as DOMPurifyModule from 'dompurify';
@@ -106,8 +106,9 @@ export const ProductInfo = ({
   const [isPriceSubscribeOpen, setPriceSubscribeOpen] = useState(false);
   const [isDescExpanded, setDescExpanded] = useState(false);
   const [isDescOverflowing, setDescOverflowing] = useState(false);
+  const [, startSizeTransition] = useTransition();
   const descRef = useRef<HTMLDivElement>(null);
-  const cleanHtml = DOMPurify.sanitize(product.descriptionHtml);
+  const cleanHtml = useMemo(() => DOMPurify.sanitize(product.descriptionHtml), [product.descriptionHtml]);
 
   useEffect(() => {
     const el = descRef.current;
@@ -135,7 +136,7 @@ export const ProductInfo = ({
     ) || []),
   ];
 
-  const sortedSizeOptions = sizeOptions?.slice().sort(compareSizes);
+  const sortedSizeOptions = useMemo(() => sizeOptions?.slice().sort(compareSizes), [sizeOptions]);
   return (
     <div className="content-stretch flex flex-col gap-[30px] items-start  py-0 relative w-full">
       <div className="flex flex-col gap-8 items-start  w-full max-w-2xl">
@@ -211,7 +212,7 @@ export const ProductInfo = ({
                         showMuted && size.toLowerCase() !== s.toLowerCase(),
                     },
                   )}
-                  onClick={() => setSize(s.toLowerCase())}
+                  onClick={() => startSizeTransition(() => setSize(s.toLowerCase()))}
                   disabled={isUnavailable}
                 >
                   {s.toUpperCase()}

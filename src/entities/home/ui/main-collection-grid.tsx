@@ -31,7 +31,7 @@ export const MainCollectionGrid = (props: MainCollectionGridProps) => {
         )}
 
         <div className="flex flex-col gap-5 md:grid md:grid-cols-3">
-          {resolvedCollections.map((col) => (
+          {resolvedCollections.map((col, index) => (
             <div key={col.handle ?? col.id} className="w-full   ">
               <Link href={col.href} prefetch className="block w-full">
                 <div className="relative group w-full aspect-3/4 rounded overflow-hidden">
@@ -42,6 +42,8 @@ export const MainCollectionGrid = (props: MainCollectionGridProps) => {
                       className="rounded object-cover w-full transition-transform duration-700 ease-in-out  group-hover:scale-105 group-hover:shadow transition-shadow"
                       fill
                       sizes="(max-width: 640px) 370px, (max-width: 1024px) 50vw, 33vw"
+                      priority={index < 3}
+                      fetchPriority={index === 0 ? 'high' : 'auto'}
                     />
                   )}
                   <div className="pointer-events-none absolute inset-0 rounded inset-shadow-sm " />

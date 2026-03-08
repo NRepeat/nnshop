@@ -12,12 +12,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const titles: Record<string, Record<string, string>> = {
     uk: {
-      man: 'Mio Mio',
-      woman: 'Mio Mio',
+      man: 'Чоловіче взуття — купити онлайн | Mio Mio',
+      woman: 'Жіноче взуття — купити онлайн | Mio Mio',
     },
     ru: {
-      man: 'Mio Mio',
-      woman: 'Mio Mio',
+      man: 'Мужская обувь — купить онлайн | Mio Mio',
+      woman: 'Женская обувь — купить онлайн | Mio Mio',
     },
   };
 

@@ -1,4 +1,5 @@
 import { sanityFetch, client } from '@/shared/sanity/lib/client';
+import { urlFor } from '@/shared/sanity/lib/image';
 import { normalizeLocaleForSanity } from '@shared/lib/locale';
 import {
   POST_BY_LANGUAGE_QUERY,
@@ -32,11 +33,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     );
   }
 
+  const ogImage =
+    post.seo?.image
+      ? urlFor(post.seo.image).width(1200).height(630).url()
+      : post.mainImage
+        ? urlFor(post.mainImage).width(1200).height(630).url()
+        : undefined;
+
   return generatePageMetadata(
     {
       title: post.seo?.title || `${post.title} | Mio Mio`,
       description: post.seo?.description || '',
       noIndex: post.seo?.noIndex ?? false,
+      image: ogImage,
     },
     locale,
     `/blog/${slug}`,

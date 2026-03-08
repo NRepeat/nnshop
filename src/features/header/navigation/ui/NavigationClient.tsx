@@ -15,7 +15,8 @@ export const NavigationClient = ({
   children: React.ReactNode;
   className?: string;
 }) => {
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState('radix-_R_4uheaitpetb_');
+  console.log('NavigationClient rendered with value:', value);
   const close = useCallback(() => setValue(''), []);
 
   return (
@@ -23,7 +24,7 @@ export const NavigationClient = ({
       <NavigationMenu
         value={value}
         onValueChange={setValue}
-        skipDelayDuration={0}
+        skipDelayDuration={100}
         delayDuration={0}
         className="w-full navigation-menu-wrapper"
         viewport={true}

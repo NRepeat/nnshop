@@ -23,10 +23,7 @@ import {
   FormItem,
   FormMessage,
 } from '@/shared/ui/form';
-import {
-  FieldGroup,
-  FieldLabel,
-} from '@/shared/ui/field';
+import { FieldGroup, FieldLabel } from '@/shared/ui/field';
 import { Link } from '@shared/i18n/navigation';
 
 export default function LoginForm({
@@ -58,8 +55,8 @@ export default function LoginForm({
       className={cn('flex flex-col gap-6 w-full max-w-3xl', className)}
       {...props}
     >
-      <Card className="overflow-hidden p-0 shadow-none border-none">
-        <CardContent className="grid p-0 md:grid-cols-2">
+      <Card className="overflow-hidden rounded shadow border-none">
+        <CardContent className="grid  md:grid-cols-2">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(async (data) => {
@@ -202,7 +199,7 @@ export default function LoginForm({
             </form>
           </Form>
 
-          <div className="bg-muted relative hidden md:block ">
+          <div className="bg-muted relative hidden md:block  rounded overflow-hidden">
             <Image
               src="/auth_image.jpeg"
               alt="Login cover"

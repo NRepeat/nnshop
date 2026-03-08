@@ -102,8 +102,8 @@ export function ResetPasswordForm({
       className={cn('flex flex-col gap-6 w-full max-w-3xl', className)}
       {...props}
     >
-      <Card className="overflow-hidden p-0 shadow-none border-none">
-        <CardContent className="grid p-0 md:grid-cols-2">
+      <Card className="overflow-hidden shadow rounded border-none">
+        <CardContent className="grid  md:grid-cols-2">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}

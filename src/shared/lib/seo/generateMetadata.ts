@@ -24,8 +24,9 @@ export function generatePageMetadata(
     alternates: {
       canonical: canonicalUrl,
       languages: {
-        ru: `${BASE_URL}/ru${normalizedPath}`,
-        uk: `${BASE_URL}/uk${normalizedPath}`,
+        'uk': `${BASE_URL}/uk${normalizedPath}`,
+        'ru': `${BASE_URL}/ru${normalizedPath}`,
+        'x-default': `${BASE_URL}/uk${normalizedPath}`,
       },
     },
     openGraph: {
@@ -89,9 +90,10 @@ export function generateCollectionMetadata(
     ? { woman: 'жіноче ', man: 'чоловіче ' }
     : { woman: 'женское ', man: 'мужское ' };
   const genderPrefix = gender ? (genderWord[gender as 'woman' | 'man'] ?? '') : '';
-  const description = isUk
+  const fallbackDescription = isUk
     ? `Обирайте ${genderPrefix}${collection.title} в MioMio: актуальні моделі, популярні бренди та зручна доставка по Україні.`
     : `Выбирайте ${genderPrefix}${collection.title} в MioMio: актуальные модели, популярные бренды и доставка по Украине.`;
+  const description = collection.description?.trim() || fallbackDescription;
 
   return generatePageMetadata(
     { title, description, image: collection.image?.url },

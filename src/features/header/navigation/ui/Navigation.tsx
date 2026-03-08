@@ -139,7 +139,10 @@ const Navigation = async ({
       .filter((sub) => !isBrandsItem(sub))
       .flatMap((sub) => sub.items.map((child) => child.url.replace(/^\//, ''))),
   );
-  const collectionImages = await getCollectionImages(allChildHandles, locale).catch(() => ({} as Record<string, string | null>));
+  const collectionImages = await getCollectionImages(
+    allChildHandles,
+    locale,
+  ).catch(() => ({}) as Record<string, string | null>);
 
   // Find brands item nested inside the gender category's sub-items
   const brandsMenuItem = items
@@ -169,8 +172,9 @@ const Navigation = async ({
             .map((subItem, subIndex) => {
               const genderImages = navImages?.[gender as 'woman' | 'man'] ?? [];
               const navImage =
-                genderImages.find((img) => img.menuIndex != null && img.menuIndex === subIndex)
-                ?? genderImages[subIndex];
+                genderImages.find(
+                  (img) => img.menuIndex != null && img.menuIndex === subIndex,
+                ) ?? genderImages[subIndex];
               const defaultImage = navImage?.imageUrl
                 ? {
                     imageUrl: navImage.imageUrl,
@@ -186,7 +190,8 @@ const Navigation = async ({
               const childItems = subItem.items.map((child) => ({
                 title: child.title,
                 url: withGender(child.url),
-                collectionImageUrl: collectionImages[child.url.replace(/^\//, '')] ?? null,
+                collectionImageUrl:
+                  collectionImages[child.url.replace(/^\//, '')] ?? null,
               }));
 
               return (
@@ -239,22 +244,25 @@ const Navigation = async ({
           >
             {t('title')}
           </NavigationTriggerClient>
-          <NavigationMenuContent className="px-4">
-            <div className="flex gap-10 py-8 px-6">
-              <div className="flex-1">
+          <NavigationMenuContent className="px-6 ">
+            <div className="flex gap-10 py-8  w-full  flex justify-center">
+              <div className="flex-1 max-w-5xl">
                 <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
                   {t('topBrands')}
                 </p>
-                <ul className="grid grid-cols-2 gap-x-8 gap-y-1">
+                <ul className="grid grid-cols-2 gap-x-8 gap-y-1 ">
                   {topBrands.slice(0, 10).map((brand) => (
-                    <li key={brand.title} className="w-full">
+                    <li
+                      key={brand.title}
+                      className="w-full w-full group rouded hover:shadow hover:bg-secondary/50 transition-colors duration-200"
+                    >
                       <NavigationItemClient
-                        className="w-full"
+                        className="w-full "
                         href={`/brend${brand.url}`}
                       >
                         <Button
                           variant={'ghost'}
-                          className="text-base font-normal font-sans w-full justify-start px-2 hover:underline transition-colors border-none h-9"
+                          className="text-base font-normal font-sans w-full justify-start px-2 group-hover:underline transition-colors border-none h-9"
                         >
                           {brand.title}
                         </Button>
@@ -263,7 +271,7 @@ const Navigation = async ({
                   ))}
                 </ul>
                 <div className="mt-3">
-                  <NavigationItemClient href="/brands">
+                  <NavigationItemClient href="/brands" className="pl-0">
                     <span className="text-base font-medium underline hover:text-primary transition-colors">
                       {t('allBrands')} →
                     </span>
@@ -276,14 +284,14 @@ const Navigation = async ({
                     <NavigationContentLink
                       key={letter}
                       href={`/brands#letter-${letter}`}
-                      className="border-none text-base font-medium hover:text-primary hover:bg-accent transition-colors text-center rounded w-9 h-9 flex items-center justify-center"
+                      className="border-none rounded text-base font-medium hover:shadow hover:bg-secondary/50 transition-colors duration-200 text-center rounded w-9 h-9 flex items-center justify-center"
                     >
                       {letter}
                     </NavigationContentLink>
                   ))}
                   <NavigationContentLink
                     href="/brands"
-                    className="border-none text-base font-medium hover:text-primary hover:bg-accent transition-colors text-center rounded w-9 h-9 flex items-center justify-center"
+                    className="border-none text-base font-medium hover:shadow hover:bg-secondary/50 transition-colors duration-200 text-center rounded w-9 h-9 flex items-center justify-center"
                   >
                     #
                   </NavigationContentLink>

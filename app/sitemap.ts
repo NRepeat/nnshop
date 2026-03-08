@@ -24,6 +24,18 @@ interface CollectionNode {
   updatedAt: string;
 }
 
+const GENDER_SLUG_PATTERNS: Record<string, string[]> = {
+  man: ['cholov'],
+  woman: ['zhinoch'],
+};
+
+function getGenderFromHandle(handle: string): string {
+  for (const [gender, patterns] of Object.entries(GENDER_SLUG_PATTERNS)) {
+    if (patterns.some((p) => handle.includes(p))) return gender;
+  }
+  return 'woman';
+}
+
 const GET_ALL_PRODUCTS_FOR_SITEMAP = `#graphql
   query GetAllProductsForSitemap($first: Int!, $after: String) {
     products(first: $first, after: $after) {
@@ -160,14 +172,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const collections = await getAllCollectionsForSitemap();
 
     for (const collection of collections) {
+      const gender = getGenderFromHandle(collection.handle);
       for (const locale of locales) {
         const alternates: Record<string, string> = {};
         for (const altLocale of locales) {
-          alternates[altLocale] = `${BASE_URL}/${altLocale}/collection/${collection.handle}`;
+          alternates[altLocale] = `${BASE_URL}/${altLocale}/${gender}/${collection.handle}`;
         }
 
         sitemapEntries.push({
-          url: `${BASE_URL}/${locale}/collection/${collection.handle}`,
+          url: `${BASE_URL}/${locale}/${gender}/${collection.handle}`,
           lastModified: formatDateForSitemap(collection.updatedAt),
           changeFrequency: 'daily',
           priority: 0.9,

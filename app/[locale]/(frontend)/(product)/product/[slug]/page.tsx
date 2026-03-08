@@ -47,38 +47,49 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProductPage({ params }: Props) {
   const { slug, locale } = await params;
   const handle = decodeURIComponent(slug);
-  const { originProduct: product } = await getProduct({
-    handle,
-    locale,
-  });
   setRequestLocale(locale);
+
+  return (
+    <Suspense fallback={<ProductViewSkeleton />}>
+      <ProductContent handle={handle} locale={locale} />
+    </Suspense>
+  );
+}
+
+const ProductContent = async ({
+  handle,
+  locale,
+}: {
+  handle: string;
+  locale: string;
+}) => {
+  const { originProduct: product } = await getProduct({ handle, locale });
 
   if (!product) {
     return notFound();
   }
+
   return (
     <>
       <JsonLd data={generateProductJsonLd(product, locale)} />
-      <Suspense fallback={<ProductViewSkeleton />}>
-        <ProductSessionView handle={handle} locale={locale}>
-          <Suspense
-            fallback={
-              <Button
-                variant="ghost"
-                size="icon"
-                className="group animate-pulse bg-gray-200 dark:bg-gray-700"
-              >
-                <Heart className="h-4 w-4" />
-              </Button>
-            }
-          >
-            <ProductSession handle={product.id} product={product as Product} />
-          </Suspense>
-        </ProductSessionView>
-      </Suspense>
+      <ProductSessionView handle={handle} locale={locale}>
+        <Suspense
+          fallback={
+            <Button
+              variant="ghost"
+              size="icon"
+              className="group animate-pulse bg-gray-200 dark:bg-gray-700"
+            >
+              <Heart className="h-4 w-4" />
+            </Button>
+          }
+        >
+          <ProductSession handle={product.id} product={product as Product} />
+        </Suspense>
+      </ProductSessionView>
     </>
   );
-}
+};
 
 const ProductSession = async ({
   handle,

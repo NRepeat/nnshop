@@ -110,7 +110,7 @@ export async function ProductView({
           </p>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 mx-auto max-w-5xl py-0 w-full">
             {relatedProducts.slice(0, 3).map((p) => (
-              <ProductCard product={p} key={p.id} />
+              <ProductCard product={p} key={p.id} withInnerShadow />
             ))}
           </div>
         </div>

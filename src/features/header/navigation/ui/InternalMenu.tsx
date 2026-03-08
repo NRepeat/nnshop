@@ -7,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@shared/ui/accordion';
+import { ChevronRightIcon } from 'lucide-react';
 export const InternalMenu = ({
   meinMenu,
   onClose,
@@ -133,16 +134,19 @@ export const InternalMenu = ({
                     </AccordionContent>
                   </AccordionItem>
                 ) : (
-                  <Link
-                    href={subItem.url}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onClose(subItem.url);
-                    }}
-                    className="pl-6 py-4 text-sm font-normal  hover:border-current transition-colors"
-                  >
-                    {subItem.title}
-                  </Link>
+                  <div className="flex items-center justify-between border-b border-foreground/10">
+                    <Link
+                      href={subItem.url}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onClose(subItem.url);
+                      }}
+                      className="py-4 font-300 transition-colors text-lg flex-1 flex items-center justify-between"
+                    >
+                      {subItem.title}
+                      <ChevronRightIcon className="text-muted-foreground pointer-events-none size-4 shrink-0 mr-3" />
+                    </Link>
+                  </div>
                 )}
               </div>
             );

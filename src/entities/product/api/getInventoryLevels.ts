@@ -37,7 +37,7 @@ export async function getInventoryLevels(
   variantIds: string[],
 ): Promise<VariantInventory[]> {
   'use cache';
-  cacheLife('minutes');
+  cacheLife('hours');
   cacheTag('inventory');
   if (!variantIds.length) return [];
 
