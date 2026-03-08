@@ -2,7 +2,6 @@ import { getCustomerOrders } from '@entities/order/api/getCustomerOrders';
 import { auth } from '@features/auth/lib/auth';
 import { OrderEmptyState } from '@features/order/ui/EmptyState';
 import { OrderList } from '@features/order/ui/OrderList';
-import { locales } from '@shared/i18n/routing';
 import { Breadcrumbs, BreadcrumbsSkeleton } from '@shared/ui/breadcrumbs';
 import { Card, CardContent, CardHeader } from '@shared/ui/card';
 import { Skeleton } from '@shared/ui/skeleton';
@@ -46,13 +45,8 @@ const OrdersPageSkeleton = () => (
   </div>
 );
 
-export async function generateStaticParams() {
-  const params = [];
-  for (const locale of locales) {
-    params.push({ locale: locale });
-  }
-  return params;
-}
+export const dynamic = 'force-dynamic';
+
 type Props = {
   params: Promise<{ locale: string }>;
 
