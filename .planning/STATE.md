@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-08T07:35:27.052Z"
+last_updated: "2026-03-08T07:43:31.269Z"
 progress:
   total_phases: 10
   completed_phases: 6
   total_plans: 36
-  completed_plans: 31
+  completed_plans: 32
 ---
 
 # Project State
@@ -72,6 +72,7 @@ Progress: [█████░░░░░] 50%
 | Phase 11-analyze-project-and-prepare-for-production-integrate-posthog-monitoring P01 | 5 | 2 tasks | 5 files |
 | Phase 11 P02 | 2 | 2 tasks | 20 files |
 | Phase 11 P03 | 5 | 2 tasks | 6 files |
+| Phase 11 P04 | 2 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -141,6 +142,8 @@ Recent decisions affecting current work:
 - [Phase 11]: [11-02]: NovaPoshtaButton geolocation debug logs removed — silent fallback to Kyiv maintained via widget default
 - [Phase 11-03]: PostHogProvider is outermost wrapper; AnalyticsIdentifier inline component calls usePostHogIdentify inside PHProvider context
 - [Phase 11-03]: capture_pageview: false in posthog.init() prevents double-counting with manual PostHogPageView
+- [Phase 11-04]: checkout_started placed in ContactInfoForm (checkout entry client) not non-existent CheckoutEntry.tsx — first interactive client component on /checkout/info route
+- [Phase 11-04]: posthog?.capture() optional chaining throughout — safe if PostHog fails to initialize; events only fire on confirmed success paths
 
 ### Roadmap Evolution
 
