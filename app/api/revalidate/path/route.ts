@@ -15,7 +15,6 @@ const LAYOUT_TYPES = [
 ];
 
 export async function POST(req: NextRequest) {
-  console.log(req, 'req');
   try {
     const { body, isValidSignature } = await parseBody<{
       type: string;
@@ -77,8 +76,6 @@ export async function POST(req: NextRequest) {
       revalidateTag('collections', 'default');
       revalidatedTags.push('collections');
     }
-    console.log(revalidatedPaths, 'revalidatedPaths');
-    console.log(revalidatedTags, 'revalidatedTags');
     return NextResponse.json({
       status: 200,
       revalidated: true,
