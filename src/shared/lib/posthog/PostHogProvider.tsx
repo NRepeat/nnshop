@@ -12,6 +12,7 @@ export function PostHogProvider({ children }: { children: ReactNode }) {
       capture_pageview: false,
       autocapture: false,
       capture_exceptions: false,
+      disable_external_dependency_loading: true,
     });
   }
 
