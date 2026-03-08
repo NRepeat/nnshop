@@ -17,11 +17,13 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: [
     'development.nninc.uk',
     'http://localhost:3000',
+    'http://localhost:4000',
     'http://localhost:3333',
-    "miomio.com.ua",
-    "www.miomio.com.ua",
-    "nmactunel.nninc.uk",
-    'https://www.miomio.com.ua'
+    'prod.nninc.uk',
+    'miomio.com.ua',
+    'www.miomio.com.ua',
+    'nmactunel.nninc.uk',
+    'https://www.miomio.com.ua',
   ],
   images: {
     unoptimized: true,
@@ -50,6 +52,14 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
+      {
+        source: '/ingest/static/:path*',
+        destination: 'https://eu-assets.i.posthog.com/static/:path*',
+      },
+      {
+        source: '/ingest/array/:path*',
+        destination: 'https://eu-assets.i.posthog.com/array/:path*',
+      },
       {
         source: '/ingest/decide',
         destination: 'https://eu.i.posthog.com/decide',
