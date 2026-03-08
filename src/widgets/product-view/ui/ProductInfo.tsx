@@ -320,6 +320,13 @@ export const ProductInfo = ({
             variant="outline"
             className=" h-10 md:h-12 text-sm rounded flex items-center gap-2 w-1/2"
             onClick={() => setQuickBuyOpen(true)}
+            disabled={
+              selectedVariant
+                ? selectedVariant.quantityAvailable === 0 && !selectedVariant.currentlyNotInStock
+                : product.variants.edges.every(
+                    (e) => e.node.quantityAvailable === 0 && !e.node.currentlyNotInStock,
+                  )
+            }
           >
             {t('quickOrder')}
           </Button>
