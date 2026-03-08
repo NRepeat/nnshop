@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { toast } from 'sonner';
@@ -23,6 +23,7 @@ import clsx from 'clsx';
 import { ContactInformation } from '~/generated/prisma/client';
 import { User } from 'better-auth';
 import { Checkbox } from '@shared/ui/checkbox';
+import { usePostHog } from 'posthog-js/react';
 
 export default function ContactInfoForm({
   contactInfo,
@@ -33,6 +34,11 @@ export default function ContactInfoForm({
 }) {
   const router = useRouter();
   const t = useTranslations('ContactInfoForm');
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    posthog?.capture('checkout_started');
+  }, [posthog]);
 
   const contactInfoSchema = getContactInfoSchema(t);
 

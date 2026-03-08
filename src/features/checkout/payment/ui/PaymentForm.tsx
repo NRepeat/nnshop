@@ -18,6 +18,7 @@ import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import resetCartSession from '@features/cart/api/resetCartSession';
 import { createOrder } from '@features/order/api/create';
 import { useSession } from '@features/auth/lib/client';
+import { usePostHog } from 'posthog-js/react';
 
 interface PaymentFormProps {
   defaultValues?: PaymentInfo | null;
@@ -61,6 +62,7 @@ export default function PaymentForm({
   const [isLoading, setIsLoading] = useState(false);
   const [liqpayOrderId, setLiqpayOrderId] = useState<string | null>(null);
   const { data: session } = useSession();
+  const posthog = usePostHog();
   const [isMerging, setIsMerging] = useState(false);
   const prevUserIdRef = useRef<string | null>(null);
 
@@ -79,7 +81,14 @@ export default function PaymentForm({
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
     setIsLoading(true);
     try {
-      // 1. Create the Shopify order
+      // 1. Fire payment_initiated before creating the order
+      posthog?.capture('payment_initiated', {
+        payment_method: data.paymentMethod,
+        amount: amount,
+        currency: currency,
+      });
+
+      // 2. Create the Shopify order
       const orderResult = await createOrder(
         completeCheckoutData,
         locale,
@@ -96,7 +105,16 @@ export default function PaymentForm({
       const createdOrder = orderResult.order;
       const orderName = (createdOrder.name || createdOrder.id.split('/').pop() || '').replace('#', '');
 
-      // 2. Save payment info (need to find the DB order by shopifyOrderId)
+      // Fire order_placed after confirmed order success
+      posthog?.capture('order_placed', {
+        order_id: createdOrder.id,
+        order_name: orderName,
+        amount: amount,
+        currency: currency,
+        payment_method: data.paymentMethod,
+      });
+
+      // 3. Save payment info (need to find the DB order by shopifyOrderId)
       // The createOrder function already saved it to DB, find it
       await savePaymentInfo(data, createdOrder.id);
 
