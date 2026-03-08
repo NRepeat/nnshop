@@ -85,6 +85,7 @@ export default function PaymentForm({
       posthog?.capture('payment_initiated', {
         payment_method: data.paymentMethod,
         amount: amount,
+        $current_url: window.location.href,
         currency: currency,
       });
 
@@ -112,6 +113,7 @@ export default function PaymentForm({
         amount: amount,
         currency: currency,
         payment_method: data.paymentMethod,
+        $current_url: window.location.href,
       });
 
       // 3. Save payment info (need to find the DB order by shopifyOrderId)

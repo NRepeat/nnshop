@@ -19,11 +19,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
       })) as GetCartQuery | null)
     : null;
   const cartId = cart?.cart?.id;
-  const sizeLabel = {
-    uk: 'Розмір',
-    ru: 'Розмір',
-    en: 'Розмір',
-  }[locale];
+  const SIZE_NAMES = ['розмір', 'размер', 'size'];
 
   const items = cart?.cart?.lines.edges.map((item) => {
     const product = item.node.merchandise.product;
@@ -47,7 +43,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
       price: originalPrice.toString(),
       handle: product.handle,
       size: item.node.merchandise.selectedOptions.find(
-        (option) => option.name === sizeLabel,
+        (option) => SIZE_NAMES.includes(option.name.toLowerCase()),
       )?.value,
       color: item.node.merchandise.selectedOptions.find(
         (option) => option.name === 'Color',

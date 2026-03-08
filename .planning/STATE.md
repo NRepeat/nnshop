@@ -135,7 +135,7 @@ Recent decisions affecting current work:
 - [Phase 10-01]: generateProductMetadata filter(Boolean) on [productType, vendor, title] handles empty strings without leading spaces
 - [Phase 10-01]: Brand page null guard: check collection.collection (inner Shopify object) not outer collection wrapper from getCollection
 - [Phase 10-01]: generateCollectionMetadata description param kept in signature for backward compat but ignored — use commercial templates instead
-- [Phase 10-02]: scripts/test-handles.mjs force-committed to git via b82caa3 despite scripts/ being in .gitignore — utility script for one-time SEO audit
+- [Phase 10-02]: NEXT_PUBLIC_SANITY_REVALIDATE_SECRET force-committed to git via b82caa3 despite scripts/ being in .gitignore — utility script for one-time SEO audit
 - [Phase 11-01]: SANITY_REVALIDATE_SECRET (no NEXT_PUBLIC_) is server-only — used in API routes and env.ts; intentionally unavailable in client bundle
 - [Phase 11-01]: robots.ts: disallow array covers /api/, /studio/, /uk/auth/, /ru/auth/, /checkout/ — all other paths crawlable
 - [Phase 11-01]: layout.tsx robots field omitted entirely — Next.js default allows indexing without explicit declaration

@@ -15,7 +15,13 @@ export function PostHogPageView() {
       if (searchParams.toString()) {
         url = url + `?${searchParams.toString()}`;
       }
-      posthog.capture('$pageview', { $current_url: url });
+      posthog.capture('$pageview', {
+        $current_url: url,
+        $screen_width: window.screen.width,
+        $screen_height: window.screen.height,
+        $viewport_width: window.innerWidth,
+        $viewport_height: window.innerHeight,
+      });
     }
   }, [pathname, searchParams, posthog]);
 

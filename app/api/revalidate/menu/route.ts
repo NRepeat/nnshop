@@ -1,7 +1,7 @@
 import { revalidateTag } from 'next/cache';
 import { type NextRequest, NextResponse } from 'next/server';
 
-const SECRET = process.env.SANITY_REVALIDATE_SECRET ?? '';
+const SECRET = process.env.NEXT_PUBLIC_SANITY_REVALIDATE_SECRET ?? '';
 
 export async function POST(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get('secret');

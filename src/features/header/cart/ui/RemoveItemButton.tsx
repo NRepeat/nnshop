@@ -29,6 +29,7 @@ export const RemoveItemButton = ({
         toast.success(t('removeSuccess'));
         posthog?.capture('remove_from_cart', {
           item_id: itemId,
+          $current_url: window.location.href,
         });
       } else {
         toast.error(t('removeError'));

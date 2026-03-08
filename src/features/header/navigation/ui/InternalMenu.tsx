@@ -154,7 +154,7 @@ export const InternalMenu = ({
     <div className="flex flex-col  px-4 py-8 font-sans h-full flex-1 overflow-y-auto">
       <Accordion
         type="multiple"
-        defaultValue={allValues}
+        // defaultValue={allValues}
         className="w-full  h-full flex-1  pr-1"
       >
         {tabs}

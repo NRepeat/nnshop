@@ -37,7 +37,9 @@ export default function ContactInfoForm({
   const posthog = usePostHog();
 
   useEffect(() => {
-    posthog?.capture('checkout_started');
+    posthog?.capture('checkout_started', {
+      $current_url: window.location.href,
+    });
   }, [posthog]);
 
   const contactInfoSchema = getContactInfoSchema(t);

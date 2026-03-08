@@ -78,7 +78,7 @@
 
 This phase combines three work streams: (1) a codebase audit with inline fixes for console logs, TypeScript any casts, and env var exposure, (2) PostHog analytics integration using the standard Next.js App Router Provider pattern, and (3) production configuration hardening (security headers, robots.txt, env documentation).
 
-The codebase scan reveals significant concrete work: ~140+ console.log/console.error/console.warn calls scattered across server actions and client components, ~50+ TypeScript `any`/`@ts-ignore` suppressions, one env var security concern (`NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` is a webhook secret that should not be client-exposed), and `robots.txt` currently blocks all crawlers (`disallow: '/'`) which would be catastrophic in production. All other sensitive secrets (SHOPIFY_ADMIN, LIQPAY_PRIVATE_KEY, DATABASE_URL, RESEND_API_KEY, BETTER_AUTH_SECRET) are correctly kept off NEXT_PUBLIC_.
+The codebase scan reveals significant concrete work: ~140+ console.log/console.error/console.warn calls scattered across server actions and client components, ~50+ TypeScript `any`/`@ts-ignore` suppressions, one env var security concern (`NEXT_PUBLIC_NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` is a webhook secret that should not be client-exposed), and `robots.txt` currently blocks all crawlers (`disallow: '/'`) which would be catastrophic in production. All other sensitive secrets (SHOPIFY_ADMIN, LIQPAY_PRIVATE_KEY, DATABASE_URL, RESEND_API_KEY, BETTER_AUTH_SECRET) are correctly kept off NEXT_PUBLIC_.
 
 PostHog integration for Next.js App Router is well-documented: install `posthog-js`, create a client-side Provider wrapping the app, add a separate PageView component with `usePathname` + `useSearchParams` (needed because App Router uses client-side navigation), and call `posthog.identify(userId, { email })` from the auth state effect. Exception autocapture is enabled via PostHog project settings (not posthog.init() options).
 
@@ -108,13 +108,13 @@ rules: [
 ]
 ```
 
-### SECURITY CONCERN: NEXT_PUBLIC_SANITY_REVALIDATE_SECRET
+### SECURITY CONCERN: NEXT_PUBLIC_NEXT_PUBLIC_SANITY_REVALIDATE_SECRET
 
 **Files:** `app/api/revalidate/menu/route.ts`, `src/shared/sanity/env.ts`
 
-`NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` is used as a webhook authentication secret in `app/api/revalidate/menu/route.ts`. The `NEXT_PUBLIC_` prefix means this value is bundled into the client-side JavaScript and visible to anyone who inspects the bundle. A webhook secret being publicly readable defeats its purpose.
+`NEXT_PUBLIC_NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` is used as a webhook authentication secret in `app/api/revalidate/menu/route.ts`. The `NEXT_PUBLIC_` prefix means this value is bundled into the client-side JavaScript and visible to anyone who inspects the bundle. A webhook secret being publicly readable defeats its purpose.
 
-**Fix:** Rename to `SANITY_REVALIDATE_SECRET` (no NEXT_PUBLIC_ prefix). It is used in two places:
+**Fix:** Rename to `NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` (no NEXT_PUBLIC_ prefix). It is used in two places:
 - `app/api/revalidate/menu/route.ts` (API route — server-only, no issue reading non-public env)
 - `src/shared/sanity/env.ts` (reads it — this file is used by both server and client; verify actual import paths)
 
@@ -142,7 +142,7 @@ The following sensitive vars do NOT have NEXT_PUBLIC_ prefix (confirmed by codeb
 - `NEXT_PUBLIC_POSTHOG_HOST` — will be added
 
 **Questionable:**
-- `NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` — webhook secret, should not be client-exposed (see above)
+- `NEXT_PUBLIC_NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` — webhook secret, should not be client-exposed (see above)
 
 ### Console log violations (high volume)
 
@@ -488,8 +488,8 @@ async headers() {
 
 ### Pitfall 7: NEXT_PUBLIC_ on a Webhook Secret
 
-**What goes wrong:** `NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` is bundled into client JS. Anyone who reads the JS bundle can extract this value and call the revalidation endpoint.
-**How to avoid:** Rename to `SANITY_REVALIDATE_SECRET`. Update both files that reference it. The API route is server-only, the sanity env.ts needs to be checked for client usage.
+**What goes wrong:** `NEXT_PUBLIC_NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` is bundled into client JS. Anyone who reads the JS bundle can extract this value and call the revalidation endpoint.
+**How to avoid:** Rename to `NEXT_PUBLIC_SANITY_REVALIDATE_SECRET`. Update both files that reference it. The API route is server-only, the sanity env.ts needs to be checked for client usage.
 
 ### Pitfall 8: Vercel Analytics Already Installed
 
@@ -654,7 +654,7 @@ RESEND_FROM_EMAIL=noreply@your-domain.com
 ESPUTNIK_API_KEY=xxx
 ESPUTNIK_API_LOGIN=xxx
 SANITY_API_READ_TOKEN=skXxx
-SANITY_REVALIDATE_SECRET=xxx   # renamed from NEXT_PUBLIC_SANITY_REVALIDATE_SECRET
+NEXT_PUBLIC_SANITY_REVALIDATE_SECRET=xxx   # renamed from NEXT_PUBLIC_NEXT_PUBLIC_SANITY_REVALIDATE_SECRET
 GOOGLE_CLIENT_ID=xxx
 GOOGLE_CLIENT_SECRET=xxx
 BLOB_BASE_URL=https://...
@@ -675,7 +675,7 @@ PRICE_APP_URL=https://...
    - What's unclear: Whether `capture_exceptions` is a valid posthog.init() key in posthog-js 1.x or if it's dashboard-only
    - Recommendation: Enable the toggle in PostHog dashboard AND include `capture_exceptions: true` in init config (belt-and-suspenders). If the key is unrecognized it will be silently ignored.
 
-3. **`NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` usage in sanity/env.ts**
+3. **`NEXT_PUBLIC_NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` usage in sanity/env.ts**
    - What we know: `src/shared/sanity/env.ts` exports this as an env var. Need to verify if this export is consumed by any client-side code.
    - What's unclear: Whether `sanity/env.ts` is imported in any `'use client'` components
    - Recommendation: Before renaming, grep import paths of `sanity/env.ts` to confirm it's only used server-side.
@@ -713,7 +713,7 @@ PRICE_APP_URL=https://...
 - Security headers: HIGH — Next.js official docs, standard HTTP security references
 - Codebase audit findings: HIGH — direct file scan, not inference
 - Exception autocapture config: MEDIUM — dashboard toggle confirmed, JS init option `capture_exceptions` not directly verified against posthog-js source
-- `SANITY_REVALIDATE_SECRET` rename: HIGH — NEXT_PUBLIC_ analysis is deterministic
+- `NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` rename: HIGH — NEXT_PUBLIC_ analysis is deterministic
 
 **Research date:** 2026-03-08
 **Valid until:** 2026-04-08 (PostHog JS releases frequently but core integration API is stable; security header values are stable)

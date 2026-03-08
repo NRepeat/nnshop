@@ -10,7 +10,8 @@ import { cn } from '@shared/lib/utils';
 import { Link } from '@shared/i18n/navigation';
 import { ProductPrice } from './Price';
 import { COLOR_MAP } from './collors';
-import { SizeChartDialog } from './SizeChartDialog';
+import dynamic from 'next/dynamic';
+const SizeChartDialog = dynamic(() => import('./SizeChartDialog').then(m => m.SizeChartDialog), { ssr: false });
 import {
   Accordion,
   AccordionContent,
@@ -28,7 +29,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Badge } from '@shared/ui/badge';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 import { Bell } from 'lucide-react';
-import DOMPurify from 'isomorphic-dompurify';
+import DOMPurify from 'dompurify';
 import { VariantInventory } from '@entities/product/api/getInventoryLevels';
 import { Popover, PopoverContent, PopoverTrigger } from '@shared/ui/popover';
 import { ButtonGroup, ButtonGroupSeparator } from '@shared/ui/button-group';

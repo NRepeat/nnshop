@@ -173,7 +173,7 @@
 - `NEXT_PUBLIC_SANITY_PROJECT_ID` - Sanity project ID
 - `NEXT_PUBLIC_SANITY_DATASET` - Sanity dataset name
 - `NEXT_PUBLIC_SANITY_API_VERSION` - Sanity API version (defaults to `2025-10-19`)
-- `NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` - Revalidation webhook secret
+- `NEXT_PUBLIC_NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` - Revalidation webhook secret
 - `SANITY_API_READ_TOKEN` - Sanity API token for server-side queries
 - `RESEND_API_KEY` - Resend email service API key
 - `ESPUTNIK_API_LOGIN` - eSputnik email marketing credentials

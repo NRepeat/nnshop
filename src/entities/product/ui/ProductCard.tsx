@@ -122,15 +122,21 @@ export const ProductCard = ({
   return (
     <Card
       className={clsx(
-        'h-full shadow-none  transition-shadow   backdrop-blur-sm bg-transparent border border-none cursor-pointer group ',
+        'h-full shadow-none  transition-shadow   backdrop-blur-sm bg-transparent border border-none cursor-pointer group relative',
         className,
       )}
     >
+      <Link
+        href={`/product/${product.handle}`}
+        prefetch
+        className="absolute inset-0 z-0"
+        aria-label={product.title}
+      />
       <CardContent className="flex flex-col px-1 md:px-2 pt-2 border-0 shadow-none h-full gap-4 bg-transparent">
         {withInnerShadow && (
           <div className="pointer-events-none absolute inset-0 rounded inset-shadow-sm " />
         )}
-        <Link href={`/product/${product.handle}`} prefetch>
+        <div>
           {withCarousel ? (
             <Carousel
               className="relative"
@@ -263,20 +269,18 @@ export const ProductCard = ({
                 </div>
             </div>
           )}
-        </Link>
+        </div>
         <div className="w-full pl-1 md:pl-3 pb-1   flex flex-col gap-1 flex-1 h-full">
-          <Link href={`/brand/${vendorToHandle(product.vendor)}`}>
+          <Link href={`/brand/${vendorToHandle(product.vendor)}`} className="relative z-10">
             <span className="text-md font-bold group-hover:underline  duration-300 decoration-transparent group-hover:decoration-primary  transition-all">
               {decodeHtmlEntities(product.vendor)}
             </span>
           </Link>
           <div className="flex flex-col justify-between flex-1">
             <div className=" w-full flex-col  justify-between flex pb-4 ">
-              <Link href={`/product/${product.handle}`}>
-                <p className="text-sm md:text-md font-light  text-pretty">
-                  {decodeHtmlEntities(product?.title ?? '')}
-                </p>
-              </Link>
+              <p className="text-sm md:text-md font-light  text-pretty">
+                {decodeHtmlEntities(product?.title ?? '')}
+              </p>
               {withSizes && availableSizes.length > 0 && (
                 <p className="text-base text-muted-foreground mt-1">
                   {availableSizes.join(' · ')}

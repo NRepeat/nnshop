@@ -53,6 +53,20 @@ export const viewport: Viewport = {
   initialScale: 1,
   themeColor: '#ffffff',
 };
+async function DraftModeTools() {
+  const { isEnabled } = await draftMode();
+  if (!isEnabled) return null;
+  return (
+    <>
+      <DisableDraftMode />
+      <VisualEditing />
+      <Suspense>
+        <SanityLive />
+      </Suspense>
+    </>
+  );
+}
+
 export async function generateStaticParams() {
   const params = [];
   for (const locale of locales) {
@@ -91,7 +105,9 @@ export default async function RootLayout(props: RootProps) {
           <Suspense fallback={null}>
             <PostHogIdentify />
           </Suspense>
-          <Header locale={locale} />
+          <Suspense fallback={null}>
+            <Header locale={locale} />
+          </Suspense>
 
           <main>{children}</main>
 
@@ -102,15 +118,9 @@ export default async function RootLayout(props: RootProps) {
           </Suspense>
         </Providers>
       </body>
-      {(await draftMode()).isEnabled && (
-        <>
-          <DisableDraftMode />
-          <VisualEditing />
-          <Suspense>
-            <SanityLive />
-          </Suspense>
-        </>
-      )}
+      <Suspense>
+        <DraftModeTools />
+      </Suspense>
       <Analytics />
       <SpeedInsights />
     </html>

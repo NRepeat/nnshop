@@ -8,11 +8,17 @@ export function PostHogProvider({ children }: { children: ReactNode }) {
   if (typeof window !== 'undefined' && !posthog.__loaded) {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
       api_host: '/ingest',
-      ui_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+      ui_host: 'https://us.posthog.com',
       capture_pageview: false,
       autocapture: false,
       capture_exceptions: false,
-      disable_external_dependency_loading: true,
+      session_recording: {
+        maskAllInputs: false,
+        maskInputOptions: { password: true },
+      },
+      loaded: (ph) => {
+        ph.startSessionRecording();
+      },
     });
   }
 

@@ -3,12 +3,11 @@
 import { useState, useReducer, memo } from 'react';
 import { toast } from 'sonner';
 import { toggleFavoriteProduct } from '@features/product/api/toggle-favorite';
-import { useRouter } from '@shared/i18n/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@shared/ui/button';
 import { Heart } from 'lucide-react';
 import { cn } from '@shared/lib/utils';
 import { useSession } from '@features/auth/lib/client';
-import { useLocale } from 'next-intl';
 
 export const FavSession = memo(({
   productId,
@@ -21,10 +20,11 @@ export const FavSession = memo(({
 }) => {
   
   const router = useRouter();
+  const params = useParams();
+  const locale = (params?.locale as string) || 'uk';
   const [isFav, setIsFav] = useState(fav);
   const [isProcessing, setIsProcessing] = useState(false);
   const [, forceUpdate] = useReducer(x => x + 1, 0);
-  const locale = useLocale();
   const session = useSession();
 
   const handleToggle = async () => {
@@ -47,7 +47,7 @@ export const FavSession = memo(({
       if (!result.success) {
         setIsFav(previousValue);
         if (result.error === 'AUTH_REQUIRED') {
-          router.push(`/auth/sign-in`, { scroll: false });
+          router.push(`/${locale}/auth/sign-in`);
         } else {
           toast("Couldn't save favorite. Try again.");
         }

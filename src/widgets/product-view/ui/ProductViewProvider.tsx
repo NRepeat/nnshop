@@ -43,7 +43,7 @@ export function ProductViewProvider({
       const variant = edge.node;
       const sizeMatch = variant.selectedOptions.find(
         (option) =>
-          option.name.toLowerCase() === 'Розмір'.toLowerCase() &&
+          SIZE_NAMES.includes(option.name.toLowerCase()) &&
           option.value.toLowerCase() === (size ?? ''),
       );
       return sizeMatch;

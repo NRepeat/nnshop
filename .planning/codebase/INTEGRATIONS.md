@@ -45,7 +45,7 @@
   - API Version: `NEXT_PUBLIC_SANITY_API_VERSION` (defaults to `2025-10-19`)
   - Studio: Mounted at `/studio` with internationalization plugins
   - Read token: `SANITY_API_READ_TOKEN` (server-side queries)
-  - Revalidation: Webhook secret `NEXT_PUBLIC_SANITY_REVALIDATE_SECRET`
+  - Revalidation: Webhook secret `NEXT_PUBLIC_NEXT_PUBLIC_SANITY_REVALIDATE_SECRET`
   - Plugins: Document internationalization, internationalized arrays, AI assist, vision tool
   - Usage: Server-side fetching via `sanityFetch()` in `src/shared/sanity/lib/query.ts`
   - Types: Generated via `npm run typegen` to `src/shared/sanity/types.ts`
@@ -187,7 +187,7 @@
 
 **Incoming (Webhooks Received):**
 - **Sanity Revalidation Webhook** - ISR cache revalidation on content updates
-  - Secret: `NEXT_PUBLIC_SANITY_REVALIDATE_SECRET`
+  - Secret: `NEXT_PUBLIC_NEXT_PUBLIC_SANITY_REVALIDATE_SECRET`
   - Likely handler: `/api/*` route for Sanity webhook
 
 - **LiqPay Callbacks** - Payment status updates
@@ -217,7 +217,7 @@
 - Shopify: SHOPIFY_STOREFRONT_API_TOKEN, SHOPIFY_STORE_DOMAIN, SHOPIFY_ADMIN_API_KEY, SHOPIFY_ADMIN_API_SECRET_KEY, SHOPIFY_API_VERSION, SHOPIFY_CUSTOMER_ACCOUNT_*
 - Google: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 - Database: DATABASE_URL
-- Sanity: NEXT_PUBLIC_SANITY_PROJECT_ID, NEXT_PUBLIC_SANITY_DATASET, SANITY_API_READ_TOKEN, NEXT_PUBLIC_SANITY_REVALIDATE_SECRET
+- Sanity: NEXT_PUBLIC_SANITY_PROJECT_ID, NEXT_PUBLIC_SANITY_DATASET, SANITY_API_READ_TOKEN, NEXT_PUBLIC_NEXT_PUBLIC_SANITY_REVALIDATE_SECRET
 - Email: RESEND_API_KEY, ESPUTNIK_API_LOGIN, ESPUTNIK_API_KEY
 - Payment: LIQPAY_PUBLIC_KEY, LIQPAY_PRIVATE_KEY
 - Auth: BETTER_AUTH_SECRET, NEXT_PUBLIC_BASE_URL

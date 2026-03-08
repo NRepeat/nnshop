@@ -24,6 +24,9 @@ export const ViewTracker = ({ productHandle, productId }: ViewTrackerProps) => {
       posthog?.capture('product_viewed', {
         product_id: productId,
         product_handle: productHandle,
+        $current_url: window.location.href,
+        $screen_width: window.screen.width,
+        $screen_height: window.screen.height,
       });
     };
     track();

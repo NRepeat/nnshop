@@ -8,7 +8,7 @@ tags: [robots, seo, security, env-vars, sanity, webhooks]
 requires: []
 provides:
   - Production-correct robots.txt allowing crawlers on public routes
-  - Server-only SANITY_REVALIDATE_SECRET (no NEXT_PUBLIC_ prefix)
+  - Server-only NEXT_PUBLIC_SANITY_REVALIDATE_SECRET (no NEXT_PUBLIC_ prefix)
   - layout.tsx metadata without noindex — site is indexable by default
 affects: [seo, sanity-webhooks, production-deploy]
 
@@ -29,7 +29,7 @@ key-files:
     - app/api/revalidate/path/route.ts
 
 key-decisions:
-  - "SANITY_REVALIDATE_SECRET (no NEXT_PUBLIC_) is server-only — used in API routes and env.ts; intentionally unavailable in client bundle"
+  - "NEXT_PUBLIC_SANITY_REVALIDATE_SECRET (no NEXT_PUBLIC_) is server-only — used in API routes and env.ts; intentionally unavailable in client bundle"
   - "robots.ts: disallow array covers /api/, /studio/, /uk/auth/, /ru/auth/, /checkout/ — all other paths crawlable"
   - "layout.tsx: robots field omitted entirely (not set to 'index') — Next.js default allows indexing without explicit declaration"
   - "Three debug console.log calls removed from path/route.ts — logged req object and revalidation arrays to server output"
@@ -58,7 +58,7 @@ completed: 2026-03-08
 
 ## Accomplishments
 - robots.ts now allows all public routes and only disallows `/api/`, `/studio/`, `/uk/auth/`, `/ru/auth/`, `/checkout/`
-- NEXT_PUBLIC_SANITY_REVALIDATE_SECRET renamed to SANITY_REVALIDATE_SECRET in env.ts and menu/route.ts; no longer exposed to client bundle
+- NEXT_PUBLIC_NEXT_PUBLIC_SANITY_REVALIDATE_SECRET renamed to NEXT_PUBLIC_SANITY_REVALIDATE_SECRET in env.ts and menu/route.ts; no longer exposed to client bundle
 - `robots: 'noindex'` removed from layout.tsx metadata — indexing enabled by Next.js default
 - Three debug console.log calls removed from path/route.ts (logged req, revalidatedPaths, revalidatedTags)
 
@@ -67,19 +67,19 @@ completed: 2026-03-08
 Each task was committed atomically:
 
 1. **Task 1: Fix robots.ts and remove noindex from layout metadata** - `dc19ff3` (fix)
-2. **Task 2: Rename NEXT_PUBLIC_SANITY_REVALIDATE_SECRET to server-only SANITY_REVALIDATE_SECRET** - `61d9587` (fix)
+2. **Task 2: Rename NEXT_PUBLIC_NEXT_PUBLIC_SANITY_REVALIDATE_SECRET to server-only NEXT_PUBLIC_SANITY_REVALIDATE_SECRET** - `61d9587` (fix)
 
 ## Files Created/Modified
 - `app/robots.ts` - Fixed from disallow-all to allow public + targeted disallows
 - `app/[locale]/(frontend)/layout.tsx` - Removed `robots: 'noindex'` from metadata export
-- `src/shared/sanity/env.ts` - revalidateSecret now reads SANITY_REVALIDATE_SECRET (no NEXT_PUBLIC_)
-- `app/api/revalidate/menu/route.ts` - SECRET reads SANITY_REVALIDATE_SECRET directly
+- `src/shared/sanity/env.ts` - revalidateSecret now reads NEXT_PUBLIC_SANITY_REVALIDATE_SECRET (no NEXT_PUBLIC_)
+- `app/api/revalidate/menu/route.ts` - SECRET reads NEXT_PUBLIC_SANITY_REVALIDATE_SECRET directly
 - `app/api/revalidate/path/route.ts` - Removed 3 debug console.log calls
 
 ## Decisions Made
-- SANITY_REVALIDATE_SECRET kept as server-only — both API routes are server-side, no client access needed
+- NEXT_PUBLIC_SANITY_REVALIDATE_SECRET kept as server-only — both API routes are server-side, no client access needed
 - robots field omitted entirely from layout.tsx (not set to `'index'`) — omission uses Next.js default which allows indexing
-- Vercel environment variable must be manually renamed in the dashboard from NEXT_PUBLIC_SANITY_REVALIDATE_SECRET to SANITY_REVALIDATE_SECRET before next deploy
+- Vercel environment variable must be manually renamed in the dashboard from NEXT_PUBLIC_NEXT_PUBLIC_SANITY_REVALIDATE_SECRET to NEXT_PUBLIC_SANITY_REVALIDATE_SECRET before next deploy
 
 ## Deviations from Plan
 
@@ -90,7 +90,7 @@ None.
 
 ## User Setup Required
 
-**Vercel dashboard action required before deploying:** Rename the environment variable `NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` to `SANITY_REVALIDATE_SECRET` in the Vercel project settings. The code now reads the server-only name; if the old Vercel var still uses the NEXT_PUBLIC_ prefix, both revalidate routes will receive an empty string and return 401 for all webhook calls.
+**Vercel dashboard action required before deploying:** Rename the environment variable `NEXT_PUBLIC_NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` to `NEXT_PUBLIC_SANITY_REVALIDATE_SECRET` in the Vercel project settings. The code now reads the server-only name; if the old Vercel var still uses the NEXT_PUBLIC_ prefix, both revalidate routes will receive an empty string and return 401 for all webhook calls.
 
 ## Next Phase Readiness
 - Site is now indexable and robots.txt is production-correct
