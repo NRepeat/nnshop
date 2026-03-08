@@ -10,7 +10,7 @@ export function PostHogProvider({ children }: { children: ReactNode }) {
       api_host: '/ingest',
       ui_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
       capture_pageview: false,
-      autocapture: true,
+      autocapture: false,
       capture_exceptions: false,
     });
   }
