@@ -19,6 +19,7 @@ import clsx from 'clsx';
 const Gallery = ({
   images,
   children,
+  handle,
   quiqView,
 }: {
   images: ShoipifyImage[];
@@ -103,7 +104,7 @@ const Gallery = ({
                     >
                       {({ ref, open }) => (
                         <div
-                          className="relative w-full aspect-square flex items-center justify-center max-h-[60vh] "
+                          className="relative w-full aspect-square flex items-center justify-center max-h-[60vh]"
                           ref={ref}
                         >
                           <Image

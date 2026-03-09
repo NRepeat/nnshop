@@ -3,7 +3,6 @@ import { sanityFetch } from '@/shared/sanity/lib/client';
 import { SITE_LOGO_QUERY } from '@/shared/sanity/lib/query';
 import { urlFor } from '@/shared/sanity/lib/image';
 
-export const runtime = 'edge';
 export const alt = 'Mio Mio';
 export const size = {
   width: 1200,
@@ -18,14 +17,16 @@ const RED = '#D94020';
 const WHITE = '#FFFFFF';
 
 export default async function Image() {
-  const logoData = await sanityFetch({
-    query: SITE_LOGO_QUERY,
-    revalidate: 3600,
-  });
-
-  const logoUrl = logoData?.logo?.url
-    ? urlFor(logoData.logo.url).width(120).height(120).url()
-    : null;
+  let logoUrl: string | null = null;
+  try {
+    const logoData = await sanityFetch({
+      query: SITE_LOGO_QUERY,
+      revalidate: 3600,
+    });
+    logoUrl = logoData?.logo?.url ? urlFor(logoData.logo.url).width(120).height(120).url() : null;
+  } catch {
+    // fallback: render without logo
+  }
 
   return new ImageResponse(
     (

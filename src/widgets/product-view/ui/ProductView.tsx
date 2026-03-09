@@ -16,8 +16,8 @@ import {
 import { JsonLd } from '@shared/ui/JsonLd';
 import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
 import { cookies } from 'next/headers';
-import { ProductCard } from '@entities/product/ui/ProductCard';
 import { ViewTracker } from '@entities/recently-viewed/ui/ViewTracker';
+import { RelatedProducts } from './RelatedProducts';
 import { RecentlyViewedSection } from '@entities/recently-viewed/ui/RecentlyViewedSection';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
@@ -104,16 +104,7 @@ export async function ProductView({
         inventoryLevels={inventoryLevels}
       />
       {relatedProducts && relatedProducts.length > 0 && (
-        <div className="content-stretch flex flex-col gap-[30px] items-center px-0 py-[30px] relative w-full">
-          <p className="text-3xl md:text-3xl text-center font-400">
-            {t('styleWith')}
-          </p>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 mx-auto max-w-5xl py-0 w-full">
-            {relatedProducts.slice(0, 3).map((p) => (
-              <ProductCard product={p} key={p.id} withInnerShadow />
-            ))}
-          </div>
-        </div>
+        <RelatedProducts products={relatedProducts} title={t('styleWith')} />
       )}
       {/* Recently Viewed: fire-and-forget view recording */}
       <ViewTracker productHandle={product.handle} productId={product.id} />

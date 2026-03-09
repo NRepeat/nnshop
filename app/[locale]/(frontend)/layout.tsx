@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Jost } from 'next/font/google';
+import { Onest } from 'next/font/google';
 import '../../globals.css';
 import { Providers } from '@/app/providers';
 import { Header } from '@widgets/header/ui/Header';
@@ -18,9 +18,9 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { PostHogPageView } from '@shared/lib/posthog/PostHogPageView';
 import { PostHogIdentify } from '@shared/lib/posthog/PostHogIdentify';
-const jostSans = Jost({
+const jostSans = Onest({
   variable: '--font-jost-sans',
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext', 'cyrillic'],
   display: 'swap',
   fallback: [
     'system-ui',

@@ -1,14 +1,27 @@
 import { Skeleton } from '@shared/ui/skeleton';
 
-export const ProductViewSkeleton = () => {
+export const ProductViewSkeleton = ({ handle }: { handle?: string }) => {
   return (
-    <div className="container my-8">
+    <div className="container space-y-16 my-8">
+      {/* Breadcrumb */}
+      <div className="flex gap-2 items-center">
+        <Skeleton className="h-4 w-16" />
+        <Skeleton className="h-4 w-3" />
+        <Skeleton className="h-4 w-20" />
+        <Skeleton className="h-4 w-3" />
+        <Skeleton className="h-4 w-28" />
+      </div>
+
+      {/* Gallery + Product Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12">
         {/* Gallery — col-span-1 lg:col-span-2 */}
         <div className="col-span-1 lg:col-span-2 flex flex-col items-center w-full">
           <div className="max-w-[600px] w-full flex flex-col gap-2">
             {/* Main image */}
-            <Skeleton className="w-full aspect-square max-h-[60vh] rounded" />
+            <Skeleton
+              className="w-full aspect-square max-h-[60vh] rounded"
+              style={handle ? { viewTransitionName: `product-img-${handle}` } : undefined}
+            />
             {/* Thumbnails */}
             <div className="flex gap-1 px-2">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -69,6 +82,20 @@ export const ProductViewSkeleton = () => {
             <Skeleton className="h-12 w-full" />
             <Skeleton className="h-12 w-full mt-px" />
           </div>
+        </div>
+      </div>
+
+      {/* Related products */}
+      <div className="flex flex-col gap-8 items-center py-8">
+        <Skeleton className="h-8 w-48" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 w-full max-w-5xl mx-auto">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex flex-col gap-3">
+              <Skeleton className="aspect-[3/4] w-full rounded-xl" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -47,7 +47,7 @@ export const BrandGrid = async ({
   const collectionPromises = [
     getCollection({
       handle: decodedSlug,
-      first: 18,
+      first: 20,
       locale: locale,
       searchParams: awaitedSearchParams,
     }),
@@ -55,7 +55,7 @@ export const BrandGrid = async ({
 
   if (hasFilters) {
     collectionPromises.push(
-      getCollection({ handle: decodedSlug, first: 18, locale: locale }),
+      getCollection({ handle: decodedSlug, first: 20, locale: locale }),
     );
   }
 
@@ -137,7 +137,7 @@ export const BrandGrid = async ({
               </Suspense>
             )}
           </div>
-          <div className="flex h-full items-end flex-row gap-2 justify-between md:justify-end">
+          <div className="flex h-full  items-center flex-row gap-2 justify-between md:justify-end">
             <Suspense fallback={null}>
               <SortSelect defaultValue={awaitedSearchParams.sort as string} />
             </Suspense>

@@ -5,6 +5,7 @@ import { Filter } from '@shared/lib/shopify/types/storefront.types';
 import { SortSelect } from './SortSelect';
 import { FilterSheet } from './FilterSheet';
 import { ActiveFiltersCarousel } from './ActiveFiltersCarousel';
+import { GridToggle } from './GridToggle';
 import { cn } from '@shared/lib/utils';
 import { useScrollStore } from '@shared/store/use-scroll-store';
 
@@ -50,14 +51,15 @@ export function CollectionFilterBar({ filters, initialFilters, hideVendor }: Pro
             ? 'opacity-100 pointer-events-auto translate-y-0'
             : 'opacity-0 pointer-events-none -translate-y-2',
           // stick under header or at screen top depending on header state
-          headerHidden ? 'top-0' : 'top-[70px] md:top-[125px]',
+          headerHidden ? 'top-0' : 'top-[var(--header-height,70px)]',
         )}
       >
         <div className="container flex items-center gap-3 py-2">
-          <div className="flex-1 min-w-0 overflow-hidden">
+          <div className="hidden md:flex flex-1 min-w-0 overflow-hidden">
             <ActiveFiltersCarousel filters={filters} />
           </div>
           <div className="flex items-center gap-2 shrink-0 ml-auto">
+            <GridToggle />
             <SortSelect />
             <FilterSheet
               filters={filters}

@@ -35,7 +35,7 @@ export function ProductViewProvider({
   );
   const sizeOptions = product.options.find((o) => isSizeOption(o.name))?.values;
 
-  const [size, setSize] = useQueryState('size');
+  const [size, setSize] = useQueryState('size', { shallow: true, scroll: false });
   let selectedVariant = undefined;
 
   if (size) {

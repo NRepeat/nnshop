@@ -1,4 +1,3 @@
-
 import { auth } from '@features/auth/lib/auth';
 import { FavSession } from '@features/header/ui/FavSession';
 import { isProductFavorite } from '@features/product/api/isProductFavorite';
@@ -17,7 +16,6 @@ import { generateProductJsonLd } from '@shared/lib/seo/jsonld';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { connection } from 'next/server';
 import { ProductViewSkeleton } from '@widgets/product-view/ui/ProductViewSkeleton';
-
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -43,14 +41,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-
 export default async function ProductPage({ params }: Props) {
   const { slug, locale } = await params;
   const handle = decodeURIComponent(slug);
   setRequestLocale(locale);
 
   return (
-    <Suspense fallback={<ProductViewSkeleton />}>
+    <Suspense fallback={<ProductViewSkeleton handle={handle} />}>
       <ProductContent handle={handle} locale={locale} />
     </Suspense>
   );
@@ -78,7 +75,7 @@ const ProductContent = async ({
             <Button
               variant="ghost"
               size="icon"
-              className="group animate-pulse bg-gray-200 "
+              className="group animate-pulse bg-transparent p-0"
             >
               <Heart className="h-4 w-4" />
             </Button>

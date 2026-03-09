@@ -1,7 +1,7 @@
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
 import { redirect, unstable_rethrow } from 'next/navigation';
-import { Suspense } from 'react';
+import { Suspense, ViewTransition } from 'react';
 import { CheckoutStepper } from '@entities/checkout/ui/CheckoutStepper';
 import { getCompletedSteps } from '@features/checkout/api/getCompletedSteps';
 import { Skeleton } from '@shared/ui/skeleton';
@@ -83,7 +83,9 @@ async function CheckoutLayoutContent({
       <div className="flex flex-col mt-8 space-y-8">
         <CheckoutStepper completedSteps={completedSteps} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
-          {children}
+          <ViewTransition name="checkout-step">
+            {children}
+          </ViewTransition>
           <Suspense fallback={<ReceiptSkeleton />}>{receipt}</Suspense>
         </div>
       </div>

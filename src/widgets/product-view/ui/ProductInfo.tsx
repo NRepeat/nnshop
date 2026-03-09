@@ -31,8 +31,7 @@ import { PriceSubscribeModal } from '@features/product/ui/PriceSubscribeModal';
 import { useState, useRef, useEffect, useMemo, useTransition } from 'react';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 import { Bell } from 'lucide-react';
-import * as DOMPurifyModule from 'dompurify';
-const DOMPurify = DOMPurifyModule.default ?? DOMPurifyModule;
+import DOMPurifyLib from 'dompurify';
 import { VariantInventory } from '@entities/product/api/getInventoryLevels';
 import { Popover, PopoverContent, PopoverTrigger } from '@shared/ui/popover';
 import { ButtonGroup, ButtonGroupSeparator } from '@shared/ui/button-group';
@@ -108,7 +107,11 @@ export const ProductInfo = ({
   const [isDescOverflowing, setDescOverflowing] = useState(false);
   const [, startSizeTransition] = useTransition();
   const descRef = useRef<HTMLDivElement>(null);
-  const cleanHtml = useMemo(() => DOMPurify.sanitize(product.descriptionHtml), [product.descriptionHtml]);
+  const cleanHtml = useMemo(() => {
+    if (typeof window === 'undefined') return product.descriptionHtml;
+    const purify = typeof DOMPurifyLib === 'function' ? DOMPurifyLib(window) : DOMPurifyLib;
+    return purify.sanitize(product.descriptionHtml);
+  }, [product.descriptionHtml]);
 
   useEffect(() => {
     const el = descRef.current;

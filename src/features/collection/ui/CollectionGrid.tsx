@@ -17,6 +17,7 @@ import { CollectionFilterBar } from './CollectionFilterBar';
 import { FilterSheet } from './FilterSheet';
 import { SortSelect } from './SortSelect';
 import { ActiveFiltersCarousel } from './ActiveFiltersCarousel';
+import { GridToggle } from './GridToggle';
 import { EnableScrollHide } from '@shared/ui/EnableScrollHide';
 import { SearchParams } from '~/app/[locale]/(frontend)/(home)/[gender]/(collection)/[slug]/page';
 import { headers } from 'next/headers';
@@ -88,7 +89,7 @@ export const CollectionGrid = async ({
     }),
     getCollection({
       handle: resolvedHandle,
-      first: 21,
+      first: 20,
       locale: locale,
       searchParams: awaitedSearchParams,
     }),
@@ -206,7 +207,8 @@ export const CollectionGrid = async ({
               </Suspense>
             )}
           </div>
-          <div className="flex h-full items-end flex-row gap-2 justify-between md:justify-end">
+          <div className="flex h-full items-center flex-row gap-2 justify-between md:justify-end">
+            <GridToggle />
             <Suspense fallback={null}>
               <SortSelect defaultValue={awaitedSearchParams.sort as string} />
             </Suspense>
