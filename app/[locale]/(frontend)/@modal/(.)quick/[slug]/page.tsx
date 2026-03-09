@@ -99,7 +99,7 @@ const ProductSessionView = async ({ params, quiqView }: Props) => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="group animate-pulse bg-gray-200 dark:bg-gray-700"
+                  className="group animate-pulse bg-gray-200 "
                 >
                   <Heart className="h-4 w-4" />
                 </Button>

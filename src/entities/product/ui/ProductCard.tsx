@@ -50,20 +50,28 @@ export const ProductCard = ({
     );
     if (!sizeOption) return [];
 
-    const sizeOptionIndex = product.options?.indexOf(sizeOption) ?? 0;
-
     const availableValues = new Set(
       product.variants?.edges
         ?.filter((v) => v.node.availableForSale)
-        .map((v) => v.node.selectedOptions?.[sizeOptionIndex]?.value)
+        .map((v) => v.node.selectedOptions?.find((o) => o.name === sizeOption.name)?.value)
         .filter(Boolean),
     );
 
-    return (
-      sizeOption.optionValues
-        ?.map((v) => v.name)
-        .filter((name) => availableValues.has(name)) ?? []
-    );
+    const CLOTHING_ORDER = ['xxs','xs','s','m','l','xl','xxl','xxxl','3xl','4xl','one size'];
+
+    const sizes = sizeOption.optionValues
+      ?.map((v) => v.name)
+      .filter((name) => availableValues.has(name)) ?? [];
+
+    return sizes.sort((a, b) => {
+      const aNum = parseFloat(a);
+      const bNum = parseFloat(b);
+      if (!isNaN(aNum) && !isNaN(bNum)) return aNum - bNum;
+      const aIdx = CLOTHING_ORDER.indexOf(a.toLowerCase());
+      const bIdx = CLOTHING_ORDER.indexOf(b.toLowerCase());
+      if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+      return a.localeCompare(b);
+    });
   })();
 
   const productImages = [

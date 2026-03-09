@@ -16,6 +16,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { StickyHeader } from './StickyHeader';
 
 export type HeaderBarProps = Extract<
   NonNullable<HEADER_QUERYResult>['header'],
@@ -50,7 +51,7 @@ export const Header = async ({ locale }: { locale: string }) => {
           />
         )}
       </Suspense>
-      <header className="sticky top-0 z-30 bg-background md:h-fit flex flex-col items-center shadow">
+      <StickyHeader>
         <div className="container w-full">
           <div className="w-full font-sans text-foreground grid grid-cols-3 text-base py-3">
             <Suspense fallback={<HeaderContentSkeleton />}>
@@ -101,7 +102,7 @@ export const Header = async ({ locale }: { locale: string }) => {
             />
           </Suspense>
         </div>
-      </header>
+      </StickyHeader>
     </>
   );
 };

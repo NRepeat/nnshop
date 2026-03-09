@@ -11,9 +11,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@shared/ui/breadcrumb';
+import { CollectionFilterBar } from '@features/collection/ui/CollectionFilterBar';
 import { FilterSheet } from '@features/collection/ui/FilterSheet';
-import { ActiveFiltersCarousel } from '@features/collection/ui/ActiveFiltersCarousel';
 import { SortSelect } from '@features/collection/ui/SortSelect';
+import { ActiveFiltersCarousel } from '@features/collection/ui/ActiveFiltersCarousel';
+import { EnableScrollHide } from '@shared/ui/EnableScrollHide';
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
@@ -92,11 +94,11 @@ export const BrandGrid = async ({
 
   return (
     <>
-      <div className=" flex flex-col gap-4 md:gap-8 mt-8">
-        <Breadcrumb>
+      <div className=" flex flex-col mt-8">
+        <Breadcrumb className=" mb-4 md:mb-8">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink  href={`/${locale}`}>
+              <BreadcrumbLink href={`/${locale}`}>
                 {t('nav.home')}
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -108,12 +110,16 @@ export const BrandGrid = async ({
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{decodeHtmlEntities(collection.collection?.title ?? '')}</BreadcrumbPage>
+              <BreadcrumbPage>
+                {decodeHtmlEntities(collection.collection?.title ?? '')}
+              </BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
 
-        <div className="w-full border-b border-muted pb-4 flex flex-col  justify-between lg:items-end gap-6">
+        <EnableScrollHide />
+
+        <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row justify-between lg:items-end gap-6">
           <div className="flex flex-col gap-3.5 w-full">
             <h1 className="text-2xl font-bold">
               {decodeHtmlEntities(collection.collection?.title ?? '')}
@@ -126,7 +132,7 @@ export const BrandGrid = async ({
             {collection.collection?.products.filters && (
               <Suspense fallback={null}>
                 <ActiveFiltersCarousel
-                  filters={collection.collection?.products.filters}
+                  filters={collection.collection.products.filters}
                 />
               </Suspense>
             )}
@@ -142,6 +148,16 @@ export const BrandGrid = async ({
             />
           </div>
         </div>
+
+        {collection.collection?.products.filters && (
+          <Suspense fallback={null}>
+            <CollectionFilterBar
+              filters={collection.collection.products.filters}
+              initialFilters={initialFilters}
+              hideVendor
+            />
+          </Suspense>
+        )}
 
         <div className="flex justify-between gap-8 h-full">
           <ClientGridWrapper

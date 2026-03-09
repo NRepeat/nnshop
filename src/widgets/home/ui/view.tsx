@@ -25,9 +25,6 @@ export const PageContent = async ({
       <Suspense fallback={null}>
         <RecentlyViewedSection />
       </Suspense>
-      <Suspense fallback={null}>
-        <NewsletterSection />
-      </Suspense>
     </div>
   );
 };

@@ -3,7 +3,10 @@ import { CollectionGridSkeleton } from '@features/collection/ui/CollectionGridSk
 import { locales } from '@shared/i18n/routing';
 import { Suspense } from 'react';
 import { Metadata } from 'next';
-import { getCollection, getCollectionSlugs } from '@entities/collection/api/getCollection';
+import {
+  getCollection,
+  getCollectionSlugs,
+} from '@entities/collection/api/getCollection';
 import { generateCollectionMetadata } from '@shared/lib/seo/generateMetadata';
 import { setRequestLocale } from 'next-intl/server';
 
@@ -23,7 +26,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       return { title: 'Collection Not Found' };
     }
 
-    return generateCollectionMetadata(collection.collection, locale, slug, gender);
+    return generateCollectionMetadata(
+      collection.collection,
+      locale,
+      slug,
+      gender,
+    );
   } catch {
     return { title: 'Collection Not Found' };
   }
@@ -43,7 +51,7 @@ export async function generateStaticParams() {
     return params;
   } catch (error) {
     console.error('Failed to generate static params for collections:', error);
-    return locales.map(locale => ({ locale, slug: '' }));
+    return locales.map((locale) => ({ locale, slug: '' }));
   }
 }
 
@@ -57,7 +65,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   setRequestLocale(locale);
 
   return (
-    <div className="container ">
+    <div className="container mb-10">
       <Suspense fallback={<CollectionGridSkeleton />}>
         <CollectionGrid params={params} searchParams={searchParams} />
       </Suspense>

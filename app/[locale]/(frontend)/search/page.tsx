@@ -24,7 +24,7 @@ export default async function SearchPage({ params, searchParams }: Props) {
   setRequestLocale(locale);
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container p-4">
       <Suspense fallback={<SearchPageSkeleton />}>
         <SearchResultsComponent searchParams={searchParams} locale={locale} />
       </Suspense>
@@ -50,17 +50,21 @@ const SearchResultsComponent = async ({
   );
   if (!query) {
     return (
-      <div className="h-fit min-h-screen">
-        {pageTitle}
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <SearchIcon />
-            </EmptyMedia>
-            <EmptyTitle>{t('noResults')}</EmptyTitle>
-            <EmptyDescription>{t('tryAgain')}</EmptyDescription>
-          </EmptyHeader>
-        </Empty>
+      <div className=" mt-8 md:mt-8 h-fit min-h-screen">
+        <div className="container">
+          <div className="my-8">
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">{pageTitle}</h1>
+          </div>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <SearchIcon />
+              </EmptyMedia>
+              <EmptyTitle>{t('noResults')}</EmptyTitle>
+              <EmptyDescription>{t('tryAgain')}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </div>
       </div>
     );
   }
@@ -69,7 +73,6 @@ const SearchResultsComponent = async ({
   let errorContent: React.ReactNode | null = null;
 
   try {
-
     const apiResponse = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/predictive-search`,
       {
@@ -106,33 +109,41 @@ const SearchResultsComponent = async ({
 
   if (!results || !results.products || results.products.length === 0) {
     return (
-      <div className="h-fit min-h-screen">
-        {pageTitle}
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <SearchIcon />
-            </EmptyMedia>
-            <EmptyTitle>{t('noResults')}</EmptyTitle>
-            <EmptyDescription>{t('tryAgain')}</EmptyDescription>
-          </EmptyHeader>
-        </Empty>
+      <div className=" mt-8 md:mt-8 h-fit min-h-screen">
+        <div className="container">
+          <div className="my-8">
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">{pageTitle}</h1>
+          </div>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <SearchIcon />
+              </EmptyMedia>
+              <EmptyTitle>{t('noResults')}</EmptyTitle>
+              <EmptyDescription>{t('tryAgain')}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </div>
       </div>
     );
   }
 
   return (
-    <>
-      {pageTitle}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-10">
-        {results.products.map((product) => (
-          <ProductCardSPP
-            product={product as ShopifyProduct}
-            key={product.id}
-          />
-        ))}
+    <div className=" mt-8 md:mt-8 h-fit min-h-screen">
+      <div className="container">
+        <div className="my-8">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2"> {pageTitle}</h1>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-10">
+          {results.products.map((product) => (
+            <ProductCardSPP
+              product={product as ShopifyProduct}
+              key={product.id}
+            />
+          ))}
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

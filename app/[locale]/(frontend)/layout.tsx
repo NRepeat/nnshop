@@ -12,6 +12,7 @@ import { VisualEditing } from 'next-sanity/visual-editing';
 import { draftMode } from 'next/headers';
 import { Suspense } from 'react';
 import { JsonLd } from '@shared/ui/JsonLd';
+import { ScrollDirectionProvider } from '@shared/ui/ScrollDirectionProvider';
 import { generateOrganizationJsonLd } from '@shared/lib/seo/jsonld';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -97,8 +98,9 @@ export default async function RootLayout(props: RootProps) {
           content="qD1Qgm9RZihEYdNNxa5cH_88cZEGi-B8-mQcGwJLrAo"
         />
       </head>
-      <body className={`${jostSans.variable} antialiased`}>
+      <body className={`${jostSans.variable} antialiased `}>
         <Providers>
+          <ScrollDirectionProvider>
           <Header locale={locale} />
           <main>{children}</main>
 
@@ -107,6 +109,7 @@ export default async function RootLayout(props: RootProps) {
           <Suspense>
             <Footer locale={locale} />
           </Suspense>
+          </ScrollDirectionProvider>
         </Providers>
       </body>
       <Suspense>

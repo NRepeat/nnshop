@@ -13,9 +13,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@shared/ui/breadcrumb';
+import { CollectionFilterBar } from './CollectionFilterBar';
 import { FilterSheet } from './FilterSheet';
-import { ActiveFiltersCarousel } from './ActiveFiltersCarousel';
 import { SortSelect } from './SortSelect';
+import { ActiveFiltersCarousel } from './ActiveFiltersCarousel';
+import { EnableScrollHide } from '@shared/ui/EnableScrollHide';
 import { SearchParams } from '~/app/[locale]/(frontend)/(home)/[gender]/(collection)/[slug]/page';
 import { headers } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
@@ -86,7 +88,7 @@ export const CollectionGrid = async ({
     }),
     getCollection({
       handle: resolvedHandle,
-      first: 18,
+      first: 21,
       locale: locale,
       searchParams: awaitedSearchParams,
     }),
@@ -167,8 +169,8 @@ export const CollectionGrid = async ({
           },
         ])}
       />
-      <div className=" flex flex-col gap-4 md:gap-8 mt-8">
-        <Breadcrumb>
+      <div className=" flex flex-col  mt-8">
+        <Breadcrumb className="mb-4 md:mb-8">
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href={`/`}>{t('nav.home')}</BreadcrumbLink>
@@ -186,15 +188,20 @@ export const CollectionGrid = async ({
           </BreadcrumbList>
         </Breadcrumb>
 
+        <EnableScrollHide />
+
         <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row justify-between lg:items-end gap-6">
           <div className="flex flex-col gap-3.5 w-full">
-            <h1 className="text-2xl font-bold">
-              {displayTitle}
-            </h1>
+            <h1 className="text-2xl font-bold">{displayTitle}</h1>
+            {/* {collection.collection?.description && (
+              <p className="text-gray-600 text-sm max-w-full">
+                {collection.collection.description}
+              </p>
+            )} */}
             {collection.collection?.products.filters && (
               <Suspense fallback={null}>
                 <ActiveFiltersCarousel
-                  filters={collection.collection?.products.filters}
+                  filters={collection.collection.products.filters}
                 />
               </Suspense>
             )}
@@ -209,6 +216,15 @@ export const CollectionGrid = async ({
             />
           </div>
         </div>
+
+        {collection.collection?.products.filters && (
+          <Suspense fallback={null}>
+            <CollectionFilterBar
+              filters={collection.collection.products.filters}
+              initialFilters={initialFilters}
+            />
+          </Suspense>
+        )}
 
         <div className="flex justify-between gap-8 h-full">
           <ClientGridWrapper

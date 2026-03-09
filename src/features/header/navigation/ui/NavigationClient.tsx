@@ -15,7 +15,7 @@ export const NavigationClient = ({
   children: React.ReactNode;
   className?: string;
 }) => {
-  const [value, setValue] = useState('radix-_R_4uheaitpetb_');
+  const [value, setValue] = useState('');
   console.log('NavigationClient rendered with value:', value);
   const close = useCallback(() => setValue(''), []);
 
@@ -30,7 +30,10 @@ export const NavigationClient = ({
         viewport={true}
       >
         <NavigationMenuList
-          className={cn(className, ' flex items-center justify-center grid-cols-3 md:grid-cols-3 w-full pt-0 py-2')}
+          className={cn(
+            className,
+            ' flex items-center justify-center grid-cols-3 md:grid-cols-3 w-full pt-0 py-2',
+          )}
         >
           {children}
         </NavigationMenuList>
