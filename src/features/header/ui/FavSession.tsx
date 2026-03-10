@@ -29,10 +29,15 @@ export const FavSession = memo(({
 
   const handleToggle = async () => {
     if (isProcessing) return;
-    
+
+    if (!session.data?.user) {
+      router.push(`/${locale}/auth/sign-in`);
+      return;
+    }
+
     const previousValue = isFav;
     const nextValue = !isFav;
-    
+
     setIsProcessing(true);
     setIsFav(nextValue);
 
@@ -43,7 +48,7 @@ export const FavSession = memo(({
         locale,
         handle,
       );
-      
+
       if (!result.success) {
         setIsFav(previousValue);
         if (result.error === 'AUTH_REQUIRED') {

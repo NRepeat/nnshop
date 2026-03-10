@@ -13,19 +13,199 @@ import {
 import { urlFor } from '@shared/sanity/lib/image';
 import { HOME_PAGEResult } from '@shared/sanity/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { cn } from '@shared/lib/utils';
 
-type HeroSliderProps = Extract<
+type HeroSliderBase = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'heroSlider' }
-> & { gender?: string };
+>;
 
-type Slide = NonNullable<HeroSliderProps['slides']>[number];
+type HeroSliderProps = HeroSliderBase & {
+  gender?: string;
+  videoFile?: string | null;
+  videoUrl?: string | null;
+  videoTitle?: string | null;
+  videoDescription?: string | null;
+  videoTextPosition?: string | null;
+  videoTitleColor?: string | null;
+  videoDescriptionColor?: string | null;
+  videoLinkUrl?: string | null;
+  videoCollection?: { handle?: string | null } | null;
+  videoOverlay?: {
+    color?: { hex?: string | null } | null;
+    opacity?: number | null;
+  } | null;
+};
 
-export const HeroBanner = (props: HeroSliderProps) => {
-  const { slides, gender } = props;
+type Slide = NonNullable<HeroSliderBase['slides']>[number] & {
+  title?: string | null;
+  textPosition?: string | null;
+  titleColor?: string | null;
+  descriptionColor?: string | null;
+  overlay?: {
+    color?: { hex?: string | null } | null;
+    opacity?: number | null;
+  } | null;
+  textBackground?: {
+    color?: { hex?: string | null } | null;
+    opacity?: number | null;
+    padding?: 'sm' | 'md' | 'lg' | null;
+    rounded?: boolean | null;
+  } | null;
+};
 
-  if (!slides || slides.length === 0) return null;
+function getPositionStyle(position: string): React.CSSProperties {
+  const [vertical, horizontal] = (position || 'bottom-left').split('-');
 
+  const style: React.CSSProperties = {};
+
+  if (vertical === 'top') {
+    style.top = 'clamp(2rem, 5vw, 4rem)';
+  } else if (vertical === 'middle') {
+    style.top = '50%';
+  } else {
+    style.bottom = 'clamp(2rem, 5vw, 4rem)';
+  }
+
+  if (horizontal === 'left') {
+    style.left = 'clamp(1.5rem, 4vw, 4rem)';
+  } else if (horizontal === 'center') {
+    style.left = '50%';
+  } else {
+    style.right = 'clamp(1.5rem, 4vw, 4rem)';
+  }
+
+  const translateX = horizontal === 'center' ? '-50%' : '0';
+  const translateY = vertical === 'middle' ? '-50%' : '0';
+  if (translateX !== '0' || translateY !== '0') {
+    style.transform = `translate(${translateX}, ${translateY})`;
+  }
+
+  return style;
+}
+
+function getTextAlign(position: string): React.CSSProperties {
+  const horizontal = (position || 'bottom-left').split('-')[1];
+  return {
+    textAlign:
+      horizontal === 'center'
+        ? 'center'
+        : horizontal === 'right'
+          ? 'right'
+          : 'left',
+    alignItems:
+      horizontal === 'center'
+        ? 'center'
+        : horizontal === 'right'
+          ? 'flex-end'
+          : 'flex-start',
+  };
+}
+
+function hexToRgba(hex: string, opacity: number) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+
+function buildOverlayBg(
+  color?: { hex?: string | null } | null,
+  opacity?: number | null,
+) {
+  const hex = color?.hex;
+  const alpha = (opacity ?? 20) / 100;
+  return hex ? hexToRgba(hex, alpha) : 'rgba(0, 0, 0, 0.2)';
+}
+
+// Video Hero
+
+type VideoHeroProps = {
+  src: string;
+  textPosition: string;
+  titleColor?: string | null;
+  descriptionColor?: string | null;
+  title?: string | null;
+  description?: string | null;
+  overlay?: { color?: { hex?: string | null } | null; opacity?: number | null } | null;
+  href?: string | null;
+};
+
+function VideoHero({ src, textPosition, titleColor, descriptionColor, title, description, overlay, href }: VideoHeroProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    el.muted = true;
+    el.play().catch(() => {});
+  }, [src]);
+
+  const pos = textPosition;
+  const overlayBg = buildOverlayBg(overlay?.color, overlay?.opacity);
+console.log(pos,'pos')
+  const inner = (
+    <>
+      <video
+        ref={videoRef}
+        src={src}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        disablePictureInPicture
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+      <div
+        className="absolute inset-0"
+        style={{ backgroundColor: overlayBg }}
+      />
+      {(title || description) && (
+        <div
+          className="absolute z-10 max-w-[80%] flex flex-col gap-4"
+          style={{ ...getPositionStyle(pos), ...getTextAlign(pos) }}
+        >
+          {title && (
+            <h2
+              className="text-3xl md:text-5xl font-bold tracking-tight drop-shadow-lg"
+              style={{ color: titleColor ?? '#ffffff' }}
+            >
+              {title}
+            </h2>
+          )}
+          {description && (
+            <p
+              className="text-base md:text-lg drop-shadow leading-snug"
+              style={{ color: descriptionColor ?? 'rgba(255,255,255,0.9)' }}
+            >
+              {description}
+            </p>
+          )}
+        </div>
+      )}
+    </>
+  );
+
+  return (
+    <div
+      className="relative w-full overflow-hidden"
+      style={{ height: 'calc(80svh - var(--header-height, 0px))' }}
+    >
+      {href ? (
+        <Link href={href} className="absolute inset-0 z-10" prefetch>
+          {inner}
+        </Link>
+      ) : (
+        inner
+      )}
+    </div>
+  );
+}
+
+// Image Slider
+
+function ImageSlider({ slides, gender }: { slides: Slide[]; gender?: string }) {
   const resolveHref = (
     url?: string | null,
     collection?: { handle?: string | null } | null,
@@ -42,76 +222,134 @@ export const HeroBanner = (props: HeroSliderProps) => {
   const getSlideHref = (slide: Slide) =>
     resolveHref(slide.link?.url, slide.collection) ?? '/';
 
-
   const renderImages = (slide: Slide, index: number) => (
     <>
       {slide.mobileImage?.asset && (
-        <Image
-          src={urlFor(slide.mobileImage.asset).width(800).height(1200).auto('format').quality(75).url()}
-          alt={slide.description || 'Banner mobile'}
-          width={800}
-          height={1200}
-          priority={index === 0}
-          className="block md:hidden object-cover w-full max-h-[60vh]"
-        />
+        <div
+          className="relative w-full block md:hidden"
+          style={{ height: 'calc(80svh - var(--header-height, 0px))' }}
+        >
+          <Image
+            src={urlFor(slide.mobileImage.asset)
+              .auto('format')
+              .quality(100)
+              .url()}
+            alt={slide.title || slide.description || 'Banner mobile'}
+            fill
+            priority={index === 0}
+            className="object-cover"
+          />
+        </div>
       )}
       {slide.image?.asset && (
-        <Image
-          src={urlFor(slide.image.asset).width(1920).height(780).fit('crop').auto('format').quality(75).url()}
-          alt={slide.description || 'Banner desktop'}
-          width={1920}
-          height={780}
-          priority={index === 0}
-          className={`${slide.mobileImage?.asset ? 'hidden md:block' : 'block'} w-full max-h-[75vh] object-cover`}
-        />
+        <div
+          className={`relative w-full aspect-video ${slide.mobileImage?.asset ? 'hidden md:block' : 'block'}`}
+          style={{ maxHeight: 'calc(90svh - var(--header-height, 0px))' }}
+        >
+          <Image
+            src={urlFor(slide.image.asset).auto('format').quality(100).url()}
+            alt={slide.title || slide.description || 'Banner desktop'}
+            fill
+            priority={index === 0}
+            className="object-cover"
+          />
+        </div>
       )}
     </>
   );
 
-  const renderOverlay = (slide: Slide, hasButtons: boolean) => (
-    <>
-      <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors" />
-      <div className="absolute bottom-12 left-6 md:bottom-20 md:left-16 z-10 max-w-[80%] flex flex-col gap-6">
-        {slide.description && (
-          <h2 className="text-white text-3xl md:text-4xl lg:text-4xl font-medium tracking-tight drop-shadow-lg">
-            {slide.description}
-          </h2>
-        )}
-        {hasButtons && slide.buttons && slide.buttons.length > 0 && (
-          <div className="flex flex-wrap gap-3">
-            {slide.buttons.map((btn, btnIndex) => (
-              <Button
-                key={`${btn.label}-${btnIndex}`}
-                variant={btn.variant ?? 'secondary'}
-                className="min-w-[140px] h-11 md:h-13 text-sm uppercase tracking-widest rounded"
+  const renderOverlay = (slide: Slide, hasButtons: boolean) => {
+    const pos = slide.textPosition ?? 'bottom-left';
+    const overlayBg = buildOverlayBg(
+      slide.overlay?.color,
+      slide.overlay?.opacity,
+    );
+
+    const tb = slide.textBackground;
+    const textBgColor = tb?.color?.hex
+      ? hexToRgba(tb.color.hex, (tb.opacity ?? 40) / 100)
+      : undefined;
+    const textPad =
+      tb?.padding === 'sm'
+        ? '0.75rem'
+        : tb?.padding === 'lg'
+          ? '1.5rem'
+          : '1rem';
+    
+    return (
+      <>
+        <div
+          className="absolute inset-0 transition-colors"
+          style={{ backgroundColor: overlayBg }}
+        />
+        <div
+          className="absolute z-10 max-w-[80%] flex flex-col gap-4"
+          style={{ ...getPositionStyle(pos), ...getTextAlign(pos) }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem',
+              ...(textBgColor && {
+                backgroundColor: textBgColor,
+                padding: textPad,
+                borderRadius: tb?.rounded ? '0.375rem' : undefined,
+              }),
+            }}
+          >
+            {slide.title && (
+              <h2
+                className="text-3xl md:text-5xl lg:text-8xl font-bold tracking-tight drop-shadow-lg"
+                style={{ color: slide.titleColor ?? '#ffffff' }}
               >
-                {btn.label}
-              </Button>
-            ))}
+                {slide.title}
+              </h2>
+            )}
+            {slide.description && (
+              <p
+                className="text-2xl md:text-3xl lg:text-5xl drop-shadow leading-snug"
+                style={{ color: slide.descriptionColor ?? 'rgba(255,255,255,0.9)' }}
+              >
+                {slide.description}
+              </p>
+            )}
+            {hasButtons && slide.buttons && slide.buttons.length > 0 && (
+              <div className="flex flex-wrap gap-3">
+                {slide.buttons.map((btn, btnIndex) => (
+                  <Button
+                    key={`${btn.label}-${btnIndex}`}
+                    variant={btn.variant ?? 'secondary'}
+                    className="min-w-[140px] h-11 md:h-13 text-sm uppercase tracking-widest rounded"
+                  >
+                    {btn.label}
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </>
-  );
+        </div>
+      </>
+    );
+  };
+
   const [api2, setApi2] = useState<CarouselApi>();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+
   const onInit = useCallback((api: CarouselApi) => {
     if (!api) return;
     setScrollSnaps(api.scrollSnapList());
   }, []);
+
   const onSelect = useCallback(
     (api: CarouselApi) => {
       if (!api) return;
-      if (api2) {
-        if (api === api2) {
-          api2.scrollTo(api2.selectedScrollSnap());
-          setSelectedIndex(api2.selectedScrollSnap());
-        }
-      }
+      if (api2 && api === api2) setSelectedIndex(api2.selectedScrollSnap());
     },
     [api2],
   );
+
   const initTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (api2) {
@@ -119,7 +357,6 @@ export const HeroBanner = (props: HeroSliderProps) => {
       api2.on('reInit', onSelect);
       initTimerRef.current = setTimeout(() => onInit(api2), 0);
     }
-
     return () => {
       if (initTimerRef.current) clearTimeout(initTimerRef.current);
       if (api2) {
@@ -128,62 +365,75 @@ export const HeroBanner = (props: HeroSliderProps) => {
       }
     };
   }, [api2, onSelect, onInit]);
+
   return (
-    <div className="hero-banner relative w-full overflow-hidden 3xl:max-w-400">
-      <Carousel
-        opts={{ loop: true, active: true }}
-        setApi={setApi2}
-        plugins={[
-          Autoplay({
-            delay: 8000,
-            stopOnInteraction: false,
-          }),
-        ]}
-      >
-        <CarouselContent className="ml-0">
-          {slides.map((slide, index) => {
-            const hasButtons = !!slide.buttons?.length;
-            return (
-              <CarouselItem
-                key={index}
-                className="pl-0 relative w-full text-pretty font-light leading-tight tracking-tight text-left text-2xl md:text-4xl"
+    <Carousel
+      opts={{ loop: true, active: true }}
+      setApi={setApi2}
+      plugins={[Autoplay({ delay: 8000, stopOnInteraction: false })]}
+    >
+      <CarouselContent className="ml-0">
+        {slides.map((slide, index) => {
+          const hasButtons = !!slide.buttons?.length;
+          return (
+            <CarouselItem key={index} className="pl-0 relative w-full">
+              <Link
+                prefetch
+                href={getSlideHref(slide)}
+                className="group relative flex w-full h-full justify-center"
               >
-                {hasButtons ? (
-                  <Link
-                    prefetch
-                    href={getSlideHref(slide)}
-                    className="group relative flex w-full h-full justify-center"
-                  >
-                    {renderImages(slide, index)}
-                    {renderOverlay(slide, true)}
-                  </Link>
-                ) : (
-                  /* No buttons — entire slide is clickable */
-                  <Link
-                    prefetch
-                    href={getSlideHref(slide)}
-                    className="group relative flex w-full h-full justify-center"
-                  >
-                    {renderImages(slide, index)}
-                    {renderOverlay(slide, false)}
-                  </Link>
-                )}
-              </CarouselItem>
-            );
-          })}
-        </CarouselContent>
-        <div className="flex justify-center gap-2 mt-4">
-          {scrollSnaps.map((_, index) => (
-            <Button
-              key={index}
-              className={`w-2 h-[3px]  py-0 px-3  ${
-                index === selectedIndex ? 'bg-primary' : 'bg-gray-300'
-              }`}
-              onClick={() => api2?.scrollTo(index)}
-            />
-          ))}
-        </div>
-      </Carousel>
+                {renderImages(slide, index)}
+                {renderOverlay(slide, hasButtons)}
+              </Link>
+            </CarouselItem>
+          );
+        })}
+      </CarouselContent>
+      <div className="flex justify-center gap-2 mt-4">
+        {scrollSnaps.map((_, index) => (
+          <Button
+            key={index}
+            className={`w-2 h-[3px] py-0 px-3 ${
+              index === selectedIndex ? 'bg-primary' : 'bg-gray-300'
+            }`}
+            onClick={() => api2?.scrollTo(index)}
+          />
+        ))}
+      </div>
+    </Carousel>
+  );
+}
+
+// HeroBanner
+
+export const HeroBanner = (props: HeroSliderProps) => {
+  console.log(props,"props")
+  const { slides, gender, videoFile, videoUrl } = props;
+  const hasVideo = !!(videoFile || videoUrl);
+
+  if (!hasVideo && (!slides || slides.length === 0)) return null;
+
+  return (
+    <div className="hero-banner relative w-full overflow-hidden max-w-[1920px] mx-auto">
+      {hasVideo ? (
+        <VideoHero
+          src={props.videoFile || props.videoUrl || ''}
+          textPosition={props.videoTextPosition ?? 'bottom-left'}
+          titleColor={props.videoTitleColor}
+          descriptionColor={props.videoDescriptionColor}
+          title={props.videoTitle}
+          description={props.videoDescription}
+          overlay={props.videoOverlay}
+          href={
+            props.videoLinkUrl ??
+            (props.videoCollection?.handle
+              ? `/${gender ?? ''}/${props.videoCollection.handle}`.replace('//', '/')
+              : null)
+          }
+        />
+      ) : (
+        <ImageSlider slides={slides as Slide[]} gender={gender} />
+      )}
     </div>
   );
 };

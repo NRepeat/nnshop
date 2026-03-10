@@ -61,7 +61,7 @@ export function SignupForm({
       {...props}
     >
       <Card className="overflow-hidden p-0 rounded shadow border-none">
-        <CardContent className="grid  md:grid-cols-2">
+        <CardContent className="grid  md:grid-cols-2 px-0">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(async (data) => {

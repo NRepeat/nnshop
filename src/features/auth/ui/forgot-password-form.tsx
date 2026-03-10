@@ -155,8 +155,8 @@ export function ForgotPasswordForm({
       className={cn('flex flex-col gap-6 w-full max-w-3xl  ', className)}
       {...props}
     >
-      <Card className="overflow-hidden  rounded shadow border-none">
-        <CardContent className="grid  md:grid-cols-2 rounded shadow border-none">
+      <Card className="overflow-hidden  rounded shadow-none border-none">
+        <CardContent className="grid  md:grid-cols-2 rounded shadow-none border-none">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
@@ -182,6 +182,7 @@ export function ForgotPasswordForm({
                             {...field}
                             id="email"
                             type="email"
+                            autoComplete="email"
                             placeholder={t('emailPlaceholder')}
                             disabled={isLoading}
                           />

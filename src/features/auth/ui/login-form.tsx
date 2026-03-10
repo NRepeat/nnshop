@@ -56,7 +56,7 @@ export default function LoginForm({
       {...props}
     >
       <Card className="overflow-hidden rounded shadow border-none">
-        <CardContent className="grid  md:grid-cols-2">
+        <CardContent className="grid  md:grid-cols-2 px-0">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(async (data) => {
@@ -88,7 +88,7 @@ export default function LoginForm({
                           {...field}
                           id="email"
                           type="email"
-                          autoComplete="email"
+                          autoComplete="username"
                           placeholder={t('emailPlaceholder')}
                           disabled={isLoading}
                           className="rounded"

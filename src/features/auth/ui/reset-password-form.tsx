@@ -99,11 +99,11 @@ export function ResetPasswordForm({
 
   return (
     <div
-      className={cn('flex flex-col gap-6 w-full max-w-3xl', className)}
+      className={cn('flex flex-col gap-6 w-full max-w-4xl', className)}
       {...props}
     >
-      <Card className="overflow-hidden shadow rounded border-none">
-        <CardContent className="grid  md:grid-cols-2">
+      <Card className="overflow-hidden shadow-none rounded border-none">
+        <CardContent className="grid shadow-none md:grid-cols-2">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}

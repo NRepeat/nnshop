@@ -29,11 +29,11 @@ export const PopularPosts = ({ title, posts }: PopularPostsProps) => {
   if (!posts || posts.length === 0) return null;
 
   return (
-    <section className=" py-12">
+    <section className=" container">
       {title != null && (
         <p className="px-4 text-3xl font-400 mb-8">{title as string}</p>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 px-4  pb-8">
         {posts.map((post) => {
           const resolved = post.localizedVersion ?? post;
           return (

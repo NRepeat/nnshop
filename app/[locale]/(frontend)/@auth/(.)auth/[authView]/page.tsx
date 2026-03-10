@@ -16,7 +16,7 @@ const AuthSession = async ({
     namespace: 'BetterAuthUI',
   });
   return (
-    <QuickView open={Boolean(params)}>
+    <QuickView open={Boolean(params)} className='px-1.5'>
       <main className=" flex grow flex-col items-center justify-center self-center  ">
         <AuthViewRenderer authView={authView} tBetterAuth={tBetterAuth} />
       </main>

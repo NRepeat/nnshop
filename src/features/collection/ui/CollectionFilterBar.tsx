@@ -50,8 +50,10 @@ export function CollectionFilterBar({ filters, initialFilters, hideVendor }: Pro
           isPastHeader
             ? 'opacity-100 pointer-events-auto translate-y-0'
             : 'opacity-0 pointer-events-none -translate-y-2',
-          // stick under header or at screen top depending on header state
-          headerHidden ? 'top-0' : 'top-[var(--header-height,70px)]',
+          // on mobile header never hides, so always sit below it;
+          // on desktop, move to top-0 when header is scrolled away
+          'top-[var(--header-height,70px)]',
+          headerHidden && 'md:top-0',
         )}
       >
         <div className="container flex items-center gap-3 py-2">

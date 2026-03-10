@@ -528,9 +528,31 @@ export const HOME_PAGE =
               }
             },
             _type == "heroSlider" => {
-              ...,
+              _type,
+              _key,
+              title,
+              description,
+              "videoFile": videoFile.asset->url,
+              videoUrl,
+              videoTitle,
+              videoDescription,
+              "videoTextPosition": videoTextPosition,
+              "videoTitleColor": videoTitleColor.hex,
+              "videoDescriptionColor": videoDescriptionColor.hex,
+              videoLinkUrl,
+              "videoCollection": videoCollection->{
+                "handle": store.slug.current
+              },
+              videoOverlay {
+                opacity,
+                color { hex }
+              },
               slides[]{
                 ...,
+                "titleColor": titleColor.hex,
+                "descriptionColor": descriptionColor.hex,
+                overlay { opacity, color { hex } },
+                textBackground { opacity, color { hex }, padding, rounded },
                 "collection": collection->{
                   title,
                   "handle": store.slug.current,
