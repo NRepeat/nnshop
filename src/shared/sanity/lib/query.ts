@@ -1086,11 +1086,11 @@ export const HEADER_QUERY = defineQuery(`
         menuIndex,
         columns[]{
           _key,
-          "title": coalesce(title[$locale], title.uk, title.ru, collection->store.title, ""),
+          "title": coalesce(title[$locale], title.uk, title.ru, collection->titles[$locale], collection->titles.uk, collection->store.title, ""),
           "url": collection->store.slug.current,
           items[]->{
             _id,
-            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, store.title, ""),
+            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, titles[$locale], titles.uk, store.title, ""),
             "handle": store.slug.current,
             "navTitleColor": navTitleColor
           },
@@ -1111,11 +1111,11 @@ export const HEADER_QUERY = defineQuery(`
         menuIndex,
         columns[]{
           _key,
-          "title": coalesce(title[$locale], title.uk, title.ru, collection->store.title, ""),
+          "title": coalesce(title[$locale], title.uk, title.ru, collection->titles[$locale], collection->titles.uk, collection->store.title, ""),
           "url": collection->store.slug.current,
           items[]->{
             _id,
-            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, store.title, ""),
+            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, titles[$locale], titles.uk, store.title, ""),
             "handle": store.slug.current,
             "navTitleColor": navTitleColor
           },

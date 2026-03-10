@@ -51,15 +51,43 @@ export function NavDropdownContent({
 
   const displayImageUrl = activeImageUrl ?? defaultImage?.imageUrl ?? null;
 
+  const processedColumns = columns.flatMap((col) => {
+    if (col.items.length <= 6) return [col];
+
+    const chunks = [];
+    for (let i = 0; i < col.items.length; i += 6) {
+      chunks.push(col.items.slice(i, i + 6));
+    }
+
+    return chunks.map((chunk, idx) => ({
+      ...col,
+      items: chunk,
+      title: idx === 0 ? col.title : '',
+      outletLink: idx === chunks.length - 1 ? col.outletLink : null,
+      actionButton: idx === chunks.length - 1 ? col.actionButton : null,
+    }));
+  });
+
   return (
-    <div className="flex gap-10 px-6 w-full py-8 justify-center">
-      {columns.map((col, colIdx) => (
-        <div key={col.title + colIdx} className="flex-1 min-w-[180px] max-w-[260px]">
-          <NavigationItemClient href={col.url} className="block mb-3">
-            <p className="text-base font-semibold tracking-wide border-b border-border pb-2">
-              {col.title}
-            </p>
-          </NavigationItemClient>
+    <div className="flex gap-10 px-6 w-full py-8 justify-between max-w-6xl ">
+      {processedColumns.map((col, colIdx) => (
+        <div
+          key={`${col.title}-${colIdx}`}
+          className="flex-1 min-w-[180px] max-w-[260px]"
+        >
+          {col.title ? (
+            <NavigationItemClient href={col.url} className="block mb-3">
+              <p className="text-base font-semibold tracking-wide border-b border-border pb-2">
+                {col.title}
+              </p>
+            </NavigationItemClient>
+          ) : (
+            <div className="block mb-3">
+              <p className="text-base font-semibold tracking-wide border-b border-border pb-2 invisible">
+                Spacer
+              </p>
+            </div>
+          )}
           <ul
             className="flex flex-col gap-0.5"
             onMouseLeave={() => setActiveImageUrl(null)}
@@ -72,10 +100,13 @@ export function NavDropdownContent({
                   setActiveImageUrl(item.collectionImageUrl ?? null)
                 }
               >
-                <NavigationItemClient href={item.url} className="w-full rounded">
+                <NavigationItemClient
+                  href={item.url}
+                  className="w-full rounded"
+                >
                   <Button
                     variant="ghost"
-                    className={`group-hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-2 border-none min-h-10 rounded ${item.navTitleColor && item.navTitleColor !== 'default' ? NAV_COLOR_MAP[item.navTitleColor] ?? '' : ''}`}
+                    className={`group-hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-2 border-none min-h-10 rounded ${item.navTitleColor && item.navTitleColor !== 'default' ? (NAV_COLOR_MAP[item.navTitleColor] ?? '') : ''}`}
                   >
                     {item.title}
                   </Button>
@@ -118,13 +149,10 @@ export function NavDropdownContent({
               className="object-cover w-full h-full rounded transition-opacity duration-200"
             />
           </NavigationItemClient>
-          {(defaultImage.imageTitle || defaultImage.alt) && (
-            <p className="text-sm text-muted-foreground">
-              {defaultImage.imageTitle ?? defaultImage.alt}
-            </p>
-          )}
           {defaultImage.imageButtonLabel && (
-            <NavigationItemClient href={defaultImage.imageButtonUrl ?? defaultImage.href}>
+            <NavigationItemClient
+              href={defaultImage.imageButtonUrl ?? defaultImage.href}
+            >
               <Button variant="outline" className="text-sm w-full">
                 {defaultImage.imageButtonLabel}
               </Button>

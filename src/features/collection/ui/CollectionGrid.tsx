@@ -202,15 +202,17 @@ export const CollectionGrid = async ({
               </Suspense>
             )}
           </div>
-          <div className="flex h-full items-center flex-row gap-2 justify-between md:justify-end">
+          <div className="flex h-full items-center flex-row gap-2 justify-between  md:justify-end">
             <GridToggle />
-            <Suspense fallback={null}>
-              <SortSelect defaultValue={awaitedSearchParams.sort as string} />
-            </Suspense>
-            <FilterSheet
-              filters={collection.collection?.products.filters}
-              initialFilters={initialFilters}
-            />
+            <div className='flex gap-2'>
+              <Suspense fallback={null}>
+                <SortSelect defaultValue={awaitedSearchParams.sort as string} />
+              </Suspense>
+              <FilterSheet
+                filters={collection.collection?.products.filters}
+                initialFilters={initialFilters}
+              />
+            </div>
           </div>
         </div>
 

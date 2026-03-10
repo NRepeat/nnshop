@@ -38,13 +38,26 @@ type NavImages = {
   man?: NavImage[] | null;
 } | null;
 
-type SanityColumnItem = { _id: string; title: string; handle: string; navTitleColor?: string | null } | null;
+type SanityColumnItem = {
+  _id: string;
+  title: string;
+  handle: string;
+  navTitleColor?: string | null;
+} | null;
 type SanityColumn = {
   title: string;
   url?: string | null;
   items?: SanityColumnItem[] | null;
-  outletLink?: { label?: string | null; collectionHandle?: string | null; url?: string | null } | null;
-  actionButton?: { label?: string | null; collectionHandle?: string | null; url?: string | null } | null;
+  outletLink?: {
+    label?: string | null;
+    collectionHandle?: string | null;
+    url?: string | null;
+  } | null;
+  actionButton?: {
+    label?: string | null;
+    collectionHandle?: string | null;
+    url?: string | null;
+  } | null;
 };
 type SanityDropdown = { menuIndex: number; columns?: SanityColumn[] | null };
 type NavDropdowns = {
@@ -66,7 +79,12 @@ export const CurrentNavigationSession = async ({
   const cookie = await cookies();
   const currentGender = gender || cookie.get('gender')?.value || 'woman';
   return (
-    <Navigation gender={currentGender} locale={locale} navImages={navImages} navDropdowns={navDropdowns} />
+    <Navigation
+      gender={currentGender}
+      locale={locale}
+      navImages={navImages}
+      navDropdowns={navDropdowns}
+    />
   );
 };
 
@@ -162,7 +180,9 @@ const Navigation = async ({
     navDropdowns?.[gender as 'woman' | 'man'] ?? []
   ).flatMap((d) =>
     (d.columns ?? []).flatMap((col) =>
-      (col.items ?? []).filter((item): item is NonNullable<SanityColumnItem> => item != null).map((item) => item.handle),
+      (col.items ?? [])
+        .filter((item): item is NonNullable<SanityColumnItem> => item != null)
+        .map((item) => item.handle),
     ),
   );
   const shopifyHandles = items.flatMap((item) =>
@@ -173,7 +193,9 @@ const Navigation = async ({
         return hasSubItems
           ? sub.items
               .filter((g) => !isBrandsItem(g))
-              .flatMap((g) => g.items.map((child) => child.url.replace(/^\//, '')))
+              .flatMap((g) =>
+                g.items.map((child) => child.url.replace(/^\//, '')),
+              )
           : sub.items.map((child) => child.url.replace(/^\//, ''));
       }),
   );
@@ -197,7 +219,6 @@ const Navigation = async ({
 
   const withGender = (url: string) => {
     const stripped = stripGenderFromHandle(url);
-    // Avoid /woman/woman — menu item that points to the gender home itself
     if (stripped === `/${gender}`) return `/${gender}`;
     return `/${gender}${stripped}`;
   };
@@ -235,37 +256,49 @@ const Navigation = async ({
                   }
                 : null;
 
-              // Try Sanity columns first, fallback to Shopify items
-              const genderDropdowns = navDropdowns?.[gender as 'woman' | 'man'] ?? [];
+              const genderDropdowns =
+                navDropdowns?.[gender as 'woman' | 'man'] ?? [];
               const sanityDropdown = genderDropdowns.find(
                 (d) => d.menuIndex === subIndex,
               );
               const columns = sanityDropdown?.columns?.length
                 ? sanityDropdown.columns.map((col) => ({
                     title: col.title,
-                    url: col.url ? withGender(`/${col.url}`) : withGender(subItem.url),
-                    items: (col.items ?? []).filter((item): item is NonNullable<SanityColumnItem> => item != null).map((item) => ({
-                      title: item.title,
-                      url: withGender(`/${item.handle}`),
-                      collectionImageUrl: collectionImages[item.handle] ?? null,
-                      navTitleColor: item.navTitleColor ?? null,
-                    })),
+                    url: col.url
+                      ? withGender(`/${col.url}`)
+                      : withGender(subItem.url),
+                    items: (col.items ?? [])
+                      .filter(
+                        (item): item is NonNullable<SanityColumnItem> =>
+                          item != null,
+                      )
+                      .map((item) => ({
+                        title: item.title,
+                        url: withGender(`/${item.handle}`),
+                        collectionImageUrl:
+                          collectionImages[item.handle] ?? null,
+                        navTitleColor: item.navTitleColor ?? null,
+                      })),
                     outletLink: col.outletLink?.label
                       ? {
                           label: col.outletLink.label,
                           url: col.outletLink.collectionHandle
                             ? withGender(`/${col.outletLink.collectionHandle}`)
-                            : col.outletLink.url ?? '#',
+                            : (col.outletLink.url ?? '#'),
                         }
                       : null,
                     actionButton: col.actionButton?.label
                       ? {
                           label: col.actionButton.label,
                           url: col.actionButton.collectionHandle
-                            ? withGender(`/${col.actionButton.collectionHandle}`)
+                            ? withGender(
+                                `/${col.actionButton.collectionHandle}`,
+                              )
                             : col.actionButton.url
                               ? col.actionButton.url
-                              : col.url ? withGender(`/${col.url}`) : withGender(subItem.url),
+                              : col.url
+                                ? withGender(`/${col.url}`)
+                                : withGender(subItem.url),
                         }
                       : null,
                   }))
@@ -318,7 +351,7 @@ const Navigation = async ({
                   >
                     {subItem.title}
                   </NavigationTriggerClient>
-                  <NavigationMenuContent className="px-4">
+                  <NavigationMenuContent className="px-4 w-full flex justify-center">
                     <NavDropdownContent
                       columns={columns}
                       defaultImage={defaultImage}
@@ -349,7 +382,6 @@ const Navigation = async ({
     <NavigationClient key={locale} className=" pt-2 w-full">
       <>
         {menu}
-
         <NavigationMenuItem className="group">
           <NavigationTriggerClient
             href="/brands"
@@ -357,9 +389,9 @@ const Navigation = async ({
           >
             {t('title')}
           </NavigationTriggerClient>
-          <NavigationMenuContent className="px-6 ">
-            <div className="flex gap-10 py-8  w-full   justify-center">
-              <div className="flex-1 max-w-5xl">
+          <NavigationMenuContent className="px-6 w-full flex justify-center ">
+            <div className="flex gap-10 py-8 max-w-6xl w-full justify-between">
+              <div className="flex-1 ">
                 <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
                   {t('topBrands')}
                 </p>
@@ -369,7 +401,6 @@ const Navigation = async ({
                       key={brand.title}
                       className="w-full group rounded hover:shadow hover:bg-secondary/50 transition-colors duration-200"
                     >
-
                       <NavigationItemClient
                         className="w-full "
                         href={`/brend${brand.url}`}

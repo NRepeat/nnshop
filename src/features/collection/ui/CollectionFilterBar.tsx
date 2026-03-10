@@ -46,12 +46,9 @@ export function CollectionFilterBar({ filters, initialFilters, hideVendor }: Pro
         className={cn(
           'fixed left-0 right-0 z-20 bg-background border-b border-muted shadow-sm py-4',
           'transition-all duration-300 ease-in-out',
-          // show only after user has scrolled past the sentinel
           isPastHeader
             ? 'opacity-100 pointer-events-auto translate-y-0'
             : 'opacity-0 pointer-events-none -translate-y-2',
-          // on mobile header never hides, so always sit below it;
-          // on desktop, move to top-0 when header is scrolled away
           'top-[var(--header-height,70px)]',
           headerHidden && 'top-0',
         )}
