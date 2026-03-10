@@ -44,6 +44,7 @@ const CART_QUERY = `#graphql
                   id
                   title
                   handle
+                  vendor
                   metafields(   identifiers: [
                   {key: "znizka", namespace: "custom"}]){
                     key
@@ -62,6 +63,10 @@ const CART_QUERY = `#graphql
                 currencyCode
               }
               amountPerQuantity {
+                amount
+                currencyCode
+              }
+              compareAtAmountPerQuantity {
                 amount
                 currencyCode
               }

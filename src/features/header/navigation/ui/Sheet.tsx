@@ -3,6 +3,8 @@ import { getMainMenu } from '../api/getMainMenu';
 import NavigationSheet from './NavigationSheet';
 import { cookies } from 'next/headers';
 import { stripGenderFromHandle } from '../utils/strip-gender-from-handle';
+import { sanityFetch } from '@shared/sanity/lib/client';
+import { FOOTER_QUERY } from '@shared/sanity/lib/query';
 
 const genderSlugMap: Record<string, string[]> = {
   woman: [
@@ -49,13 +51,12 @@ function isBrandsItem(item: { url: string; title: string }): boolean {
 const MenuSheet = async ({ locale }: { locale: string }) => {
   const cookie = await cookies();
   const gender = cookie.get('gender')?.value || 'woman';
-  
-  const t = await getTranslations({
-    locale,
-    namespace: 'Header.nav.drawer',
-  });
-  
-  const allItems = await getMainMenu({ locale });
+
+  const [t, allItems, footerData] = await Promise.all([
+    getTranslations({ locale, namespace: 'Header.nav.drawer' }),
+    getMainMenu({ locale }),
+    sanityFetch({ query: FOOTER_QUERY, tags: ['siteSettings', 'footer'] }),
+  ]);
 
   // Filter by gender
   const mainMenuRaw = allItems.filter((item) => matchesGender(item, gender));
@@ -105,9 +106,16 @@ const MenuSheet = async ({ locale }: { locale: string }) => {
     });
   }
 
+  const socialLinks = footerData?.footerSettings?.socialLinks ?? [];
+
   return (
     // @ts-ignore
-    <NavigationSheet mainMenu={menuItems} title={t('title')} locale={locale} />
+    <NavigationSheet
+      mainMenu={menuItems}
+      title={t('title')}
+      locale={locale}
+      socialLinks={socialLinks}
+    />
   );
 };
 

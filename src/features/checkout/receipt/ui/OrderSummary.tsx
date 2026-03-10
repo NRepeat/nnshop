@@ -26,6 +26,7 @@ interface CartItem {
   handle: string;
   image: string | null;
   price: number;
+  compareAtPrice: number | null;
   discountedPrice: number;
   quantity: number;
   totalPrice: number;
@@ -85,17 +86,19 @@ function OrderItemCard({
 
       {/* Total Price */}
       <div className="flex-shrink-0 text-right">
-        <p
-          className={`text-sm font-medium `}
-        >
-          <span
-            className={cn('text-sm font-medium ', {
-              'text-red-600': item.sale > 0,
-            })}
-          >
-            {formatPrice(item.discountedPrice)} {currencySymbol}
-          </span>
-        </p>
+        {item.sale > 0 ? (
+          <div className="flex flex-col items-end gap-0.5">
+            <span className="text-xs line-through text-gray-400">{formatPrice(item.price)} {currencySymbol}</span>
+            <span className="text-sm font-medium text-red-600">{formatPrice(item.discountedPrice)} {currencySymbol}</span>
+          </div>
+        ) : item.compareAtPrice ? (
+          <div className="flex flex-col items-end gap-0.5">
+            <span className="text-xs line-through text-gray-400">{formatPrice(item.compareAtPrice)} {currencySymbol}</span>
+            <span className="text-sm font-medium text-red-600">{formatPrice(item.price)} {currencySymbol}</span>
+          </div>
+        ) : (
+          <span className="text-sm font-medium">{formatPrice(item.discountedPrice)} {currencySymbol}</span>
+        )}
       </div>
     </div>
   );
@@ -134,6 +137,8 @@ export async function OrderSummary({
         product.metafields?.find((m) => m?.key === 'znizka')?.value || '0',
       ) || 0;
     const price = Number(line.cost.amountPerQuantity.amount);
+    const compareAtAmount = (line.cost as any).compareAtAmountPerQuantity?.amount;
+    const compareAtPrice = compareAtAmount ? Number(compareAtAmount) : null;
     const discountedPrice = price - (price * sale) / 100;
     const totalPrice =
       sale > 0 ? discountedPrice * line.quantity : price * line.quantity;
@@ -141,6 +146,7 @@ export async function OrderSummary({
     const sizeOption = line.merchandise.selectedOptions?.find(
       (opt) =>
         opt.name.toLowerCase() === 'розмір' ||
+        opt.name.toLowerCase() === 'размер' ||
         opt.name.toLowerCase() === 'size',
     );
     const colorOption = line.merchandise.selectedOptions?.find(
@@ -155,6 +161,7 @@ export async function OrderSummary({
       handle: product.handle,
       image: line.merchandise.image?.url || null,
       price,
+      compareAtPrice: compareAtPrice && compareAtPrice > price ? compareAtPrice : null,
       discountedPrice,
       quantity: line.quantity,
       totalPrice,

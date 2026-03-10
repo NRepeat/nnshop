@@ -94,6 +94,31 @@ export default defineType({
       description: 'Overrides the Shopify collection title on the frontend. Leave empty to use the Shopify title.',
       group: 'editorial',
     }),
+    // Nav title override (overrides title shown in navigation dropdown)
+    defineField({
+      name: 'navTitle',
+      title: 'Nav Title Override',
+      type: 'localizedString',
+      description: 'Override the title shown in navigation dropdowns. Leave empty to use the collection title.',
+      group: 'editorial',
+    }),
+    // Nav title color (text color in navigation dropdown)
+    defineField({
+      name: 'navTitleColor',
+      title: 'Nav Title Color',
+      type: 'string',
+      description: 'Highlight color for this item in navigation dropdowns.',
+      group: 'editorial',
+      options: {
+        list: [
+          { title: 'Default', value: 'default' },
+          { title: 'Red (Sale / Outlet)', value: 'red' },
+          { title: 'Orange', value: 'orange' },
+          { title: 'Green', value: 'green' },
+          { title: 'Blue', value: 'blue' },
+        ],
+      },
+    }),
     // Is Brand
     defineField({
       name: 'isBrand',

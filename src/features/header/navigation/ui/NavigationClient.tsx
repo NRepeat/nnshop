@@ -1,8 +1,9 @@
 'use client';
 
-import { createContext, useCallback, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { NavigationMenu, NavigationMenuList } from '@shared/ui/navigation-menu';
 import { cn } from '@shared/lib/utils';
+import { usePathname } from 'next/navigation';
 
 const NavigationCloseContext = createContext<() => void>(() => {});
 
@@ -17,6 +18,11 @@ export const NavigationClient = ({
 }) => {
   const [value, setValue] = useState('');
   const close = useCallback(() => setValue(''), []);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setValue('');
+  }, [pathname]);
 
   return (
     <NavigationCloseContext.Provider value={close}>

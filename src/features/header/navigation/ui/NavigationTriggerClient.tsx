@@ -3,6 +3,7 @@
 import { NavigationMenuTrigger } from '@shared/ui/navigation-menu';
 import { cn } from '@shared/lib/utils';
 import { Link } from '@shared/i18n/navigation';
+import { useNavigationClose } from './NavigationClient';
 
 interface NavigationTriggerClientProps {
   children: React.ReactNode;
@@ -15,6 +16,8 @@ export const NavigationTriggerClient = ({
   className,
   href,
 }: NavigationTriggerClientProps) => {
+  const close = useNavigationClose();
+
   return (
     <NavigationMenuTrigger
       variant={'ghost'}
@@ -22,6 +25,11 @@ export const NavigationTriggerClient = ({
         'hover:bg-accent/50 hover:rounded-t  cursor-pointer w-full text-nowrap text-base font-300 font-sans h-full has-[>svg]:px-5 px-5 py-2 border-transparent',
         className,
       )}
+      onClick={(e) => {
+        if (e.currentTarget.dataset.state === 'open') {
+          close();
+        }
+      }}
     >
       <Link href={href || ''} prefetch>
         {children}

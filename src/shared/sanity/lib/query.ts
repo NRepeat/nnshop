@@ -1055,11 +1055,14 @@ export const HEADER_QUERY = defineQuery(`
         menuIndex,
         imageTitle,
         imageButtonLabel,
+        imageButtonUrl,
+        brandSlug,
         "imageUrl": image.asset->url,
         "imageWidth": image.asset->metadata.dimensions.width,
         "imageHeight": image.asset->metadata.dimensions.height,
         "collectionHandle": collection->store.slug.current,
         "collectionTitle": collection->store.title,
+        "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,
       },
       man[]{
         _key,
@@ -1067,11 +1070,14 @@ export const HEADER_QUERY = defineQuery(`
         menuIndex,
         imageTitle,
         imageButtonLabel,
+        imageButtonUrl,
+        brandSlug,
         "imageUrl": image.asset->url,
         "imageWidth": image.asset->metadata.dimensions.width,
         "imageHeight": image.asset->metadata.dimensions.height,
         "collectionHandle": collection->store.slug.current,
         "collectionTitle": collection->store.title,
+        "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,
       }
     },
     navDropdowns {
@@ -1084,8 +1090,19 @@ export const HEADER_QUERY = defineQuery(`
           "url": collection->store.slug.current,
           items[]->{
             _id,
-            "title": store.title,
-            "handle": store.slug.current
+            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, store.title, ""),
+            "handle": store.slug.current,
+            "navTitleColor": navTitleColor
+          },
+          "outletLink": outletLink {
+            "label": coalesce(label[$locale], label.uk, label.ru, ""),
+            "collectionHandle": collection->store.slug.current,
+            url
+          },
+          "actionButton": actionButton {
+            "label": coalesce(label[$locale], label.uk, label.ru, ""),
+            "collectionHandle": collection->store.slug.current,
+            url
           }
         }
       },
@@ -1098,8 +1115,19 @@ export const HEADER_QUERY = defineQuery(`
           "url": collection->store.slug.current,
           items[]->{
             _id,
-            "title": store.title,
-            "handle": store.slug.current
+            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, store.title, ""),
+            "handle": store.slug.current,
+            "navTitleColor": navTitleColor
+          },
+          "outletLink": outletLink {
+            "label": coalesce(label[$locale], label.uk, label.ru, ""),
+            "collectionHandle": collection->store.slug.current,
+            url
+          },
+          "actionButton": actionButton {
+            "label": coalesce(label[$locale], label.uk, label.ru, ""),
+            "collectionHandle": collection->store.slug.current,
+            url
           }
         }
       }

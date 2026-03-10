@@ -1,7 +1,6 @@
 'use client';
 
 import { Link } from '@shared/i18n/navigation';
-import { useNavigationClose } from './NavigationClient';
 
 interface NavigationContentLinkProps {
   href: string;
@@ -14,10 +13,8 @@ export const NavigationContentLink = ({
   children,
   className,
 }: NavigationContentLinkProps) => {
-  const closeMenu = useNavigationClose();
-
   return (
-    <Link href={href} prefetch onClick={closeMenu} className={className}>
+    <Link href={href} prefetch className={className}>
       {children}
     </Link>
   );

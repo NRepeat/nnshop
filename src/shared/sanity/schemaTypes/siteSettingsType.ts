@@ -25,111 +25,7 @@ export const siteSettingsType = defineType({
       name: 'navImages',
       title: 'Navigation Dropdown Images',
       description: 'Images per gender shown in navigation dropdowns, matched by index to sub-menu items.',
-      type: 'object',
-      fields: [
-        defineField({
-          name: 'woman',
-          title: 'Woman',
-          type: 'array',
-          of: [
-            defineArrayMember({
-              type: 'object',
-              fields: [
-                defineField({
-                  name: 'image',
-                  title: 'Image',
-                  type: 'image',
-                  options: { hotspot: true },
-                  validation: (Rule) => Rule.required(),
-                }),
-                defineField({
-                  name: 'menuIndex',
-                  title: 'Menu Index',
-                  type: 'number',
-                  description: 'Index of the dropdown menu item (0 = first). If set, overrides array position.',
-                }),
-                defineField({
-                  name: 'collection',
-                  title: 'Collection',
-                  type: 'reference',
-                  to: [{ type: 'collection' }],
-                  description: 'Link to a Shopify collection page (priority over URL)',
-                }),
-                defineField({
-                  name: 'url',
-                  title: 'Link URL',
-                  type: 'string',
-                  description: 'Fallback URL if no collection selected (e.g. /woman/new-arrivals)',
-                }),
-                defineField({
-                  name: 'imageTitle',
-                  title: 'Image Title',
-                  type: 'string',
-                  description: 'Caption shown below the image (e.g. "Женская обувь")',
-                }),
-                defineField({
-                  name: 'imageButtonLabel',
-                  title: 'Image Button Label',
-                  type: 'string',
-                  description: 'Button label below image title (e.g. "Все коллекции")',
-                }),
-              ],
-              preview: { select: { media: 'image', title: 'collection.store.title', subtitle: 'menuIndex' } },
-            }),
-          ],
-        }),
-        defineField({
-          name: 'man',
-          title: 'Man',
-          type: 'array',
-          of: [
-            defineArrayMember({
-              type: 'object',
-              fields: [
-                defineField({
-                  name: 'image',
-                  title: 'Image',
-                  type: 'image',
-                  options: { hotspot: true },
-                  validation: (Rule) => Rule.required(),
-                }),
-                defineField({
-                  name: 'menuIndex',
-                  title: 'Menu Index',
-                  type: 'number',
-                  description: 'Index of the dropdown menu item (0 = first). If set, overrides array position.',
-                }),
-                defineField({
-                  name: 'collection',
-                  title: 'Collection',
-                  type: 'reference',
-                  to: [{ type: 'collection' }],
-                  description: 'Link to a Shopify collection page (priority over URL)',
-                }),
-                defineField({
-                  name: 'url',
-                  title: 'Link URL',
-                  type: 'string',
-                  description: 'Fallback URL if no collection selected (e.g. /man/new-arrivals)',
-                }),
-                defineField({
-                  name: 'imageTitle',
-                  title: 'Image Title',
-                  type: 'string',
-                  description: 'Caption shown below the image (e.g. "Мужская обувь")',
-                }),
-                defineField({
-                  name: 'imageButtonLabel',
-                  title: 'Image Button Label',
-                  type: 'string',
-                  description: 'Button label below image title (e.g. "Все коллекции")',
-                }),
-              ],
-              preview: { select: { media: 'image', title: 'collection.store.title', subtitle: 'menuIndex' } },
-            }),
-          ],
-        }),
-      ],
+      type: 'navDropdownImages',
     }),
     defineField({
       name: 'navDropdowns',
@@ -185,6 +81,58 @@ export const siteSettingsType = defineType({
                             defineArrayMember({
                               type: 'reference',
                               to: [{ type: 'collection' }],
+                            }),
+                          ],
+                        }),
+                        defineField({
+                          name: 'outletLink',
+                          title: 'Outlet / Special Link',
+                          type: 'object',
+                          description: 'Highlighted link shown at the bottom of the column (e.g. Outlet, Sale). Styled in red.',
+                          fields: [
+                            defineField({
+                              name: 'label',
+                              title: 'Label',
+                              type: 'localizedString',
+                            }),
+                            defineField({
+                              name: 'collection',
+                              title: 'Collection',
+                              type: 'reference',
+                              to: [{ type: 'collection' }],
+                              description: 'Link to a Shopify collection page (priority over URL).',
+                            }),
+                            defineField({
+                              name: 'url',
+                              title: 'URL',
+                              type: 'string',
+                              description: 'Custom URL if no collection selected.',
+                            }),
+                          ],
+                        }),
+                        defineField({
+                          name: 'actionButton',
+                          title: 'Action Button',
+                          type: 'object',
+                          description: 'Button shown below the column items. Leave empty to hide.',
+                          fields: [
+                            defineField({
+                              name: 'label',
+                              title: 'Button Label',
+                              type: 'localizedString',
+                            }),
+                            defineField({
+                              name: 'collection',
+                              title: 'Collection',
+                              type: 'reference',
+                              to: [{ type: 'collection' }],
+                              description: 'Link button to a collection page (priority over URL).',
+                            }),
+                            defineField({
+                              name: 'url',
+                              title: 'Button URL',
+                              type: 'string',
+                              description: 'Custom URL. Used if no collection selected.',
                             }),
                           ],
                         }),

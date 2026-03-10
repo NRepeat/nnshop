@@ -481,51 +481,88 @@ export type SiteSettings = {
   infoBar?: InfoBar;
   header?: Header;
   brandsNavigation?: BrandsNavigation;
-  navImages?: {
+  navImages?: NavDropdownImages;
+  navDropdowns?: {
     woman?: Array<{
-      image?: {
-        asset?: {
+      menuIndex?: number;
+      columns?: Array<{
+        collection?: {
           _ref: string;
           _type: 'reference';
           _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+          [internalGroqTypeReferenceTo]?: 'collection';
         };
-        media?: unknown;
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        _type: 'image';
-      };
-      menuIndex?: number;
-      collection?: {
-        _ref: string;
-        _type: 'reference';
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: 'collection';
-      };
-      url?: string;
+        title?: LocalizedString;
+        items?: Array<{
+          _ref: string;
+          _type: 'reference';
+          _weak?: boolean;
+          _key: string;
+          [internalGroqTypeReferenceTo]?: 'collection';
+        }>;
+        outletLink?: {
+          label?: LocalizedString;
+          collection?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'collection';
+          };
+          url?: string;
+        };
+        actionButton?: {
+          label?: LocalizedString;
+          collection?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'collection';
+          };
+          url?: string;
+        };
+        _key: string;
+      }>;
       _key: string;
     }>;
     man?: Array<{
-      image?: {
-        asset?: {
+      menuIndex?: number;
+      columns?: Array<{
+        collection?: {
           _ref: string;
           _type: 'reference';
           _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+          [internalGroqTypeReferenceTo]?: 'collection';
         };
-        media?: unknown;
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        _type: 'image';
-      };
-      menuIndex?: number;
-      collection?: {
-        _ref: string;
-        _type: 'reference';
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: 'collection';
-      };
-      url?: string;
+        title?: LocalizedString;
+        items?: Array<{
+          _ref: string;
+          _type: 'reference';
+          _weak?: boolean;
+          _key: string;
+          [internalGroqTypeReferenceTo]?: 'collection';
+        }>;
+        outletLink?: {
+          label?: LocalizedString;
+          collection?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'collection';
+          };
+          url?: string;
+        };
+        actionButton?: {
+          label?: LocalizedString;
+          collection?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'collection';
+          };
+          url?: string;
+        };
+        _key: string;
+      }>;
       _key: string;
     }>;
   };
@@ -556,20 +593,24 @@ export type FooterSettings = {
   paymentMethods?: Array<string>;
 };
 
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop';
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
+export type LocalizedString = {
+  _type: 'localizedString';
+  ru?: string;
+  uk?: string;
 };
 
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot';
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
+export type NavDropdownImages = {
+  _type: 'navDropdownImages';
+  woman?: Array<
+    {
+      _key: string;
+    } & NavImageItem
+  >;
+  man?: Array<
+    {
+      _key: string;
+    } & NavImageItem
+  >;
 };
 
 export type BrandsNavigation = {
@@ -649,12 +690,6 @@ export type Social = {
   _type: 'social';
   linkedIn?: string;
   x?: string;
-};
-
-export type LocalizedString = {
-  _type: 'localizedString';
-  ru?: string;
-  uk?: string;
 };
 
 export type Locale = {
@@ -898,6 +933,22 @@ export type LinkInternal = {
       };
 };
 
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop';
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot';
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
+};
+
 export type BrandGridBlock = {
   _type: 'brandGridBlock';
   title?: LocalizedString;
@@ -922,6 +973,40 @@ export type BrandGridBlock = {
     _type: 'logo';
     _key: string;
   }>;
+};
+
+export type NavImageItem = {
+  _type: 'navImageItem';
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: 'image';
+  };
+  menuIndex?: number;
+  collection?: {
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: 'collection';
+  };
+  brandSlug?: string;
+  url?: string;
+  imageTitle?: string;
+  imageButtonLabel?: string;
+  imageButtonCollection?: {
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: 'collection';
+  };
+  imageButtonUrl?: string;
 };
 
 export type CollectionsWithPreviews = {
@@ -1338,6 +1423,8 @@ export type Collection = {
   };
   showHero?: boolean;
   customTitle?: LocalizedString;
+  navTitle?: LocalizedString;
+  navTitleColor?: 'default' | 'red' | 'orange' | 'green' | 'blue';
   isBrand?: boolean;
   hero?: HeroCollection;
   modules?: Array<
@@ -1592,8 +1679,8 @@ export type AllSanitySchemaTypes =
   | Seo
   | SiteSettings
   | FooterSettings
-  | SanityImageCrop
-  | SanityImageHotspot
+  | LocalizedString
+  | NavDropdownImages
   | BrandsNavigation
   | Header
   | InfoBar
@@ -1601,7 +1688,6 @@ export type AllSanitySchemaTypes =
   | Slug
   | Redirect
   | Social
-  | LocalizedString
   | Locale
   | SimpleBlockContent
   | ProductCarousel
@@ -1621,7 +1707,10 @@ export type AllSanitySchemaTypes =
   | HeroCollection
   | LinkExternal
   | LinkInternal
+  | SanityImageCrop
+  | SanityImageHotspot
   | BrandGridBlock
+  | NavImageItem
   | CollectionsWithPreviews
   | BlockCatalog
   | ContentBlocks
@@ -3988,7 +4077,7 @@ export type SITEMAP_QUERYResult = Array<{
   language: string | null;
 }>;
 // Variable: HEADER_QUERY
-// Query: *[_type == 'siteSettings'][0]{    infoBar {      ...,      telephone,      viberPhone,      "text": coalesce(text[$locale], text.uk, text.ru, ""),      link {        ...,        "collectionData": reference-> {          title,          "handle": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    },    header {      ...,      categoryLinks[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      },      mainCategory[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    },    brandsNavigation {      topBrands,      collections[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    },    navImages {      woman[]{        _key,        url,        menuIndex,        "imageUrl": image.asset->url,        "imageWidth": image.asset->metadata.dimensions.width,        "imageHeight": image.asset->metadata.dimensions.height,        "collectionHandle": collection->store.slug.current,        "collectionTitle": collection->store.title,      },      man[]{        _key,        url,        menuIndex,        "imageUrl": image.asset->url,        "imageWidth": image.asset->metadata.dimensions.width,        "imageHeight": image.asset->metadata.dimensions.height,        "collectionHandle": collection->store.slug.current,        "collectionTitle": collection->store.title,      }    }  }
+// Query: *[_type == 'siteSettings'][0]{    infoBar {      ...,      telephone,      viberPhone,      "text": coalesce(text[$locale], text.uk, text.ru, ""),      link {        ...,        "collectionData": reference-> {          title,          "handle": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    },    header {      ...,      categoryLinks[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      },      mainCategory[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    },    brandsNavigation {      topBrands,      collections[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    },    navImages {      woman[]{        _key,        url,        menuIndex,        imageTitle,        imageButtonLabel,        imageButtonUrl,        brandSlug,        "imageUrl": image.asset->url,        "imageWidth": image.asset->metadata.dimensions.width,        "imageHeight": image.asset->metadata.dimensions.height,        "collectionHandle": collection->store.slug.current,        "collectionTitle": collection->store.title,        "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,      },      man[]{        _key,        url,        menuIndex,        imageTitle,        imageButtonLabel,        imageButtonUrl,        brandSlug,        "imageUrl": image.asset->url,        "imageWidth": image.asset->metadata.dimensions.width,        "imageHeight": image.asset->metadata.dimensions.height,        "collectionHandle": collection->store.slug.current,        "collectionTitle": collection->store.title,        "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,      }    },    navDropdowns {      woman[]{        _key,        menuIndex,        columns[]{          _key,          "title": coalesce(title[$locale], title.uk, title.ru, collection->store.title, ""),          "url": collection->store.slug.current,          items[]->{            _id,            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, store.title, ""),            "handle": store.slug.current,            "navTitleColor": navTitleColor          },          "outletLink": outletLink {            "label": coalesce(label[$locale], label.uk, label.ru, ""),            "collectionHandle": collection->store.slug.current,            url          },          "actionButton": actionButton {            "label": coalesce(label[$locale], label.uk, label.ru, ""),            "collectionHandle": collection->store.slug.current,            url          }        }      },      man[]{        _key,        menuIndex,        columns[]{          _key,          "title": coalesce(title[$locale], title.uk, title.ru, collection->store.title, ""),          "url": collection->store.slug.current,          items[]->{            _id,            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, store.title, ""),            "handle": store.slug.current,            "navTitleColor": navTitleColor          },          "outletLink": outletLink {            "label": coalesce(label[$locale], label.uk, label.ru, ""),            "collectionHandle": collection->store.slug.current,            url          },          "actionButton": actionButton {            "label": coalesce(label[$locale], label.uk, label.ru, ""),            "collectionHandle": collection->store.slug.current,            url          }        }      }    }  }
 export type HEADER_QUERYResult = {
   infoBar: {
     _type: 'infoBar';
@@ -4172,21 +4261,139 @@ export type HEADER_QUERYResult = {
       _key: string;
       url: string | null;
       menuIndex: number | null;
+      imageTitle: string | null;
+      imageButtonLabel: string | null;
+      imageButtonUrl: string | null;
+      brandSlug: string | null;
       imageUrl: string | null;
       imageWidth: number | null;
       imageHeight: number | null;
       collectionHandle: string | null;
       collectionTitle: string | null;
+      imageButtonCollectionHandle: string | null;
     }> | null;
     man: Array<{
       _key: string;
       url: string | null;
       menuIndex: number | null;
+      imageTitle: string | null;
+      imageButtonLabel: string | null;
+      imageButtonUrl: string | null;
+      brandSlug: string | null;
       imageUrl: string | null;
       imageWidth: number | null;
       imageHeight: number | null;
       collectionHandle: string | null;
       collectionTitle: string | null;
+      imageButtonCollectionHandle: string | null;
+    }> | null;
+  } | null;
+  navDropdowns: {
+    woman: Array<{
+      _key: string;
+      menuIndex: number | null;
+      columns: Array<{
+        _key: string;
+        title:
+          | Array<{
+              _type: 'localizedString';
+              ru?: string;
+              uk?: string;
+            }>
+          | string
+          | '';
+        url: string | null;
+        items: Array<{
+          _id: string;
+          title:
+            | Array<{
+                _type: 'localizedString';
+                ru?: string;
+                uk?: string;
+              }>
+            | string
+            | '';
+          handle: string | null;
+          navTitleColor: 'blue' | 'default' | 'green' | 'orange' | 'red' | null;
+        }> | null;
+        outletLink: {
+          label:
+            | Array<{
+                _type: 'localizedString';
+                ru?: string;
+                uk?: string;
+              }>
+            | string
+            | '';
+          collectionHandle: string | null;
+          url: string | null;
+        } | null;
+        actionButton: {
+          label:
+            | Array<{
+                _type: 'localizedString';
+                ru?: string;
+                uk?: string;
+              }>
+            | string
+            | '';
+          collectionHandle: string | null;
+          url: string | null;
+        } | null;
+      }> | null;
+    }> | null;
+    man: Array<{
+      _key: string;
+      menuIndex: number | null;
+      columns: Array<{
+        _key: string;
+        title:
+          | Array<{
+              _type: 'localizedString';
+              ru?: string;
+              uk?: string;
+            }>
+          | string
+          | '';
+        url: string | null;
+        items: Array<{
+          _id: string;
+          title:
+            | Array<{
+                _type: 'localizedString';
+                ru?: string;
+                uk?: string;
+              }>
+            | string
+            | '';
+          handle: string | null;
+          navTitleColor: 'blue' | 'default' | 'green' | 'orange' | 'red' | null;
+        }> | null;
+        outletLink: {
+          label:
+            | Array<{
+                _type: 'localizedString';
+                ru?: string;
+                uk?: string;
+              }>
+            | string
+            | '';
+          collectionHandle: string | null;
+          url: string | null;
+        } | null;
+        actionButton: {
+          label:
+            | Array<{
+                _type: 'localizedString';
+                ru?: string;
+                uk?: string;
+              }>
+            | string
+            | '';
+          collectionHandle: string | null;
+          url: string | null;
+        } | null;
+      }> | null;
     }> | null;
   } | null;
 } | null;
@@ -4248,7 +4455,7 @@ declare module '@sanity/client' {
     '\n  *[_id == $id][0]{\n    title,\n    "image": mainImage.asset->{\n      url,\n      metadata {\n        palette\n      }\n    }\n  }\n': OG_IMAGE_QUERYResult;
     '\n  *[_type == \'siteSettings\'][0]{\n    "logo": header.icon.asset->{\n      url\n    }\n  }\n': SITE_LOGO_QUERYResult;
     '\n*[_type in ["page", "post"] && defined(slug.current)] {\n    "href": select(\n      _type == "page" => "/" + slug.current,\n      _type == "post" => select(\n        defined(language) => "/" + language + "/posts/" + slug.current,\n        "/posts/" + slug.current\n      ),\n      slug.current\n    ),\n    _updatedAt,\n    language\n}\n': SITEMAP_QUERYResult;
-    '\n  *[_type == \'siteSettings\'][0]{\n    infoBar {\n      ...,\n      telephone,\n      viberPhone,\n      "text": coalesce(text[$locale], text.uk, text.ru, ""),\n      link {\n        ...,\n        "collectionData": reference-> {\n          title,\n          "handle": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    header {\n      ...,\n      categoryLinks[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      },\n      mainCategory[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    brandsNavigation {\n      topBrands,\n      collections[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    navImages {\n      woman[]{\n        _key,\n        url,\n        menuIndex,\n        "imageUrl": image.asset->url,\n        "imageWidth": image.asset->metadata.dimensions.width,\n        "imageHeight": image.asset->metadata.dimensions.height,\n        "collectionHandle": collection->store.slug.current,\n        "collectionTitle": collection->store.title,\n      },\n      man[]{\n        _key,\n        url,\n        menuIndex,\n        "imageUrl": image.asset->url,\n        "imageWidth": image.asset->metadata.dimensions.width,\n        "imageHeight": image.asset->metadata.dimensions.height,\n        "collectionHandle": collection->store.slug.current,\n        "collectionTitle": collection->store.title,\n      }\n    }\n  }\n': HEADER_QUERYResult;
+    '\n  *[_type == \'siteSettings\'][0]{\n    infoBar {\n      ...,\n      telephone,\n      viberPhone,\n      "text": coalesce(text[$locale], text.uk, text.ru, ""),\n      link {\n        ...,\n        "collectionData": reference-> {\n          title,\n          "handle": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    header {\n      ...,\n      categoryLinks[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      },\n      mainCategory[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    brandsNavigation {\n      topBrands,\n      collections[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    navImages {\n      woman[]{\n        _key,\n        url,\n        menuIndex,\n        imageTitle,\n        imageButtonLabel,\n        imageButtonUrl,\n        brandSlug,\n        "imageUrl": image.asset->url,\n        "imageWidth": image.asset->metadata.dimensions.width,\n        "imageHeight": image.asset->metadata.dimensions.height,\n        "collectionHandle": collection->store.slug.current,\n        "collectionTitle": collection->store.title,\n        "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,\n      },\n      man[]{\n        _key,\n        url,\n        menuIndex,\n        imageTitle,\n        imageButtonLabel,\n        imageButtonUrl,\n        brandSlug,\n        "imageUrl": image.asset->url,\n        "imageWidth": image.asset->metadata.dimensions.width,\n        "imageHeight": image.asset->metadata.dimensions.height,\n        "collectionHandle": collection->store.slug.current,\n        "collectionTitle": collection->store.title,\n        "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,\n      }\n    },\n    navDropdowns {\n      woman[]{\n        _key,\n        menuIndex,\n        columns[]{\n          _key,\n          "title": coalesce(title[$locale], title.uk, title.ru, collection->store.title, ""),\n          "url": collection->store.slug.current,\n          items[]->{\n            _id,\n            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, store.title, ""),\n            "handle": store.slug.current,\n            "navTitleColor": navTitleColor\n          },\n          "outletLink": outletLink {\n            "label": coalesce(label[$locale], label.uk, label.ru, ""),\n            "collectionHandle": collection->store.slug.current,\n            url\n          },\n          "actionButton": actionButton {\n            "label": coalesce(label[$locale], label.uk, label.ru, ""),\n            "collectionHandle": collection->store.slug.current,\n            url\n          }\n        }\n      },\n      man[]{\n        _key,\n        menuIndex,\n        columns[]{\n          _key,\n          "title": coalesce(title[$locale], title.uk, title.ru, collection->store.title, ""),\n          "url": collection->store.slug.current,\n          items[]->{\n            _id,\n            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, store.title, ""),\n            "handle": store.slug.current,\n            "navTitleColor": navTitleColor\n          },\n          "outletLink": outletLink {\n            "label": coalesce(label[$locale], label.uk, label.ru, ""),\n            "collectionHandle": collection->store.slug.current,\n            url\n          },\n          "actionButton": actionButton {\n            "label": coalesce(label[$locale], label.uk, label.ru, ""),\n            "collectionHandle": collection->store.slug.current,\n            url\n          }\n        }\n      }\n    }\n  }\n': HEADER_QUERYResult;
     "\n  *[_type == 'siteSettings'][0]{\n    footerSettings {\n      socialLinks[] {\n        platform,\n        url\n      },\n      workingHours {\n        uk,\n        ru\n      },\n      address {\n        uk,\n        ru\n      },\n      paymentMethods\n    }\n  }\n": FOOTER_QUERYResult;
     '*[_type == "collection" && store.slug.current == $handle][0]{ isBrand, customTitle }': COLLECTION_IS_BRAND_QUERYResult;
   }

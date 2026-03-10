@@ -28,6 +28,9 @@ type NavImage = {
   collectionTitle?: string | null;
   imageTitle?: string | null;
   imageButtonLabel?: string | null;
+  imageButtonUrl?: string | null;
+  imageButtonCollectionHandle?: string | null;
+  brandSlug?: string | null;
 };
 
 type NavImages = {
@@ -35,8 +38,14 @@ type NavImages = {
   man?: NavImage[] | null;
 } | null;
 
-type SanityColumnItem = { _id: string; title: string; handle: string } | null;
-type SanityColumn = { title: string; url?: string | null; items?: SanityColumnItem[] | null };
+type SanityColumnItem = { _id: string; title: string; handle: string; navTitleColor?: string | null } | null;
+type SanityColumn = {
+  title: string;
+  url?: string | null;
+  items?: SanityColumnItem[] | null;
+  outletLink?: { label?: string | null; collectionHandle?: string | null; url?: string | null } | null;
+  actionButton?: { label?: string | null; collectionHandle?: string | null; url?: string | null } | null;
+};
 type SanityDropdown = { menuIndex: number; columns?: SanityColumn[] | null };
 type NavDropdowns = {
   woman?: SanityDropdown[] | null;
@@ -205,17 +214,24 @@ const Navigation = async ({
                 genderImages.find(
                   (img) => img.menuIndex != null && img.menuIndex === subIndex,
                 ) ?? genderImages[subIndex];
+              const imageHref = navImage?.collectionHandle
+                ? `/${gender}/${navImage.collectionHandle}`
+                : navImage?.brandSlug
+                  ? `/brands/${navImage.brandSlug}`
+                  : (navImage?.url ?? '#');
+              const imageButtonUrl = navImage?.imageButtonCollectionHandle
+                ? `/${gender}/${navImage.imageButtonCollectionHandle}`
+                : (navImage?.imageButtonUrl ?? null);
               const defaultImage = navImage?.imageUrl
                 ? {
                     imageUrl: navImage.imageUrl,
                     imageWidth: navImage.imageWidth,
                     imageHeight: navImage.imageHeight,
-                    href: navImage.collectionHandle
-                      ? `/${gender}/${navImage.collectionHandle}`
-                      : (navImage.url ?? '#'),
+                    href: imageHref,
                     alt: navImage.collectionTitle ?? '',
                     imageTitle: navImage.imageTitle ?? null,
                     imageButtonLabel: navImage.imageButtonLabel ?? null,
+                    imageButtonUrl,
                   }
                 : null;
 
@@ -231,9 +247,27 @@ const Navigation = async ({
                     items: (col.items ?? []).filter((item): item is NonNullable<SanityColumnItem> => item != null).map((item) => ({
                       title: item.title,
                       url: withGender(`/${item.handle}`),
-                      collectionImageUrl:
-                        collectionImages[item.handle] ?? null,
+                      collectionImageUrl: collectionImages[item.handle] ?? null,
+                      navTitleColor: item.navTitleColor ?? null,
                     })),
+                    outletLink: col.outletLink?.label
+                      ? {
+                          label: col.outletLink.label,
+                          url: col.outletLink.collectionHandle
+                            ? withGender(`/${col.outletLink.collectionHandle}`)
+                            : col.outletLink.url ?? '#',
+                        }
+                      : null,
+                    actionButton: col.actionButton?.label
+                      ? {
+                          label: col.actionButton.label,
+                          url: col.actionButton.collectionHandle
+                            ? withGender(`/${col.actionButton.collectionHandle}`)
+                            : col.actionButton.url
+                              ? col.actionButton.url
+                              : col.url ? withGender(`/${col.url}`) : withGender(subItem.url),
+                        }
+                      : null,
                   }))
                 : // Fallback: Shopify 4-level — level 3 = column, level 4 = items
                   // If level 3 has sub-items → treat as columns; otherwise flat single column

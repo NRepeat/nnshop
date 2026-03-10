@@ -13,18 +13,29 @@ type DefaultImage = {
   alt: string;
   imageTitle?: string | null;
   imageButtonLabel?: string | null;
+  imageButtonUrl?: string | null;
+};
+
+const NAV_COLOR_MAP: Record<string, string> = {
+  red: 'text-red-500',
+  orange: 'text-orange-500',
+  green: 'text-green-600',
+  blue: 'text-blue-600',
 };
 
 type ChildItem = {
   title: string;
   url: string;
   collectionImageUrl?: string | null;
+  navTitleColor?: string | null;
 };
 
 type Column = {
   title: string;
   url: string;
   items: ChildItem[];
+  outletLink?: { label?: string | null; url?: string | null } | null;
+  actionButton?: { label?: string | null; url?: string | null } | null;
 };
 
 export function NavDropdownContent({
@@ -64,7 +75,7 @@ export function NavDropdownContent({
                 <NavigationItemClient href={item.url} className="w-full rounded">
                   <Button
                     variant="ghost"
-                    className="group-hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-2 border-none min-h-10 rounded"
+                    className={`group-hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-2 border-none min-h-10 rounded ${item.navTitleColor && item.navTitleColor !== 'default' ? NAV_COLOR_MAP[item.navTitleColor] ?? '' : ''}`}
                   >
                     {item.title}
                   </Button>
@@ -72,11 +83,20 @@ export function NavDropdownContent({
               </li>
             ))}
           </ul>
-          {colIdx === 0 && (
+          {col.outletLink?.label && (
+            <div className="mt-3 border-t border-border pt-3">
+              <NavigationItemClient href={col.outletLink.url ?? col.url}>
+                <span className="text-sm font-medium text-red-500 hover:underline transition-all px-2">
+                  {col.outletLink.label}
+                </span>
+              </NavigationItemClient>
+            </div>
+          )}
+          {col.actionButton?.label && (
             <div className="mt-4">
-              <NavigationItemClient href={col.url}>
+              <NavigationItemClient href={col.actionButton.url ?? col.url}>
                 <Button variant="outline" className="text-sm">
-                  {col.title}
+                  {col.actionButton.label}
                 </Button>
               </NavigationItemClient>
             </div>
@@ -104,7 +124,7 @@ export function NavDropdownContent({
             </p>
           )}
           {defaultImage.imageButtonLabel && (
-            <NavigationItemClient href={defaultImage.href}>
+            <NavigationItemClient href={defaultImage.imageButtonUrl ?? defaultImage.href}>
               <Button variant="outline" className="text-sm w-full">
                 {defaultImage.imageButtonLabel}
               </Button>

@@ -16,6 +16,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { cn } from '@shared/lib/utils';
 import clsx from 'clsx';
 
+const BLUR_DATA_URL =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYGBgAAAABAABJjarzgAAAABJRU5ErkJggg==';
+
 const Gallery = ({
   images,
   children,
@@ -104,7 +107,7 @@ const Gallery = ({
                     >
                       {({ ref, open }) => (
                         <div
-                          className="relative w-full aspect-square flex items-center justify-center max-h-[60vh]"
+                          className="relative w-full aspect-square flex items-center justify-center max-h-[60vh] bg-white"
                           ref={ref}
                         >
                           <Image
@@ -117,6 +120,8 @@ const Gallery = ({
                             fetchPriority={index === 0 ? 'high' : 'auto'}
                             loading={index === 0 ? 'eager' : 'lazy'}
                             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 40vw"
+                            placeholder="blur"
+                            blurDataURL={BLUR_DATA_URL}
                           />
                         </div>
                       )}
@@ -158,7 +163,7 @@ const Gallery = ({
                   >
                     <div
                       className={
-                        'aspect-square relative border rounded overflow-hidden ' +
+                        'aspect-square relative border rounded overflow-hidden bg-muted ' +
                         (index === selectedIndex
                           ? 'border-primary'
                           : 'border-transparent opacity-50')
@@ -171,6 +176,8 @@ const Gallery = ({
                         className="object-cover"
                         loading="lazy"
                         sizes="(max-width: 768px) 33vw, (max-width: 1024px) 33vw, 20vw"
+                        placeholder="blur"
+                        blurDataURL={BLUR_DATA_URL}
                       />
                     </div>
                   </CarouselItem>

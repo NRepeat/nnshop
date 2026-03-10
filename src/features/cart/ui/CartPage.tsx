@@ -14,6 +14,7 @@ type CartItemType = {
   id: string;
   title: string;
   price: string;
+  compareAtPrice?: string | null;
   size: string;
   handle: string;
   totalPrice: string;

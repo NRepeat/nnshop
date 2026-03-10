@@ -8,7 +8,7 @@ interface SEOData {
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
-const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.jpg`;
+const DEFAULT_OG_IMAGE = `${process.env.BLOB_BASE_URL}/og-image.jpg`;
 
 export function generatePageMetadata(
   seo: SEOData,
