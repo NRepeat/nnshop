@@ -264,9 +264,7 @@ const Navigation = async ({
               const columns = sanityDropdown?.columns?.length
                 ? sanityDropdown.columns.map((col) => ({
                     title: col.title,
-                    url: col.url
-                      ? withGender(`/${col.url}`)
-                      : withGender(subItem.url),
+                    url: col.url ? withGender(`/${col.url}`) : null,
                     items: (col.items ?? [])
                       .filter(
                         (item): item is NonNullable<SanityColumnItem> =>
@@ -353,6 +351,7 @@ const Navigation = async ({
                   </NavigationTriggerClient>
                   <NavigationMenuContent className="px-4 w-full flex justify-center">
                     <NavDropdownContent
+                    // @ts-ignore
                       columns={columns}
                       defaultImage={defaultImage}
                       gender={gender}
@@ -389,25 +388,24 @@ const Navigation = async ({
           >
             {t('title')}
           </NavigationTriggerClient>
-          <NavigationMenuContent className="px-6 w-full flex justify-center ">
-            <div className="flex gap-10 py-8 max-w-6xl w-full justify-between">
-              <div className="flex-1 ">
-                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
-                  {t('topBrands')}
-                </p>
-                <ul className="grid grid-cols-2 gap-x-8 gap-y-1 ">
-                  {topBrands.slice(0, 10).map((brand) => (
+          <NavigationMenuContent className="px-4 w-full flex justify-center">
+            <div className="flex gap-10 px-6 w-full py-8 justify-between max-w-6xl">
+              <div className="flex-1 min-w-[180px] max-w-[260px]">
+                <div className="block mb-3">
+                  <p className="text-base font-semibold tracking-wide border-b border-border pb-2">
+                    {t('topBrands')}
+                  </p>
+                </div>
+                <ul className="flex flex-col gap-0.5">
+                  {topBrands.slice(0, 5).map((brand) => (
                     <li
                       key={brand.title}
                       className="w-full group rounded hover:shadow hover:bg-secondary/50 transition-colors duration-200"
                     >
-                      <NavigationItemClient
-                        className="w-full "
-                        href={`/brend${brand.url}`}
-                      >
+                      <NavigationItemClient className="w-full rounded" href={`/brend${brand.url}`}>
                         <Button
-                          variant={'ghost'}
-                          className="text-base font-normal font-sans w-full justify-start px-2 group-hover:underline transition-colors border-none h-9"
+                          variant="ghost"
+                          className="group-hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-2 border-none min-h-10 rounded"
                         >
                           {brand.title}
                         </Button>
@@ -415,9 +413,33 @@ const Navigation = async ({
                     </li>
                   ))}
                 </ul>
-                <div className="mt-3">
-                  <NavigationItemClient href="/brands" className="pl-0">
-                    <span className="text-base font-medium underline hover:text-primary transition-colors">
+              </div>
+              <div className="flex-1 min-w-[180px] max-w-[260px]">
+                <div className="block mb-3">
+                  <p className="text-base font-semibold tracking-wide border-b border-border pb-2 invisible">
+                    Spacer
+                  </p>
+                </div>
+                <ul className="flex flex-col gap-0.5">
+                  {topBrands.slice(5, 10).map((brand) => (
+                    <li
+                      key={brand.title}
+                      className="w-full group rounded hover:shadow hover:bg-secondary/50 transition-colors duration-200"
+                    >
+                      <NavigationItemClient className="w-full rounded" href={`/brend${brand.url}`}>
+                        <Button
+                          variant="ghost"
+                          className="group-hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-2 border-none min-h-10 rounded"
+                        >
+                          {brand.title}
+                        </Button>
+                      </NavigationItemClient>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-3 border-t border-border pt-3">
+                  <NavigationItemClient href="/brands">
+                    <span className="text-sm font-medium hover:underline transition-all px-2">
                       {t('allBrands')} →
                     </span>
                   </NavigationItemClient>
@@ -429,7 +451,7 @@ const Navigation = async ({
                     <NavigationContentLink
                       key={letter}
                       href={`/brands#letter-${letter}`}
-                      className="border-none rounded text-base font-medium hover:shadow hover:bg-secondary/50 transition-colors duration-200 text-center rounded w-9 h-9 flex items-center justify-center"
+                      className="border-none rounded text-base font-medium hover:shadow hover:bg-secondary/50 transition-colors duration-200 text-center w-9 h-9 flex items-center justify-center"
                     >
                       {letter}
                     </NavigationContentLink>

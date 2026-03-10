@@ -76,11 +76,19 @@ export function NavDropdownContent({
           className="flex-1 min-w-[180px] max-w-[260px]"
         >
           {col.title ? (
-            <NavigationItemClient href={col.url} className="block mb-3">
-              <p className="text-base font-semibold tracking-wide border-b border-border pb-2">
-                {col.title}
-              </p>
-            </NavigationItemClient>
+            col.url ? (
+              <NavigationItemClient href={col.url} className="block mb-3">
+                <p className="text-base font-semibold tracking-wide border-b border-border pb-2">
+                  {col.title}
+                </p>
+              </NavigationItemClient>
+            ) : (
+              <div className="block mb-3">
+                <p className="text-base font-semibold tracking-wide border-b border-border pb-2">
+                  {col.title}
+                </p>
+              </div>
+            )
           ) : (
             <div className="block mb-3">
               <p className="text-base font-semibold tracking-wide border-b border-border pb-2 invisible">

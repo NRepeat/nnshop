@@ -24,8 +24,8 @@ export const ClientGrid = ({
       className={cn(
         'grid gap-1 md:gap-4 mt-2',
         cols === '3'
-          ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
-          : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-5',
+          ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-5'
+          : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
       )}
     >
       <AnimatePresence>
