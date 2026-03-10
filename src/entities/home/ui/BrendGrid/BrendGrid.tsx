@@ -6,6 +6,7 @@ import { HOME_PAGEResult } from '@shared/sanity/types';
 import { Carousel, CarouselContent, CarouselItem } from '@shared/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link';
+import { cn } from '@shared/lib/utils';
 
 type BrandGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
@@ -29,12 +30,6 @@ export function BrandGrid({ barnds, locale, gender }: BrandGridProps) {
   return (
     <section className="container  ">
       <div className="py-8">
-        {/*{
-          <h2 className="mb-16 text-center  max-w-4xl text-pretty font-light text-lg md:text-3xl">
-            {'Популярні бренди'}
-          </h2>
-        }*/}
-
         <div className="hidden md:grid grid-cols-2 items-center justify-items-center gap-x-6 gap-y-10 md:grid-cols-5 md:gap-x-4 md:gap-y-4">
           {barnds.map((brand) => (
             <Link
@@ -42,14 +37,17 @@ export function BrandGrid({ barnds, locale, gender }: BrandGridProps) {
               href={getBrandHref(brand)}
               className="cursor-pointer basis-1/3"
             >
-              <div className="group relative flex h-16 w-full max-w-[160px] items-center justify-center transition-all duration-300 hover:opacity-60">
+              <div className="relative group flex aspect-video max-w-[160px] h-[100px] items-center justify-center overflow-hidden transition-all duration-300 hover:opacity-60">
                 {brand.asset ? (
                   <Image
-                    src={urlFor(brand).width(300).url()}
-                    alt="brand logo"
-                    width={160}
-                    height={60}
-                    className="max-h-full w-auto object-contain"
+                    src={urlFor(brand).width(160).height(100).url()}
+                    alt={brand.collectionData?.handle || 'brand logo'}
+                    fill
+                    className={cn('object-contain', {
+                      'scale-150':
+                        brand.collectionData?.handle === 'ghoud' ||
+                        brand.collectionData?.handle === 'agl',
+                    })}
                   />
                 ) : null}
               </div>
@@ -64,21 +62,21 @@ export function BrandGrid({ barnds, locale, gender }: BrandGridProps) {
           <CarouselContent className="-ml-2">
             {Array.from({ length: Math.ceil(barnds.length / 2) }).map(
               (_, i) => (
-                <CarouselItem key={i} className="pl-2 basis-1/2 sm:basis-1/3">
+                <CarouselItem key={i} className="pl-8 basis-1/3">
                   <div className="flex flex-col gap-y-8">
                     {barnds.slice(i * 2, i * 2 + 2).map((brand) => (
-                      <Link
-                        href={getBrandHref(brand)}
-                        key={brand._key}
-                      >
+                      <Link href={getBrandHref(brand)} key={brand._key}>
                         <div className="group relative flex h-16 w-full max-w-[160px] items-center justify-center transition-all duration-300 hover:opacity-60 mx-auto">
                           {brand.asset ? (
                             <Image
-                              src={urlFor(brand).width(300).url()}
-                              alt="brand logo"
-                              width={160}
-                              height={60}
-                              className="max-h-full w-auto object-contain"
+                              src={urlFor(brand).width(160).height(100).url()}
+                              alt={brand.collectionData?.handle || 'brand logo'}
+                              fill
+                              className={cn('object-contain', {
+                                'scale-150':
+                                  brand.collectionData?.handle === 'ghoud' ||
+                                  brand.collectionData?.handle === 'agl',
+                              })}
                             />
                           ) : null}
                         </div>
@@ -90,18 +88,6 @@ export function BrandGrid({ barnds, locale, gender }: BrandGridProps) {
             )}
           </CarouselContent>
         </Carousel>
-        {/* <div className="mt-6 flex justify-center">
-          <Button
-            asChild
-            variant="outline"
-            className="group h-12 min-w-[200px] rounded-lg border-slate-300 px-8 text-sm font-medium transition-all hover:border-slate-900 hover:bg-transparent active:scale-95"
-          >
-            <Link href="/brands" className="flex items-center gap-2">
-              {buttonText}
-              <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </Button>
-        </div> */}
       </div>
     </section>
   );

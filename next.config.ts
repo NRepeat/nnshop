@@ -10,12 +10,11 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-
-  // logging: {
-  //   fetches: {
-  //     fullUrl: false,
-  //   },
-  // },
+  logging: {
+    fetches: {
+      fullUrl: false,
+    },
+  },
   cacheComponents: true,
   allowedDevOrigins: [
     'development.nninc.uk',

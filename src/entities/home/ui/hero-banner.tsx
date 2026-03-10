@@ -35,6 +35,7 @@ type HeroSliderProps = HeroSliderBase & {
     color?: { hex?: string | null } | null;
     opacity?: number | null;
   } | null;
+  compact?: boolean;
 };
 
 type Slide = NonNullable<HeroSliderBase['slides']>[number] & {
@@ -54,8 +55,14 @@ type Slide = NonNullable<HeroSliderBase['slides']>[number] & {
   } | null;
 };
 
+function sanitizeString(str: string): string {
+  // eslint-disable-next-line no-control-regex
+  return str.replace(/[^\x20-\x7E\u00A0-\u00FF\u0400-\u04FF]/g, '').trim();
+}
+
 function getPositionStyle(position: string): React.CSSProperties {
-  const [vertical, horizontal] = (position || 'bottom-left').split('-');
+  const cleanPos = sanitizeString(position || 'bottom-left');
+  const [vertical, horizontal] = cleanPos.split('-');
 
   const style: React.CSSProperties = {};
 
@@ -85,7 +92,8 @@ function getPositionStyle(position: string): React.CSSProperties {
 }
 
 function getTextAlign(position: string): React.CSSProperties {
-  const horizontal = (position || 'bottom-left').split('-')[1];
+  const cleanPos = sanitizeString(position || 'bottom-left');
+  const horizontal = cleanPos.split('-')[1];
   return {
     textAlign:
       horizontal === 'center'
@@ -129,9 +137,10 @@ type VideoHeroProps = {
   description?: string | null;
   overlay?: { color?: { hex?: string | null } | null; opacity?: number | null } | null;
   href?: string | null;
+  compact?: boolean;
 };
 
-function VideoHero({ src, textPosition, titleColor, descriptionColor, title, description, overlay, href }: VideoHeroProps) {
+function VideoHero({ src, textPosition, titleColor, descriptionColor, title, description, overlay, href, compact }: VideoHeroProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -143,7 +152,6 @@ function VideoHero({ src, textPosition, titleColor, descriptionColor, title, des
 
   const pos = textPosition;
   const overlayBg = buildOverlayBg(overlay?.color, overlay?.opacity);
-console.log(pos,'pos')
   const inner = (
     <>
       <video
@@ -187,34 +195,39 @@ console.log(pos,'pos')
     </>
   );
 
+  const heightStyle = compact
+    ? `.video-hero{height:40svh}`
+    : `.video-hero{height:calc(75svh - var(--header-height,0px))}@media(min-width:768px){.video-hero{height:calc(80svh - var(--header-height,0px))}}`;
+
   return (
-    <div
-      className="relative w-full overflow-hidden"
-      style={{ height: 'calc(80svh - var(--header-height, 0px))' }}
-    >
-      {href ? (
-        <Link href={href} className="absolute inset-0 z-10" prefetch>
-          {inner}
-        </Link>
-      ) : (
-        inner
-      )}
-    </div>
+    <>
+      <style>{heightStyle}</style>
+      <div className="video-hero relative w-full overflow-hidden">
+        {href ? (
+          <Link href={href} className="absolute inset-0 z-10" prefetch>
+            {inner}
+          </Link>
+        ) : (
+          inner
+        )}
+      </div>
+    </>
   );
 }
 
 // Image Slider
 
-function ImageSlider({ slides, gender }: { slides: Slide[]; gender?: string }) {
+function ImageSlider({ slides, gender, compact }: { slides: Slide[]; gender?: string; compact?: boolean }) {
   const resolveHref = (
     url?: string | null,
     collection?: { handle?: string | null } | null,
   ) => {
-    if (url) return url;
+    if (url) return sanitizeString(url);
     if (collection?.handle) {
+      const cleanHandle = sanitizeString(collection.handle);
       return gender
-        ? `/${gender}/${collection.handle}`
-        : `/${collection.handle}`;
+        ? `/${gender}/${cleanHandle}`
+        : `/${cleanHandle}`;
     }
     return null;
   };
@@ -227,7 +240,7 @@ function ImageSlider({ slides, gender }: { slides: Slide[]; gender?: string }) {
       {slide.mobileImage?.asset && (
         <div
           className="relative w-full block md:hidden"
-          style={{ height: 'calc(80svh - var(--header-height, 0px))' }}
+          style={{ height: compact ? '40svh' : 'calc(80svh - var(--header-height, 0px))' }}
         >
           <Image
             src={urlFor(slide.mobileImage.asset)
@@ -244,14 +257,16 @@ function ImageSlider({ slides, gender }: { slides: Slide[]; gender?: string }) {
       {slide.image?.asset && (
         <div
           className={`relative w-full aspect-video ${slide.mobileImage?.asset ? 'hidden md:block' : 'block'}`}
-          style={{ maxHeight: 'calc(90svh - var(--header-height, 0px))' }}
+          style={{ maxHeight: compact ? '40svh' : 'calc(90svh - var(--header-height, 0px))' }}
         >
           <Image
             src={urlFor(slide.image.asset).auto('format').quality(100).url()}
             alt={slide.title || slide.description || 'Banner desktop'}
-            fill
+            fill={!compact}
+            width={compact ? 1920 : undefined}
+            height={compact ? 540 : undefined}
             priority={index === 0}
-            className="object-cover"
+            className={compact ? "w-full h-full object-cover" : "object-cover"}
           />
         </div>
       )}
@@ -407,14 +422,13 @@ function ImageSlider({ slides, gender }: { slides: Slide[]; gender?: string }) {
 // HeroBanner
 
 export const HeroBanner = (props: HeroSliderProps) => {
-  console.log(props,"props")
-  const { slides, gender, videoFile, videoUrl } = props;
+  const { slides, gender, videoFile, videoUrl, compact } = props;
   const hasVideo = !!(videoFile || videoUrl);
 
   if (!hasVideo && (!slides || slides.length === 0)) return null;
 
   return (
-    <div className="hero-banner relative w-full overflow-hidden max-w-[1920px] mx-auto">
+    <div className="hero-banner relative w-full overflow-hidden  mx-auto">
       {hasVideo ? (
         <VideoHero
           src={props.videoFile || props.videoUrl || ''}
@@ -424,15 +438,17 @@ export const HeroBanner = (props: HeroSliderProps) => {
           title={props.videoTitle}
           description={props.videoDescription}
           overlay={props.videoOverlay}
+          compact={compact}
           href={
-            props.videoLinkUrl ??
-            (props.videoCollection?.handle
-              ? `/${gender ?? ''}/${props.videoCollection.handle}`.replace('//', '/')
-              : null)
+            props.videoLinkUrl 
+              ? sanitizeString(props.videoLinkUrl)
+              : (props.videoCollection?.handle
+                ? `/${gender ?? ''}/${sanitizeString(props.videoCollection.handle)}`.replace('//', '/')
+                : null)
           }
         />
       ) : (
-        <ImageSlider slides={slides as Slide[]} gender={gender} />
+        <ImageSlider slides={slides as Slide[]} gender={gender} compact={compact} />
       )}
     </div>
   );

@@ -30,7 +30,8 @@ export const FavSession = memo(({
   const handleToggle = async () => {
     if (isProcessing) return;
 
-    if (!session.data?.user) {
+    const user = session.data?.user as (typeof session.data.user & { isAnonymous?: boolean }) | undefined;
+    if (!user || user.isAnonymous) {
       router.push(`/${locale}/auth/sign-in`);
       return;
     }

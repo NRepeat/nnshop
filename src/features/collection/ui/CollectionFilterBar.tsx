@@ -53,7 +53,7 @@ export function CollectionFilterBar({ filters, initialFilters, hideVendor }: Pro
           // on mobile header never hides, so always sit below it;
           // on desktop, move to top-0 when header is scrolled away
           'top-[var(--header-height,70px)]',
-          headerHidden && 'md:top-0',
+          headerHidden && 'top-0',
         )}
       >
         <div className="container flex items-center gap-3 py-2">

@@ -8,17 +8,10 @@ type FeaturesProps = Extract<
 
 export function Features({ features, title, locale }: FeaturesProps) {
   const isSingleItem = features?.length === 1;
-  const localizedTitle = getLocalizedString(title, locale);
 
   return (
     <section className="container ">
-      <div className="py-8 md:py-8">
-        {/* {localizedTitle && (
-          <h2 className="mb-16 text-center text-3xl font-light tracking-tight text-slate-900 md:text-5xl">
-            {localizedTitle}
-          </h2>
-        )} */}
-
+      <div className="py-8 md:py-24">
         {Array.isArray(features) && (
           <div
             className={`flex flex-wrap gap-y-12 justify-center ${

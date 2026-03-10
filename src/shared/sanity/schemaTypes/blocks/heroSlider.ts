@@ -231,6 +231,14 @@ export const heroSlider = {
       group: 'slides',
     },
     {
+      title: 'Compact Mode',
+      name: 'compact',
+      type: 'boolean',
+      description: 'If set, the banner will have a smaller height.',
+      initialValue: false,
+      group: 'slides',
+    },
+    {
       title: 'Description',
       name: 'description',
       type: 'text',

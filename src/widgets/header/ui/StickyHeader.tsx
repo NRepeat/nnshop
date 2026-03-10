@@ -28,7 +28,7 @@ export function StickyHeader({ children }: { children: React.ReactNode }) {
       className={cn(
         'sticky top-0 z-30 bg-background md:h-fit flex flex-col items-center shadow',
         'transition-transform duration-300 ease-in-out will-change-transform',
-        hidden ? 'md:-translate-y-full' : 'translate-y-0',
+        hidden ? '-translate-y-full' : 'translate-y-0',
       )}
     >
       {children}
