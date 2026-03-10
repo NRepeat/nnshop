@@ -51,8 +51,23 @@ const renderBlock = (
   gender: string,
 ): React.ReactNode => {
   switch (block._type) {
-    case 'heroSlider':
-      return <HeroBanner key={block._key} {...(block as any)} gender={gender} />;
+    case 'heroSlider': {
+      const hero = block as any;
+      const videoSrc = hero.videoFile || hero.videoUrl;
+      return (
+        <Fragment key={block._key}>
+          {videoSrc && (
+            <link
+              rel="preload"
+              href={videoSrc}
+              as="video"
+              type="video/mp4"
+            />
+          )}
+          <HeroBanner {...hero} gender={gender} />
+        </Fragment>
+      );
+    }
 
     case 'mainCollectionGrid':
       return (

@@ -1,7 +1,7 @@
 import { AnnouncementBar } from '@entities/announcement-bar/announcement-bar';
 import {
   CurrentNavigationSession,
-  CurrentNavigationSessionSkilet,
+  CurrentNavigationSessionSkeleton,
 } from '@features/header/navigation/ui/Navigation';
 import { HeaderContent } from '@features/header/ui/HeaderContent';
 import { HeaderContentSkeleton } from '@features/header/ui/HeaderContentSkeleton';
@@ -95,10 +95,11 @@ export const Header = async ({ locale }: { locale: string }) => {
           )}
         </div>
         <div className="hidden md:block w-full">
-          <Suspense fallback={<CurrentNavigationSessionSkilet />}>
+          <Suspense fallback={<CurrentNavigationSessionSkeleton />}>
             <CurrentNavigationSession
               locale={locale}
               navImages={headerData?.navImages}
+              navDropdowns={headerData?.navDropdowns}
             />
           </Suspense>
         </div>

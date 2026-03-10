@@ -9,10 +9,10 @@ import {
 } from '@shared/ui/accordion';
 import { ChevronRightIcon } from 'lucide-react';
 export const InternalMenu = ({
-  meinMenu,
+  mainMenu,
   onClose,
 }: {
-  meinMenu: {
+  mainMenu: {
     label: string;
     menu: {
       id: Maybe<string> | undefined;
@@ -32,7 +32,7 @@ export const InternalMenu = ({
   }[];
   onClose: (link: string) => void;
 }) => {
-  const allValues = meinMenu.flatMap((item, itemIndex) =>
+  const allValues = mainMenu.flatMap((item, itemIndex) =>
     item.menu.flatMap((subItem, subIndex) => {
       const values = [];
       const subId = `sub-${subItem.id || subItem.title}-${subIndex}`;
@@ -44,7 +44,7 @@ export const InternalMenu = ({
     }),
   );
 
-  const tabs = meinMenu
+  const tabs = mainMenu
     .filter((item) => item.menu.length > 0)
     .map((item) => {
       return (
@@ -63,7 +63,7 @@ export const InternalMenu = ({
                           e.preventDefault();
                           onClose(subItem.url);
                         }}
-                        className="py-4 font-300 transition-colors text-lg flex-1"
+                        className="py-4 font-light transition-colors text-lg flex-1"
                       >
                         {subItem.title}
                       </Link>
@@ -141,7 +141,7 @@ export const InternalMenu = ({
                         e.preventDefault();
                         onClose(subItem.url);
                       }}
-                      className="py-4 font-300 transition-colors text-lg flex-1 flex items-center justify-between"
+                      className="py-4 font-light transition-colors text-lg flex-1 flex items-center justify-between"
                     >
                       {subItem.title}
                       <ChevronRightIcon className="text-muted-foreground pointer-events-none size-4 shrink-0 mr-3" />

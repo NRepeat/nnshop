@@ -533,6 +533,7 @@ export const HOME_PAGE =
               title,
               description,
               "videoFile": videoFile.asset->url,
+              "videoPoster": videoPoster.asset->url,
               videoUrl,
               videoTitle,
               videoDescription,
@@ -1052,6 +1053,8 @@ export const HEADER_QUERY = defineQuery(`
         _key,
         url,
         menuIndex,
+        imageTitle,
+        imageButtonLabel,
         "imageUrl": image.asset->url,
         "imageWidth": image.asset->metadata.dimensions.width,
         "imageHeight": image.asset->metadata.dimensions.height,
@@ -1062,11 +1065,43 @@ export const HEADER_QUERY = defineQuery(`
         _key,
         url,
         menuIndex,
+        imageTitle,
+        imageButtonLabel,
         "imageUrl": image.asset->url,
         "imageWidth": image.asset->metadata.dimensions.width,
         "imageHeight": image.asset->metadata.dimensions.height,
         "collectionHandle": collection->store.slug.current,
         "collectionTitle": collection->store.title,
+      }
+    },
+    navDropdowns {
+      woman[]{
+        _key,
+        menuIndex,
+        columns[]{
+          _key,
+          "title": coalesce(title[$locale], title.uk, title.ru, collection->store.title, ""),
+          "url": collection->store.slug.current,
+          items[]->{
+            _id,
+            "title": store.title,
+            "handle": store.slug.current
+          }
+        }
+      },
+      man[]{
+        _key,
+        menuIndex,
+        columns[]{
+          _key,
+          "title": coalesce(title[$locale], title.uk, title.ru, collection->store.title, ""),
+          "url": collection->store.slug.current,
+          items[]->{
+            _id,
+            "title": store.title,
+            "handle": store.slug.current
+          }
+        }
       }
     }
   }

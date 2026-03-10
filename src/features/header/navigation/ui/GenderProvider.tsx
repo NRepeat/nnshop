@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState,useCallback } from 'react';
 import { saveGenderPreference } from '../api/saveGender';
-import { cookieFenderSet } from '../api/setCookieGender';
+import { cookieGenderSet } from '../api/setCookieGender';
 
 type Gender = 'woman' | 'man';
 
@@ -32,7 +32,7 @@ export function GenderProvider({
       // Сохраняем в БД (для авторизованных) и cookies (для анонимных)
       await Promise.all([
         saveGenderPreference(newGender),
-        cookieFenderSet(newGender),
+        cookieGenderSet(newGender),
       ]);
     } catch (error) {
       console.error('Failed to save gender preference:', error);

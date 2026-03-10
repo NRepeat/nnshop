@@ -260,6 +260,14 @@ export const heroSlider = {
       options: { accept: 'video/mp4,video/webm,video/*' },
     },
     {
+      title: 'Video Poster (Thumbnail)',
+      name: 'videoPoster',
+      type: 'image',
+      group: 'video',
+      description: 'Image shown while the video is loading.',
+      options: { hotspot: true },
+    },
+    {
       title: 'Video URL',
       name: 'videoUrl',
       type: 'url',

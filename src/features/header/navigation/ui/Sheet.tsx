@@ -58,8 +58,8 @@ const MenuSheet = async ({ locale }: { locale: string }) => {
   const allItems = await getMainMenu({ locale });
 
   // Filter by gender
-  const meinMenuRaw = allItems.filter((item) => matchesGender(item, gender));
-  const items = meinMenuRaw.length > 0 ? meinMenuRaw : allItems.slice(0, 1);
+  const mainMenuRaw = allItems.filter((item) => matchesGender(item, gender));
+  const items = mainMenuRaw.length > 0 ? mainMenuRaw : allItems.slice(0, 1);
 
   // Find brands item nested inside the gender category's sub-items
   const brandsMenuItem = items
@@ -107,7 +107,7 @@ const MenuSheet = async ({ locale }: { locale: string }) => {
 
   return (
     // @ts-ignore
-    <NavigationSheet meinMenu={menuItems} title={t('title')} locale={locale} />
+    <NavigationSheet mainMenu={menuItems} title={t('title')} locale={locale} />
   );
 };
 

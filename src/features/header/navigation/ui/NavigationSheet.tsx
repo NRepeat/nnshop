@@ -14,14 +14,14 @@ import { Menu } from 'lucide-react';
 import { useRouter } from '@shared/i18n/navigation';
 import { Button } from '@shared/ui/button';
 import { saveGenderPreference } from '../api/saveGender';
-import { cookieFenderSet } from '../api/setCookieGender';
+import { cookieGenderSet } from '../api/setCookieGender';
 
 const NavigationSheet = ({
-  meinMenu,
+  mainMenu,
   title,
   locale,
 }: {
-  meinMenu: {
+  mainMenu: {
     label: string;
     menu: {
       id: Maybe<string> | undefined;
@@ -49,7 +49,7 @@ const NavigationSheet = ({
     const genderMatch = link.match(/^\/(woman|man)\//);
     if (genderMatch) {
       const gender = genderMatch[1] as 'woman' | 'man';
-      cookieFenderSet(gender);
+      cookieGenderSet(gender);
       saveGenderPreference(gender);
     }
     navigate.push(link);
@@ -68,7 +68,7 @@ const NavigationSheet = ({
         <SheetHeader className="pt-6 px-4">
           <SheetTitle className="font-sans">{title}</SheetTitle>
         </SheetHeader>
-        <InternalMenu meinMenu={meinMenu} onClose={onClose} />
+        <InternalMenu mainMenu={mainMenu} onClose={onClose} />
         <SheetFooter className="flex justify-center w-full flex-row mb-20">
         </SheetFooter>
       </SheetContent>

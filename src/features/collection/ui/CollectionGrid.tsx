@@ -194,11 +194,6 @@ export const CollectionGrid = async ({
         <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row justify-between lg:items-end gap-6">
           <div className="flex flex-col gap-3.5 w-full">
             <h1 className="text-2xl font-bold">{displayTitle}</h1>
-            {/* {collection.collection?.description && (
-              <p className="text-gray-600 text-sm max-w-full">
-                {collection.collection.description}
-              </p>
-            )} */}
             {collection.collection?.products.filters && (
               <Suspense fallback={null}>
                 <ActiveFiltersCarousel

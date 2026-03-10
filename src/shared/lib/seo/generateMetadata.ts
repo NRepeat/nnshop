@@ -8,6 +8,7 @@ interface SEOData {
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
+const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.jpg`;
 
 export function generatePageMetadata(
   seo: SEOData,
@@ -34,7 +35,7 @@ export function generatePageMetadata(
       description: seo.description,
       url: canonicalUrl,
       siteName: 'Mio Mio',
-      images: seo.image ? [{ url: seo.image, width: 1200, height: 630 }] : [],
+      images: [{ url: seo.image || DEFAULT_OG_IMAGE, width: 1200, height: 630 }],
       locale: locale === 'uk' ? 'uk_UA' : 'ru_UA',
       type: 'website',
     },
@@ -42,7 +43,7 @@ export function generatePageMetadata(
       card: 'summary_large_image',
       title: seo.title || 'Mio Mio',
       description: seo.description,
-      images: seo.image ? [seo.image] : [],
+      images: [seo.image || DEFAULT_OG_IMAGE],
     },
   };
 }

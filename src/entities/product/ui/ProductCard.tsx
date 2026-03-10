@@ -9,8 +9,6 @@ import {
   CarouselApi,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from '@shared/ui/carousel';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/shared/ui/badge';
@@ -22,6 +20,8 @@ import { cn } from '@shared/lib/utils';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { ZoomIn } from 'lucide-react';
+import { AddToCartModal } from '@features/product/ui/AddToCartModal';
 
 type ProductCardProps = {
   product: Product;
@@ -42,26 +42,47 @@ export const ProductCard = ({
   withQuick,
   withInnerShadow,
   withSizes = true,
+  addToCard,
 }: ProductCardProps) => {
   const t = useTranslations('ProductCard');
+  const tPage = useTranslations('ProductPage');
+  const SIZE_NAMES = ['size', 'розмір', 'размер'];
+
   const availableSizes = (() => {
     const sizeOption = product.options?.find((opt) =>
-      ['size', 'розмір', 'размер'].includes(opt.name.toLowerCase()),
+      SIZE_NAMES.includes(opt.name.toLowerCase()),
     );
     if (!sizeOption) return [];
 
     const availableValues = new Set(
       product.variants?.edges
         ?.filter((v) => v.node.availableForSale)
-        .map((v) => v.node.selectedOptions?.find((o) => o.name === sizeOption.name)?.value)
+        .map(
+          (v) =>
+            v.node.selectedOptions?.find((o) => o.name === sizeOption.name)
+              ?.value,
+        )
         .filter(Boolean),
     );
 
-    const CLOTHING_ORDER = ['xxs','xs','s','m','l','xl','xxl','xxxl','3xl','4xl','one size'];
+    const CLOTHING_ORDER = [
+      'xxs',
+      'xs',
+      's',
+      'm',
+      'l',
+      'xl',
+      'xxl',
+      'xxxl',
+      '3xl',
+      '4xl',
+      'one size',
+    ];
 
-    const sizes = sizeOption.optionValues
-      ?.map((v) => v.name)
-      .filter((name) => availableValues.has(name)) ?? [];
+    const sizes =
+      sizeOption.optionValues
+        ?.map((v) => v.name)
+        .filter((name) => availableValues.has(name)) ?? [];
 
     return sizes.sort((a, b) => {
       const aNum = parseFloat(a);
@@ -88,11 +109,14 @@ export const ProductCard = ({
   ]
     .filter(Boolean)
     .splice(0, 5);
+
   const nav = useRouter();
   const isNew = product.tags.includes('новий') || product.tags.includes('new');
   const [api2, setApi2] = useState<CarouselApi>();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+  const [isAddToCartOpen, setAddToCartOpen] = useState(false);
+
   const onInit = useCallback((api: CarouselApi) => {
     if (!api) return;
     setScrollSnaps(api.scrollSnapList());
@@ -127,10 +151,35 @@ export const ProductCard = ({
       setScrollSnaps([]);
     };
   }, [api2, onSelect, onInit]);
+
+  // Cursor-based image sliding
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!api2 || productImages.length <= 1) return;
+      const rect = carouselRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const x = e.clientX - rect.left;
+      const segmentWidth = rect.width / productImages.length;
+      const newIndex = Math.min(
+        Math.floor(x / segmentWidth),
+        productImages.length - 1,
+      );
+      if (newIndex !== api2.selectedScrollSnap()) {
+        api2.scrollTo(newIndex, true);
+      }
+    },
+    [api2, productImages.length],
+  );
+
+  const handleMouseLeave = useCallback(() => {
+    if (api2) api2.scrollTo(0, true);
+  }, [api2]);
+
   return (
     <Card
       className={clsx(
-        'h-full shadow-none  transition-shadow   backdrop-blur-sm bg-transparent border border-none cursor-pointer group relative',
+        'h-full shadow-none  transition-shadow p-0   backdrop-blur-sm bg-transparent border border-none cursor-pointer group relative',
         className,
       )}
     >
@@ -140,7 +189,7 @@ export const ProductCard = ({
         className="absolute inset-0 z-10"
         aria-label={product.title}
       />
-      <CardContent className="flex flex-col px-1 md:px-2 pt-2 border-0 shadow-none h-full gap-4 bg-transparent">
+      <CardContent className="flex flex-col p-1 py-3 md:p-2 md:py-2.5  border-0 shadow-none h-full gap-4 bg-transparent">
         {withInnerShadow && (
           <div className="pointer-events-none absolute inset-0 rounded inset-shadow-sm " />
         )}
@@ -151,7 +200,17 @@ export const ProductCard = ({
               opts={{ align: 'center' }}
               setApi={setApi2}
             >
-              <div className="group relative md:aspect-square w-full ">
+              <div
+                className="group relative md:aspect-square w-full z-20 cursor-pointer"
+                onClick={() => nav.push(`/product/${product.handle}`)}
+              >
+                {/* Mouse tracking overlay (desktop only — on mobile Embla handles touch directly) */}
+                <div
+                  ref={carouselRef}
+                  className="absolute inset-0 z-20 pointer-events-none md:pointer-events-auto"
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={handleMouseLeave}
+                />
                 {isNew && (
                   <Badge className="absolute rounded top-1  left-1 z-10 ">
                     {t('new')}
@@ -174,15 +233,6 @@ export const ProductCard = ({
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselNext
-                  variant={'ghost'}
-                  size={'icon'}
-                  className="group-hover:flex  rounded rounded-bl-none  rounded-br-none  rounded-tr-none hidden w-12 md:hover:flex bg-background/40 bottom-0 right-0 absolute"
-                />
-                <CarouselPrevious
-                  variant={'ghost'}
-                  className="group-hover:flex hidden w-12 md:hover:flex bg-background/40  rounded rounded-bl-none  rounded-br-none rounded-tl-none bottom-0 left-0 absolute"
-                />
                 <div
                   className={cn(
                     'absolute top-1.5  right-2 z-20   group-hover:block',
@@ -190,6 +240,10 @@ export const ProductCard = ({
                       hidden: !isFav,
                     },
                   )}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
                 >
                   <FavSession
                     fav={isFav}
@@ -197,41 +251,40 @@ export const ProductCard = ({
                     handle={product.handle}
                   />
                 </div>
-                <div className="flex justify-center gap-2 mt-4 absolute bottom-0 left-1/2 -translate-x-1/2">
-                  {scrollSnaps.map((_, index) => (
-                    <Button
-                      key={index}
-                      className={`w-2 h-[5px]  py-0 px-3  ${
-                        index === selectedIndex ? 'bg-primary' : 'bg-gray-300'
-                      }`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        api2?.scrollTo(index);
-                      }}
-                    />
-                  ))}
-                </div>
+                {/* Image progress dots */}
+                {scrollSnaps.length > 1 && (
+                  <div className="flex justify-center gap-1 absolute bottom-0.5 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+                    {scrollSnaps.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`h-[3px] rounded-full transition-all duration-200 ${
+                          index === selectedIndex
+                            ? 'bg-primary w-4'
+                            : 'bg-gray-300 w-2'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
                 {withQuick && (
-                  <div className=" bottom-0 left-2  flex w-full justify-end absolute rounded">
-                    <Button
-                      variant={'ghost'}
-                      className="group-hover:flex hidden bg-background/70 rounded"
+                  <div className="bottom-2 cursor-pointer left-1/2 -translate-x-1/2 hidden group-hover:flex absolute z-20 items-center gap-1.5 bg-background/80 px-3 py-1.5 rounded text-sm">
+                    <ZoomIn className="w-4 h-4" />
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
-
                         nav.push(`/quick/${product.handle}`, { scroll: false });
                       }}
+                      className='cursor-pointer'
                     >
                       {t('quickView')}
-                    </Button>
+                    </button>
                   </div>
                 )}
               </div>
             </Carousel>
           ) : (
-            <Link href={`/product/${product.handle}`} prefetch className="group relative aspect-square w-full overflow-hidden block">
+            <div className="group relative aspect-square w-full overflow-hidden block rounded-t">
               {isNew && (
                 <Badge className="absolute rounded top-1  left-1 z-10 ">
                   {t('new')}
@@ -240,62 +293,65 @@ export const ProductCard = ({
               <div className="relative aspect-square md:h-full w-full flex justify-center items-center rounded-t overflow-hidden">
                 <Image
                   className="object-cover w-full h-full"
-                  src={productImages[0]?.url || product.featuredImage?.url || ''}
-                  alt={productImages[0]?.altText || product.featuredImage?.altText || ''}
+                  src={
+                    productImages[0]?.url || product.featuredImage?.url || ''
+                  }
+                  alt={
+                    productImages[0]?.altText ||
+                    product.featuredImage?.altText ||
+                    ''
+                  }
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 />
               </div>
               {withQuick && (
-                <div className=" bottom-2 left-1/2 -translate-x-1/2 hidden group-hover:block absolute">
-                  <Button
-                    variant={'ghost'}
-                    className="bg-background/70 rounded"
+                <div className="bottom-2 left-1/2 -translate-x-1/2 hidden group-hover:flex absolute z-20 items-center gap-1.5 bg-background/80 px-3 py-1.5 rounded text-sm">
+                  <ZoomIn className="w-4 h-4" />
+                  <button
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      nav.push(`/product/${product.handle}`, {});
+                      nav.push(`/quick/${product.handle}`, { scroll: false });
                     }}
                   >
                     {t('quickView')}
-                  </Button>
+                  </button>
                 </div>
               )}
-                   <div
-                  className={cn(
-                    'absolute top-1.5  right-2 z-20   group-hover:block',
-                    {
-                      hidden: !isFav,
-                    },
-                  )}
-                >
-                  <FavSession
-                    fav={isFav}
-                    productId={product.id}
-                    handle={product.handle}
-                  />
-                </div>
-            </Link>
+              <div
+                className={cn(
+                  'absolute top-1.5  right-2 z-20   group-hover:block',
+                  {
+                    hidden: !isFav,
+                  },
+                )}
+              >
+                <FavSession
+                  fav={isFav}
+                  productId={product.id}
+                  handle={product.handle}
+                />
+              </div>
+            </div>
           )}
         </div>
-        <div className="w-full pl-1 md:pl-3 pb-1   flex flex-col gap-1 flex-1 h-full">
-          <Link href={`/brand/${vendorToHandle(product.vendor)}`} className="relative z-10">
-            <span className="text-md font-bold group-hover:underline  duration-300 decoration-transparent group-hover:decoration-primary  transition-all">
-              {decodeHtmlEntities(product.vendor)}
-            </span>
-          </Link>
-          <div className="flex flex-col justify-between flex-1">
-            <div className=" w-full flex-col  justify-between flex pb-4 ">
-              <p className="text-sm md:text-md font-light  text-pretty">
+        <div className="w-full   flex flex-col gap-1 flex-1 h-full">
+          <div className="flex flex-col justify-between flex-1 pl-1 md:pl-3 pb-2.5">
+            <Link
+              href={`/brand/${vendorToHandle(product.vendor)}`}
+              className="relative z-10 mb-2"
+            >
+              <span className="text-md font-bold group-hover:underline  duration-300 decoration-transparent group-hover:decoration-primary  transition-all">
+                {decodeHtmlEntities(product.vendor)}
+              </span>
+            </Link>
+            <div className="w-full flex-col justify-between flex pb-2">
+              <p className="text-sm md:text-md font-light text-pretty">
                 {decodeHtmlEntities(product?.title ?? '')}
               </p>
-              {withSizes && availableSizes.length > 0 && (
-                <p className="text-base text-muted-foreground mt-1">
-                  {availableSizes.join(' · ')}
-                </p>
-              )}
             </div>
-            <div className="mt-auto">
+            <div className="mt-auto flex flex-col gap-2">
               {product.metafield &&
               product.metafield.key === 'znizka' &&
               product.metafield.value &&
@@ -334,10 +390,48 @@ export const ProductCard = ({
                   )}
                 </span>
               )}
+
+              {/* Sizes as text */}
+              {withSizes && availableSizes.length > 0 && (
+                <p className="text-base text-muted-foreground">
+                  {availableSizes.join(' · ')}
+                </p>
+              )}
+
+              {/* Add to cart — hover only */}
             </div>
           </div>
+          {addToCard && (
+            <div
+              className="relative z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+              }}
+            >
+              <Button
+                className="w-full h-10 text-sm rounded"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setAddToCartOpen(true);
+                }}
+              >
+                {tPage('addToCart')}
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
+
+      {addToCard && (
+        <AddToCartModal
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          product={product as any}
+          open={isAddToCartOpen}
+          onOpenChange={setAddToCartOpen}
+        />
+      )}
     </Card>
   );
 };

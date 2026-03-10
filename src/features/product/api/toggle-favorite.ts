@@ -12,9 +12,8 @@ export const toggleFavoriteProduct = async (
   locale: string,
   handle?: string,
 ) => {
-  // Re-verify session server-side to prevent anonymous users from bypassing client check
   const serverSession = await auth.api.getSession({ headers: await headers() });
-  const isAnonymous = (serverSession?.user as (typeof serverSession.user & { isAnonymous?: boolean }) | undefined)?.isAnonymous;
+  const isAnonymous = (serverSession?.user as (NonNullable<typeof serverSession>['user'] & { isAnonymous?: boolean }) | undefined)?.isAnonymous;
 
   if (!serverSession?.user?.id || isAnonymous) {
     return { success: false, error: 'AUTH_REQUIRED' };

@@ -22,7 +22,7 @@ export const ClientGrid = ({
   return (
     <div
       className={cn(
-        'grid gap-1 md:gap-6',
+        'grid gap-1 md:gap-4 mt-2',
         cols === '3'
           ? 'grid-cols-3 md:grid-cols-4 lg:grid-cols-5'
           : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
@@ -40,6 +40,8 @@ export const ClientGrid = ({
             exit="exit"
           >
             <ProductCard
+              withQuick
+              addToCard
               product={product}
               className="hover:shadow pt-0 px-0 rounded"
               withCarousel

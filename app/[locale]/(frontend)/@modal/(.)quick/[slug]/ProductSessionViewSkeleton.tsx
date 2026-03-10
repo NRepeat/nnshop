@@ -4,7 +4,7 @@ import { QuickView } from '@/widgets/product-view/ui/QuickView';
 export function ProductSessionViewSkeleton() {
   return (
     <QuickView open={true}>
-      <div className="mt-10 animate-pulse">
+      <div className="mt-10 animate-pulse min-h-[70vh]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Gallery / Image Placeholder */}
           <div className="h-96 bg-gray-200  rounded-lg"></div>

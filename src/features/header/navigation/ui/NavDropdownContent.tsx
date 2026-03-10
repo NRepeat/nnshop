@@ -11,6 +11,8 @@ type DefaultImage = {
   imageHeight?: number | null;
   href: string;
   alt: string;
+  imageTitle?: string | null;
+  imageButtonLabel?: string | null;
 };
 
 type ChildItem = {
@@ -19,12 +21,18 @@ type ChildItem = {
   collectionImageUrl?: string | null;
 };
 
+type Column = {
+  title: string;
+  url: string;
+  items: ChildItem[];
+};
+
 export function NavDropdownContent({
-  children,
+  columns,
   defaultImage,
   gender,
 }: {
-  children: ChildItem[];
+  columns: Column[];
   defaultImage?: DefaultImage | null;
   gender: string;
 }) {
@@ -33,50 +41,75 @@ export function NavDropdownContent({
   const displayImageUrl = activeImageUrl ?? defaultImage?.imageUrl ?? null;
 
   return (
-    <div
-      className={`flex gap-10  px-6 w-full  py-8 flex justify-center    ${defaultImage ? 'justify-around' : ''}`}
-    >
-      <div className="flex-1 max-w-5xl">
-        <ul
-          className="grid grid-cols-2 gap-x-8 gap-y-1 w-full"
-          onMouseLeave={() => setActiveImageUrl(null)}
-        >
-          {children.map((child) => (
-            <li
-              key={child.title + gender}
-              className="w-full group rouded hover:shadow hover:bg-secondary/50 transition-colors duration-200"
-              onMouseEnter={() =>
-                setActiveImageUrl(child.collectionImageUrl ?? null)
-              }
-            >
-              <NavigationItemClient href={child.url} className="w-full rounded">
-                <Button
-                  variant="ghost"
-                  className="group-hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-2 border-none min-h-10 rounded"
-                >
-                  {child.title}
+    <div className="flex gap-10 px-6 w-full py-8 justify-center">
+      {columns.map((col, colIdx) => (
+        <div key={col.title + colIdx} className="flex-1 min-w-[180px] max-w-[260px]">
+          <NavigationItemClient href={col.url} className="block mb-3">
+            <p className="text-base font-semibold tracking-wide border-b border-border pb-2">
+              {col.title}
+            </p>
+          </NavigationItemClient>
+          <ul
+            className="flex flex-col gap-0.5"
+            onMouseLeave={() => setActiveImageUrl(null)}
+          >
+            {col.items.map((item) => (
+              <li
+                key={item.title + gender}
+                className="w-full group rounded hover:shadow hover:bg-secondary/50 transition-colors duration-200"
+                onMouseEnter={() =>
+                  setActiveImageUrl(item.collectionImageUrl ?? null)
+                }
+              >
+                <NavigationItemClient href={item.url} className="w-full rounded">
+                  <Button
+                    variant="ghost"
+                    className="group-hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-2 border-none min-h-10 rounded"
+                  >
+                    {item.title}
+                  </Button>
+                </NavigationItemClient>
+              </li>
+            ))}
+          </ul>
+          {colIdx === 0 && (
+            <div className="mt-4">
+              <NavigationItemClient href={col.url}>
+                <Button variant="outline" className="text-sm">
+                  {col.title}
                 </Button>
               </NavigationItemClient>
-            </li>
-          ))}
-        </ul>
-      </div>
+            </div>
+          )}
+        </div>
+      ))}
 
       {defaultImage && displayImageUrl && (
-        <div className="shrink-0 w-[350px] max-h-[400px] py-0 relative mr-10">
+        <div className="shrink-0 w-[300px] flex flex-col gap-3 mr-10">
           <NavigationItemClient
-            href={activeImageUrl ? '#' : defaultImage.href}
-            className="block h-full px-0 py-0 rounded   "
+            href={defaultImage.href}
+            className="block rounded overflow-hidden"
           >
             <Image
               src={displayImageUrl}
-              alt={activeImageUrl ? '' : defaultImage.alt}
-              width={defaultImage.imageWidth ?? 350}
-              height={defaultImage.imageHeight ?? 460}
-              className="object-cover w-full h-full rounded transition-opacity duration-200 "
+              alt={defaultImage.alt}
+              width={defaultImage.imageWidth ?? 300}
+              height={defaultImage.imageHeight ?? 380}
+              className="object-cover w-full h-full rounded transition-opacity duration-200"
             />
-            <div className="pointer-events-none absolute inset-0 rounded inset-shadow-sm  "></div>
           </NavigationItemClient>
+          {(defaultImage.imageTitle || defaultImage.alt) && (
+            <p className="text-sm text-muted-foreground">
+              {defaultImage.imageTitle ?? defaultImage.alt}
+            </p>
+          )}
+          {defaultImage.imageButtonLabel && (
+            <NavigationItemClient href={defaultImage.href}>
+              <Button variant="outline" className="text-sm w-full">
+                {defaultImage.imageButtonLabel}
+              </Button>
+            </NavigationItemClient>
+          )}
         </div>
       )}
     </div>

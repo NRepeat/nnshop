@@ -26,6 +26,8 @@ type NavImage = {
   imageHeight?: number | null;
   collectionHandle?: string | null;
   collectionTitle?: string | null;
+  imageTitle?: string | null;
+  imageButtonLabel?: string | null;
 };
 
 type NavImages = {
@@ -33,34 +35,44 @@ type NavImages = {
   man?: NavImage[] | null;
 } | null;
 
+type SanityColumnItem = { _id: string; title: string; handle: string } | null;
+type SanityColumn = { title: string; url?: string | null; items?: SanityColumnItem[] | null };
+type SanityDropdown = { menuIndex: number; columns?: SanityColumn[] | null };
+type NavDropdowns = {
+  woman?: SanityDropdown[] | null;
+  man?: SanityDropdown[] | null;
+} | null;
+
 export const CurrentNavigationSession = async ({
   locale,
   gender,
   navImages,
+  navDropdowns,
 }: {
   locale: string;
   gender?: string;
   navImages?: NavImages;
+  navDropdowns?: NavDropdowns;
 }) => {
   const cookie = await cookies();
   const currentGender = gender || cookie.get('gender')?.value || 'woman';
   return (
-    <Navigation gender={currentGender} locale={locale} navImages={navImages} />
+    <Navigation gender={currentGender} locale={locale} navImages={navImages} navDropdowns={navDropdowns} />
   );
 };
 
-export const CurrentNavigationSessionSkilet = () => {
-  const meinMenu = [
+export const CurrentNavigationSessionSkeleton = () => {
+  const mainMenu = [
     { slug: 'home', title: 'Home', items: [] },
     { slug: 'about', title: 'About', items: [] },
     { slug: 'about', title: 'About', items: [] },
     { slug: 'about', title: 'About', items: [] },
   ];
-  const menu = meinMenu.map((item, index) => {
+  const menu = mainMenu.map((item, index) => {
     return (
       <NavigationMenuItem
         key={`${item.title}-${index}`}
-        className={` ${index === meinMenu.length - 1 ? 'block' : 'block'}`}
+        className={` ${index === mainMenu.length - 1 ? 'block' : 'block'}`}
       >
         <Skeleton className="w-[100px] h-[30px]" />
       </NavigationMenuItem>
@@ -119,10 +131,12 @@ const Navigation = async ({
   gender,
   locale,
   navImages,
+  navDropdowns,
 }: {
   gender: string;
   locale: string;
   navImages?: NavImages;
+  navDropdowns?: NavDropdowns;
 }) => {
   const [allItems, t] = await Promise.all([
     getMainMenu({ locale }),
@@ -130,15 +144,31 @@ const Navigation = async ({
   ]);
 
   // Filter by gender
-  const meinMenu = allItems.filter((item) => matchesGender(item, gender));
-  const items = meinMenu.length > 0 ? meinMenu : allItems.slice(0, 1);
+  const mainMenu = allItems.filter((item) => matchesGender(item, gender));
+  const items = mainMenu.length > 0 ? mainMenu : allItems.slice(0, 1);
 
   // Collect all child handles to prefetch their featured images
-  const allChildHandles = items.flatMap((item) =>
+  // Collect from Sanity navDropdowns + Shopify fallback
+  const sanityHandles = (
+    navDropdowns?.[gender as 'woman' | 'man'] ?? []
+  ).flatMap((d) =>
+    (d.columns ?? []).flatMap((col) =>
+      (col.items ?? []).filter((item): item is NonNullable<SanityColumnItem> => item != null).map((item) => item.handle),
+    ),
+  );
+  const shopifyHandles = items.flatMap((item) =>
     item.items
       .filter((sub) => !isBrandsItem(sub))
-      .flatMap((sub) => sub.items.map((child) => child.url.replace(/^\//, ''))),
+      .flatMap((sub) => {
+        const hasSubItems = sub.items.some((g) => g.items.length > 0);
+        return hasSubItems
+          ? sub.items
+              .filter((g) => !isBrandsItem(g))
+              .flatMap((g) => g.items.map((child) => child.url.replace(/^\//, '')))
+          : sub.items.map((child) => child.url.replace(/^\//, ''));
+      }),
   );
+  const allChildHandles = [...new Set([...sanityHandles, ...shopifyHandles])];
   const collectionImages = await getCollectionImages(
     allChildHandles,
     locale,
@@ -184,15 +214,64 @@ const Navigation = async ({
                       ? `/${gender}/${navImage.collectionHandle}`
                       : (navImage.url ?? '#'),
                     alt: navImage.collectionTitle ?? '',
+                    imageTitle: navImage.imageTitle ?? null,
+                    imageButtonLabel: navImage.imageButtonLabel ?? null,
                   }
                 : null;
 
-              const childItems = subItem.items.map((child) => ({
-                title: child.title,
-                url: withGender(child.url),
-                collectionImageUrl:
-                  collectionImages[child.url.replace(/^\//, '')] ?? null,
-              }));
+              // Try Sanity columns first, fallback to Shopify items
+              const genderDropdowns = navDropdowns?.[gender as 'woman' | 'man'] ?? [];
+              const sanityDropdown = genderDropdowns.find(
+                (d) => d.menuIndex === subIndex,
+              );
+              const columns = sanityDropdown?.columns?.length
+                ? sanityDropdown.columns.map((col) => ({
+                    title: col.title,
+                    url: col.url ? withGender(`/${col.url}`) : withGender(subItem.url),
+                    items: (col.items ?? []).filter((item): item is NonNullable<SanityColumnItem> => item != null).map((item) => ({
+                      title: item.title,
+                      url: withGender(`/${item.handle}`),
+                      collectionImageUrl:
+                        collectionImages[item.handle] ?? null,
+                    })),
+                  }))
+                : // Fallback: Shopify 4-level — level 3 = column, level 4 = items
+                  // If level 3 has sub-items → treat as columns; otherwise flat single column
+                  (() => {
+                    const nonBrandsGroups = subItem.items.filter(
+                      (g) => !isBrandsItem(g),
+                    );
+                    const hasSubItems = nonBrandsGroups.some(
+                      (g) => g.items.length > 0,
+                    );
+                    if (hasSubItems) {
+                      return nonBrandsGroups.slice(0, 2).map((group) => ({
+                        title: group.title,
+                        url: withGender(group.url),
+                        items: group.items.map((child) => ({
+                          title: child.title,
+                          url: withGender(child.url),
+                          collectionImageUrl:
+                            collectionImages[child.url.replace(/^\//, '')] ??
+                            null,
+                        })),
+                      }));
+                    }
+                    // flat fallback (only 3 levels in Shopify)
+                    return [
+                      {
+                        title: subItem.title,
+                        url: withGender(subItem.url),
+                        items: nonBrandsGroups.map((child) => ({
+                          title: child.title,
+                          url: withGender(child.url),
+                          collectionImageUrl:
+                            collectionImages[child.url.replace(/^\//, '')] ??
+                            null,
+                        })),
+                      },
+                    ];
+                  })();
 
               return (
                 <NavigationMenuItem
@@ -207,7 +286,7 @@ const Navigation = async ({
                   </NavigationTriggerClient>
                   <NavigationMenuContent className="px-4">
                     <NavDropdownContent
-                      children={childItems}
+                      columns={columns}
                       defaultImage={defaultImage}
                       gender={gender}
                     />
@@ -245,7 +324,7 @@ const Navigation = async ({
             {t('title')}
           </NavigationTriggerClient>
           <NavigationMenuContent className="px-6 ">
-            <div className="flex gap-10 py-8  w-full  flex justify-center">
+            <div className="flex gap-10 py-8  w-full   justify-center">
               <div className="flex-1 max-w-5xl">
                 <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
                   {t('topBrands')}
@@ -254,8 +333,9 @@ const Navigation = async ({
                   {topBrands.slice(0, 10).map((brand) => (
                     <li
                       key={brand.title}
-                      className="w-full w-full group rouded hover:shadow hover:bg-secondary/50 transition-colors duration-200"
+                      className="w-full group rounded hover:shadow hover:bg-secondary/50 transition-colors duration-200"
                     >
+
                       <NavigationItemClient
                         className="w-full "
                         href={`/brend${brand.url}`}

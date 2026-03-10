@@ -46,6 +46,7 @@ export const metadata: Metadata = {
     type: 'website',
     siteName: 'Mio Mio',
     locale: 'uk_UA',
+    images: [{ url: `${BASE_URL}/og-image.jpg`, width: 1200, height: 630 }],
   },
 };
 

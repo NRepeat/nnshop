@@ -41,17 +41,29 @@ function getPositionStyle(position: string): React.CSSProperties {
 function getTextAlign(position: string): React.CSSProperties {
   const horizontal = position.split('-')[1];
   return {
-    textAlign: horizontal === 'center' ? 'center' : horizontal === 'right' ? 'right' : 'left',
-    alignItems: horizontal === 'center' ? 'center' : horizontal === 'right' ? 'flex-end' : 'flex-start',
+    textAlign:
+      horizontal === 'center'
+        ? 'center'
+        : horizontal === 'right'
+          ? 'right'
+          : 'left',
+    alignItems:
+      horizontal === 'center'
+        ? 'center'
+        : horizontal === 'right'
+          ? 'flex-end'
+          : 'flex-start',
   };
 }
 
 export function SplitImage(props: SplitGridProps) {
   const { title, image, orientation, collection, locale, gender } = props;
   const description = (props as any).description;
-  const textPosition: string = stegaClean((props as any).textPosition) || 'bottom-left';
+  const textPosition: string =
+    stegaClean((props as any).textPosition) || 'bottom-left';
   const titleColor: string | null = (props as any).titleColor?.hex ?? null;
-  const descriptionColor: string | null = (props as any).descriptionColor?.hex ?? null;
+  const descriptionColor: string | null =
+    (props as any).descriptionColor?.hex ?? null;
   const overlay = (props as any).overlay;
   const textBackground = (props as any).textBackground;
 
@@ -63,8 +75,11 @@ export function SplitImage(props: SplitGridProps) {
     ? hexToRgba(textBackground.color.hex, (textBackground.opacity ?? 40) / 100)
     : undefined;
   const textPad =
-    textBackground?.padding === 'sm' ? '0.75rem' :
-    textBackground?.padding === 'lg' ? '1.5rem' : '1rem';
+    textBackground?.padding === 'sm'
+      ? '0.75rem'
+      : textBackground?.padding === 'lg'
+        ? '1.5rem'
+        : '1rem';
 
   const localizedDescription = description
     ? (description[locale as 'uk' | 'ru'] ?? description.uk ?? null)
@@ -112,7 +127,10 @@ export function SplitImage(props: SplitGridProps) {
               >
                 <div
                   className="absolute max-w-[85%] flex flex-col gap-3"
-                  style={{ ...getPositionStyle(textPosition), ...getTextAlign(textPosition) }}
+                  style={{
+                    ...getPositionStyle(textPosition),
+                    ...getTextAlign(textPosition),
+                  }}
                 >
                   <div
                     style={{
@@ -122,7 +140,9 @@ export function SplitImage(props: SplitGridProps) {
                       ...(textBgColor && {
                         backgroundColor: textBgColor,
                         padding: textPad,
-                        borderRadius: textBackground?.rounded ? '0.375rem' : undefined,
+                        borderRadius: textBackground?.rounded
+                          ? '0.375rem'
+                          : undefined,
                       }),
                     }}
                   >
@@ -137,9 +157,11 @@ export function SplitImage(props: SplitGridProps) {
                     {(localizedDescription || linkUrl?.handle) && (
                       <span
                         className="text-base uppercase tracking-widest"
-                        style={{ color: descriptionColor ?? 'rgba(255,255,255,0.85)' }}
+                        style={{
+                          color: descriptionColor ?? 'rgba(255,255,255,0.85)',
+                        }}
                       >
-                        {localizedDescription || linkUrl?.title}
+                        {localizedDescription}
                       </span>
                     )}
                   </div>
@@ -148,7 +170,9 @@ export function SplitImage(props: SplitGridProps) {
             </div>
 
             {/* Desktop: separate text column, aligned by textPosition horizontal */}
-            <div className={`hidden w-full md:flex md:flex-1 ${stegaClean(orientation) === 'imageRight' ? 'md:pr-12' : 'md:pl-12'}`}>
+            <div
+              className={`hidden w-full md:flex md:flex-1 ${stegaClean(orientation) === 'imageRight' ? 'md:pr-12' : 'md:pl-12'}`}
+            >
               <div
                 className="flex flex-col gap-6 w-full text-black"
                 style={getTextAlign(textPosition)}
@@ -164,7 +188,7 @@ export function SplitImage(props: SplitGridProps) {
                     className="h-auto p-0 text-base uppercase text-wrap tracking-widest group-hover:underline duration-300 decoration-transparent group-hover:decoration-primary transition-all group-hover:opacity-70 text-black border-black rounded"
                   >
                     <span className="max-w-full text-pretty">
-                      {localizedDescription || linkUrl?.title}
+                      {localizedDescription}
                     </span>
                   </Button>
                 )}

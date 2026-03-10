@@ -23,6 +23,7 @@ type HeroSliderBase = Extract<
 type HeroSliderProps = HeroSliderBase & {
   gender?: string;
   videoFile?: string | null;
+  videoPoster?: string | null;
   videoUrl?: string | null;
   videoTitle?: string | null;
   videoDescription?: string | null;
@@ -130,6 +131,7 @@ function buildOverlayBg(
 
 type VideoHeroProps = {
   src: string;
+  poster?: string | null;
   textPosition: string;
   titleColor?: string | null;
   descriptionColor?: string | null;
@@ -140,13 +142,42 @@ type VideoHeroProps = {
   compact?: boolean;
 };
 
-function VideoHero({ src, textPosition, titleColor, descriptionColor, title, description, overlay, href, compact }: VideoHeroProps) {
+function VideoHero({ src, poster, textPosition, titleColor, descriptionColor, title, description, overlay, href, compact }: VideoHeroProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [ready, setReady] = useState(false);
+  const [autoPoster, setAutoPoster] = useState<string | null>(null);
+
+  // If no poster provided — capture first frame via canvas
+  useEffect(() => {
+    if (poster) return;
+    const el = videoRef.current;
+    if (!el) return;
+
+    const capture = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = el.videoWidth || 1280;
+        canvas.height = el.videoHeight || 720;
+        canvas.getContext('2d')?.drawImage(el, 0, 0, canvas.width, canvas.height);
+        setAutoPoster(canvas.toDataURL('image/jpeg', 0.8));
+      } catch {}
+    };
+
+    if (el.readyState >= 2) {
+      capture();
+    } else {
+      el.addEventListener('loadeddata', capture, { once: true });
+      return () => el.removeEventListener('loadeddata', capture);
+    }
+  }, [src, poster]);
 
   useEffect(() => {
+    setReady(false);
+    setAutoPoster(null);
     const el = videoRef.current;
     if (!el) return;
     el.muted = true;
+    el.load();
     el.play().catch(() => {});
   }, [src]);
 
@@ -157,13 +188,16 @@ function VideoHero({ src, textPosition, titleColor, descriptionColor, title, des
       <video
         ref={videoRef}
         src={src}
+        poster={poster ?? autoPoster ?? undefined}
         autoPlay
         muted
         loop
         playsInline
         preload="auto"
         disablePictureInPicture
-        className="absolute inset-0 w-full h-full object-cover"
+        onLoadedData={() => setReady(true)}
+        onCanPlay={() => setReady(true)}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${ready ? 'opacity-100' : 'opacity-0'}`}
       />
       <div
         className="absolute inset-0"
@@ -422,7 +456,7 @@ function ImageSlider({ slides, gender, compact }: { slides: Slide[]; gender?: st
 // HeroBanner
 
 export const HeroBanner = (props: HeroSliderProps) => {
-  const { slides, gender, videoFile, videoUrl, compact } = props;
+  const { slides, gender, videoFile, videoPoster, videoUrl, compact } = props;
   const hasVideo = !!(videoFile || videoUrl);
 
   if (!hasVideo && (!slides || slides.length === 0)) return null;
@@ -432,6 +466,7 @@ export const HeroBanner = (props: HeroSliderProps) => {
       {hasVideo ? (
         <VideoHero
           src={props.videoFile || props.videoUrl || ''}
+          poster={videoPoster}
           textPosition={props.videoTextPosition ?? 'bottom-left'}
           titleColor={props.videoTitleColor}
           descriptionColor={props.videoDescriptionColor}

@@ -19,7 +19,9 @@ export function PostHogProvider({ children }: { children: ReactNode }) {
         maskInputOptions: { password: true },
       },
       loaded: (ph) => {
-        ph.startSessionRecording();
+        if (process.env.NODE_ENV !== 'development') {
+          ph.startSessionRecording();
+        }
       },
     });
   }, []);

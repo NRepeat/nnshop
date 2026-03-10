@@ -16,7 +16,6 @@ export const NavigationClient = ({
   className?: string;
 }) => {
   const [value, setValue] = useState('');
-  console.log('NavigationClient rendered with value:', value);
   const close = useCallback(() => setValue(''), []);
 
   return (
@@ -32,7 +31,7 @@ export const NavigationClient = ({
         <NavigationMenuList
           className={cn(
             className,
-            ' flex items-center justify-center grid-cols-3 md:grid-cols-3 w-full pt-0 py-2',
+            'flex items-center justify-center w-full pt-0 py-2',
           )}
         >
           {children}

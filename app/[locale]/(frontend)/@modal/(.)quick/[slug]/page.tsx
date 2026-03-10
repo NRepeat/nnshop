@@ -16,7 +16,6 @@ import { setRequestLocale } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { auth } from '@features/auth/lib/auth';
 import { isProductFavorite } from '@features/product/api/isProductFavorite';
-import { ProductSessionViewSkeleton } from './ProductSessionViewSkeleton';
 import { Button } from '@shared/ui/button';
 import { Heart } from 'lucide-react';
 import { connection } from 'next/server';
@@ -28,7 +27,7 @@ type Props = {
 
 export default async function ProductQuickViewPage({ params }: Props) {
   return (
-    <Suspense fallback={<ProductSessionViewSkeleton />}>
+    <Suspense fallback={null}>
       <ProductSession params={params} />
     </Suspense>
   );
@@ -90,7 +89,7 @@ const ProductSessionView = async ({ params, quiqView }: Props) => {
     ]);
     const isFavorite = await isProductFavorite(product.id, session);
     return (
-      <div className="mt-10">
+      <div className="mt-10 min-h-[70vh]">
         <ProductViewProvider
         quiqView={quiqView}
           favCommponent={
