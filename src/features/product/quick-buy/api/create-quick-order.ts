@@ -4,7 +4,7 @@ import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
-import { captureServerEvent } from '@shared/lib/posthog/posthog-server';
+import { captureServerEvent, captureServerError } from '@shared/lib/posthog/posthog-server';
 
 type QuickOrderInput = {
   variantId: string;
@@ -158,10 +158,12 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
     const { order: createdOrder, userErrors } = orderResponse.orderCreate;
 
     if (userErrors.length > 0) {
-      console.error(
-        'Quick Order - User Errors:',
-        JSON.stringify(userErrors, null, 2),
-      );
+      await captureServerError(new Error('Shopify Order Creation Failed'), {
+        service: 'product',
+        action: 'create_quick_order_shopify_error',
+        userId,
+        extra: { userErrors, variantId: orderData.variantId },
+      });
       return {
         success: false,
         errors: userErrors.map((error) => error.message),
@@ -169,7 +171,12 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
     }
 
     if (!createdOrder) {
-      console.error('Quick Order - No order returned');
+      await captureServerError(new Error('Shopify Order Creation Failed - No Order'), {
+        service: 'product',
+        action: 'create_quick_order_no_order',
+        userId,
+        extra: { variantId: orderData.variantId },
+      });
       return {
         success: false,
         errors: ['Failed to create quick order'],
@@ -203,7 +210,18 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
       orderName: createdOrder.name,
     };
   } catch (error) {
-    console.error('Quick Order - Error:', error);
+    const session = await auth.api.getSession({ headers: await headers() });
+    const userId = session?.user?.id;
+
+    await captureServerError(error, {
+      service: 'product',
+      action: 'create_quick_order',
+      userId,
+      extra: {
+        variantId: orderData.variantId,
+        productTitle: orderData.productTitle,
+      },
+    });
     return {
       success: false,
       errors: [

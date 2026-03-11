@@ -12,6 +12,7 @@ import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { headers } from 'next/headers';
+import { captureServerError } from '@shared/lib/posthog/posthog-server';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { formatPhoneForShopify } from '@features/checkout/schema/contactInfoSchema';
@@ -80,7 +81,10 @@ export async function createOrder(
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
-      console.error('SESSION NOT FOUND');
+      await captureServerError(new Error('Session not found during order creation'), {
+        service: 'checkout',
+        action: 'create_order_no_session',
+      });
       return {
         success: false,
         errors: ['Session not found'],
@@ -91,23 +95,24 @@ export async function createOrder(
       userId: session.user.id,
       locale,
     })) as GetCartQuery | null;
-    if (!result) {
-      console.error('CART NOT FOUND');
+    if (!result || !result.cart) {
+      await captureServerError(new Error('Cart not found during order creation'), {
+        service: 'checkout',
+        action: 'create_order_no_cart',
+        userId: session.user.id,
+      });
       return {
         success: false,
         errors: ['Cart  NOT FOUND'],
       };
     }
     const cart = result.cart;
-    if (!cart) {
-      console.error('CART NOT FOUND');
-      return {
-        success: false,
-        errors: ['Cart  NOT FOUND'],
-      };
-    }
     if (!cart.lines || !cart.lines.edges.length) {
-      console.error('CART HAS NO ITEMS');
+      await captureServerError(new Error('Cart empty during order creation'), {
+        service: 'checkout',
+        action: 'create_order_empty_cart',
+        userId: session.user.id,
+      });
       return {
         success: false,
         errors: ['Cart has no items'],
@@ -334,12 +339,11 @@ export async function createOrder(
     const userErrors = orderResponse.orderCreate.userErrors;
 
     if (userErrors.length > 0) {
-      console.error(
-        ' ADMIN API USER ERRORS:',
-        JSON.stringify(userErrors, null, 2),
-      );
-      userErrors.forEach((error) => {
-        console.error(`Field: ${error.field}, Message: ${error.message}`);
+      await captureServerError(new Error('Shopify Order Creation Failed (Admin API)'), {
+        service: 'checkout',
+        action: 'create_order_shopify_error',
+        userId: session.user.id,
+        extra: { userErrors },
       });
       return {
         success: false,
@@ -348,7 +352,11 @@ export async function createOrder(
     }
 
     if (!createdOrder) {
-      console.error(' NO ORDER RETURNED FROM ADMIN API');
+      await captureServerError(new Error('Shopify Order Creation Failed - No Order (Admin API)'), {
+        service: 'checkout',
+        action: 'create_order_no_order',
+        userId: session.user.id,
+      });
       return {
         success: false,
         errors: ['Failed to create order - no order returned'],
@@ -371,11 +379,11 @@ export async function createOrder(
         },
       });
     } catch (dbError) {
-      console.error('[create-order] DB save failed after Shopify success', {
-        step: 'prisma-order-create',
+      await captureServerError(dbError, {
+        service: 'checkout',
+        action: 'create_order_db_save_error',
         userId: session.user.id,
-        orderId: createdOrder.id,
-        error: dbError instanceof Error ? dbError.message : String(dbError),
+        extra: { orderId: createdOrder.id },
       });
       // Do NOT re-throw — Shopify order exists; user must see success state
     }
@@ -385,10 +393,11 @@ export async function createOrder(
       order: createdOrder,
     };
   } catch (error) {
-    console.error(' ERROR CREATING ORDER WITH ADMIN API:', error);
-    console.error(' ERROR DETAILS:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
+    const session = await auth.api.getSession({ headers: await headers() });
+    await captureServerError(error, {
+      service: 'checkout',
+      action: 'create_order_unexpected_error',
+      userId: session?.user?.id,
     });
     return {
       success: false,

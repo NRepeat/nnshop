@@ -4,6 +4,7 @@ import { contactInfoSchema, formatPhoneForShopify } from '@features/checkout/sch
 import { updateCartBuyerIdentity } from '@entities/cart/api/shopify-cart-buyer-identity-update';
 import { prisma } from '@shared/lib/prisma';
 import { headers } from 'next/headers';
+import { captureServerError } from '@shared/lib/posthog/posthog-server';
 import z from 'zod';
 
 const saveContactInfo = async (data: z.infer<typeof contactInfoSchema>) => {
@@ -65,6 +66,13 @@ const saveContactInfo = async (data: z.infer<typeof contactInfoSchema>) => {
 
     return transaction;
   } catch (e) {
+    const session = await auth.api.getSession({ headers: await headers() });
+    await captureServerError(e, {
+      service: 'checkout',
+      action: 'save_contact_info',
+      userId: session?.user?.id,
+      extra: { email: data.email },
+    });
     throw new Error(String(e));
   }
 };

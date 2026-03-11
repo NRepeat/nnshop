@@ -72,6 +72,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
         toast.error(result.message);
       }
     } catch (error) {
+      posthog?.captureException(error);
       console.error('Error saving delivery info:', error);
       toast.error(t('errorSavingDeliveryInformation'));
     }

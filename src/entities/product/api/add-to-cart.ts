@@ -2,7 +2,7 @@
 
 import { addToCartAction } from '@entities/cart/api/add-product';
 import { checkInventoryLevel } from './check-inventory-level';
-import { captureServerEvent } from '@shared/lib/posthog/posthog-server';
+import { captureServerEvent, captureServerError } from '@shared/lib/posthog/posthog-server';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
 
@@ -46,7 +46,19 @@ async function addToCart(_: any, formData: FormData) {
 
     return { success: true, message: 'Added to cart' };
   } catch (error) {
-    console.error('[addToCart] unexpected error:', error);
+    const reqHeaders = await headers();
+    const session = await auth.api.getSession({ headers: reqHeaders });
+    const userId = session?.user?.id ?? 'anonymous';
+
+    await captureServerError(error, {
+      service: 'product',
+      action: 'add_to_cart',
+      userId,
+      extra: {
+        variantId: formData.get('variantId')?.toString(),
+        productTitle: formData.get('productTitle')?.toString(),
+      },
+    });
     return { success: false, message: String(error) };
   }
 }

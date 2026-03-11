@@ -75,6 +75,7 @@ export default function ContactInfoForm({
         toast.error(t('errorSavingContactInformation'));
       }
     } catch (error) {
+      posthog?.captureException(error);
       console.error('Error saving contact info:', error);
       toast.error(t('errorSavingContactInformation'));
     }

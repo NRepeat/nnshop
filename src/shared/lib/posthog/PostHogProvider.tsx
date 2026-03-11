@@ -12,7 +12,7 @@ export function PostHogProvider({ children }: { children: ReactNode }) {
       ui_host: 'https://us.posthog.com',
       capture_pageview: false,
       autocapture: false,
-      capture_exceptions: false,
+      capture_exceptions: true,
       person_profiles: 'always',
       session_recording: {
         maskAllInputs: false,

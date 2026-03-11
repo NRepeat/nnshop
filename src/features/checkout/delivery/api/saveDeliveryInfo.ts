@@ -3,6 +3,7 @@
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { headers } from 'next/headers';
+import { captureServerError } from '@shared/lib/posthog/posthog-server';
 import { DeliveryInfo } from '../model/deliverySchema';
 import { updateCartDeliveryPreferences } from '@entities/cart/api/update-cart-delivery-preferences';
 
@@ -119,7 +120,13 @@ export async function saveDeliveryInfo(
       message: 'Delivery information saved successfully!',
     };
   } catch (error) {
-    console.error('Error saving delivery info:', error);
+    const session = await auth.api.getSession({ headers: await headers() });
+    await captureServerError(error, {
+      service: 'checkout',
+      action: 'save_delivery_info',
+      userId: session?.user?.id,
+      extra: { deliveryMethod: data.deliveryMethod, city: data.city },
+    });
     return {
       success: false,
       message:

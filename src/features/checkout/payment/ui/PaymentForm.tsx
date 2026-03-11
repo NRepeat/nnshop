@@ -138,6 +138,7 @@ export default function PaymentForm({
       toast.success(t('paymentInformationSaved'));
       router.push(`/checkout/success/${encodeURIComponent(orderName)}`);
     } catch (error) {
+      posthog?.captureException(error);
       console.error('Error completing order:', error);
       toast.error(t('errorSavingPaymentInformation'));
       setIsLoading(false);

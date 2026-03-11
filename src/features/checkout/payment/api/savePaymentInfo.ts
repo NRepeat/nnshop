@@ -2,6 +2,7 @@
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { headers } from 'next/headers';
+import { captureServerError } from '@shared/lib/posthog/posthog-server';
 import { PaymentInfo } from '../schema/paymentSchema';
 import { User } from '~/generated/prisma/client';
 
@@ -74,7 +75,13 @@ export async function savePaymentInfo(
       };
     }
   } catch (error) {
-    console.error('Error saving payment info:', error);
+    const session = await auth.api.getSession({ headers: await headers() });
+    await captureServerError(error, {
+      service: 'checkout',
+      action: 'save_payment_info',
+      userId: session?.user?.id,
+      extra: { shopifyOrderId, amount: data.amount },
+    });
     return {
       success: false,
       message:
