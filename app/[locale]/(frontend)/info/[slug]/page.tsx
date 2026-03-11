@@ -8,6 +8,7 @@ import { generatePageMetadata } from '@shared/lib/seo/generateMetadata';
 import { PortableText, type PortableTextBlock } from 'next-sanity';
 import { components } from '@/shared/sanity/components/portableText';
 import { ContactForm } from '@features/contact/ui/ContactForm';
+import { notFound } from 'next/navigation';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -85,6 +86,8 @@ export default async function InfoPage({ params }: Props) {
     params: { language: sanityLocale, slug },
     revalidate: 3600,
   });
+
+  if (!pageContent) notFound();
 
   return (
     <div className="container flex">

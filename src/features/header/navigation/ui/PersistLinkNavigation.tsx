@@ -59,7 +59,7 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
     cookieGenderGet(),
     buildLevel2Map(locale),
   ]);
-  const currentGender = gender || 'woman';
+  const currentGender = (['woman', 'man'].includes(gender ?? '') ? gender : null) || 'woman';
 
   const links =
     props.mainCategory?.map((category) => {
@@ -115,7 +115,8 @@ const GenderSession = async ({
   level2Map: Record<string, string>;
   className?: string;
 }) => {
-  const gender = (await cookieGenderGet()) || 'woman';
+  const rawGender = await cookieGenderGet();
+  const gender = (['woman', 'man'].includes(rawGender ?? '') ? rawGender : null) || 'woman';
   return (
     <NavButton gender={gender} slug={slug} level2Map={level2Map} className={className}>
       {label}

@@ -10,7 +10,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@shared/ui/carousel';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@shared/i18n/navigation';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@shared/ui/button';
 import { useTranslations } from 'next-intl';

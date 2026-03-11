@@ -77,7 +77,11 @@ export const CurrentNavigationSession = async ({
   navDropdowns?: NavDropdowns;
 }) => {
   const cookie = await cookies();
-  const currentGender = gender || cookie.get('gender')?.value || 'woman';
+  const cookieGender = cookie.get('gender')?.value;
+  const currentGender =
+    gender ||
+    (['woman', 'man'].includes(cookieGender ?? '') ? cookieGender : null) ||
+    'woman';
   return (
     <Navigation
       gender={currentGender}
@@ -345,13 +349,13 @@ const Navigation = async ({
                 >
                   <NavigationTriggerClient
                     href={withGender(subItem.url)}
-                    className="hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all"
+                    className="hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all "
                   >
                     {subItem.title}
                   </NavigationTriggerClient>
                   <NavigationMenuContent className="px-4 w-full flex justify-center">
                     <NavDropdownContent
-                    // @ts-ignore
+                      // @ts-ignore
                       columns={columns}
                       defaultImage={defaultImage}
                       gender={gender}
@@ -391,21 +395,24 @@ const Navigation = async ({
           <NavigationMenuContent className="px-4 w-full flex justify-center">
             <div className="flex gap-10 px-6 w-full py-8 justify-between max-w-6xl">
               <div className="flex-1 min-w-[180px] max-w-[260px]">
-                <div className="block mb-3">
+                <NavigationItemClient className="block mb-3 px-4">
                   <p className="text-base font-semibold tracking-wide border-b border-border pb-2">
                     {t('topBrands')}
                   </p>
-                </div>
+                </NavigationItemClient>
                 <ul className="flex flex-col gap-0.5">
                   {topBrands.slice(0, 5).map((brand) => (
                     <li
                       key={brand.title}
                       className="w-full group rounded hover:shadow hover:bg-secondary/50 transition-colors duration-200"
                     >
-                      <NavigationItemClient className="w-full rounded" href={`/brend${brand.url}`}>
+                      <NavigationItemClient
+                        className="w-full rounded px-0"
+                        href={`/brend${brand.url}`}
+                      >
                         <Button
                           variant="ghost"
-                          className="group-hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-2 border-none min-h-10 rounded"
+                          className="group-hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-4 border-none min-h-10 rounded"
                         >
                           {brand.title}
                         </Button>
@@ -426,10 +433,13 @@ const Navigation = async ({
                       key={brand.title}
                       className="w-full group rounded hover:shadow hover:bg-secondary/50 transition-colors duration-200"
                     >
-                      <NavigationItemClient className="w-full rounded" href={`/brend${brand.url}`}>
+                      <NavigationItemClient
+                        className="w-full rounded px-0"
+                        href={`/brend${brand.url}`}
+                      >
                         <Button
                           variant="ghost"
-                          className="group-hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-2 border-none min-h-10 rounded"
+                          className="group-hover:underline duration-300 decoration-transparent  hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-4 border-none rounded"
                         >
                           {brand.title}
                         </Button>
@@ -438,8 +448,8 @@ const Navigation = async ({
                   ))}
                 </ul>
                 <div className="mt-3 border-t border-border pt-3">
-                  <NavigationItemClient href="/brands">
-                    <span className="text-sm font-medium hover:underline transition-all px-2">
+                  <NavigationItemClient href="/brands" className='px-0'>
+                    <span className="text-sm font-medium hover:underline transition-all px-4">
                       {t('allBrands')} →
                     </span>
                   </NavigationItemClient>

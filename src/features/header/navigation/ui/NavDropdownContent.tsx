@@ -52,24 +52,23 @@ export function NavDropdownContent({
   const displayImageUrl = activeImageUrl ?? defaultImage?.imageUrl ?? null;
 
   const processedColumns = columns.flatMap((col) => {
-    if (col.items.length <= 5) return [col];
+    if (col.items.length <= 6) return [col];
 
-    const chunks = [];
-    for (let i = 0; i < col.items.length; i += 5) {
-      chunks.push(col.items.slice(i, i + 5));
-    }
+    const half = Math.ceil(col.items.length / 2);
 
-    return chunks.map((chunk, idx) => ({
-      ...col,
-      items: chunk,
-      title: idx === 0 ? col.title : '',
-      outletLink: idx === chunks.length - 1 ? col.outletLink : null,
-      actionButton: idx === chunks.length - 1 ? col.actionButton : null,
-    }));
+    return [
+      {
+        ...col,
+        items: col.items.slice(0, half),
+        outletLink: null,
+        actionButton: null,
+      },
+      { ...col, items: col.items.slice(half), title: '' },
+    ];
   });
 
   return (
-    <div className="flex gap-10 px-6 w-full py-8 justify-between max-w-6xl ">
+    <div className="flex gap-10 px-6 w-full py-8 items-start justify-between  max-w-6xl ">
       {processedColumns.map((col, colIdx) => (
         <div
           key={`${col.title}-${colIdx}`}
@@ -77,20 +76,20 @@ export function NavDropdownContent({
         >
           {col.title ? (
             col.url ? (
-              <NavigationItemClient href={col.url} className="block mb-3">
+              <NavigationItemClient href={col.url} className="block mb-3 px-4">
                 <p className="text-base font-semibold tracking-wide border-b border-border pb-2">
                   {col.title}
                 </p>
               </NavigationItemClient>
             ) : (
-              <div className="block mb-3">
+              <NavigationItemClient className="block mb-3 px-4">
                 <p className="text-base font-semibold tracking-wide border-b border-border pb-2">
                   {col.title}
                 </p>
-              </div>
+              </NavigationItemClient>
             )
           ) : (
-            <div className="block mb-3">
+            <div className="block mb-3 py-2 px-2">
               <p className="text-base font-semibold tracking-wide border-b border-border pb-2 invisible">
                 Spacer
               </p>
@@ -109,12 +108,12 @@ export function NavDropdownContent({
                 }
               >
                 <NavigationItemClient
+                  className="w-full rounded px-0"
                   href={item.url}
-                  className="w-full rounded"
                 >
                   <Button
                     variant="ghost"
-                    className={`group-hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-2 border-none min-h-10 rounded ${item.navTitleColor && item.navTitleColor !== 'default' ? (NAV_COLOR_MAP[item.navTitleColor] ?? '') : ''}`}
+                    className="group-hover:underline duration-300 decoration-transparent  hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-4 border-none rounded"
                   >
                     {item.title}
                   </Button>
@@ -123,12 +122,20 @@ export function NavDropdownContent({
             ))}
           </ul>
           {col.outletLink?.label && (
-            <div className="mt-3 border-t border-border pt-3">
-              <NavigationItemClient href={col.outletLink.url ?? col.url}>
-                <span className="text-sm font-medium text-red-500 hover:underline transition-all px-2">
-                  {col.outletLink.label}
-                </span>
-              </NavigationItemClient>
+            <div className="mt-1 border-t border-border pt-1">
+              <div className="w-full group rounded hover:shadow hover:bg-secondary/50 transition-colors duration-200">
+                <NavigationItemClient
+                  href={col.outletLink.url ?? col.url}
+                  className="block w-full rounded p-0"
+                >
+                  <Button
+                    variant="ghost"
+                    className="group-hover:underline  px-4 h-12 duration-300 decoration-transparent hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start border-none min-h-10 rounded text-red-500"
+                  >
+                    {col.outletLink.label}
+                  </Button>
+                </NavigationItemClient>
+              </div>
             </div>
           )}
           {col.actionButton?.label && (
@@ -144,7 +151,7 @@ export function NavDropdownContent({
       ))}
 
       {defaultImage && displayImageUrl && (
-        <div className="shrink-0 w-[300px] flex flex-col gap-3 mr-10">
+        <div className="shrink-0 w-[300px] max-w-[300px] flex flex-col gap-3 mr-10">
           <NavigationItemClient
             href={defaultImage.href}
             className="block rounded overflow-hidden"

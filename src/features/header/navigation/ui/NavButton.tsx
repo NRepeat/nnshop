@@ -1,6 +1,5 @@
 'use client';
 import { Button } from '@shared/ui/button';
-import { cookieGenderSet } from '../api/setCookieGender';
 import { cn } from '@shared/lib/utils';
 import { usePathname, useRouter } from '@shared/i18n/navigation';
 import { genders } from '@shared/i18n/routing';
@@ -24,8 +23,8 @@ export const NavButton = ({
   const genderInUrl = pathname.split('/').find((segment) => genders.includes(segment));
   const isActive = genderInUrl ? genderInUrl === slug : (gender || 'woman') === slug;
 
-  const onClick = async () => {
-    await cookieGenderSet(slug);
+  const onClick = () => {
+    document.cookie = `gender=${slug};path=/;max-age=${60 * 60 * 24 * 365}`;
 
     // Try to navigate to the equivalent level-2 collection for the target gender
     const segments = pathname.split('/').filter(Boolean);
@@ -38,6 +37,7 @@ export const NavButton = ({
     } else {
       router.push(`/${slug}`);
     }
+    router.refresh();
   };
 
   return (
