@@ -25,7 +25,7 @@ export default function LoadMore({
   const t = useTranslations('LoadMore');
   const [pageInfo, setPageInfo] = useState<PageInfo>(initialPageInfo);
   const [isPending, startTransition] = useTransition();
-  const { ref, inView } = useInView();
+  const { inView } = useInView();
   const searchParams = useSearchParams();
 
   useEffect(() => {

@@ -1,10 +1,6 @@
 import { CardCarousel } from '@entities/home/ui/cardCarousel';
-import Image from 'next/image';
-import { Link } from '@shared/i18n/navigation';
 import { HOME_PAGEResult } from '@shared/sanity/types';
 import { getCollection } from '@entities/collection/api/getCollection';
-import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
-import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { ProductCard } from '@entities/product/ui/ProductCard';
 type ProductCarouselGridProps = Extract<
@@ -25,7 +21,7 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
   const products = shopifyCollection.collection?.collection?.products.edges.map(
     (edge) => edge.node,
   );
-  const items = products?.map((product, index) => {
+  const items = products?.map((product) => {
     return <ProductCard product={product as Product}  withCarousel={false}  withSizes withInnerShadow
     withQuick={false} className=' hover:shadow rounded-b rounded-t pt-0 px-0 '/>;
   });

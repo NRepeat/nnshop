@@ -1,15 +1,9 @@
-import {
-  getMetaobject,
-  ProductMEtaobjectType,
-} from '@entities/metaobject/api/get-metaobject';
-import { PathSync } from '@entities/path-sync/ui/path-sync';
-import { getReletedProducts } from '@entities/product/api/get-related-products';
-import { getInventoryLevels } from '@entities/product/api/getInventoryLevels';
 import { getProduct } from '@entities/product/api/getProduct';
 
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { ProductView } from '@widgets/product-view';
 import { notFound, unstable_rethrow } from 'next/navigation';
+import { PathSync } from '@entities/path-sync/ui/path-sync';
 
 export const ProductSessionView = async ({
   handle,
@@ -30,47 +24,6 @@ export const ProductSessionView = async ({
       return notFound();
     }
 
-    const parseIds = (key: string) => {
-      const value = product.metafields.find((m) => m?.key === key)?.value;
-      if (!value) return [];
-      try {
-        const parsed = JSON.parse(value as string) as string[];
-        return parsed.map((id) => id.split('/').pop() || '').filter(Boolean);
-      } catch {
-        return [];
-      }
-    };
-
-    const relatedProductsIds = parseIds('recommended_products');
-    const boundProductsData = parseIds('bound-products');
-
-    const attributesJsonIds = product.metafields.find(
-      (m) => m?.key === 'attributes',
-    )?.value;
-    const parsedAttributeIDs: string[] = attributesJsonIds
-      ? JSON.parse(attributesJsonIds as string)
-      : [];
-
-    const variantIds = product.variants.edges.map((e) => e.node.id);
-
-    const [
-      relatedShopiyProductsData,
-      boundProducts,
-      attributesResults,
-      inventoryLevels,
-    ] = await Promise.all([
-      getReletedProducts(relatedProductsIds, locale),
-      getReletedProducts(boundProductsData, locale),
-      Promise.all(parsedAttributeIDs.map((id) => getMetaobject(id))),
-      getInventoryLevels(variantIds),
-    ]);
-
-    const relatedProducts = [...relatedShopiyProductsData];
-
-    const attributes = attributesResults.filter(
-      (attr): attr is ProductMEtaobjectType => attr !== null,
-    );
-
     const targetLocale = locale === 'ru' ? 'uk' : 'ru';
     const paths = {
       [locale]: `/product/${handle}`,
@@ -81,12 +34,8 @@ export const ProductSessionView = async ({
       <>
         <PathSync paths={paths} />
         <ProductView
-          attributes={attributes}
           product={product as Product}
-          relatedProducts={relatedProducts}
-          boundProducts={boundProducts}
           locale={locale}
-          inventoryLevels={inventoryLevels}
         >
           {children}
         </ProductView>

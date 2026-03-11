@@ -13,7 +13,6 @@ import {
 import { urlFor } from '@shared/sanity/lib/image';
 import { HOME_PAGEResult } from '@shared/sanity/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { cn } from '@shared/lib/utils';
 
 type HeroSliderBase = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],

@@ -9,11 +9,11 @@ import { Filter } from '@shared/lib/shopify/types/storefront.types';
 import { Slider } from '@/shared/ui/slider';
 
 type Props = {
-  filter: Filter;
   initialFilterPrice: Filter | undefined;
+  filter: Filter;
 };
 
-export function NuqsPriceRangeFilter({ filter, initialFilterPrice }: Props) {
+export function NuqsPriceRangeFilter({ initialFilterPrice }: Props) {
   const t = useTranslations('CollectionPage.filters');
   const [isPending] = useTransition();
   const [minPrice, setMinPrice] = useQueryState(

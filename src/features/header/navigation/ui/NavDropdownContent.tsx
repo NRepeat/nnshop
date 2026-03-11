@@ -52,11 +52,11 @@ export function NavDropdownContent({
   const displayImageUrl = activeImageUrl ?? defaultImage?.imageUrl ?? null;
 
   const processedColumns = columns.flatMap((col) => {
-    if (col.items.length <= 6) return [col];
+    if (col.items.length <= 5) return [col];
 
     const chunks = [];
-    for (let i = 0; i < col.items.length; i += 6) {
-      chunks.push(col.items.slice(i, i + 6));
+    for (let i = 0; i < col.items.length; i += 5) {
+      chunks.push(col.items.slice(i, i + 5));
     }
 
     return chunks.map((chunk, idx) => ({

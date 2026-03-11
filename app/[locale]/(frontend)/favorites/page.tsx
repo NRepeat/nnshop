@@ -2,7 +2,6 @@ import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { headers } from 'next/headers';
 import { getProductsByIds } from '@entities/product/api/getProductsByIds';
-import { FavoriteProductCard } from '@features/favorites/ui/FavoriteProductCard';
 import { Breadcrumbs } from '@shared/ui/breadcrumbs';
 import { Empty, EmptyHeader, EmptyTitle } from '@shared/ui/empty';
 import { Heart } from 'lucide-react';

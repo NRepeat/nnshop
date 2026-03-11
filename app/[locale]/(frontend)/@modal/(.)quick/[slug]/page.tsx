@@ -19,10 +19,10 @@ import { isProductFavorite } from '@features/product/api/isProductFavorite';
 import { Button } from '@shared/ui/button';
 import { Heart } from 'lucide-react';
 import { connection } from 'next/server';
-
+import Gallery from '@features/product/ui/Gallery';
+import type { Image as ShoipifyImage } from '@shared/lib/shopify/types/storefront.types';
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
-  quiqView?: boolean;
 };
 
 export default async function ProductQuickViewPage({ params }: Props) {
@@ -33,7 +33,7 @@ export default async function ProductQuickViewPage({ params }: Props) {
   );
 }
 
-const ProductSessionView = async ({ params, quiqView }: Props) => {
+const ProductSessionView = async ({ params }: Props) => {
   await connection();
 
   try {
@@ -88,35 +88,46 @@ const ProductSessionView = async ({ params, quiqView }: Props) => {
       getInventoryLevels(variantIds),
     ]);
     const isFavorite = await isProductFavorite(product.id, session);
+    const images = product.images.edges
+      .map((edge) => edge.node)
+      .filter(Boolean);
+
     return (
       <div className="mt-10 min-h-[70vh]">
-        <ProductViewProvider
-        quiqView={quiqView}
-          favCommponent={
-            <Suspense
-              fallback={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="group animate-pulse bg-gray-200 "
-                >
-                  <Heart className="h-4 w-4" />
-                </Button>
-              }
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12 relative">
+          <ProductViewProvider
+            product={product as ShopifyProduct}
+            boundProducts={boundProducts}
+            attributes={attributes}
+            inventoryLevels={inventoryLevels}
+          >
+            <Gallery
+              images={images as any}
+              productId={product.id}
+              quiqView={true}
             >
-              <GallerySession
-                product={product as ShopifyProduct}
-                isFavorite={isFavorite}
-              />
-            </Suspense>
-          }
-          product={product as ShopifyProduct}
-          boundProducts={boundProducts}
-          attributes={attributes}
-          inventoryLevels={inventoryLevels}
-        />
+              <Suspense
+                fallback={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="group animate-pulse bg-gray-200 "
+                  >
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                }
+              >
+                <GallerySession
+                  product={product as ShopifyProduct}
+                  isFavorite={isFavorite}
+                />
+              </Suspense>
+            </Gallery>
+          </ProductViewProvider>
+        </div>
       </div>
     );
+
   } catch (e) {
     unstable_rethrow(e);
     console.error(e);
@@ -127,7 +138,7 @@ const ProductSessionView = async ({ params, quiqView }: Props) => {
 const ProductSession = async ({ params }: Props) => {
   return (
     <QuickView open={Boolean(params)}>
-      <ProductSessionView params={params} quiqView={true} />
+      <ProductSessionView params={params} />
     </QuickView>
   );
 };

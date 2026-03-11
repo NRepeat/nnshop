@@ -73,15 +73,6 @@ export const Footer = async ({ locale }: { locale: string }) => {
     { title: t('privacy_policy'), href: '/info/privacy-policy' },
   ];
 
-  const categoryLinks = [
-    { title: t('category_woman'), href: '/woman' },
-    { title: t('category_man'), href: '/man' },
-    { title: t('category_shoes'), href: '/woman/shoes' },
-    { title: t('category_clothes'), href: '/woman/clothes' },
-    { title: t('category_accessories'), href: '/woman/accessories' },
-    { title: t('category_brands'), href: '/brands' },
-  ];
-
   const workingHours =
     footer?.workingHours?.[locale as 'uk' | 'ru'] ?? t('working_hours');
 

@@ -1,29 +1,27 @@
 'use client';
 import { useQueryState } from 'nuqs';
-import Gallery from '@features/product/ui/Gallery';
 import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
-import { ProductInfo } from './ProductInfo';
 import { ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
 import { VariantInventory } from '@entities/product/api/getInventoryLevels';
 import { ScrollToTop } from '@shared/ui/ScrollToTop';
+import dynamic from 'next/dynamic';
+
+const ProductInfo = dynamic(() => import('./ProductInfo').then(mod => mod.ProductInfo));
 
 export function ProductViewProvider({
   product,
   boundProducts,
   attributes,
-  favCommponent,
   inventoryLevels,
-  quiqView,
+  children,
 }: {
   product: ShopifyProduct;
   boundProducts: ShopifyProduct[];
   attributes: ProductMEtaobjectType[];
-  favCommponent: React.ReactNode;
   inventoryLevels?: VariantInventory[];
-  quiqView?: boolean;
+  children?: React.ReactNode;
 }) {
   if (!product) throw new Error('Product not found');
-  const images = product.images.edges.map((edge) => edge.node).filter(Boolean);
   const COLOR_NAMES = ['колір', 'цвет', 'color'];
   const SIZE_NAMES = ['розмір', 'размер', 'size'];
   const isColorOption = (name: string) => COLOR_NAMES.includes(name.toLowerCase());
@@ -52,28 +50,18 @@ export function ProductViewProvider({
   return (
     <>
       <ScrollToTop />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12 relative">
-        <Gallery
-          images={images}
-          productId={product.id}
-          handle={product.handle}
-          quiqView={quiqView}
-        >
-          {favCommponent}
-        </Gallery>
-        <ProductInfo
-          product={product}
-          colorOptions={colorOptions}
-          sizeOptions={sizeOptions}
-          selectedVariant={selectedVariant}
-          setSize={setSize}
-          boundProduct={boundProductColorOptions}
-          size={size ?? ''}
-          attributes={attributes}
-          inventoryLevels={inventoryLevels ?? []}
-        />
-      </div>
+      {children}
+      <ProductInfo
+        product={product}
+        colorOptions={colorOptions}
+        sizeOptions={sizeOptions}
+        selectedVariant={selectedVariant}
+        setSize={setSize}
+        boundProduct={boundProductColorOptions}
+        size={size ?? ''}
+        attributes={attributes}
+        inventoryLevels={inventoryLevels ?? []}
+      />
     </>
   );
 }

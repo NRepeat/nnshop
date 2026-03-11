@@ -12,7 +12,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@shared/ui/accordion';
-import { cn } from '@shared/lib/utils';
 import { DiscountCodeInput } from '@features/cart/ui/DiscountCodeInput';
 
 interface OrderSummaryProps {

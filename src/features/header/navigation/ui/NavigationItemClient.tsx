@@ -1,7 +1,6 @@
 'use client';
 
 import { Link } from '@shared/i18n/navigation';
-import { usePathname } from 'next/navigation';
 import { cn } from '@shared/lib/utils';
 interface NavigationItemClientProps {
   href: string;
@@ -14,11 +13,6 @@ export const NavigationItemClient = ({
   children,
   className,
 }: NavigationItemClientProps) => {
-  const pathname = usePathname();
-
-  const normalizedHref = href.startsWith('/') ? href : `/${href}`;
-  const isActive = pathname === normalizedHref;
-
   return (
     <Link
       href={href}

@@ -61,7 +61,7 @@ export const FavSession = memo(({
         setIsFav(result.isFavorited);
         router.refresh();
       }
-    } catch (err) {
+    } catch {
       setIsFav(previousValue);
       toast("Couldn't save favorite. Try again.");
     } finally {

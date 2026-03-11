@@ -12,7 +12,6 @@ import {
 import { useTranslations } from 'next-intl';
 import { PaymentInfo } from '../schema/paymentSchema';
 import PaymentMethodButton from './PaymentMethodButton';
-import clsx from 'clsx';
 
 interface PaymentMethodSelectionProps {
   paymentMethods: {

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Skeleton } from '@shared/ui/skeleton';
 
 export function ProductCarouselSkeleton() {
   return (

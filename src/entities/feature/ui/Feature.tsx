@@ -6,7 +6,7 @@ type FeaturesProps = Extract<
   { _type: 'features' }
 > & { locale: string };
 
-export function Features({ features, title, locale }: FeaturesProps) {
+export function Features({ features, locale }: FeaturesProps) {
   const isSingleItem = features?.length === 1;
 
   return (

@@ -20,7 +20,6 @@ const Content = async ({
   cartId,
   locale,
   discountCodes,
-  subtotalAmount,
   totalAmount,
   discountAmount,
 }: {

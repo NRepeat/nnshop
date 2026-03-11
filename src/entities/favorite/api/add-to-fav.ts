@@ -3,9 +3,8 @@
 import { auth } from '@features/auth/lib/auth';
 // import { redirect } from '@shared/i18n/navigation';
 import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
 
-export const addToFavorites = async (productId: string, userId: string) => {
+export const addToFavorites = async () => {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
 

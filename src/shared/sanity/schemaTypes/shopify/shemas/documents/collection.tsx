@@ -1,7 +1,6 @@
 import React from 'react';
 import { defineField, defineType } from 'sanity';
 import { PackageIcon } from '@sanity/icons';
-import { getExtension } from '@sanity/asset-utils';
 import pluralize from 'pluralize-esm';
 import ShopifyIcon from '@/shared/sanity/components/shopify/icons/Shopify';
 import CollectionHiddenInput from '@/shared/sanity/components/shopify/inputs/CollectionHidden';

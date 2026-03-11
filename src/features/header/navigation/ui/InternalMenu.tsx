@@ -32,18 +32,6 @@ export const InternalMenu = ({
   }[];
   onClose: (link: string) => void;
 }) => {
-  const allValues = mainMenu.flatMap((item, itemIndex) =>
-    item.menu.flatMap((subItem, subIndex) => {
-      const values = [];
-      const subId = `sub-${subItem.id || subItem.title}-${subIndex}`;
-      // Only add the very first subId to default open
-      if (itemIndex === 0 && subIndex === 0 && subItem.items && subItem.items.length > 0) {
-        values.push(subId);
-      }
-      return values;
-    }),
-  );
-
   const tabs = mainMenu
     .filter((item) => item.menu.length > 0)
     .map((item) => {

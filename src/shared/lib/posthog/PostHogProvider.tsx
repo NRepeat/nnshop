@@ -20,7 +20,16 @@ export function PostHogProvider({ children }: { children: ReactNode }) {
       },
       loaded: (ph) => {
         if (process.env.NODE_ENV !== 'development') {
-          ph.startSessionRecording();
+          const startRecording = () => ph.startSessionRecording();
+          if (typeof window !== 'undefined') {
+            if ('requestIdleCallback' in window) {
+              (window as any).requestIdleCallback(() => {
+                setTimeout(startRecording, 3000);
+              });
+            } else {
+              setTimeout(startRecording, 5000);
+            }
+          }
         }
       },
     });

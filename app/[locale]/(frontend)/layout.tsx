@@ -16,8 +16,6 @@ import { ScrollDirectionProvider } from '@shared/ui/ScrollDirectionProvider';
 import { generateOrganizationJsonLd } from '@shared/lib/seo/jsonld';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { PostHogPageView } from '@shared/lib/posthog/PostHogPageView';
-import { PostHogIdentify } from '@shared/lib/posthog/PostHogIdentify';
 const jostSans = Onest({
   variable: '--font-jost-sans',
   subsets: ['latin', 'latin-ext', 'cyrillic'],

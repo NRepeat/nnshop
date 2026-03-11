@@ -1,23 +1,17 @@
 import { Separator } from '@shared/ui/separator';
-import ConditionScale from './ConditionScale';
-import { HelpCircle } from 'lucide-react';
 import { Product } from '@shared/types/product/types';
 import { notFound } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
 import { ProductVariant } from '@shared/lib/shopify/types/storefront.types';
 import { ProductOptions } from './ProductOptions';
 
 const Description = async ({
   product,
   selectedVariant,
-  locale,
 }: {
   product: Product;
   selectedVariant: ProductVariant;
-  locale: string;
 }) => {
   if (!product) return notFound();
-  const t = await getTranslations({ locale, namespace: 'ProductPage' });
   const price = product.priceRange?.maxVariantPrice;
   const isDiscounted = false;
   const compareAtPrice = product.priceRange?.maxVariantPrice;

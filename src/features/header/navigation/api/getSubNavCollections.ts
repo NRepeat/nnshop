@@ -25,7 +25,7 @@ export const getSubNavCollections = async ({
 }) => {
   const locale = await getLocale();
 
-  const responce = await storefrontClient.request<
+  await storefrontClient.request<
     GetSubMenuQuery,
     {
       handle: string;

@@ -22,13 +22,11 @@ const BLUR_DATA_URL =
 const Gallery = ({
   images,
   children,
-  handle,
   quiqView,
 }: {
   images: ShoipifyImage[];
   productId: string;
   children?: React.ReactNode;
-  handle: string;
   quiqView?: boolean;
 }) => {
   const [mainApi, setMainApi] = useState<CarouselApi>();
@@ -120,8 +118,8 @@ const Gallery = ({
                             fetchPriority={index === 0 ? 'high' : 'auto'}
                             loading={index === 0 ? 'eager' : 'lazy'}
                             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 40vw"
-                            placeholder="blur"
-                            blurDataURL={BLUR_DATA_URL}
+                            placeholder={index === 0 ? 'empty' : 'blur'}
+                            blurDataURL={index === 0 ? undefined : BLUR_DATA_URL}
                           />
                         </div>
                       )}
