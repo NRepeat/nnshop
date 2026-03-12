@@ -1,4 +1,4 @@
-import { getCollection } from '@entities/collection/api/getCollection';
+import { getCollection, getCollectionFilters } from '@entities/collection/api/getCollection';
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { sanityFetch } from '@shared/sanity/lib/client';
@@ -60,6 +60,7 @@ export const CollectionGrid = async ({
       first: 20,
       locale: locale,
       searchParams: awaitedSearchParams,
+      gender,
     }),
     auth.api.getSession({ headers: await headers() }),
   ]);
@@ -82,8 +83,8 @@ export const CollectionGrid = async ({
       .map((edge) => edge.node)
       .filter(
         (edge) =>
-          Number(edge.priceRange.minVariantPrice.amount) > 0 ||
-          Number(edge.priceRange.maxVariantPrice.amount) > 0,
+          (edge.priceRange?.minVariantPrice?.amount && Number(edge.priceRange.minVariantPrice.amount) > 0) ||
+          (edge.priceRange?.maxVariantPrice?.amount && Number(edge.priceRange.maxVariantPrice.amount) > 0),
       ) || [];
 
   // Batch check favorites
@@ -107,12 +108,10 @@ export const CollectionGrid = async ({
   // Only fetch initialData if we actually have filters to avoid extra request
   let initialFilters = collection.collection?.products.filters;
   if (hasFilters) {
-    const initialData = await getCollection({
+    initialFilters = await getCollectionFilters({
       handle: resolvedHandle,
-      first: 1, // Minimize payload since we only need filters
       locale: locale,
     });
-    initialFilters = initialData?.collection?.collection?.products.filters;
   }
 
   const targetLocale = locale === 'ru' ? 'uk' : 'ru';
@@ -142,11 +141,11 @@ export const CollectionGrid = async ({
         <Breadcrumb className="mb-4 md:mb-8">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/`}>{t('nav.home')}</BreadcrumbLink>
+              <BreadcrumbLink href={`/${locale}`}>{t('nav.home')}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/${gender}`}>
+              <BreadcrumbLink href={`/${locale}/${gender}`}>
                 {gender === 'man' ? t('nav.man') : t('nav.woman')}
               </BreadcrumbLink>
             </BreadcrumbItem>

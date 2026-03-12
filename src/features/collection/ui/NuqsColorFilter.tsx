@@ -9,6 +9,7 @@ import {
 import { cn } from '@shared/lib/utils';
 import { COLOR_MAP } from '@widgets/product-view/ui/collors';
 import { toFilterSlug } from '@shared/lib/filterSlug';
+import he from 'he';
 
 type Props = {
   filter: Filter;
@@ -26,7 +27,7 @@ export function NuqsColorFilter({ filter, initialFilter }: Props) {
     filterKey,
     parseAsArrayOf(parseAsString, ';')
       .withDefault([])
-      .withOptions({ shallow: false, history: 'replace' }),
+      .withOptions({ shallow: false, history: 'replace', throttleMs: 500 }),
   );
 
   useEffect(() => {
@@ -82,7 +83,7 @@ export function NuqsColorFilter({ filter, initialFilter }: Props) {
                 )}
               </span>
               <span className="capitalize">
-                {value.label} ({value.count})
+                {he.decode(value.label)} ({value.count})
               </span>
             </label>
           );

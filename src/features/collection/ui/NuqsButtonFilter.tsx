@@ -10,6 +10,7 @@ import { Button } from '@shared/ui/button';
 import { cn } from '@shared/lib/utils';
 import { toFilterSlug } from '@shared/lib/filterSlug';
 import { Spinner } from '@shared/ui/Spinner';
+import he from 'he';
 
 type Props = {
   filter: Filter;
@@ -31,7 +32,7 @@ export function NuqsButtonFilter({
     filterKey,
     parseAsArrayOf(parseAsString, ';')
       .withDefault([])
-      .withOptions({ shallow: false, history: 'replace' }),
+      .withOptions({ shallow: false, history: 'replace', throttleMs: 500 }),
   );
 
   useEffect(() => {
@@ -51,6 +52,9 @@ export function NuqsButtonFilter({
 
   const displayValues = (initialFilter ?? filter).values.map((v) => {
     const live = filter.values.find((fv) => fv.label === v.label);
+    if (v.label === 'L/XL') {
+      console.log(`[CLIENT DEBUG L/XL] label: ${v.label}, facetedCount: ${live?.count}, baseCount: ${v.count}`);
+    }
     return live ?? { ...v, count: 0 };
   });
 
@@ -80,8 +84,8 @@ export function NuqsButtonFilter({
             )}
           >
             {filter.id === 'filter.p.m.custom.rozmir'
-              ? value.label.toUpperCase()
-              : value.label}
+              ? he.decode(value.label).toUpperCase()
+              : he.decode(value.label)}
             {showCount && (
               <span className="text-muted-foreground">{value.count}</span>
             )}

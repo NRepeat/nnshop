@@ -21,6 +21,7 @@ export function SortSelect() {
       shallow: false,
       history: 'replace',
       scroll: false,
+      throttleMs: 500,
     }),
   );
 

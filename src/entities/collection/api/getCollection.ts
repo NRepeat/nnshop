@@ -2,6 +2,7 @@
 import { toFilterSlug } from '@shared/lib/filterSlug';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { storefrontClient } from '@shared/lib/shopify/client';
+import { getProductsByIds } from '@entities/product/api/getProductsByIds';
 import {
   GetCollectionQuery,
   GetCollectionFiltersQuery,
@@ -11,6 +12,80 @@ import {
 } from '@shared/lib/shopify/types/storefront.generated';
 import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
 import { cacheLife, cacheTag } from 'next/cache';
+
+const GetCollectionLightweight = `#graphql
+  query GetCollectionLight(
+    $handle: String!
+    $filters: [ProductFilter!]
+    $first: Int
+    $after: String
+  ) {
+    collection(handle: $handle) {
+      id
+      title
+      handle
+      products(
+        first: $first
+        filters: $filters
+        after: $after
+      ) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        edges {
+          node {
+            id
+            createdAt
+            tags
+            metafield(namespace:"custom",key:"znizka"){
+              value
+            }
+            gender: metafield(namespace:"custom",key:"gender"){
+              value
+            }
+            sortOrder: metafield(namespace:"custom",key:"sort_order"){
+              value
+            }
+            priceRange {
+              maxVariantPrice {
+                amount
+              }
+            }
+            variants(first: 250) {
+              edges {
+                node {
+                  availableForSale
+                  selectedOptions {
+                    name
+                    value
+                  }
+                }
+              }
+            }
+            options {
+              name
+              optionValues {
+                name
+              }
+            }
+          }
+        }
+        filters {
+          id
+          label
+          type
+          values {
+            id
+            label
+            count
+            input
+          }
+        }
+      }
+    }
+  }
+`;
 
 const GetCollectionWithProducts = `#graphql
   query GetCollection(
@@ -118,7 +193,7 @@ const GetCollectionWithProducts = `#graphql
               width
               height
             }
-            media(first:20){
+            media(first: 6){
                     edges{
                       node{
 
@@ -151,9 +226,9 @@ const GetCollectionWithProducts = `#graphql
 
 const GetCollectionFilters = `
 #graphql
-query GetCollectionFilters($handle: String!) {
+query GetCollectionFilters($handle: String!, $filters: [ProductFilter!]) {
     collection(handle: $handle) {
-        products(first: 1){
+        products(first: 1, filters: $filters){
             filters {
                 id
                 label
@@ -185,7 +260,7 @@ const GET_COLLECTION_SLUGS = `
 
 export const getCollectionSlugs = async () => {
   'use cache';
-  cacheLife('default');
+  cacheLife('hours');
   cacheTag('collection');
 
   const handlesSet = new Set<string>();
@@ -217,18 +292,20 @@ export const getCollectionSlugs = async () => {
 export const getCollectionFilters = async ({
   handle,
   locale,
+  filters = [{ available: true }],
 }: {
   handle: string;
   locale: string;
+  filters?: ProductFilter[];
 }) => {
   'use cache';
-  cacheLife('default');
+  cacheLife('hours');
   const collection = await storefrontClient.request<
     GetCollectionFiltersQuery,
     GetCollectionFiltersQueryVariables
   >({
     query: GetCollectionFilters,
-    variables: { handle },
+    variables: { handle, filters },
     language: locale.toUpperCase() as StorefrontLanguageCode,
   });
   return collection.collection?.products.filters;
@@ -243,40 +320,30 @@ async function fetchAllCollectionEdges({
   handle,
   locale,
   filters,
-  sortKey,
-  reverse,
 }: {
   handle: string;
   locale: string;
   filters: ProductFilter[];
-  sortKey: string;
-  reverse: boolean;
-}): Promise<{ edges: any[]; firstBatch: GetCollectionQuery | null }> {
-  'use cache';
-  cacheLife('hours');
-  cacheTag(`collection:${handle}`);
-  cacheTag(handle);
+}): Promise<{ edges: any[]; collectionBase: any }> {
 
   const allEdges: any[] = [];
   let cursor: string | null = null;
   let hasNextPage = true;
-  let firstBatch: GetCollectionQuery | null = null;
+  let collectionBase: any = null;
 
   while (hasNextPage) {
-    const batch: GetCollectionQuery = await storefrontClient.request<GetCollectionQuery, any>({
-      query: GetCollectionWithProducts,
+    const batch: any = await storefrontClient.request<any, any>({
+      query: GetCollectionLightweight,
       variables: {
         handle,
         filters,
         first: 250,
         after: cursor ?? undefined,
-        sortKey,
-        reverse,
       },
       language: locale.toUpperCase() as StorefrontLanguageCode,
     });
 
-    if (!firstBatch) firstBatch = batch;
+    if (!collectionBase) collectionBase = batch.collection;
     const products = batch.collection?.products;
     if (!products) break;
 
@@ -285,7 +352,7 @@ async function fetchAllCollectionEdges({
     cursor = products.pageInfo.endCursor ?? null;
   }
 
-  return { edges: allEdges, firstBatch };
+  return { edges: allEdges, collectionBase };
 }
 
 export const  getCollection = async ({
@@ -308,7 +375,7 @@ export const  getCollection = async ({
   gender?: string;
 }) => {
   'use cache';
-  cacheLife('default');
+  cacheLife('hours');
   cacheTag(`collection:${handle}`);
   cacheTag(handle);
   
@@ -320,7 +387,7 @@ export const  getCollection = async ({
     throw new Error('getCollection: handle is required');
   }
 
-  const filters: ProductFilter[] = [];
+  const filters: ProductFilter[] = [{ available: true }];
   const sizeFilterLabels: string[] = [];
   const needsFilterDefs = !!(searchParams || gender);
   if (needsFilterDefs) {
@@ -358,19 +425,6 @@ export const  getCollection = async ({
               }
             });
           }
-        }
-      }
-
-      if (gender && GENDER_SLUG_PATTERNS[gender]) {
-        const patterns = GENDER_SLUG_PATTERNS[gender];
-        const genderDef = filterDefinitions.find((f) =>
-          f.id === 'filter.p.m.custom.gender',
-        );
-        if (genderDef) {
-          const match = genderDef.values.find((v) =>
-            patterns.some((p) => toFilterSlug(v.label).includes(p)),
-          );
-          if (match) filters.push(JSON.parse(match.input));
         }
       }
     }
@@ -419,13 +473,14 @@ export const  getCollection = async ({
   let collection: GetCollectionQuery;
 
   if (isDefaultSort) {
-    const { edges: allEdges, firstBatch } = await fetchAllCollectionEdges({
+    const { edges: allEdges, collectionBase } = await fetchAllCollectionEdges({
       handle,
       locale,
       filters,
-      sortKey: 'RELEVANCE',
-      reverse: false,
     });
+
+    console.log(`[getCollection] Found ${allEdges.length} products total in collection ${handle}`);
+    
     // Sort all products: 1) by sort_order metafield (lower = higher position), 2) by createdAt desc (newest first)
     allEdges.sort((a: any, b: any) => {
       const aVal =
@@ -444,9 +499,27 @@ export const  getCollection = async ({
     });
 
     const _SIZE_OPT = ['size', 'розмір', 'размер'];
+    
+    // Debug logging for L/XL
+    allEdges.forEach((edge: any) => {
+      const sizes = edge.node.variants?.edges?.map((v: any) => ({
+        value: v.node.selectedOptions?.find((opt: any) => _SIZE_OPT.includes(opt.name.toLowerCase()))?.value,
+        available: v.node.availableForSale
+      }));
+      if (sizes?.some((s: any) => s.value === 'L/XL')) {
+        console.log(`[DEBUG L/XL] Product: ${edge.node.id}, Handle: ${edge.node.handle}, Available: ${edge.node.availableForSale}`);
+        console.log(`[DEBUG L/XL] Sizes:`, JSON.stringify(sizes));
+        console.log(`[DEBUG L/XL] Tags:`, edge.node.tags);
+        console.log(`[DEBUG L/XL] Gender Metafield:`, edge.node.gender?.value);
+      }
+    });
+
     const availableEdges = allEdges.filter((edge: any) =>
       edge.node.variants?.edges?.some((v: any) => v.node.availableForSale)
     );
+    
+    console.log(`[getCollection] Products after availability filter: ${availableEdges.length}`);
+
     const filteredEdges = sizeFilterLabels.length > 0
       ? availableEdges.filter((edge: any) => {
           const sizeOptIndex = edge.node.options?.findIndex((opt: any) =>
@@ -463,6 +536,13 @@ export const  getCollection = async ({
         })
       : availableEdges;
 
+    if (collectionBase?.products?.filters) {
+       const sizeFilter = collectionBase.products.filters.find((f: any) => f.id.includes('size') || f.label === 'Розмір' || f.label === 'Размер');
+       if (sizeFilter) {
+         console.log(`[DEBUG L/XL] Shopify Filter "Розмір" values:`, JSON.stringify(sizeFilter.values.find((v: any) => v.label === 'L/XL')));
+       }
+    }
+
     // Determine the page slice using offset-based cursor
     const pageSize = first || last || 20;
     const startIndex = after
@@ -473,9 +553,23 @@ export const  getCollection = async ({
 
     const slicedEdges = filteredEdges.slice(startIndex, startIndex + pageSize);
 
-    collection = firstBatch!;
+    // Fetch full product data only for the sliced products
+    const productIds = slicedEdges.map((edge: any) => edge.node.id);
+    const fullProducts = await getProductsByIds(productIds, locale);
+    
+    // Map full data back to slicedEdges maintaining the order
+    const fullProductsMap = new Map(fullProducts.map(p => [p.id, p]));
+    const hydratedEdges = slicedEdges.map((edge: any) => ({
+      ...edge,
+      node: {
+        ...edge.node,
+        ...(fullProductsMap.get(edge.node.id) || {})
+      }
+    }));
+
+    collection = { collection: collectionBase } as any;
     if (collection.collection) {
-      collection.collection.products.edges = slicedEdges;
+      collection.collection.products.edges = hydratedEdges;
       collection.collection.products.pageInfo = {
         hasNextPage: startIndex + pageSize < filteredEdges.length,
         hasPreviousPage: startIndex > 0,
@@ -487,12 +581,10 @@ export const  getCollection = async ({
     }
   } else if (isNewSort) {
     // Fetch all products sorted by creation date desc; "new" tag is secondary tiebreaker
-    const { edges: allEdges, firstBatch } = await fetchAllCollectionEdges({
+    const { edges: allEdges, collectionBase } = await fetchAllCollectionEdges({
       handle,
       locale,
       filters,
-      sortKey: 'CREATED',
-      reverse: true,
     });
 
     // Primary: createdAt desc; secondary: "new"-tagged first when dates are equal
@@ -537,9 +629,23 @@ export const  getCollection = async ({
 
     const slicedEdges = filteredEdges.slice(startIndex, startIndex + pageSize);
 
-    collection = firstBatch!;
+    // Fetch full product data only for the sliced products
+    const productIds = slicedEdges.map((edge: any) => edge.node.id);
+    const fullProducts = await getProductsByIds(productIds, locale);
+    
+    // Map full data back to slicedEdges maintaining the order
+    const fullProductsMap = new Map(fullProducts.map(p => [p.id, p]));
+    const hydratedEdges = slicedEdges.map((edge: any) => ({
+      ...edge,
+      node: {
+        ...edge.node,
+        ...(fullProductsMap.get(edge.node.id) || {})
+      }
+    }));
+
+    collection = { collection: collectionBase } as any;
     if (collection.collection) {
-      collection.collection.products.edges = slicedEdges;
+      collection.collection.products.edges = hydratedEdges;
       collection.collection.products.pageInfo = {
         hasNextPage: startIndex + pageSize < filteredEdges.length,
         hasPreviousPage: startIndex > 0,
@@ -551,12 +657,10 @@ export const  getCollection = async ({
     }
   } else if (isPriceSort) {
     // Fetch all products and sort by effective price (accounts for znizka discount metafield)
-    const { edges: allEdges, firstBatch } = await fetchAllCollectionEdges({
+    const { edges: allEdges, collectionBase } = await fetchAllCollectionEdges({
       handle,
       locale,
       filters,
-      sortKey: 'PRICE',
-      reverse: false,
     });
 
     // Sort by effective price: maxVariantPrice * (1 - znizka/100)
@@ -604,9 +708,23 @@ export const  getCollection = async ({
 
     const slicedEdges = filteredEdges.slice(startIndex, startIndex + pageSize);
 
-    collection = firstBatch!;
+    // Fetch full product data only for the sliced products
+    const productIds = slicedEdges.map((edge: any) => edge.node.id);
+    const fullProducts = await getProductsByIds(productIds, locale);
+    
+    // Map full data back to slicedEdges maintaining the order
+    const fullProductsMap = new Map(fullProducts.map(p => [p.id, p]));
+    const hydratedEdges = slicedEdges.map((edge: any) => ({
+      ...edge,
+      node: {
+        ...edge.node,
+        ...(fullProductsMap.get(edge.node.id) || {})
+      }
+    }));
+
+    collection = { collection: collectionBase } as any;
     if (collection.collection) {
-      collection.collection.products.edges = slicedEdges;
+      collection.collection.products.edges = hydratedEdges;
       collection.collection.products.pageInfo = {
         hasNextPage: startIndex + pageSize < filteredEdges.length,
         hasPreviousPage: startIndex > 0,

@@ -18,11 +18,11 @@ export function NuqsPriceRangeFilter({ initialFilterPrice }: Props) {
   const [isPending] = useTransition();
   const [minPrice, setMinPrice] = useQueryState(
     'minPrice',
-    parseAsInteger.withOptions({ shallow: false }),
+    parseAsInteger.withOptions({ shallow: false, throttleMs: 500 }),
   );
   const [maxPrice, setMaxPrice] = useQueryState(
     'maxPrice',
-    parseAsInteger.withOptions({ shallow: false }),
+    parseAsInteger.withOptions({ shallow: false, throttleMs: 500 }),
   );
 
   const price = initialFilterPrice

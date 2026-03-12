@@ -10,6 +10,7 @@ import { cn } from '@shared/lib/utils';
 import { toFilterSlug } from '@shared/lib/filterSlug';
 import { Checkbox } from '@shared/ui/checkbox';
 import { Spinner } from '@/shared/ui/Spinner';
+import he from 'he';
 
 type Props = {
   filter: Filter;
@@ -25,7 +26,7 @@ export function NuqsListFilter({ filter, initialFilter }: Props) {
     filterKey,
     parseAsArrayOf(parseAsString, ';')
       .withDefault([])
-      .withOptions({ shallow: false, history: 'replace' }),
+      .withOptions({ shallow: false, history: 'replace', throttleMs: 500 }),
   );
 
   const handleFilterChange = (value: FilterValue) => {
@@ -75,7 +76,7 @@ export function NuqsListFilter({ filter, initialFilter }: Props) {
                       'text-muted-foreground': value.count === 0 && !isChecked,
                     })}
                   >
-                    {value.label} ({value.count})
+                    {he.decode(value.label)} ({value.count})
                   </span>
                 </label>
               </li>
