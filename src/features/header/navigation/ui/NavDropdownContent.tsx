@@ -151,7 +151,7 @@ export function NavDropdownContent({
       ))}
 
       {defaultImage && displayImageUrl && (
-        <div className="shrink-0 w-[300px] max-w-[300px] flex flex-col gap-3 mr-10">
+        <div className="shrink-0 w-[300px]  flex flex-col gap-3 mr-10">
           <NavigationItemClient
             href={defaultImage.href}
             className="block rounded overflow-hidden"

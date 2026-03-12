@@ -28,7 +28,10 @@ const GetCollectionWithProducts = `#graphql
       title
       handle
       description
-      
+      seo {
+        description
+      }
+
       image {
         url
         altText
@@ -285,7 +288,7 @@ async function fetchAllCollectionEdges({
   return { edges: allEdges, firstBatch };
 }
 
-export const getCollection = async ({
+export const  getCollection = async ({
   handle,
   searchParams,
   first,
@@ -423,7 +426,6 @@ export const getCollection = async ({
       sortKey: 'RELEVANCE',
       reverse: false,
     });
-
     // Sort all products: 1) by sort_order metafield (lower = higher position), 2) by createdAt desc (newest first)
     allEdges.sort((a: any, b: any) => {
       const aVal =

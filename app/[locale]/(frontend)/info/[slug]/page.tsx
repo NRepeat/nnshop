@@ -17,19 +17,36 @@ type Props = {
 const pageTitles: Record<string, Record<string, string>> = {
   uk: {
     contacts: 'Контакти',
-    delivery: 'Доставка та оплата',
+    delivery: 'Доставка',
     sustainability: 'Сталий розвиток',
-    'payment-returns': 'Оплата та повернення',
-    'public-offer-agreement': 'Договір публічної оферти',
+    'payment-returns': 'Оплата і повернення',
+    'public-offer-agreement': 'Публічна оферта',
     'privacy-policy': 'Політика конфіденційності',
   },
   ru: {
     contacts: 'Контакты',
-    delivery: 'Доставка и оплата',
+    delivery: 'Доставка',
     sustainability: 'Устойчивое развитие',
     'payment-returns': 'Оплата и возврат',
-    'public-offer-agreement': 'Договор публичной оферты',
+    'public-offer-agreement': 'Публичная оферта',
     'privacy-policy': 'Политика конфиденциальности',
+  },
+};
+
+const pageDescriptions: Record<string, Record<string, string>> = {
+  uk: {
+    contacts: 'Як з нами зв\'язатися: месенджери, пошта, графік роботи та підтримка щодо замовлень ✔️',
+    delivery: 'Умови доставки по Україні: терміни, вартість, служби доставки та отримання замовлення.',
+    'payment-returns': 'Способи оплати 💳 Правила повернення ✔️ Строки та умови ⏳ Як оформити запит 🧾 Пояснюємо просто ⭐',
+    'public-offer-agreement': 'Умови продажу та використання сайту MioMio: оформлення замовлення, оплата, доставка, повернення, права та обов\'язки сторін.',
+    'privacy-policy': 'Умови збору та обробки персональних даних у MioMio.',
+  },
+  ru: {
+    contacts: 'Как с нами связаться: мессенджеры, почта, график работы и поддержка по заказам ✔️',
+    delivery: 'Условия доставки по Украине: сроки, стоимость, службы доставки и получение заказа.',
+    'payment-returns': 'Способы оплаты 💳 Правила возврата ✔️ Сроки и условия ⏳ Как оформить запрос 🧾 Объясняем просто ⭐',
+    'public-offer-agreement': 'Условия продажи и использования сайта MioMio: оформление заказа, оплата, доставка, возврат, права и обязанности сторон.',
+    'privacy-policy': 'Условия сбора и обработки персональных данных в MioMio.',
   },
 };
 
@@ -37,10 +54,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
 
   const title = pageTitles[locale]?.[slug] || slug;
+  const description = pageDescriptions[locale]?.[slug];
 
   return generatePageMetadata(
     {
-      title: `${title} | Mio Mio`,
+      title: `${title} | MioMio`,
+      description,
     },
     locale,
     `/info/${slug}`,
@@ -77,7 +96,10 @@ export default async function InfoPage({ params }: Props) {
     return (
       <div className="container my-10 min-h-screen">
         <h1 className="sr-only">{pageTitle}</h1>
+        <div className='w-full justify-center'>
         <ContactForm />
+
+        </div>
       </div>
     );
   }

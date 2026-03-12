@@ -27,12 +27,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!post) {
     return generatePageMetadata(
-      { title: 'Блог | Mio Mio' },
+      { title: 'Блог | MioMio' },
       locale,
       `/blog/${slug}`,
     );
   }
 
+  const isUk = locale === 'uk';
   const ogImage =
     post.seo?.image
       ? urlFor(post.seo.image).width(1200).height(630).url()
@@ -40,10 +41,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         ? urlFor(post.mainImage).width(1200).height(630).url()
         : undefined;
 
+  const fallbackDescription = isUk
+    ? 'Читайте в блозі MioMio: поради зі стилю, добірки та практичні гіди з вибору взуття й одягу.'
+    : 'Читайте в блоге MioMio: советы по стилю, подборки и практичные гайды по выбору обуви и одежды.';
+
   return generatePageMetadata(
     {
-      title: post.seo?.title || `${post.title} | Mio Mio`,
-      description: post.seo?.description || '',
+      title: post.seo?.title || `${post.title} | MioMio`,
+      description: post.seo?.description || fallbackDescription,
       noIndex: post.seo?.noIndex ?? false,
       image: ogImage,
     },

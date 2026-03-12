@@ -408,7 +408,7 @@ const Navigation = async ({
                     >
                       <NavigationItemClient
                         className="w-full rounded px-0"
-                        href={`/brend${brand.url}`}
+                        href={`/brand${brand.url}?_gender=${gender}`}
                       >
                         <Button
                           variant="ghost"
@@ -435,7 +435,7 @@ const Navigation = async ({
                     >
                       <NavigationItemClient
                         className="w-full rounded px-0"
-                        href={`/brend${brand.url}`}
+                        href={`/brand${brand.url}?_gender=${gender}`}
                       >
                         <Button
                           variant="ghost"

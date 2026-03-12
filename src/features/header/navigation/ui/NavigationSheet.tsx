@@ -10,7 +10,7 @@ import {
 import { InternalMenu } from './InternalMenu';
 import { useState } from 'react';
 import { Maybe } from '@shared/lib/shopify/types/storefront.types';
-import { Menu } from 'lucide-react';
+import { Menu, ChevronRightIcon } from 'lucide-react';
 import { useRouter } from '@shared/i18n/navigation';
 import { Button } from '@shared/ui/button';
 import { saveGenderPreference } from '../api/saveGender';
@@ -48,11 +48,17 @@ type SocialLink = {
   url?: string | null;
 };
 
+type DirectLink = {
+  title: string;
+  href: string;
+};
+
 const NavigationSheet = ({
   mainMenu,
   title,
   locale,
   socialLinks = [],
+  directLinks = [],
 }: {
   mainMenu: {
     label: string;
@@ -75,9 +81,11 @@ const NavigationSheet = ({
   title: string;
   locale: string;
   socialLinks?: SocialLink[];
+  directLinks?: DirectLink[];
 }) => {
   const navigate = useRouter();
   const [open, setOpen] = useState(false);
+
   const onClose = (link: string) => {
     setOpen(false);
     const genderMatch = link.match(/^\/(woman|man)\//);
@@ -117,10 +125,25 @@ const NavigationSheet = ({
 
         <div className="flex-1 overflow-y-auto">
           <InternalMenu mainMenu={mainMenu} onClose={onClose} />
+          {directLinks.length > 0 && (
+            <div className="px-4">
+              {directLinks.map((link) => (
+                <div key={link.href} className="flex items-center justify-between border-b border-foreground/10">
+                  <Link
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className="py-4 font-light transition-colors text-lg flex-1 flex items-center justify-between text-red-500"
+                  >
+                    {link.title}
+                    <ChevronRightIcon className="pointer-events-none size-4 shrink-0 mr-3" />
+                  </Link>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <SheetFooter className="shrink-0 border-t border-foreground/10 px-4 py-6 flex flex-col gap-5">
-          {/* Info links */}
           <div className="flex flex-col gap-2">
             {infoLinks.map((link) => (
               <Link
@@ -134,7 +157,6 @@ const NavigationSheet = ({
             ))}
           </div>
 
-          {/* Social links */}
           {activeSocialLinks.length > 0 && (
             <div className="flex gap-3">
               {activeSocialLinks.map((link) => (

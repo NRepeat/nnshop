@@ -143,40 +143,11 @@ type VideoHeroProps = {
 
 function VideoHero({ src, poster, textPosition, titleColor, descriptionColor, title, description, overlay, href, compact }: VideoHeroProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [ready, setReady] = useState(false);
-  const [autoPoster, setAutoPoster] = useState<string | null>(null);
-
-  // If no poster provided — capture first frame via canvas
-  useEffect(() => {
-    if (poster) return;
-    const el = videoRef.current;
-    if (!el) return;
-
-    const capture = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width = el.videoWidth || 1280;
-        canvas.height = el.videoHeight || 720;
-        canvas.getContext('2d')?.drawImage(el, 0, 0, canvas.width, canvas.height);
-        setAutoPoster(canvas.toDataURL('image/jpeg', 0.8));
-      } catch {}
-    };
-
-    if (el.readyState >= 2) {
-      capture();
-    } else {
-      el.addEventListener('loadeddata', capture, { once: true });
-      return () => el.removeEventListener('loadeddata', capture);
-    }
-  }, [src, poster]);
 
   useEffect(() => {
-    setReady(false);
-    setAutoPoster(null);
     const el = videoRef.current;
     if (!el) return;
     el.muted = true;
-    el.load();
     el.play().catch(() => {});
   }, [src]);
 
@@ -187,16 +158,14 @@ function VideoHero({ src, poster, textPosition, titleColor, descriptionColor, ti
       <video
         ref={videoRef}
         src={src}
-        poster={poster ?? autoPoster ?? undefined}
+        poster={poster ?? undefined}
         autoPlay
         muted
         loop
         playsInline
         preload="auto"
         disablePictureInPicture
-        onLoadedData={() => setReady(true)}
-        onCanPlay={() => setReady(true)}
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${ready ? 'opacity-100' : 'opacity-0'}`}
+        className="absolute inset-0 w-full h-full object-cover"
       />
       <div
         className="absolute inset-0"
@@ -208,12 +177,12 @@ function VideoHero({ src, poster, textPosition, titleColor, descriptionColor, ti
           style={{ ...getPositionStyle(pos), ...getTextAlign(pos) }}
         >
           {title && (
-            <h2
+            <h1
               className="text-3xl md:text-5xl font-bold tracking-tight drop-shadow-lg"
               style={{ color: titleColor ?? '#ffffff' }}
             >
               {title}
-            </h2>
+            </h1>
           )}
           {description && (
             <p
@@ -230,7 +199,7 @@ function VideoHero({ src, poster, textPosition, titleColor, descriptionColor, ti
 
   const heightStyle = compact
     ? `.video-hero{height:40svh}`
-    : `.video-hero{height:calc(75svh - var(--header-height,0px))}@media(min-width:768px){.video-hero{height:calc(80svh - var(--header-height,0px))}}`;
+    : `.video-hero{height:calc(70svh - var(--header-height,0px))}@media(min-width:768px){.video-hero{height:calc(85svh - var(--header-height,0px))}}`;
 
   return (
     <>
@@ -268,6 +237,18 @@ function ImageSlider({ slides, gender, compact }: { slides: Slide[]; gender?: st
   const getSlideHref = (slide: Slide) =>
     resolveHref(slide.link?.url, slide.collection) ?? '/';
 
+  const renderOverlayTitle = (slide: Slide, index: number) => {
+    const Tag = index === 0 ? 'h1' : 'h2';
+    return (
+      <Tag
+        className="text-3xl md:text-5xl lg:text-8xl font-bold tracking-tight drop-shadow-lg"
+        style={{ color: slide.titleColor ?? '#ffffff' }}
+      >
+        {slide.title}
+      </Tag>
+    );
+  };
+
   const renderImages = (slide: Slide, index: number) => (
     <>
       {slide.mobileImage?.asset && (
@@ -278,7 +259,7 @@ function ImageSlider({ slides, gender, compact }: { slides: Slide[]; gender?: st
           <Image
             src={urlFor(slide.mobileImage.asset)
               .auto('format')
-              .quality(100)
+              .quality(80)
               .url()}
             alt={slide.title || slide.description || 'Banner mobile'}
             fill
@@ -293,7 +274,7 @@ function ImageSlider({ slides, gender, compact }: { slides: Slide[]; gender?: st
           style={{ maxHeight: compact ? '40svh' : 'calc(90svh - var(--header-height, 0px))' }}
         >
           <Image
-            src={urlFor(slide.image.asset).auto('format').quality(100).url()}
+            src={urlFor(slide.image.asset).auto('format').quality(80).url()}
             alt={slide.title || slide.description || 'Banner desktop'}
             fill={!compact}
             width={compact ? 1920 : undefined}
@@ -306,7 +287,7 @@ function ImageSlider({ slides, gender, compact }: { slides: Slide[]; gender?: st
     </>
   );
 
-  const renderOverlay = (slide: Slide, hasButtons: boolean) => {
+  const renderOverlay = (slide: Slide, hasButtons: boolean, index: number) => {
     const pos = slide.textPosition ?? 'bottom-left';
     const overlayBg = buildOverlayBg(
       slide.overlay?.color,
@@ -346,14 +327,7 @@ function ImageSlider({ slides, gender, compact }: { slides: Slide[]; gender?: st
               }),
             }}
           >
-            {slide.title && (
-              <h2
-                className="text-3xl md:text-5xl lg:text-8xl font-bold tracking-tight drop-shadow-lg"
-                style={{ color: slide.titleColor ?? '#ffffff' }}
-              >
-                {slide.title}
-              </h2>
-            )}
+            {slide.title && renderOverlayTitle(slide, index ?? 1)}
             {slide.description && (
               <p
                 className="text-2xl md:text-3xl lg:text-5xl drop-shadow leading-snug"
@@ -431,7 +405,7 @@ function ImageSlider({ slides, gender, compact }: { slides: Slide[]; gender?: st
                 className="group relative flex w-full h-full justify-center"
               >
                 {renderImages(slide, index)}
-                {renderOverlay(slide, hasButtons)}
+                {renderOverlay(slide, hasButtons, index)}
               </Link>
             </CarouselItem>
           );
@@ -441,6 +415,7 @@ function ImageSlider({ slides, gender, compact }: { slides: Slide[]; gender?: st
         {scrollSnaps.map((_, index) => (
           <Button
             key={index}
+            aria-label={`Slide ${index + 1}`}
             className={`w-2 h-[3px] py-0 px-3 ${
               index === selectedIndex ? 'bg-primary' : 'bg-gray-300'
             }`}

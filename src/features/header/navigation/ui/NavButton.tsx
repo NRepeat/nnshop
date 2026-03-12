@@ -3,6 +3,7 @@ import { Button } from '@shared/ui/button';
 import { cn } from '@shared/lib/utils';
 import { usePathname, useRouter } from '@shared/i18n/navigation';
 import { genders } from '@shared/i18n/routing';
+import { useTransition, useState, useEffect } from 'react';
 
 export const NavButton = ({
   children,
@@ -19,25 +20,32 @@ export const NavButton = ({
 }) => {
   const pathname = usePathname();
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [optimisticSlug, setOptimisticSlug] = useState<string | null>(null);
+
+  useEffect(() => {
+    setOptimisticSlug(null);
+  }, [pathname]);
 
   const genderInUrl = pathname.split('/').find((segment) => genders.includes(segment));
-  const isActive = genderInUrl ? genderInUrl === slug : (gender || 'woman') === slug;
+  const resolvedActive = genderInUrl ? genderInUrl === slug : (gender || 'woman') === slug;
+  const isActive = optimisticSlug ? optimisticSlug === slug : resolvedActive;
 
   const onClick = () => {
+    setOptimisticSlug(slug);
     document.cookie = `gender=${slug};path=/;max-age=${60 * 60 * 24 * 365}`;
 
-    // Try to navigate to the equivalent level-2 collection for the target gender
     const segments = pathname.split('/').filter(Boolean);
-    // pathname from next-intl is locale-stripped, so segments = [gender, handle?, ...]
-    const currentHandle = segments[1]; // e.g. "zhinoche-vzuttya"
+    const currentHandle = segments[1];
+    const destination =
+      currentHandle && level2Map?.[currentHandle]
+        ? `/${slug}/${level2Map[currentHandle]}`
+        : `/${slug}`;
 
-    if (currentHandle && level2Map && level2Map[currentHandle]) {
-      const mappedHandle = level2Map[currentHandle];
-      router.push(`/${slug}/${mappedHandle}`);
-    } else {
-      router.push(`/${slug}`);
-    }
-    router.refresh();
+    startTransition(() => {
+      router.push(destination);
+      setTimeout(() => router.refresh(), 0);
+    });
   };
 
   return (
@@ -46,6 +54,7 @@ export const NavButton = ({
         'w-full cursor-pointer text-nowrap md:text-base font-light font-sans h-full px-6 text-lg md:px-5 md:py-2',
         'border-b-2 border-transparent hover:bg-accent/50 hover:underline duration-300 decoration-transparent hover:decoration-primary transition-all',
         { 'border-b-primary': isActive },
+        { 'opacity-60': isPending && !isActive },
         className,
       )}
       variant="ghost"

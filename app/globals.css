@@ -3,6 +3,16 @@
 @import '@daveyplate/better-auth-ui/css';
 @plugin "@tailwindcss/typography";
 
+/* SendPulse live chat — below sheets/modals */
+sp-live-chat {
+  z-index: 49 !important;
+}
+
+/* Sonner toaster — below sheets/modals (z-[200]) */
+[data-sonner-toaster] {
+  z-index: 199 !important;
+}
+
 /* ─── View Transitions ─────────────────────────────────────── */
 @keyframes vt-fade-in {
   from { opacity: 0; }

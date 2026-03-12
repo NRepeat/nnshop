@@ -7,27 +7,45 @@ import {
   getCollection,
   getCollectionSlugs,
 } from '@entities/collection/api/getCollection';
+import { resolveCollectionHandle } from '@entities/collection/lib/resolve-handle';
 import { generateCollectionMetadata } from '@shared/lib/seo/generateMetadata';
 import { setRequestLocale } from 'next-intl/server';
+import { sanityFetch } from '@shared/sanity/lib/client';
+import { COLLECTION_IS_BRAND_QUERY } from '@shared/sanity/lib/query';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale, gender } = await params;
+  const resolvedHandle = resolveCollectionHandle(slug, gender);
 
   try {
-    const { collection } = await getCollection({
-      handle: slug,
-      locale,
-      first: 1,
-    });
+    const [{ collection }, sanityCollection] = await Promise.all([
+      getCollection({
+        handle: resolvedHandle,
+        locale,
+        first: 1,
+      }),
+      sanityFetch({
+        query: COLLECTION_IS_BRAND_QUERY,
+        params: { handle: resolvedHandle },
+        tags: [`collection:${resolvedHandle}`],
+      }),
+    ]);
 
     if (!collection.collection) {
       return { title: 'Collection Not Found' };
     }
 
+    const displayTitle =
+      sanityCollection?.customTitle?.[locale as 'uk' | 'ru'] ||
+      collection.collection.title;
+
     return generateCollectionMetadata(
-      collection.collection,
+      {
+        ...collection.collection,
+        title: displayTitle,
+      },
       locale,
       slug,
       gender,

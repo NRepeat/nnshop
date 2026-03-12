@@ -8,7 +8,7 @@ interface SEOData {
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
-const DEFAULT_OG_IMAGE = `${process.env.BLOB_BASE_URL}/og-image.jpg`;
+const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.jpg`;
 
 export function generatePageMetadata(
   seo: SEOData,
@@ -62,8 +62,8 @@ export function generateProductMetadata(
   const titleParts = [product.productType, product.vendor, product.title].filter(Boolean);
   const title = `${titleParts.join(' ')} | MioMio`;
   const description = isUk
-    ? `Купити ${product.title} в MioMio — фото, характеристики та доступні розміри в наявності. Зручне оформлення замовлення онлайн і доставка по Україні ✔️`
-    : `Купить ${product.title} в MioMio — фото, характеристики и доступные размеры в наличии. Удобное оформление заказа онлайн и доставка по Украине ✔️`;
+    ? 'Фото, характеристики та доступні розміри в наявності. Зручне оформлення замовлення онлайн і доставка по Україні ✔️'
+    : 'Фото, характеристики и доступные размеры в наличии. Удобное оформление заказа онлайн и доставка по Украине ✔️';
 
   return generatePageMetadata(
     { title, description, image: product.featuredImage?.url },
@@ -76,6 +76,7 @@ export function generateCollectionMetadata(
   collection: {
     title: string;
     description?: string | null;
+    seo?: { description?: string | null } | null;
     image?: { url: string } | null;
   },
   locale: string,
@@ -84,17 +85,18 @@ export function generateCollectionMetadata(
 ): Metadata {
   const isUk = locale === 'uk';
   const prefix = gender ? `/${gender}` : '';
+  const genderPhrase = isUk
+    ? { woman: ' для жінок', man: ' для чоловіків' }
+    : { woman: ' для женщин', man: ' для мужчин' };
+  const genderSuffix = gender ? (genderPhrase[gender as 'woman' | 'man'] ?? '') : '';
   const title = isUk
-    ? `Купити ${collection.title} | MioMio`
-    : `Купить ${collection.title} | MioMio`;
-  const genderWord = isUk
-    ? { woman: 'жіноче ', man: 'чоловіче ' }
-    : { woman: 'женское ', man: 'мужское ' };
-  const genderPrefix = gender ? (genderWord[gender as 'woman' | 'man'] ?? '') : '';
-  const fallbackDescription = isUk
-    ? `Обирайте ${genderPrefix}${collection.title} в MioMio: актуальні моделі, популярні бренди та зручна доставка по Україні.`
-    : `Выбирайте ${genderPrefix}${collection.title} в MioMio: актуальные модели, популярные бренды и доставка по Украине.`;
-  const description = collection.description?.trim() || fallbackDescription;
+    ? `Купити ${collection.title}${genderSuffix} | MioMio`
+    : `Купить ${collection.title}${genderSuffix} | MioMio`;
+  const templateDescription = isUk
+    ? `Добірка ${collection.title}${genderSuffix} в MioMio. Перевіряйте наявність, обирайте розмір і оформлюйте замовлення онлайн.`
+    : `Подборка ${collection.title}${genderSuffix} в MioMio. Проверяйте наличие, выбирайте размер и оформляйте заказ онлайн.`;
+  // Template is primary; Shopify seo.description (if set in admin) as fallback
+  const description = templateDescription || collection.seo?.description?.trim();
 
   return generatePageMetadata(
     { title, description, image: collection.image?.url },

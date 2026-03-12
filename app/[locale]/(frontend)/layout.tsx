@@ -91,6 +91,7 @@ export default async function RootLayout(props: RootProps) {
     <html lang={locale} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://cdn.shopify.com" />
+        <script src="https://cdn.pulse.is/livechat/loader.js" data-live-chat-id="6683a3f051e3db46980f8c09" async></script>
         <JsonLd data={generateOrganizationJsonLd()} />
         <meta
           name="google-site-verification"

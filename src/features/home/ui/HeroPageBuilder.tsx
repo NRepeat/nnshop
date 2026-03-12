@@ -56,14 +56,6 @@ const renderBlock = (
       const videoSrc = hero.videoFile || hero.videoUrl;
       return (
         <Fragment key={block._key}>
-          {videoSrc && (
-            <link
-              rel="preload"
-              href={videoSrc}
-              as="video"
-              type="video/mp4"
-            />
-          )}
           <HeroBanner {...hero} gender={gender} />
         </Fragment>
       );

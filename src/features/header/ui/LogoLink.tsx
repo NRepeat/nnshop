@@ -26,6 +26,7 @@ export const LogoLink = async ({
           width={360}
           height={28}
           alt={alt}
+          priority
           className="w-full h-full max-w-[180px]"
         />
       </div>

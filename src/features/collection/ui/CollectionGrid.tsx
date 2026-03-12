@@ -13,6 +13,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@shared/ui/breadcrumb';
+import { resolveCollectionHandle } from '@entities/collection/lib/resolve-handle';
 import { CollectionFilterBar } from './CollectionFilterBar';
 import { FilterSheet } from './FilterSheet';
 import { SortSelect } from './SortSelect';
@@ -27,43 +28,9 @@ import { auth } from '@features/auth/lib/auth';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
 import { prisma } from '@shared/lib/prisma';
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@shared/ui/empty';
+import { PackageSearch } from 'lucide-react';
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
-
-const GENDERED_HANDLES = new Set([
-  'ryukzaky-cholovichi',
-  'sumky-cholovichi',
-  'tufli-cholovichi',
-  'golovni-ubory-zhinochi',
-  'shtany-ta-bryuky-zhinochi',
-  'svitshoty-ta-kofty-cholovichi',
-  'dzhynsy-cholovichi',
-  'pidzhaky-zhinochi',
-  'verhnij-odyag-zhinocha',
-  'svetry-ta-dzhempery-cholovichi',
-  'shorty-cholovichi',
-  'verhnij-odyag-cholovicha',
-  'krosivky-ta-kedy-cholovichi',
-  'zhinoche-vzuttya',
-  'choloviche-vzuttya',
-  'zhinochyj-odyag',
-  'cholovichyj-odyag',
-]);
-
-const GENDER_SUFFIXES: Record<string, string[]> = {
-  man: ['cholovichi', 'cholovicha', 'cholovichyj', 'choloviche'],
-  woman: ['zhinochi', 'zhinocha', 'zhinochyj', 'zhinoche'],
-};
-
-function resolveCollectionHandle(slug: string, gender: string): string {
-  const suffixes = GENDER_SUFFIXES[gender] || [];
-  for (const suffix of suffixes) {
-    const withSuffix = `${slug}-${suffix}`;
-    if (GENDERED_HANDLES.has(withSuffix)) return withSuffix;
-    const withPrefix = `${suffix}-${slug}`;
-    if (GENDERED_HANDLES.has(withPrefix)) return withPrefix;
-  }
-  return slug;
-}
 
 export const CollectionGrid = async ({
   params,
@@ -72,10 +39,11 @@ export const CollectionGrid = async ({
   params: Promise<{ locale: string; slug: string; gender: string }>;
   searchParams: Promise<SearchParams>;
 }) => {
-  const [awaitedParams, awaitedSearchParams, t] = await Promise.all([
+  const [awaitedParams, awaitedSearchParams, t, tCollection] = await Promise.all([
     params,
     searchParams,
     getTranslations('Header'),
+    getTranslations('CollectionPage'),
   ]);
   const { locale, slug, gender } = awaitedParams;
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
@@ -97,10 +65,10 @@ export const CollectionGrid = async ({
   ]);
 
   if (sanityCollection?.isBrand) {
-    redirect(`/${locale}/brand/${resolvedHandle}`);
+    redirect(`/${locale}/brand/${resolvedHandle}?_gender=${gender}`);
   }
 
-  if (!currentData?.collection) {
+  if (!currentData?.collection?.collection) {
     return notFound();
   }
 
@@ -206,7 +174,7 @@ export const CollectionGrid = async ({
             <GridToggle />
             <div className='flex gap-2'>
               <Suspense fallback={null}>
-                <SortSelect defaultValue={awaitedSearchParams.sort as string} />
+                <SortSelect />
               </Suspense>
               <FilterSheet
                 filters={collection.collection?.products.filters}
@@ -226,12 +194,26 @@ export const CollectionGrid = async ({
         )}
 
         <div className="flex justify-between gap-8 h-full">
-          <ClientGridWrapper
-            initialPageInfo={pageInfo as PageInfo}
-            // @ts-ignore
-            initialProducts={productsWithFav as Product[]}
-            handle={resolvedHandle}
-          />
+          {productsWithFav.length === 0 ? (
+            <div className="w-full py-16">
+              <Empty>
+                <EmptyHeader>
+                  <PackageSearch className="w-12 h-12 text-muted-foreground" />
+                  <EmptyTitle>{tCollection('noProducts')}</EmptyTitle>
+                  {hasFilters && (
+                    <EmptyDescription>{tCollection('explore')}</EmptyDescription>
+                  )}
+                </EmptyHeader>
+              </Empty>
+            </div>
+          ) : (
+            <ClientGridWrapper
+              initialPageInfo={pageInfo as PageInfo}
+              // @ts-ignore
+              initialProducts={productsWithFav as Product[]}
+              handle={resolvedHandle}
+            />
+          )}
         </div>
       </div>
     </>

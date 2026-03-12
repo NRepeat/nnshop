@@ -31,7 +31,6 @@ export const SearchClient = ({ className }: { className?: string }) => {
   const [query, setQuery] = useState('');
   const [debouncedQuery] = useDebounce(query, 500);
   const [results, setResults] = useState<PredictiveSearchResult | null>(null);
-  console.log(results);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

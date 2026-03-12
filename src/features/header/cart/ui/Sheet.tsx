@@ -37,10 +37,16 @@ const CartSheet = async ({ locale }: { locale: string }) => {
     const discountedPrice = sale > 0 ? originalPrice * (1 - sale / 100) : originalPrice;
     const totalPrice = discountedPrice * quantity;
 
+    const compareAtAmount = (item.node.cost as any).compareAtAmountPerQuantity?.amount;
+    const compareAtPrice = compareAtAmount && Number(compareAtAmount) > originalPrice
+      ? Number(compareAtAmount).toString()
+      : null;
+
     return {
       id: item.node.id,
       title: product.title,
       price: originalPrice.toString(),
+      compareAtPrice,
       handle: product.handle,
       size: item.node.merchandise.selectedOptions.find(
         (option) => SIZE_NAMES.includes(option.name.toLowerCase()),

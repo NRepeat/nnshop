@@ -12,7 +12,17 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  return generatePageMetadata({ title: 'Блог | Mio Mio' }, locale, '/blog');
+  const isUk = locale === 'uk';
+  return generatePageMetadata(
+    {
+      title: isUk ? 'Блог про моду та стиль | MioMio' : 'Блог о моде и стиле | MioMio',
+      description: isUk
+        ? 'Поради зі стилю, сезонні добірки та практичні гіди з вибору. Нові матеріали в блозі MioMio ✔️'
+        : 'Советы по стилю, сезонные подборки и практичные гайды по выбору. Новые материалы в блоге MioMio ✔️',
+    },
+    locale,
+    '/blog',
+  );
 }
 
 export default async function BlogPage({ params }: Props) {

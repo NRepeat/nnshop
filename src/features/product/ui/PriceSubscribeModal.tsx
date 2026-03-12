@@ -37,10 +37,10 @@ export function PriceSubscribeModal({
   const posthog = usePostHog();
 
   useEffect(() => {
-    if (session?.user?.email) {
+    if (session?.user?.email && !session.user.isAnonymous) {
       setEmail(session.user.email);
     }
-  }, [session?.user?.email]);
+  }, [session?.user?.email, session?.user?.isAnonymous]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

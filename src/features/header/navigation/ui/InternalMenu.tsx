@@ -8,6 +8,8 @@ import {
   AccordionTrigger,
 } from '@shared/ui/accordion';
 import { ChevronRightIcon } from 'lucide-react';
+import { Button } from '@shared/ui/button';
+
 export const InternalMenu = ({
   mainMenu,
   onClose,
@@ -18,6 +20,7 @@ export const InternalMenu = ({
       id: Maybe<string> | undefined;
       title: string;
       url: string;
+      outletLink?: { label: string; url: string } | null;
       items: {
         id: Maybe<string> | undefined;
         title: string;
@@ -111,7 +114,7 @@ export const InternalMenu = ({
                                   e.preventDefault();
                                   onClose(subSubItem.url);
                                 }}
-                                className="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded text-left transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 pl-4 py-4  font-normal  transition-colors text-lg"
+                                className="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded text-left transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 pl-4 py-4 font-normal transition-colors text-lg"
                               >
                                 {subSubItem.title}
                               </Link>
@@ -119,6 +122,25 @@ export const InternalMenu = ({
                           </div>
                         );
                       })}
+                      {subItem.outletLink?.label && (
+                        <div className="mt-1 border-t border-foreground/10 pt-1">
+                          <Link
+                            href={subItem.outletLink.url}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              onClose(subItem.outletLink!.url);
+                            }}
+                            className="block w-full rounded p-0"
+                          >
+                            <Button
+                              variant="ghost"
+                              className="px-4 h-12 duration-300 decoration-transparent hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start border-none min-h-10 rounded text-red-500"
+                            >
+                              {subItem.outletLink.label}
+                            </Button>
+                          </Link>
+                        </div>
+                      )}
                     </AccordionContent>
                   </AccordionItem>
                 ) : (
@@ -146,7 +168,6 @@ export const InternalMenu = ({
     <div className="flex flex-col  px-4 py-8 font-sans h-full flex-1 overflow-y-auto">
       <Accordion
         type="multiple"
-        // defaultValue={allValues}
         className="w-full  h-full flex-1  pr-1"
       >
         {tabs}

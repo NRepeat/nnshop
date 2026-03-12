@@ -20,7 +20,7 @@ export function Providers({ children }: { children: ReactNode }) {
               <PostHogIdentify />
             </Suspense>
             {children}
-            <Toaster position="bottom-center" />
+            <Toaster position="bottom-center" toastOptions={{ style: { zIndex: 199 } }} />
           </PostHogProvider>
         </NuqsAdapter>
       </Suspense>

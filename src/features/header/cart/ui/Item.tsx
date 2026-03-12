@@ -16,6 +16,7 @@ const CartItem = ({
     totalPrice: string;
     quantity: number;
     price: string;
+    compareAtPrice?: string | null;
     size: string;
     color: string;
     image: string;
@@ -26,6 +27,10 @@ const CartItem = ({
   itemId: string;
 }) => {
   const sale = Number(product.sale);
+  const originalPrice = Number(product.price);
+  const compareAtPrice = product.compareAtPrice ? Number(product.compareAtPrice) : null;
+  const showZnizka = sale > 0;
+  const showCompareAt = !showZnizka && compareAtPrice && compareAtPrice > originalPrice;
   const t = useTranslations('Header.cart.drawer');
 
   return (
@@ -56,10 +61,20 @@ const CartItem = ({
               )}
             </div>
           </div>
-          <div className="col-span-1 flex flex-col justify-center">
+          <div className="col-span-1 flex flex-col justify-center items-end">
+            {(showZnizka || showCompareAt) && (
+              <p className="text-muted-foreground text-xs line-through">
+                <span>
+                  {showZnizka
+                    ? Math.round(originalPrice * product.quantity).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+                    : Math.round(compareAtPrice! * product.quantity).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
+                </span>
+                <span> {getCurrencySymbol('UAH')}</span>
+              </p>
+            )}
             <p
               className={cn('justify-items-end text-right gap-1 flex justify-end md:flex-row flex-col', {
-                'text-red-500': sale > 0,
+                'text-red-500': showZnizka || showCompareAt,
               })}
             >
               <span>

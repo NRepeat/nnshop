@@ -9,50 +9,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui/select';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { useTransition, useState } from 'react';
+import { useQueryState, parseAsString } from 'nuqs';
 import { useTranslations } from 'next-intl';
-import { Button } from '@shared/ui/button';
 
-type SortSelectProps = {
-  defaultValue?: string;
-};
-
-export function SortSelect({ defaultValue }: SortSelectProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+export function SortSelect() {
   const t = useTranslations('CollectionPage.sort');
 
-  const [currentSort, setCurrentSort] = useState(defaultValue || 'trending');
+  const [sort, setSort] = useQueryState(
+    'sort',
+    parseAsString.withDefault('trending').withOptions({
+      shallow: false,
+      history: 'replace',
+      scroll: false,
+    }),
+  );
 
   const handleSortChange = (value: string) => {
-    setCurrentSort(value);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    if (value && value !== 'trending') {
-      newSearchParams.set('sort', value);
-    } else {
-      newSearchParams.delete('sort');
-    }
-
-    startTransition(() => {
-      router.replace(`${pathname}?${newSearchParams.toString()}`, {
-        scroll: false,
-      });
-    });
+    setSort(value === 'trending' ? null : value);
   };
 
   return (
-    <Select
-      value={currentSort}
-      onValueChange={handleSortChange}
-      disabled={isPending}
-    >
-      <SelectTrigger className="w-[160px]  md:w-[160px] min-w-fit rounded">
-        <Button asChild variant={'outline'} className="flex items-center gap-x-2 border bg-primary">
-          <SelectValue placeholder={t('sortBy')} />
-        </Button>
+    <Select value={sort} onValueChange={handleSortChange}>
+      <SelectTrigger className="w-[160px] md:w-[160px] min-w-fit rounded border-primary bg-white text-black ">
+        <SelectValue placeholder={t('sortBy')} />
       </SelectTrigger>
       <SelectContent className="rounded">
         <SelectGroup>

@@ -3,7 +3,15 @@ import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
 import { ProductCardSPP } from '@entities/product/ui/ProductCardSPP';
 import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
-import { PredictiveSearchQuery } from '@shared/lib/shopify/types/storefront.generated';
+import {
+  PredictiveSearchQuery,
+  PredictiveSearchQueryVariables,
+} from '@shared/lib/shopify/types/storefront.generated';
+import {
+  PredictiveSearchLimitScope,
+  SearchableField,
+} from '@shared/lib/shopify/types/storefront.types';
+import { storefrontClient } from '@shared/lib/shopify/client';
 import {
   Empty,
   EmptyDescription,
@@ -13,6 +21,88 @@ import {
 } from '@shared/ui/empty';
 import { SearchIcon } from 'lucide-react';
 import { Skeleton } from '@shared/ui/skeleton';
+
+const PREDICTIVE_SEARCH_QUERY = `#graphql
+  query predictiveSearch(
+    $limit: Int!
+    $limitScope: PredictiveSearchLimitScope!
+    $query: String!
+    $searchableFields: [SearchableField!]
+    $types: [PredictiveSearchType!]
+  ) {
+    predictiveSearch(
+      limit: $limit
+      limitScope: $limitScope
+      query: $query
+      searchableFields: $searchableFields
+      types: $types
+    ) {
+      products {
+        id
+        title
+        handle
+        metafields(identifiers: [{key: "znizka", namespace: "custom"}]) {
+          key
+          value
+        }
+        priceRange {
+          maxVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        featuredImage {
+          url
+          altText
+          width
+          height
+        }
+        tags
+        vendor
+        options {
+          name
+          optionValues {
+            name
+          }
+        }
+        media(first: 20) {
+          edges {
+            node {
+              previewImage {
+                url
+                width
+                height
+                altText
+              }
+            }
+          }
+        }
+        variants(first: 250) {
+          edges {
+            node {
+              id
+              title
+              availableForSale
+              quantityAvailable
+              price {
+                amount
+                currencyCode
+              }
+              compareAtPrice {
+                amount
+                currencyCode
+              }
+              selectedOptions {
+                name
+                value
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -53,7 +143,7 @@ const SearchResultsComponent = async ({
       <div className=" mt-8 md:mt-8 h-fit min-h-screen">
         <div className="container">
           <div className="my-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">{pageTitle}</h1>
+            {pageTitle}
           </div>
           <Empty>
             <EmptyHeader>
@@ -73,28 +163,27 @@ const SearchResultsComponent = async ({
   let errorContent: React.ReactNode | null = null;
 
   try {
-    const apiResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/predictive-search`,
-      {
-        method: 'POST',
-        body: JSON.stringify({ query }),
-        headers: { 'Content-Type': 'application/json' },
+    const response = await storefrontClient.request<
+      PredictiveSearchQuery,
+      PredictiveSearchQueryVariables
+    >({
+      query: PREDICTIVE_SEARCH_QUERY,
+      variables: {
+        limit: 10,
+        limitScope: 'EACH' as PredictiveSearchLimitScope,
+        query,
+        searchableFields: [
+          'TITLE',
+          'VARIANTS_TITLE',
+          'VARIANTS_SKU',
+          'VENDOR',
+          'PRODUCT_TYPE',
+        ] as SearchableField[],
       },
-    );
-
-    if (!apiResponse.ok) {
-      console.error('Error fetching search results:', apiResponse.statusText);
-      errorContent = (
-        <>
-          {pageTitle}
-          <p>{t('errorFetchingResults')}</p>
-        </>
-      );
-    } else {
-      results = await apiResponse.json();
-    }
+    });
+    results = response.predictiveSearch;
   } catch (error) {
-    console.error('Network error fetching search results:', error);
+    console.error('Error fetching search results:', error);
     errorContent = (
       <>
         {pageTitle}
@@ -112,7 +201,7 @@ const SearchResultsComponent = async ({
       <div className=" mt-8 md:mt-8 h-fit min-h-screen">
         <div className="container">
           <div className="my-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">{pageTitle}</h1>
+            {pageTitle}
           </div>
           <Empty>
             <EmptyHeader>

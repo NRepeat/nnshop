@@ -97,7 +97,7 @@ export const SyncedCarousels = ({
   );
   return (
     <div className="grid grid-cols-1 md:grid-cols-2  w-full container gap-2">
-      <div className="py-8 flex justify-start">
+      <div className="py-8 flex justify-center md:justify-start">
         <Carousel opts={{ loop: true }} setApi={setApi1}>
           <CarouselContent className="[&>div]:ml-0">
             {previews?.map(

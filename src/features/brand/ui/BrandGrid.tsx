@@ -1,6 +1,8 @@
 import { getCollection } from '@entities/collection/api/getCollection';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@shared/ui/empty';
+import { PackageSearch } from 'lucide-react';
 import { ClientGridWrapper } from '@features/collection/ui/ClientGridWrapper';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
 import {
@@ -19,8 +21,8 @@ import { EnableScrollHide } from '@shared/ui/EnableScrollHide';
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
-import { isProductFavorite } from '@features/product/api/isProductFavorite';
 import { auth } from '@features/auth/lib/auth';
+import { prisma } from '@shared/lib/prisma';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -31,37 +33,43 @@ export const BrandGrid = async ({
   params: Promise<{ locale: string; slug: string }>;
   searchParams: Promise<SearchParams>;
 }) => {
-  const [awaitedParams, awaitedSearchParams, t, tBrands] = await Promise.all([
+  const [awaitedParams, awaitedSearchParams, t, tBrands, tCollection] = await Promise.all([
     params,
     searchParams,
     getTranslations('Header'),
     getTranslations('BrandsPage'),
+    getTranslations('CollectionPage'),
   ]);
 
   const { locale, slug } = awaitedParams;
   const decodedSlug = decodeURIComponent(slug);
   setRequestLocale(locale);
 
-  const hasFilters = Object.keys(awaitedSearchParams).length > 0;
+  const gender = awaitedSearchParams._gender as string | undefined;
+  const searchParamsWithoutGender = Object.fromEntries(
+    Object.entries(awaitedSearchParams).filter(([k]) => k !== '_gender'),
+  );
+  const hasFilters = Object.keys(searchParamsWithoutGender).length > 0;
 
   const collectionPromises = [
     getCollection({
       handle: decodedSlug,
       first: 20,
       locale: locale,
-      searchParams: awaitedSearchParams,
+      searchParams: searchParamsWithoutGender,
+      gender,
     }),
   ];
 
   if (hasFilters) {
     collectionPromises.push(
-      getCollection({ handle: decodedSlug, first: 20, locale: locale }),
+      getCollection({ handle: decodedSlug, first: 20, locale: locale, gender }),
     );
   }
 
   const [currentData, initialData] = await Promise.all(collectionPromises);
 
-  if (!currentData?.collection) {
+  if (!currentData?.collection?.collection) {
     return notFound();
   }
 
@@ -76,15 +84,21 @@ export const BrandGrid = async ({
       ) || [];
 
   const session = await auth.api.getSession({ headers: await headers() });
-  const productsWithFav = await Promise.all(
-    rawProducts.map(async (product) => {
-      const isFav = await isProductFavorite(product.id, session);
-      return {
-        ...product,
-        isFav,
-      };
-    }),
-  );
+  let favoriteProductIds = new Set<string>();
+  if (session?.user?.id) {
+    const favorites = await prisma.favoriteProduct.findMany({
+      where: {
+        userId: session.user.id,
+        productId: { in: rawProducts.map((p) => p.id) },
+      },
+      select: { productId: true },
+    });
+    favoriteProductIds = new Set(favorites.map((f) => f.productId));
+  }
+  const productsWithFav = rawProducts.map((product) => ({
+    ...product,
+    isFav: favoriteProductIds.has(product.id),
+  }));
 
   const initialFilters = hasFilters
     ? initialData?.collection?.collection?.products.filters
@@ -103,12 +117,25 @@ export const BrandGrid = async ({
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`/${locale}/brands`}>
-                {tBrands('title')}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            {gender ? (
+              <>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href={`/${locale}/${gender}`}>
+                    {gender === 'man' ? t('nav.man') : t('nav.woman')}
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+              </>
+            ) : (
+              <>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href={`/${locale}/brands`}>
+                    {tBrands('title')}
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+              </>
+            )}
             <BreadcrumbItem>
               <BreadcrumbPage>
                 {decodeHtmlEntities(collection.collection?.title ?? '')}
@@ -139,7 +166,7 @@ export const BrandGrid = async ({
           </div>
           <div className="flex h-full  items-center flex-row gap-2 justify-between md:justify-end">
             <Suspense fallback={null}>
-              <SortSelect defaultValue={awaitedSearchParams.sort as string} />
+              <SortSelect />
             </Suspense>
             <FilterSheet
               filters={collection.collection?.products.filters}
@@ -160,12 +187,27 @@ export const BrandGrid = async ({
         )}
 
         <div className="flex justify-between gap-8 h-full">
-          <ClientGridWrapper
-            initialPageInfo={pageInfo as PageInfo}
-            // @ts-ignore
-            initialProducts={productsWithFav as Product[]}
-            handle={decodedSlug}
-          />
+          {productsWithFav.length === 0 ? (
+            <div className="w-full py-16">
+              <Empty>
+                <EmptyHeader>
+                  <PackageSearch className="w-12 h-12 text-muted-foreground" />
+                  <EmptyTitle>{tCollection('noProducts')}</EmptyTitle>
+                  {hasFilters && (
+                    <EmptyDescription>{tCollection('explore')}</EmptyDescription>
+                  )}
+                </EmptyHeader>
+              </Empty>
+            </div>
+          ) : (
+            <ClientGridWrapper
+              initialPageInfo={pageInfo as PageInfo}
+              // @ts-ignore
+              initialProducts={productsWithFav as Product[]}
+              handle={decodedSlug}
+              gender={gender}
+            />
+          )}
         </div>
       </div>
     </>
