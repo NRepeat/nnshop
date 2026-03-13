@@ -26,6 +26,7 @@ const NAV_COLOR_MAP: Record<string, string> = {
 type ChildItem = {
   title: string;
   url: string;
+  isDuplicate?: boolean;
   collectionImageUrl?: string | null;
   navTitleColor?: string | null;
 };
@@ -107,17 +108,29 @@ export function NavDropdownContent({
                   setActiveImageUrl(item.collectionImageUrl ?? null)
                 }
               >
-                <NavigationItemClient
-                  className="w-full rounded px-0"
-                  href={item.url}
-                >
-                  <Button
-                    variant="ghost"
-                    className="group-hover:underline duration-300 decoration-transparent  hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-4 border-none rounded"
+                {item.isDuplicate ? (
+                  <span className="w-full rounded px-0 block opacity-50 cursor-default">
+                    <Button
+                      variant="ghost"
+                      className="text-base font-normal font-sans w-full justify-start px-4 border-none rounded"
+                      disabled
+                    >
+                      {item.title}
+                    </Button>
+                  </span>
+                ) : (
+                  <NavigationItemClient
+                    className="w-full rounded px-0"
+                    href={item.url}
                   >
-                    {item.title}
-                  </Button>
-                </NavigationItemClient>
+                    <Button
+                      variant="ghost"
+                      className="group-hover:underline duration-300 decoration-transparent  hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start px-4 border-none rounded"
+                    >
+                      {item.title}
+                    </Button>
+                  </NavigationItemClient>
+                )}
               </li>
             ))}
           </ul>

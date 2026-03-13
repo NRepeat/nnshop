@@ -40,6 +40,7 @@ export const RemoveItemButton = ({
     <Button
       variant={'ghost'}
       size={'icon'}
+      aria-label={t('remove')}
       onClick={(e) => handleRemove(e)}
       disabled={isPending}
       className="text-muted-foreground hover:text-foreground size-5 p-0"

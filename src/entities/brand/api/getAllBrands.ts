@@ -25,8 +25,9 @@ const GET_ALL_BRANDS_QUERY = `#graphql
 
 export async function getAllBrands(locale: string = 'uk') {
   'use cache';
-  cacheLife('days');
+  cacheLife('max');
   cacheTag('brands');
+  cacheTag('sitemap-brands');
   try {
     const brands = new Set<string>();
     let hasNextPage = true;

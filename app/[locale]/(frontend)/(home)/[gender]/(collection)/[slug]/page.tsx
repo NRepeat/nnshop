@@ -15,12 +15,20 @@ import { COLLECTION_IS_BRAND_QUERY } from '@shared/sanity/lib/query';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
+export type Props = {
+  params: Promise<{ locale: string; slug: string; gender: string }>;
+  searchParams: Promise<SearchParams>;
+};
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale, gender } = await params;
-  const resolvedHandle = resolveCollectionHandle(slug, gender);
+  const decodedSlug = decodeURIComponent(slug);
 
   try {
-    const [{ collection }, sanityCollection] = await Promise.all([
+    const allSlugs = await getCollectionSlugs();
+    const resolvedHandle = resolveCollectionHandle(decodedSlug, gender, new Set(allSlugs));
+
+    const [{ collection, alternateHandle }, sanityCollection] = await Promise.all([
       getCollection({
         handle: resolvedHandle,
         locale,
@@ -33,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       }),
     ]);
 
-    if (!collection.collection) {
+    if (!collection.collection?.id) {
       return { title: 'Collection Not Found' };
     }
 
@@ -49,6 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       locale,
       slug,
       gender,
+      alternateHandle,
     );
   } catch {
     return { title: 'Collection Not Found' };
@@ -72,11 +81,6 @@ export async function generateStaticParams() {
     return locales.map((locale) => ({ locale, slug: '' }));
   }
 }
-
-export type Props = {
-  params: Promise<{ locale: string; slug: string; gender: string }>;
-  searchParams: Promise<SearchParams>;
-};
 
 export default async function CollectionPage({ params, searchParams }: Props) {
   const { locale } = await params;

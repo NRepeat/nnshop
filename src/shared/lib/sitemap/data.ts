@@ -18,6 +18,7 @@ interface VendorSitemapNode {
 }
 
 interface CollectionSitemapNode {
+  id: string;
   handle: string;
   updatedAt: string;
 }
@@ -49,6 +50,7 @@ export interface SitemapProduct {
 
 export interface SitemapCategory {
   handle: string;
+  ruHandle: string;
   updatedAt: string;
   gender: string;
 }
@@ -106,6 +108,7 @@ const GET_COLLECTIONS_FOR_SITEMAP = `#graphql
     collections(first: 250) {
       edges {
         node {
+          id
           handle
           updatedAt
         }
@@ -136,7 +139,7 @@ const GET_VENDORS_FOR_SITEMAP = `#graphql
 
 export async function getSitemapProducts(): Promise<SitemapProduct[]> {
   'use cache';
-  cacheLife('hours');
+  cacheLife('max');
   cacheTag('sitemap-products');
 
   const allProducts: SitemapProduct[] = [];
@@ -171,21 +174,32 @@ export async function getSitemapProducts(): Promise<SitemapProduct[]> {
 
 export async function getSitemapCategories(): Promise<SitemapCategory[]> {
   'use cache';
-  cacheLife('hours');
+  cacheLife('max');
   cacheTag('sitemap-categories');
 
   try {
-    const response: CollectionsForSitemapResponse = await storefrontClient.request<
-      CollectionsForSitemapResponse,
-      Record<string, never>
-    >({
-      query: GET_COLLECTIONS_FOR_SITEMAP,
-      variables: {},
-      language: 'UK' as StorefrontLanguageCode,
-    });
+    const [ukResponse, ruResponse] = await Promise.all([
+      storefrontClient.request<CollectionsForSitemapResponse, Record<string, never>>({
+        query: GET_COLLECTIONS_FOR_SITEMAP,
+        variables: {},
+        language: 'UK' as StorefrontLanguageCode,
+      }),
+      storefrontClient.request<CollectionsForSitemapResponse, Record<string, never>>({
+        query: GET_COLLECTIONS_FOR_SITEMAP,
+        variables: {},
+        language: 'RU' as StorefrontLanguageCode,
+      }),
+    ]);
 
-    return (response.collections?.edges ?? []).map((edge) => ({
+    // Build a map of collection ID → RU handle
+    const ruHandleById = new Map<string, string>();
+    for (const edge of ruResponse.collections?.edges ?? []) {
+      ruHandleById.set(edge.node.id, edge.node.handle);
+    }
+
+    return (ukResponse.collections?.edges ?? []).map((edge) => ({
       handle: edge.node.handle,
+      ruHandle: ruHandleById.get(edge.node.id) ?? edge.node.handle,
       updatedAt: edge.node.updatedAt,
       gender: getGenderFromHandle(edge.node.handle),
     }));
@@ -197,7 +211,7 @@ export async function getSitemapCategories(): Promise<SitemapCategory[]> {
 
 export async function getSitemapBrands(): Promise<SitemapBrand[]> {
   'use cache';
-  cacheLife('hours');
+  cacheLife('max');
   cacheTag('sitemap-brands');
 
   const vendorSet = new Set<string>();
@@ -244,7 +258,7 @@ const POSTS_FOR_SITEMAP_QUERY = `
 
 export async function getSitemapPosts(): Promise<SitemapPost[]> {
   'use cache';
-  cacheLife('hours');
+  cacheLife('max');
   cacheTag('sitemap-posts');
   cacheTag('post');
 

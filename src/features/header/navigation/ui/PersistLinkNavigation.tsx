@@ -6,6 +6,7 @@ import { cookieGenderGet } from '../api/setCookieGender';
 import { getTranslations } from 'next-intl/server';
 import clsx from 'clsx';
 import { getMainMenu } from '../api/getMainMenu';
+import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 
 const BRANDS_SLUGS = ['brand', 'бренд', 'брендi', 'бренди'];
 function isBrandsItem(item: { url: string; title: string }) {
@@ -67,9 +68,9 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
       let slug = '';
       if (collectionData?.id) {
         const resolved = resolveCollectionLink(collectionData, locale, currentGender);
-        slug = resolved.handle || collectionData?.pageHandle || '';
+        slug = cleanSlug(resolved.handle || collectionData?.pageHandle || '');
       } else {
-        slug = collectionData?.pageHandle || '';
+        slug = cleanSlug(collectionData?.pageHandle || '');
       }
       return { slug };
     }) || [];

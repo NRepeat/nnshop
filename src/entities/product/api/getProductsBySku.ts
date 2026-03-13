@@ -1,6 +1,6 @@
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
-import { cacheLife } from 'next/cache';
+import { cacheLife, cacheTag } from 'next/cache';
 
 const QUERY = `#graphql
   query GetProductsBySku($query: String!, $first: Int!) {
@@ -64,7 +64,9 @@ export async function getProductsBySku(
   count: number = 3,
 ): Promise<any[]> {
   'use cache';
-  cacheLife('minutes');
+  cacheLife('max');
+  cacheTag('product');
+  cacheTag(`product-sku:${sku}`);
 
   if (!sku?.trim()) return [];
 

@@ -11,13 +11,13 @@ export async function GET() {
   const categories = await getSitemapCategories();
 
   const entries = categories.map((c) => ({
-    url: `${BASE_URL}/ru/${c.gender}/${c.handle}`,
+    url: `${BASE_URL}/ru/${c.gender}/${c.ruHandle}`,
     lastModified: formatDate(c.updatedAt),
     changeFrequency: 'daily',
     priority: 0.9,
     alternates: {
       uk: `${BASE_URL}/uk/${c.gender}/${c.handle}`,
-      ru: `${BASE_URL}/ru/${c.gender}/${c.handle}`,
+      ru: `${BASE_URL}/ru/${c.gender}/${c.ruHandle}`,
       'x-default': `${BASE_URL}/uk/${c.gender}/${c.handle}`,
     },
   }));

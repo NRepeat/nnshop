@@ -123,9 +123,9 @@ export const Footer = async ({ locale }: { locale: string }) => {
 
           {/* Column 2 — Categories */}
           {/* <div>
-            <h3 className="text-base font-bold mb-4 text-white">
+            <p className="text-base font-bold mb-4 text-white">
               {t('categories_column_title')}
-            </h3>
+            </p>
             <ul className="space-y-2.5">
               {categoryLinks.map((link) => (
                 <li key={link.href}>
@@ -142,9 +142,9 @@ export const Footer = async ({ locale }: { locale: string }) => {
 
           {/* Column 3 — Info */}
           <div>
-            <h3 className="text-base font-bold mb-4 text-white">
+            <p className="text-base font-bold mb-4 text-white">
               {t('info_column_title')}
-            </h3>
+            </p>
             <ul className="space-y-2.5">
               {infoLinks.map((link) => (
                 <li key={link.href}>
@@ -161,9 +161,9 @@ export const Footer = async ({ locale }: { locale: string }) => {
 
           {/* Column 4 — Working hours & contacts */}
           <div>
-            <h3 className="text-base font-bold mb-4 text-white">
+            <p className="text-base font-bold mb-4 text-white">
               {t('working_hours_title')}
-            </h3>
+            </p>
             <div className="flex flex-col gap-3">
               <p className="text-white/60 text-sm">{workingHours}</p>
 

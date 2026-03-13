@@ -1,3 +1,5 @@
+import { cleanSlug } from '../utils/cleanSlug';
+
 type LocalizedHandles = {
   uk?: string | null;
   ru?: string | null;
@@ -23,14 +25,7 @@ export type CollectionData = {
 
 /**
  * Resolves the localized handle for a collection based on locale.
- * Uses Sanity data directly instead of making API calls to Shopify.
  */
-const cleanString = (str: string | null | undefined): string | null => {
-  if (!str) return null;
-  // This regex removes Zero Width Space, Zero Width Non-Joiner, Zero Width Joiner, and BOM
-  return str.replace(/[\u200B-\u200D\uFEFF]/g, '');
-};
-
 export const resolveCollectionLink = (
   collectionData: CollectionData | null | undefined,
   locale: string,
@@ -56,8 +51,8 @@ export const resolveCollectionLink = (
   const title =
     collectionData.titles?.[localeKey] || collectionData.title || null;
 
-  const cleanedHandle = cleanString(handle);
-  const cleanedTitle = cleanString(title);
+  const cleanedHandle = cleanSlug(handle);
+  const cleanedTitle = title?.trim() || null;
 
   const prefix = gender ? `/${gender}` : '';
 

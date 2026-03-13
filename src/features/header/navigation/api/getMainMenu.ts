@@ -2,6 +2,7 @@ import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { GetMainMenuQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { cacheLife, cacheTag } from 'next/cache';
+import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 
 function decodeHtmlEntities(text: string): string {
   return text
@@ -41,7 +42,7 @@ const query = `#graphql
 
 export const getMainMenu = async ({ locale }: { locale: string }) => {
   'use cache';
-  cacheLife('days');
+  cacheLife('max');
   cacheTag('menu');
   const responce = await storefrontClient.request<
     GetMainMenuQuery,
@@ -58,22 +59,22 @@ export const getMainMenu = async ({ locale }: { locale: string }) => {
     responce.menu?.items.map((item) => ({
       id: item.resourceId,
       title: decodeHtmlEntities(item.title),
-      url: `/${item.url?.split('/').pop()}`,
+      url: `/${cleanSlug(item.url?.split('/').pop())}`,
       items:
         item.items?.map((subItem) => ({
           id: subItem.resourceId,
           title: decodeHtmlEntities(subItem.title),
-          url: `/${subItem.url?.split('/').pop()}`,
+          url: `/${cleanSlug(subItem.url?.split('/').pop())}`,
           items:
             subItem.items?.map((subItem) => ({
               id: subItem.resourceId,
               title: decodeHtmlEntities(subItem.title),
-              url: `/${subItem.url?.split('/').pop()}`,
+              url: `/${cleanSlug(subItem.url?.split('/').pop())}`,
               items:
                 subItem.items?.map((child) => ({
                   id: child.resourceId,
                   title: decodeHtmlEntities(child.title),
-                  url: `/${child.url?.split('/').pop()}`,
+                  url: `/${cleanSlug(child.url?.split('/').pop())}`,
                 })) || [],
             })) || [],
         })) || [],

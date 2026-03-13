@@ -2,8 +2,8 @@
 
 import { NavigationMenuTrigger } from '@shared/ui/navigation-menu';
 import { cn } from '@shared/lib/utils';
-import { Link } from '@shared/i18n/navigation';
 import { useNavigationClose } from './NavigationClient';
+import { useRouter } from '@shared/i18n/navigation';
 
 interface NavigationTriggerClientProps {
   children: React.ReactNode;
@@ -17,6 +17,7 @@ export const NavigationTriggerClient = ({
   href,
 }: NavigationTriggerClientProps) => {
   const close = useNavigationClose();
+  const router = useRouter();
 
   return (
     <NavigationMenuTrigger
@@ -28,12 +29,11 @@ export const NavigationTriggerClient = ({
       onClick={(e) => {
         if (e.currentTarget.dataset.state === 'open') {
           close();
+          if (href) router.push(href);
         }
       }}
     >
-      <Link href={href || ''} prefetch>
-        {children}
-      </Link>
+      {children}
     </NavigationMenuTrigger>
   );
 };

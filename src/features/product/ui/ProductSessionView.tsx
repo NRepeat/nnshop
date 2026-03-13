@@ -9,10 +9,12 @@ export const ProductSessionView = async ({
   handle,
   locale,
   children,
+  searchParams,
 }: {
   handle: string;
   locale: string;
   children: React.ReactNode;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
   try {
     const { alternateHandle, originProduct: product } = await getProduct({
@@ -36,6 +38,7 @@ export const ProductSessionView = async ({
         <ProductView
           product={product as Product}
           locale={locale}
+          searchParams={searchParams}
         >
           {children}
         </ProductView>

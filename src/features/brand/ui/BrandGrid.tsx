@@ -45,7 +45,11 @@ export const BrandGrid = async ({
   const decodedSlug = decodeURIComponent(slug);
   setRequestLocale(locale);
 
-  const gender = awaitedSearchParams._gender as string | undefined;
+  const cookieStore = await headers();
+  const cookieHeader = cookieStore.get('cookie') || '';
+  const genderFromCookie = cookieHeader.includes('gender=man') ? 'man' : cookieHeader.includes('gender=woman') ? 'woman' : undefined;
+
+  const gender = (awaitedSearchParams._gender as string | undefined) || genderFromCookie;
   const searchParamsWithoutGender = Object.fromEntries(
     Object.entries(awaitedSearchParams).filter(([k]) => k !== '_gender'),
   );
@@ -58,12 +62,13 @@ export const BrandGrid = async ({
       locale: locale,
       searchParams: searchParamsWithoutGender,
       gender,
+      genderTag: gender,
     }),
   ];
 
   if (hasFilters) {
     collectionPromises.push(
-      getCollection({ handle: decodedSlug, first: 20, locale: locale, gender }),
+      getCollection({ handle: decodedSlug, first: 20, locale: locale, gender, genderTag: gender }),
     );
   }
 
@@ -79,8 +84,9 @@ export const BrandGrid = async ({
       .map((edge) => edge.node)
       .filter(
         (edge) =>
-          Number(edge.priceRange.minVariantPrice.amount) > 0 ||
-          Number(edge.priceRange.maxVariantPrice.amount) > 0,
+          (Number(edge.priceRange.minVariantPrice.amount) > 0 ||
+            Number(edge.priceRange.maxVariantPrice.amount) > 0) &&
+          (edge.totalInventory === null || edge.totalInventory === undefined || edge.totalInventory > 0),
       ) || [];
 
   const session = await auth.api.getSession({ headers: await headers() });

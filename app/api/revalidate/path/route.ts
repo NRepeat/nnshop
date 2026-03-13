@@ -73,19 +73,19 @@ export async function POST(req: NextRequest) {
 
     // Shopify: collection updates also invalidate the slugs list
     if (body.type === 'collection') {
-      revalidateTag('collections', 'default');
-      revalidateTag('sitemap-categories', 'default');
+      revalidateTag('collections', 'max');
+      revalidateTag('sitemap-categories', 'max');
       revalidatedTags.push('collections', 'sitemap-categories');
     }
 
     // Sitemap cache invalidation based on content type
     if (body.type === 'product') {
-      revalidateTag('sitemap-products', 'default');
-      revalidateTag('sitemap-brands', 'default'); // brands derived from product vendors
+      revalidateTag('sitemap-products', 'max');
+      revalidateTag('sitemap-brands', 'max'); // brands derived from product vendors
       revalidatedTags.push('sitemap-products', 'sitemap-brands');
     }
     if (body.type === 'post') {
-      revalidateTag('sitemap-posts', 'default');
+      revalidateTag('sitemap-posts', 'max');
       revalidatedTags.push('sitemap-posts');
     }
 

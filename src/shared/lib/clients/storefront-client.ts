@@ -137,7 +137,7 @@ export class StorefrontClient implements ShopifyClient {
     variables,
     language,
     signal,
-    cache = 'no-store',
+    cache,
     revalidate,
     tags,
   }: {

@@ -57,8 +57,9 @@ export async function getNewProductsFiller({
   count: number;
 }) {
   'use cache';
-  cacheLife('minutes');
+  cacheLife('max');
   cacheTag('new-products-filler');
+  cacheTag('product');
 
   if (!productType || count <= 0) return [];
 

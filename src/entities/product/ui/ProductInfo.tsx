@@ -92,11 +92,6 @@ export const ProductInfo = ({
       </div>
     </div>
     <AddToCartButton product={product} />
-    {/*<div className="bg-black content-stretch flex items-center justify-center px-[18px] py-[11px] relative shrink-0 w-full">
-      <p className="font-['Styrene_A_Web:Regular',sans-serif] leading-[20px] not-italic relative shrink-0 text-[15px] text-nowrap text-white">
-        Add to Bag
-      </p>
-    </div>*/}
     <div className="content-stretch flex flex-col gap-px items-start relative shrink-0 w-full">
       <div className="border-[#ddd] border-[0px_0px_1px] border-solid content-stretch flex gap-[10px] items-center px-0 py-[13px] relative shrink-0 w-full">
         <p className="basis-0 font-['Styrene_A_Web:Regular',sans-serif] grow leading-[20px] min-h-px min-w-px not-italic relative shrink-0 text-[13px] text-black">

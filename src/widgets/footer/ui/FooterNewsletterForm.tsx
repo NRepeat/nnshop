@@ -30,6 +30,7 @@ export const FooterNewsletterForm = () => {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder={t('subscribe_placeholder')}
+        aria-label={t('subscribe_placeholder')}
         required
         className="flex-1 rounded-r-none bg-transparent border border-white/30 text-sm text-white placeholder-white/40 px-3 py-2 focus:outline-none focus:border-white/60 min-w-0"
       />

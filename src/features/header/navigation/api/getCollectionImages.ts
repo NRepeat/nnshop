@@ -9,7 +9,7 @@ export async function getCollectionImages(
   locale: string,
 ): Promise<Record<string, string | null>> {
   'use cache';
-  cacheLife('hours');
+  cacheLife('max');
   cacheTag('menu');
 
   // Filter out empty/invalid handles

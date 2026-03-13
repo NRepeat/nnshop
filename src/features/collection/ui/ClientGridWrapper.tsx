@@ -22,13 +22,6 @@ export const ClientGridWrapper = ({
   const [products, setProducts] =
     useState<(Product & { isFav: boolean })[]>(initialProducts);
   const [pageInfo, setPageInfo] = useState(initialPageInfo);
-  useEffect(() => {
-    setProducts(initialProducts);
-  }, [initialProducts]);
-
-  useEffect(() => {
-    setPageInfo(initialPageInfo);
-  }, [initialPageInfo]);
 
   const handleDataLoaded = (newProducts: Product[], newPageInfo: any) => {
     setProducts((prev) => {

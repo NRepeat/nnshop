@@ -12,6 +12,7 @@ import { usePathname, useRouter } from '@shared/i18n/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { cn } from '@shared/lib/utils';
 import { usePathStore } from '@/shared/store/use-path-store';
+import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 export const parseLocale = {
   ru: 'РУС',
   uk: 'УКР',
@@ -39,9 +40,10 @@ export function LanguageSwitcher({
   const [, startTransition] = useTransition();
   const changeLocale = (newLocale: string) => {
     setSelectedLocale(newLocale);
-    const targetPath = alternatePaths?.[newLocale] || pathname;
+    const targetPath = (alternatePaths?.[newLocale] || pathname) as string;
+    const sanitizedPath = cleanSlug(targetPath);
     startTransition(() => {
-      router.replace(targetPath, { locale: newLocale });
+      router.replace(sanitizedPath, { locale: newLocale });
     });
   };
   useEffect(() => {
