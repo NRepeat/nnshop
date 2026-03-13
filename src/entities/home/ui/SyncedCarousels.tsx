@@ -155,7 +155,8 @@ export const SyncedCarousels = ({
                 </div>
                 <div className="grid grid-cols-3 gap-1 md:gap-2 pb-1">
                   {collection?.collection?.collection?.products.edges
-                    ?.slice(0, 3)
+                    ?.filter((e) => e.node.totalInventory === null || e.node.totalInventory === undefined || e.node.totalInventory > 0)
+                    .slice(0, 3)
                     .map(
                       (
                         product: NonNullable<
@@ -183,6 +184,7 @@ export const SyncedCarousels = ({
             {scrollSnaps.map((_, index) => (
               <Button
                 key={index}
+                aria-label={`Slide ${index + 1}`}
                 className={`w-2 h-[3px]  py-0 px-3  ${
                   index === selectedIndex ? 'bg-primary' : 'bg-gray-300'
                 }`}

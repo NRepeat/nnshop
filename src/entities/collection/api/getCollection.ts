@@ -234,21 +234,21 @@ export const getCollectionSlugs = async () => {
   const handlesSet = new Set<string>();
   const locales: StorefrontLanguageCode[] = ['RU', 'UK'];
   try {
-    const collection = await storefrontClient.request<
-      GetCollectionsHandlesQuery,
-      GetCollectionsHandlesQueryVariables
-    >({
-      query: GET_COLLECTION_SLUGS,
-      language: locales[0],
-    });
+    const [ruCollection, ukCollection] = await Promise.all(
+      locales.map((language) =>
+        storefrontClient.request<GetCollectionsHandlesQuery, GetCollectionsHandlesQueryVariables>({
+          query: GET_COLLECTION_SLUGS,
+          language,
+        }),
+      ),
+    );
 
-    if (!collection) {
+    if (!ruCollection || !ukCollection) {
       throw new Error('No collections found');
     }
 
-    collection.collections.edges.forEach((edge) => {
-      handlesSet.add(edge.node.handle);
-    });
+    ruCollection.collections.edges.forEach((edge) => handlesSet.add(edge.node.handle));
+    ukCollection.collections.edges.forEach((edge) => handlesSet.add(edge.node.handle));
 
     return Array.from(handlesSet);
   } catch (error) {
@@ -333,6 +333,8 @@ export const getCollection = async ({
   last,
   before,
   locale,
+  gender,
+  genderTag,
 }: {
   handle: string;
   searchParams?: { [key: string]: string | string[] | undefined };
@@ -342,6 +344,9 @@ export const getCollection = async ({
   before?: string;
   locale: string;
   gender?: string;
+  /** When set, adds a Shopify tag filter for this gender value (e.g. 'woman' | 'man').
+   *  Use only for brand/vendor pages where a single collection contains both genders. */
+  genderTag?: string;
 }) => {
   'use cache';
   cacheLife('max');
@@ -356,6 +361,13 @@ export const getCollection = async ({
   if (!handle) throw new Error('getCollection: handle is required');
 
   const filters: ProductFilter[] = [{ available: true }];
+
+  if (genderTag) {
+    const genderMetafieldValue = genderTag === 'man' ? 'choloviche' : genderTag === 'woman' ? 'zhinoche' : null;
+    if (genderMetafieldValue) {
+      filters.push({ productMetafield: { namespace: 'custom', key: 'gender', value: genderMetafieldValue } });
+    }
+  }
 
   if (searchParams) {
     log('fetching filter definitions...');

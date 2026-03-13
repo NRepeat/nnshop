@@ -18,9 +18,9 @@ export const ProductCarousel = async (props: ProductCarouselGridProps) => {
     locale,
   });
   if (!shopifyCollection) return null;
-  const products = shopifyCollection.collection?.collection?.products.edges.map(
-    (edge) => edge.node,
-  );
+  const products = shopifyCollection.collection?.collection?.products.edges
+    .map((edge) => edge.node)
+    .filter((p) => p.totalInventory === null || p.totalInventory === undefined || p.totalInventory > 0);
   const items = products?.map((product) => {
     return <ProductCard product={product as Product}  withCarousel={false}  withSizes withInnerShadow
     withQuick={false} className=' hover:shadow rounded-b rounded-t pt-0 px-0 '/>;

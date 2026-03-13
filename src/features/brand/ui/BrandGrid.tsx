@@ -62,12 +62,13 @@ export const BrandGrid = async ({
       locale: locale,
       searchParams: searchParamsWithoutGender,
       gender,
+      genderTag: gender,
     }),
   ];
 
   if (hasFilters) {
     collectionPromises.push(
-      getCollection({ handle: decodedSlug, first: 20, locale: locale, gender }),
+      getCollection({ handle: decodedSlug, first: 20, locale: locale, gender, genderTag: gender }),
     );
   }
 
@@ -83,8 +84,9 @@ export const BrandGrid = async ({
       .map((edge) => edge.node)
       .filter(
         (edge) =>
-          Number(edge.priceRange.minVariantPrice.amount) > 0 ||
-          Number(edge.priceRange.maxVariantPrice.amount) > 0,
+          (Number(edge.priceRange.minVariantPrice.amount) > 0 ||
+            Number(edge.priceRange.maxVariantPrice.amount) > 0) &&
+          (edge.totalInventory === null || edge.totalInventory === undefined || edge.totalInventory > 0),
       ) || [];
 
   const session = await auth.api.getSession({ headers: await headers() });
