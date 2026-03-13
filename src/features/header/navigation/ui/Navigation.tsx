@@ -7,7 +7,7 @@ import {
 import { getMainMenu } from '../api/getMainMenu';
 import { getCollectionImages } from '../api/getCollectionImages';
 import { getTranslations } from 'next-intl/server';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { NavigationClient } from './NavigationClient';
 import { Skeleton } from '@shared/ui/skeleton';
 import { NavigationItemClient } from './NavigationItemClient';
@@ -77,10 +77,14 @@ export const CurrentNavigationSession = async ({
   navImages?: NavImages;
   navDropdowns?: NavDropdowns;
 }) => {
-  const cookie = await cookies();
+  const [cookie, headersList] = await Promise.all([cookies(), headers()]);
   const cookieGender = cookie.get('gender')?.value;
+  // x-gender is set by middleware from the URL — takes priority over the cookie
+  // to avoid showing stale gender when user navigates across genders.
+  const headerGender = headersList.get('x-gender');
   const currentGender =
     gender ||
+    (headerGender && ['woman', 'man'].includes(headerGender) ? headerGender : null) ||
     (['woman', 'man'].includes(cookieGender ?? '') ? cookieGender : null) ||
     'woman';
   return (

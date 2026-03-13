@@ -31,7 +31,7 @@ export function SortSelect() {
 
   return (
     <Select value={sort} onValueChange={handleSortChange}>
-      <SelectTrigger className="w-[160px] md:w-[160px] min-w-fit rounded border-primary bg-white text-black ">
+      <SelectTrigger aria-label={t('sortBy')} className="w-[160px] md:w-[160px] min-w-fit rounded border-primary bg-white text-black ">
         <SelectValue placeholder={t('sortBy')} />
       </SelectTrigger>
       <SelectContent className="rounded">

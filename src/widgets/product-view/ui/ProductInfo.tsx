@@ -36,6 +36,7 @@ import { VariantInventory } from '@entities/product/api/getInventoryLevels';
 import { Popover, PopoverContent, PopoverTrigger } from '@shared/ui/popover';
 import { ButtonGroup, ButtonGroupSeparator } from '@shared/ui/button-group';
 import { usePostHog } from 'posthog-js/react';
+import { stripInvisible } from '@shared/lib/seo/generateMetadata';
 
 const DetailsContent = ({
   attributes,
@@ -44,35 +45,33 @@ const DetailsContent = ({
   attributes: ProductMEtaobjectType[];
   locale: string;
 }) => {
+  const rows = attributes
+    .filter(
+      (attr) =>
+        attr?.fields.find((f) => f.key === 'title')?.value !== 'Особливості',
+    )
+    .flatMap((attr) => {
+      if (!attr) return [];
+      const title =
+        locale === 'ru'
+          ? attr.fields.find((f) => f.key === 'ru_title')?.value
+          : attr.fields.find((f) => f.key === 'title')?.value;
+      const value =
+        locale === 'ru'
+          ? attr.fields.find((f) => f.key === 'ru_translation')?.value
+          : attr.fields.find((f) => f.key === 'atribute_payload')?.value;
+      if (!title || !value) return [];
+      return [{ id: attr.id, title, value }];
+    });
+
   return (
-    <div className="text-sm text-gray-600 flex flex-col gap-2">
-      {attributes
-        .filter(
-          (attr) =>
-            attr?.fields.find((f) => f.key === 'title')?.value !==
-            'Особливості',
-        )
-        .map((attr) => {
-          if (!attr) return null;
-          const title =
-            locale === 'ru'
-              ? attr.fields.find((f) => f.key === 'ru_title')?.value
-              : attr.fields.find((f) => f.key === 'title')?.value;
-          const value =
-            locale === 'ru'
-              ? attr.fields.find((f) => f.key === 'ru_translation')?.value
-              : attr.fields.find((f) => f.key === 'atribute_payload')?.value;
-          if (!title || !value) return null;
-          return (
-            <div
-              key={attr.id}
-              className="grid grid-cols-[auto_1fr] gap-x-8 gap-y-2 "
-            >
-              <span className="content-start min-w-[100px]">{title}</span>
-              <span className="content-start">{value}</span>
-            </div>
-          );
-        })}
+    <div className="text-sm text-gray-600 grid grid-cols-[auto_1fr] gap-x-8 gap-y-2">
+      {rows.map(({ id, title, value }) => (
+        <React.Fragment key={id}>
+          <span>{title}</span>
+          <span>{value}</span>
+        </React.Fragment>
+      ))}
     </div>
   );
 };
@@ -143,17 +142,17 @@ export const ProductInfo = ({
   return (
     <div className="content-stretch flex flex-col gap-[30px] items-start  py-0 relative w-full">
       <div className="flex flex-col gap-8 items-start  w-full max-w-2xl">
-        <section className="space-y-2 w-full">
+        <section className="flex flex-col gap-2 w-full">
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg text-gray-800">{stripInvisible(product.title)}</h1>
+          </div>
           {product.vendor && (
-            <Link href={`/brand/${vendorToHandle(product.vendor)}`} prefetch>
-              <p className="text-xl font-semibold uppercase tracking-tight">
+            <Link href={`/brand/${vendorToHandle(product.vendor)}`} prefetch className="order-first">
+              <h2 className="text-xl font-semibold uppercase tracking-tight">
                 {product.vendor}
-              </p>
+              </h2>
             </Link>
           )}
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg text-gray-800">{product.title}</h1>
-          </div>
           {sku && (
             <p className="text-sm text-gray-500">
               {t('sku')}: {sku}

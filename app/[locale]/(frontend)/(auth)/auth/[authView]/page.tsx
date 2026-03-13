@@ -13,9 +13,9 @@ const AuthSession = async ({
     namespace: 'BetterAuthUI',
   });
   return (
-    <main className="flex  flex-col items-center  self-center h-fit min-h-screen w-full">
+    <div className="flex  flex-col items-center  self-center h-fit min-h-screen w-full">
       <AuthViewRenderer authView={authView} tBetterAuth={tBetterAuth} />
-    </main>
+    </div>
   );
 };
 export default async function AuthPage({

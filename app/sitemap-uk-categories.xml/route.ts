@@ -17,7 +17,7 @@ export async function GET() {
     priority: 0.9,
     alternates: {
       uk: `${BASE_URL}/uk/${c.gender}/${c.handle}`,
-      ru: `${BASE_URL}/ru/${c.gender}/${c.handle}`,
+      ru: `${BASE_URL}/ru/${c.gender}/${c.ruHandle}`,
       'x-default': `${BASE_URL}/uk/${c.gender}/${c.handle}`,
     },
   }));

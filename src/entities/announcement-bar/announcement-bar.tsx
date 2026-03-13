@@ -59,14 +59,16 @@ export const AnnouncementBar = async (props: AnnouncementBarProps) => {
             )}
           </div>
           <Suspense>
-            <Link href={resolvedLink} className="hidden sm:block">
-              <p className=" w-full items-center justify-center py-3 font-400 hidden md:flex  ">
-                {displayText}
-              </p>
-              <p className=" w-full items-center justify-center py-3  font-400 flex md:hidden">
-                {displayText}
-              </p>
-            </Link>
+            {displayText && (
+              <Link href={resolvedLink} className="hidden sm:block" aria-label={displayText}>
+                <p className=" w-full items-center justify-center py-3 font-400 hidden md:flex  ">
+                  {displayText}
+                </p>
+                <p className=" w-full items-center justify-center py-3  font-400 flex md:hidden">
+                  {displayText}
+                </p>
+              </Link>
+            )}
           </Suspense>
 
           <div className="flex justify-end">

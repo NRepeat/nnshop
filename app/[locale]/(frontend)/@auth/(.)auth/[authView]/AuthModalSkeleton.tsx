@@ -4,7 +4,7 @@ import { Skeleton } from '@shared/ui/skeleton';
 export function AuthModalSkeleton() {
   return (
     <QuickView open={true}>
-      <main className="flex grow flex-col items-center justify-center self-center min-h-[60vh]">
+      <div className="flex grow flex-col items-center justify-center self-center min-h-[60vh]">
         <div className="w-full max-w-md p-8 space-y-6">
           {/* Title */}
           <Skeleton className="h-8 w-3/4 mx-auto" />
@@ -21,7 +21,7 @@ export function AuthModalSkeleton() {
           {/* Link */}
           <Skeleton className="h-4 w-1/2 mx-auto" />
         </div>
-      </main>
+      </div>
     </QuickView>
   );
 }

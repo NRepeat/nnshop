@@ -3,7 +3,7 @@ import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 
-import { GENDERED_HANDLES } from '@entities/collection/lib/resolve-handle';
+import { hasGenderedSuffix } from '@entities/collection/lib/resolve-handle';
 const handleI18nRouting = createMiddleware(routing);
 
 export async function proxy(request: NextRequest) {
@@ -17,7 +17,7 @@ export async function proxy(request: NextRequest) {
   // 0. Fast redirect for Ukrainian gendered handles on Russian locale
   if (segments.length >= 3 && segments[0] === 'ru' && allowedGenders.includes(segments[1])) {
     const slug = segments[2];
-    if (GENDERED_HANDLES.has(slug)) {
+    if (hasGenderedSuffix(slug)) {
       const url = request.nextUrl.clone();
       url.pathname = `/uk/${segments[1]}/${slug}`;
       return NextResponse.redirect(url, { status: 301 }); // Use 301 for SEO
@@ -85,18 +85,45 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // 4. Determine effective gender: URL takes priority over cookie
+  const urlGender = segments.length >= 2 && allowedGenders.includes(segments[1]) ? segments[1] : null;
+  const effectiveGender = urlGender || (genderCookie && allowedGenders.includes(genderCookie) ? genderCookie : 'woman');
+
   const i18nResponse = handleI18nRouting(request);
 
-  // 4. Ensure gender cookie is set
+  // Update cookie if missing or stale
   if (!genderCookie) {
-    let initialGender = 'woman';
-    if (segments.length >= 2 && allowedGenders.includes(segments[1])) {
-      initialGender = segments[1];
-    }
-    i18nResponse.cookies.set('gender', cleanSlug(initialGender), { path: '/', maxAge: 60 * 60 * 24 * 365 });
-  } 
-  else if (segments.length >= 2 && allowedGenders.includes(segments[1]) && genderCookie !== segments[1]) {
-    i18nResponse.cookies.set('gender', cleanSlug(segments[1]), { path: '/', maxAge: 60 * 60 * 24 * 365 });
+    i18nResponse.cookies.set('gender', cleanSlug(effectiveGender), { path: '/', maxAge: 60 * 60 * 24 * 365 });
+  } else if (urlGender && genderCookie !== urlGender) {
+    i18nResponse.cookies.set('gender', cleanSlug(urlGender), { path: '/', maxAge: 60 * 60 * 24 * 365 });
+  }
+
+  // For non-redirect responses, forward x-gender as a request header so server
+  // components can read the correct gender immediately (without waiting for the
+  // cookie to round-trip to the browser and back).
+  const isRedirect = i18nResponse.status >= 300 && i18nResponse.status < 400;
+  if (!isRedirect) {
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-gender', effectiveGender);
+
+    const finalResponse = NextResponse.next({ request: { headers: requestHeaders } });
+
+    // Copy cookies from the i18n response
+    i18nResponse.cookies.getAll().forEach((cookie) => {
+      finalResponse.cookies.set(cookie.name, cookie.value, {
+        path: cookie.path,
+        maxAge: cookie.maxAge,
+        httpOnly: cookie.httpOnly,
+        secure: cookie.secure,
+        sameSite: cookie.sameSite as 'lax' | 'strict' | 'none' | undefined,
+      });
+    });
+
+    // Forward x-middleware-rewrite so next-intl locale routing still works
+    const rewrite = i18nResponse.headers.get('x-middleware-rewrite');
+    if (rewrite) finalResponse.headers.set('x-middleware-rewrite', rewrite);
+
+    return finalResponse;
   }
 
   return i18nResponse;

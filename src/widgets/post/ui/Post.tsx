@@ -50,7 +50,7 @@ export function Post(
                 src={urlFor(mainImage).width(400).height(400).url()}
                 width={400}
                 height={400}
-                alt=""
+                alt={title ?? ''}
                 className="rounded"
               />
             </figure>

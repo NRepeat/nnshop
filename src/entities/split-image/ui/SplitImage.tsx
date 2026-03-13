@@ -182,15 +182,12 @@ export function SplitImage(props: SplitGridProps) {
                     {localizedTitle}
                   </h2>
                 )}
-                {linkUrl?.handle && (
-                  <Button
-                    variant="link"
-                    className="h-auto p-0 text-base uppercase text-wrap tracking-widest group-hover:underline duration-300 decoration-transparent group-hover:decoration-primary transition-all group-hover:opacity-70 text-black border-black rounded"
-                  >
+                {linkUrl?.handle && localizedDescription && (
+                  <span className="h-auto p-0 text-base uppercase text-wrap tracking-widest group-hover:underline duration-300 decoration-transparent group-hover:decoration-primary transition-all group-hover:opacity-70 text-black border-black rounded">
                     <span className="max-w-full text-pretty">
                       {localizedDescription}
                     </span>
-                  </Button>
+                  </span>
                 )}
               </div>
             </div>

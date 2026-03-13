@@ -4,6 +4,7 @@ import { cn } from '@shared/lib/utils';
 import { usePathname, useRouter } from '@shared/i18n/navigation';
 import { genders } from '@shared/i18n/routing';
 import { useTransition, useState, useEffect } from 'react';
+import { detectGenderFromHandle } from '@entities/collection/lib/resolve-handle';
 
 export const NavButton = ({
   children,
@@ -37,10 +38,18 @@ export const NavButton = ({
 
     const segments = pathname.split('/').filter(Boolean);
     const currentHandle = segments[1];
-    const destination =
-      currentHandle && level2Map?.[currentHandle]
-        ? `/${slug}/${level2Map[currentHandle]}`
-        : `/${slug}`;
+
+    let destination = `/${slug}`;
+    if (currentHandle) {
+      const handleGender = detectGenderFromHandle(currentHandle);
+      if (handleGender === slug) {
+        // Handle already belongs to target gender — navigate directly
+        destination = `/${slug}/${currentHandle}`;
+      } else if (level2Map?.[currentHandle]) {
+        // Map to the equivalent collection for the target gender
+        destination = `/${slug}/${level2Map[currentHandle]}`;
+      }
+    }
 
     startTransition(() => {
       router.push(destination);

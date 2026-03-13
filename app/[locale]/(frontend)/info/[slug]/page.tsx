@@ -95,7 +95,7 @@ export default async function InfoPage({ params }: Props) {
   if (slug === 'contacts') {
     return (
       <div className="container my-10 min-h-screen">
-        <h1 className="sr-only">{pageTitle}</h1>
+        <h1 className="text-2xl font-bold mb-6">{pageTitle}</h1>
         <div className='w-full justify-center'>
         <ContactForm />
 

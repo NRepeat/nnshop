@@ -15,7 +15,7 @@ import { COLLECTION_IS_BRAND_QUERY } from '@shared/sanity/lib/query';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
-type Props = {
+export type Props = {
   params: Promise<{ locale: string; slug: string; gender: string }>;
   searchParams: Promise<SearchParams>;
 };
@@ -23,10 +23,12 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale, gender } = await params;
   const decodedSlug = decodeURIComponent(slug);
-  const resolvedHandle = resolveCollectionHandle(decodedSlug, gender);
 
   try {
-    const [{ collection }, sanityCollection] = await Promise.all([
+    const allSlugs = await getCollectionSlugs();
+    const resolvedHandle = resolveCollectionHandle(decodedSlug, gender, new Set(allSlugs));
+
+    const [{ collection, alternateHandle }, sanityCollection] = await Promise.all([
       getCollection({
         handle: resolvedHandle,
         locale,
@@ -39,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       }),
     ]);
 
-    if (!collection.collection) {
+    if (!collection.collection?.id) {
       return { title: 'Collection Not Found' };
     }
 
@@ -55,6 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       locale,
       slug,
       gender,
+      alternateHandle,
     );
   } catch {
     return { title: 'Collection Not Found' };

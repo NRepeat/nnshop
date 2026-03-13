@@ -4,9 +4,7 @@ import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.
 import { ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
 import { VariantInventory } from '@entities/product/api/getInventoryLevels';
 import { ScrollToTop } from '@shared/ui/ScrollToTop';
-import dynamic from 'next/dynamic';
-
-const ProductInfo = dynamic(() => import('./ProductInfo').then(mod => mod.ProductInfo));
+import { ProductInfo } from './ProductInfo';
 
 export function ProductViewProvider({
   product,

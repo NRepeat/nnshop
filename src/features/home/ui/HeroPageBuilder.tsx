@@ -208,8 +208,8 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
     return null;
   }
   return (
-    <main className="flex flex-col">
+    <div className="flex flex-col">
       {(content as PageContent[]).map((block, index) => renderBlock(block, locale, gender, index === 0))}
-    </main>
+    </div>
   );
 };
