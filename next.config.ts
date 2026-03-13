@@ -3,6 +3,7 @@ import { withPostHogConfig } from '@posthog/nextjs-config';
 import bundleAnalyzer from '@next/bundle-analyzer';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
+import { withBotId } from 'botid/next/config';
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -94,7 +95,7 @@ const nextConfig: NextConfig = {
 };
 const withNextIntl = createNextIntlPlugin('./src/shared/i18n/request.ts');
 
-export default withBundleAnalyzer(withPostHogConfig(withNextIntl(nextConfig), {
+export default withBotId(withBundleAnalyzer(withPostHogConfig(withNextIntl(nextConfig), {
   personalApiKey: process.env.POSTHOG_PERSONAL_API_KEY!,
   projectId: process.env.POSTHOG_PROJECT_ID!,
   host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
@@ -102,4 +103,4 @@ export default withBundleAnalyzer(withPostHogConfig(withNextIntl(nextConfig), {
     enabled: process.env.NODE_ENV === 'production',
     deleteAfterUpload: true,
   },
-}));
+})));
