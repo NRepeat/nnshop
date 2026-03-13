@@ -36,6 +36,7 @@ type HeroSliderProps = HeroSliderBase & {
     opacity?: number | null;
   } | null;
   compact?: boolean;
+  isFirst?: boolean;
 };
 
 type Slide = NonNullable<HeroSliderBase['slides']>[number] & {
@@ -139,9 +140,10 @@ type VideoHeroProps = {
   overlay?: { color?: { hex?: string | null } | null; opacity?: number | null } | null;
   href?: string | null;
   compact?: boolean;
+  isFirst?: boolean;
 };
 
-function VideoHero({ src, poster, textPosition, titleColor, descriptionColor, title, description, overlay, href, compact }: VideoHeroProps) {
+function VideoHero({ src, poster, textPosition, titleColor, descriptionColor, title, description, overlay, href, compact, isFirst }: VideoHeroProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -153,6 +155,7 @@ function VideoHero({ src, poster, textPosition, titleColor, descriptionColor, ti
 
   const pos = textPosition;
   const overlayBg = buildOverlayBg(overlay?.color, overlay?.opacity);
+  const Tag = isFirst ? 'h1' : 'h2';
   const inner = (
     <>
       <video
@@ -177,12 +180,12 @@ function VideoHero({ src, poster, textPosition, titleColor, descriptionColor, ti
           style={{ ...getPositionStyle(pos), ...getTextAlign(pos) }}
         >
           {title && (
-            <h1
+            <Tag
               className="text-3xl md:text-5xl font-bold tracking-tight drop-shadow-lg"
               style={{ color: titleColor ?? '#ffffff' }}
             >
               {title}
-            </h1>
+            </Tag>
           )}
           {description && (
             <p
@@ -219,7 +222,7 @@ function VideoHero({ src, poster, textPosition, titleColor, descriptionColor, ti
 
 // Image Slider
 
-function ImageSlider({ slides, gender, compact }: { slides: Slide[]; gender?: string; compact?: boolean }) {
+function ImageSlider({ slides, gender, compact, isFirst }: { slides: Slide[]; gender?: string; compact?: boolean; isFirst?: boolean }) {
   const resolveHref = (
     url?: string | null,
     collection?: { handle?: string | null } | null,
@@ -238,7 +241,7 @@ function ImageSlider({ slides, gender, compact }: { slides: Slide[]; gender?: st
     resolveHref(slide.link?.url, slide.collection) ?? '/';
 
   const renderOverlayTitle = (slide: Slide, index: number) => {
-    const Tag = index === 0 ? 'h1' : 'h2';
+    const Tag = (isFirst && index === 0) ? 'h1' : 'h2';
     return (
       <Tag
         className="text-3xl md:text-5xl lg:text-8xl font-bold tracking-tight drop-shadow-lg"
@@ -430,7 +433,7 @@ function ImageSlider({ slides, gender, compact }: { slides: Slide[]; gender?: st
 // HeroBanner
 
 export const HeroBanner = (props: HeroSliderProps) => {
-  const { slides, gender, videoFile, videoPoster, videoUrl, compact } = props;
+  const { slides, gender, videoFile, videoPoster, videoUrl, compact, isFirst } = props;
   const hasVideo = !!(videoFile || videoUrl);
 
   if (!hasVideo && (!slides || slides.length === 0)) return null;
@@ -448,6 +451,7 @@ export const HeroBanner = (props: HeroSliderProps) => {
           description={props.videoDescription}
           overlay={props.videoOverlay}
           compact={compact}
+          isFirst={isFirst}
           href={
             props.videoLinkUrl 
               ? sanitizeString(props.videoLinkUrl)
@@ -457,7 +461,7 @@ export const HeroBanner = (props: HeroSliderProps) => {
           }
         />
       ) : (
-        <ImageSlider slides={slides as Slide[]} gender={gender} compact={compact} />
+        <ImageSlider slides={slides as Slide[]} gender={gender} compact={compact} isFirst={isFirst} />
       )}
     </div>
   );

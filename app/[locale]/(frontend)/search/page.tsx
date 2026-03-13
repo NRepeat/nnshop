@@ -23,7 +23,7 @@ import { SearchIcon } from 'lucide-react';
 import { Skeleton } from '@shared/ui/skeleton';
 
 const PREDICTIVE_SEARCH_QUERY = `#graphql
-  query predictiveSearch(
+  query predictiveSearchQuery(
     $limit: Int!
     $limitScope: PredictiveSearchLimitScope!
     $query: String!

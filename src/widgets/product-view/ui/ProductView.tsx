@@ -20,6 +20,7 @@ import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 import Gallery from '@features/product/ui/Gallery';
 import { getReletedProducts } from '@entities/product/api/get-related-products';
+import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 
 const RelatedProducts = dynamic(() => import('./RelatedProducts').then(mod => mod.RelatedProducts));
 
@@ -32,15 +33,48 @@ export async function ProductView({
   locale,
   children,
   quiqView,
+  searchParams,
 }: {
   product: ShopifyProduct;
   locale: string;
   children: React.ReactNode;
   quiqView?: boolean;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const tHeader = await getTranslations({ locale, namespace: 'Header' });
   const cookieStore = await cookies();
   const gender = cookieStore.get('gender')?.value || 'woman';
+  const awaitedSearchParams = searchParams ? await searchParams : {};
+  const collectionFromUrl = awaitedSearchParams.collection as string | undefined;
+
+  const categoryName = product.productType;
+  const allCollections = product.collections?.edges?.map(e => e.node) || [];
+  
+  let selectedCollection = null;
+
+  if (collectionFromUrl) {
+    selectedCollection = allCollections.find(c => c.handle === collectionFromUrl);
+  }
+
+  if (!selectedCollection && categoryName) {
+    // Try to find a collection that matches the product category (productType)
+    selectedCollection = allCollections.find(c => 
+      c.title.toLowerCase() === categoryName.toLowerCase() ||
+      c.handle.toLowerCase().includes(categoryName.toLowerCase())
+    );
+  }
+
+  if (!selectedCollection) {
+    // Try to find a collection that matches current gender
+    const genderMarker = gender === 'man' ? 'cholov' : 'zhin';
+    selectedCollection = allCollections.find(c => 
+      c.handle.toLowerCase().includes(genderMarker) || 
+      c.title.toLowerCase().includes(gender === 'man' ? 'чолов' : 'жін')
+    );
+  }
+
+  const displayCategory = categoryName || selectedCollection?.title;
+  const collectionHandle = cleanSlug(selectedCollection?.handle);
 
   const breadcrumbItems = [
     { name: tHeader('nav.home'), url: `${BASE_URL}/${locale}` },
@@ -48,14 +82,23 @@ export async function ProductView({
       name: gender === 'man' ? tHeader('nav.man') : tHeader('nav.woman'),
       url: `${BASE_URL}/${locale}/${gender}`,
     },
-    ...(product.vendor
+    ...(displayCategory
       ? [
           {
-            name: product.vendor,
-            url: `${BASE_URL}/${locale}/brand/${vendorToHandle(product.vendor)}`,
+            name: displayCategory,
+            url: collectionHandle 
+              ? `${BASE_URL}/${locale}/${gender}/${collectionHandle}` 
+              : `${BASE_URL}/${locale}/search?q=${displayCategory}`,
           },
         ]
-      : []),
+      : product.vendor
+        ? [
+            {
+              name: product.vendor,
+              url: `${BASE_URL}/${locale}/brand/${vendorToHandle(product.vendor)}`,
+            },
+          ]
+        : []),
     {
       name: product.title,
       url: `${BASE_URL}/${locale}/product/${product.handle}`,
@@ -78,7 +121,16 @@ export async function ProductView({
               {gender === 'man' ? tHeader('nav.man') : tHeader('nav.woman')}
             </BreadcrumbLink>
           </BreadcrumbItem>
-          {product.vendor && (
+          {displayCategory ? (
+            <>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href={collectionHandle ? `/${gender}/${collectionHandle}` : `/search?q=${displayCategory}`}>
+                  {displayCategory}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            </>
+          ) : product.vendor ? (
             <>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
@@ -87,7 +139,7 @@ export async function ProductView({
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </>
-          )}
+          ) : null}
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>{product.title}</BreadcrumbPage>

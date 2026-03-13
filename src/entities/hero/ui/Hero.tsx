@@ -7,16 +7,17 @@ import { components } from '@/shared/sanity/components/portableText';
 type HeroProps = Extract<
   NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],
   { _type: 'hero' }
->;
+> & { isFirst?: boolean };
 
-export function Hero({ title, text, image }: HeroProps) {
+export function Hero({ title, text, image, isFirst }: HeroProps) {
+  const Tag = isFirst ? 'h1' : 'h2';
   return (
     <section className="isolate w-full aspect-[2/1] py-16 relative overflow-hidden">
       <div className="relative flex flex-col justify-center items-center gap-8 h-full z-20">
         {title ? (
-          <h1 className="text-2xl md:text-4xl lg:text-6xl font-semibold text-white text-pretty max-w-3xl">
+          <Tag className="text-2xl md:text-4xl lg:text-6xl font-semibold text-white text-pretty max-w-3xl">
             {title}
-          </h1>
+          </Tag>
         ) : null}
         <div className="prose-lg lg:prose-xl prose-invert flex items-center">
           {text ? <PortableText value={text} components={components} /> : null}

@@ -1,4 +1,4 @@
-const GENDERED_HANDLES = new Set([
+export const GENDERED_HANDLES = new Set([
   'ryukzaky-cholovichi',
   'sumky-cholovichi',
   'tufli-cholovichi',

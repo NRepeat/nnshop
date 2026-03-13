@@ -66,7 +66,7 @@ export const CollectionGrid = async ({
   ]);
 
   if (sanityCollection?.isBrand) {
-    redirect(`/${locale}/brand/${resolvedHandle}?_gender=${gender}`);
+    redirect(`/${locale}/brand/${resolvedHandle}`);
   }
 
   if (!currentData?.collection?.collection) {
@@ -74,6 +74,19 @@ export const CollectionGrid = async ({
   }
 
   const { collection, alternateHandle } = currentData;
+  const canonicalHandle = collection.collection?.handle;
+
+  // 1. If the handle in the URL is actually for the other locale (Shopify confirmed)
+  if (canonicalHandle && resolvedHandle === alternateHandle && resolvedHandle !== canonicalHandle) {
+    const targetLocale = locale === 'ru' ? 'uk' : 'ru';
+    redirect(`/${targetLocale}/${gender}/${resolvedHandle}`);
+  }
+
+  // 2. SEO REDIRECT: If the requested handle is not canonical for current locale (e.g. old handle)
+  if (canonicalHandle && resolvedHandle !== canonicalHandle) {
+    redirect(`/${locale}/${gender}/${canonicalHandle}`);
+  }
+
   const displayTitle =
     sanityCollection?.customTitle?.[locale as 'uk' | 'ru'] ||
     collection.collection?.title;

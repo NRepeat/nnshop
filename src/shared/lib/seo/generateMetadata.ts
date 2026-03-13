@@ -59,8 +59,26 @@ export function generateProductMetadata(
   slug: string
 ): Metadata {
   const isUk = locale === 'uk';
-  const titleParts = [product.productType, product.vendor, product.title].filter(Boolean);
-  const title = `${titleParts.join(' ')} | MioMio`;
+  
+  // Create a clean title without repeating words
+  // Example: if productType is "Босоніжки" and title is "Босоніжки Albano ...", we don't want to repeat "Босоніжки"
+  const type = product.productType || '';
+  const vendor = product.vendor || '';
+  const productTitle = product.title || '';
+  
+  let baseTitle = '';
+  if (productTitle.toLowerCase().includes(vendor.toLowerCase())) {
+    baseTitle = productTitle;
+  } else {
+    baseTitle = `${vendor} ${productTitle}`;
+  }
+
+  // Ensure productType is included if it's not already in the title
+  if (type && !baseTitle.toLowerCase().includes(type.toLowerCase())) {
+    baseTitle = `${type} ${baseTitle}`;
+  }
+
+  const title = `${baseTitle} | MioMio`;
   const description = isUk
     ? 'Фото, характеристики та доступні розміри в наявності. Зручне оформлення замовлення онлайн і доставка по Україні ✔️'
     : 'Фото, характеристики и доступные размеры в наличии. Удобное оформление заказа онлайн и доставка по Украине ✔️';

@@ -136,7 +136,7 @@ const GET_VENDORS_FOR_SITEMAP = `#graphql
 
 export async function getSitemapProducts(): Promise<SitemapProduct[]> {
   'use cache';
-  cacheLife('hours');
+  cacheLife('max');
   cacheTag('sitemap-products');
 
   const allProducts: SitemapProduct[] = [];
@@ -171,7 +171,7 @@ export async function getSitemapProducts(): Promise<SitemapProduct[]> {
 
 export async function getSitemapCategories(): Promise<SitemapCategory[]> {
   'use cache';
-  cacheLife('hours');
+  cacheLife('max');
   cacheTag('sitemap-categories');
 
   try {
@@ -197,7 +197,7 @@ export async function getSitemapCategories(): Promise<SitemapCategory[]> {
 
 export async function getSitemapBrands(): Promise<SitemapBrand[]> {
   'use cache';
-  cacheLife('hours');
+  cacheLife('max');
   cacheTag('sitemap-brands');
 
   const vendorSet = new Set<string>();
@@ -244,7 +244,7 @@ const POSTS_FOR_SITEMAP_QUERY = `
 
 export async function getSitemapPosts(): Promise<SitemapPost[]> {
   'use cache';
-  cacheLife('hours');
+  cacheLife('max');
   cacheTag('sitemap-posts');
   cacheTag('post');
 

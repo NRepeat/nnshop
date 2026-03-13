@@ -1156,5 +1156,11 @@ export const FOOTER_QUERY = defineQuery(`
 `);
 
 export const COLLECTION_IS_BRAND_QUERY = defineQuery(
-  `*[_type == "collection" && store.slug.current == $handle][0]{ isBrand, customTitle }`
+  `*[_type == "collection" && (store.slug.current == $handle || handles.uk == $handle || handles.ru == $handle)][0]{ 
+    isBrand, 
+    customTitle,
+    handles,
+    titles,
+    "handle": store.slug.current
+  }`
 );

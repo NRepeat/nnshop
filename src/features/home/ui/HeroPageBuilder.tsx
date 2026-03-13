@@ -49,14 +49,14 @@ const renderBlock = (
   block: PageContent,
   locale: Locale,
   gender: string,
+  isFirst: boolean = false,
 ): React.ReactNode => {
   switch (block._type) {
     case 'heroSlider': {
       const hero = block as any;
-      const videoSrc = hero.videoFile || hero.videoUrl;
       return (
         <Fragment key={block._key}>
-          <HeroBanner {...hero} gender={gender} />
+          <HeroBanner {...hero} gender={gender} isFirst={isFirst} />
         </Fragment>
       );
     }
@@ -111,7 +111,7 @@ const renderBlock = (
       );
 
     case 'hero':
-      return <Hero key={block._key} {...(block as any)} />;
+      return <Hero key={block._key} {...(block as any)} isFirst={isFirst} />;
 
     case 'faqs':
       return <FAQs key={block._key} locale={locale} {...(block as any)} />;
@@ -185,7 +185,7 @@ const renderBlock = (
       if (!Array.isArray(sharedContent)) return null;
       return (
         <Fragment key={(block as unknown as SharedSectionRefBlock)._key}>
-          {sharedContent.map((innerBlock) => renderBlock(innerBlock, locale, gender))}
+          {sharedContent.map((innerBlock, index) => renderBlock(innerBlock, locale, gender, isFirst && index === 0))}
         </Fragment>
       );
     }
@@ -209,7 +209,7 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
   }
   return (
     <main className="flex flex-col">
-      {(content as PageContent[]).map((block) => renderBlock(block, locale, gender))}
+      {(content as PageContent[]).map((block, index) => renderBlock(block, locale, gender, index === 0))}
     </main>
   );
 };

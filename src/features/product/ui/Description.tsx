@@ -23,7 +23,7 @@ const Description = async ({
       <div className="sticky top-24 md:max-w-xl ">
         <p className="tw:no-underline text-md">{product.vendor}</p>
         <div className="product__title mt-1">
-          <h1 className="text-2xl font-bold">{product.title}</h1>
+          <h1 className="text-2xl font-bold">{product.title}</h2>
         </div>
 
         <div id="price" role="status" className="mt-4">

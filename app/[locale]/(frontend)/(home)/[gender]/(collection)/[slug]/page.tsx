@@ -15,9 +15,15 @@ import { COLLECTION_IS_BRAND_QUERY } from '@shared/sanity/lib/query';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
+type Props = {
+  params: Promise<{ locale: string; slug: string; gender: string }>;
+  searchParams: Promise<SearchParams>;
+};
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale, gender } = await params;
-  const resolvedHandle = resolveCollectionHandle(slug, gender);
+  const decodedSlug = decodeURIComponent(slug);
+  const resolvedHandle = resolveCollectionHandle(decodedSlug, gender);
 
   try {
     const [{ collection }, sanityCollection] = await Promise.all([
@@ -72,11 +78,6 @@ export async function generateStaticParams() {
     return locales.map((locale) => ({ locale, slug: '' }));
   }
 }
-
-export type Props = {
-  params: Promise<{ locale: string; slug: string; gender: string }>;
-  searchParams: Promise<SearchParams>;
-};
 
 export default async function CollectionPage({ params, searchParams }: Props) {
   const { locale } = await params;

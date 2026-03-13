@@ -38,7 +38,9 @@ function groupBrandsByLetter(brands: string[]): Record<string, string[]> {
 
 const BrandsList = async ({ locale }: { locale: string }) => {
   const t = await getTranslations({ locale, namespace: 'BrandsPage' });
-  const brands = (await getAllBrands(locale)).map(decodeHtmlEntities);
+  const rawBrands = await getAllBrands(locale);
+  // Decode entities and then filter for unique values to avoid duplicate keys like "Kennel&Schmenger"
+  const brands = Array.from(new Set(rawBrands.map(decodeHtmlEntities)));
   const groupedBrands = groupBrandsByLetter(brands);
   const letters = Object.keys(groupedBrands).sort();
 

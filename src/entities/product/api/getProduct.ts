@@ -51,6 +51,16 @@ export const GET_PRODUCT_QUERY = `#graphql
       vendor
       productType
       
+      collections(first: 10) {
+        edges {
+          node {
+            id
+            title
+            handle
+          }
+        }
+      }
+
       priceRange {
         maxVariantPrice {
           amount
@@ -130,7 +140,7 @@ export const getProduct = async ({
   locale: string;
 }) => {
   'use cache';
-  cacheLife("default");
+  cacheLife('max');
   cacheTag(`product:${handle}`);
   cacheTag(handle);
   try {

@@ -16,6 +16,7 @@ import { NavigationContentLink } from './NavigationContentLink';
 import { NavDropdownContent } from './NavDropdownContent';
 import { stripGenderFromHandle } from '../utils/strip-gender-from-handle';
 import { Button } from '@shared/ui/button';
+import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 
 type NavImage = {
   _key?: string | null;
@@ -217,16 +218,17 @@ const Navigation = async ({
   const topBrands =
     brandsMenuItem?.items?.flatMap((sub) =>
       sub.items?.length > 0
-        ? sub.items.map((child) => ({ title: child.title, url: child.url }))
-        : [{ title: sub.title, url: sub.url }],
+        ? sub.items.map((child) => ({ title: child.title, url: cleanSlug(child.url) }))
+        : [{ title: sub.title, url: cleanSlug(sub.url) }],
     ) || [];
 
   const withGender = (url: string) => {
-    const stripped = stripGenderFromHandle(url);
-    if (stripped === `/${gender}`) return `/${gender}`;
-    return `/${gender}${stripped}`;
+    const stripped = stripGenderFromHandle(cleanSlug(url));
+    const path = stripped === `/${gender}` ? `/${gender}` : `/${gender}${stripped}`;
+    return cleanSlug(path);
   };
 
+  const seenUrls = new Set<string>();
   const menu = items.map((item, index) => {
     if (item.items.length > 0) {
       return (
@@ -266,44 +268,53 @@ const Navigation = async ({
                 (d) => d.menuIndex === subIndex,
               );
               const columns = sanityDropdown?.columns?.length
-                ? sanityDropdown.columns.map((col) => ({
-                    title: col.title,
-                    url: col.url ? withGender(`/${col.url}`) : null,
-                    items: (col.items ?? [])
-                      .filter(
-                        (item): item is NonNullable<SanityColumnItem> =>
-                          item != null,
-                      )
-                      .map((item) => ({
-                        title: item.title,
-                        url: withGender(`/${item.handle}`),
-                        collectionImageUrl:
-                          collectionImages[item.handle] ?? null,
-                        navTitleColor: item.navTitleColor ?? null,
-                      })),
-                    outletLink: col.outletLink?.label
-                      ? {
-                          label: col.outletLink.label,
-                          url: col.outletLink.collectionHandle
-                            ? withGender(`/${col.outletLink.collectionHandle}`)
-                            : (col.outletLink.url ?? '#'),
-                        }
-                      : null,
-                    actionButton: col.actionButton?.label
-                      ? {
-                          label: col.actionButton.label,
-                          url: col.actionButton.collectionHandle
-                            ? withGender(
-                                `/${col.actionButton.collectionHandle}`,
-                              )
-                            : col.actionButton.url
-                              ? col.actionButton.url
-                              : col.url
-                                ? withGender(`/${col.url}`)
-                                : withGender(subItem.url),
-                        }
-                      : null,
-                  }))
+                ? sanityDropdown.columns.map((col) => {
+                    const colUrl = col.url ? withGender(`/${col.url}`) : null;
+                    return {
+                      title: col.title,
+                      url: colUrl,
+                      items: (col.items ?? [])
+                        .filter(
+                          (item): item is NonNullable<SanityColumnItem> =>
+                            item != null,
+                        )
+                        .map((item) => {
+                          const itemUrl = withGender(`/${item.handle}`);
+                          const isDuplicate = seenUrls.has(itemUrl);
+                          seenUrls.add(itemUrl);
+                          return {
+                            title: item.title,
+                            url: itemUrl,
+                            isDuplicate,
+                            collectionImageUrl:
+                              collectionImages[item.handle] ?? null,
+                            navTitleColor: item.navTitleColor ?? null,
+                          };
+                        }),
+                      outletLink: col.outletLink?.label
+                        ? {
+                            label: col.outletLink.label,
+                            url: col.outletLink.collectionHandle
+                              ? withGender(`/${col.outletLink.collectionHandle}`)
+                              : (col.outletLink.url ?? '#'),
+                          }
+                        : null,
+                      actionButton: col.actionButton?.label
+                        ? {
+                            label: col.actionButton.label,
+                            url: col.actionButton.collectionHandle
+                              ? withGender(
+                                  `/${col.actionButton.collectionHandle}`,
+                                )
+                              : col.actionButton.url
+                                ? col.actionButton.url
+                                : col.url
+                                  ? withGender(`/${col.url}`)
+                                  : withGender(subItem.url),
+                          }
+                        : null,
+                    };
+                  })
                 : // Fallback: Shopify 4-level — level 3 = column, level 4 = items
                   // If level 3 has sub-items → treat as columns; otherwise flat single column
                   (() => {
@@ -317,13 +328,19 @@ const Navigation = async ({
                       return nonBrandsGroups.slice(0, 2).map((group) => ({
                         title: group.title,
                         url: withGender(group.url),
-                        items: group.items.map((child) => ({
-                          title: child.title,
-                          url: withGender(child.url),
-                          collectionImageUrl:
-                            collectionImages[child.url.replace(/^\//, '')] ??
-                            null,
-                        })),
+                        items: group.items.map((child) => {
+                          const itemUrl = withGender(child.url);
+                          const isDuplicate = seenUrls.has(itemUrl);
+                          seenUrls.add(itemUrl);
+                          return {
+                            title: child.title,
+                            url: itemUrl,
+                            isDuplicate,
+                            collectionImageUrl:
+                              collectionImages[child.url.replace(/^\//, '')] ??
+                              null,
+                          };
+                        }),
                       }));
                     }
                     // flat fallback (only 3 levels in Shopify)
@@ -331,13 +348,19 @@ const Navigation = async ({
                       {
                         title: subItem.title,
                         url: withGender(subItem.url),
-                        items: nonBrandsGroups.map((child) => ({
-                          title: child.title,
-                          url: withGender(child.url),
-                          collectionImageUrl:
-                            collectionImages[child.url.replace(/^\//, '')] ??
-                            null,
-                        })),
+                        items: nonBrandsGroups.map((child) => {
+                          const itemUrl = withGender(child.url);
+                          const isDuplicate = seenUrls.has(itemUrl);
+                          seenUrls.add(itemUrl);
+                          return {
+                            title: child.title,
+                            url: itemUrl,
+                            isDuplicate,
+                            collectionImageUrl:
+                              collectionImages[child.url.replace(/^\//, '')] ??
+                              null,
+                          };
+                        }),
                       },
                     ];
                   })();
@@ -408,7 +431,7 @@ const Navigation = async ({
                     >
                       <NavigationItemClient
                         className="w-full rounded px-0"
-                        href={`/brand${brand.url}?_gender=${gender}`}
+                        href={`/brand${brand.url}`}
                       >
                         <Button
                           variant="ghost"
@@ -435,7 +458,7 @@ const Navigation = async ({
                     >
                       <NavigationItemClient
                         className="w-full rounded px-0"
-                        href={`/brand${brand.url}?_gender=${gender}`}
+                        href={`/brand${brand.url}`}
                       >
                         <Button
                           variant="ghost"

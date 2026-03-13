@@ -19,6 +19,7 @@ import { ProductViewSkeleton } from '@widgets/product-view/ui/ProductViewSkeleto
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -41,14 +42,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function ProductPage({ params }: Props) {
+export default async function ProductPage({ params, searchParams }: Props) {
   const { slug, locale } = await params;
   const handle = decodeURIComponent(slug);
   setRequestLocale(locale);
 
   return (
     <Suspense fallback={<ProductViewSkeleton handle={handle} />}>
-      <ProductContent handle={handle} locale={locale} />
+      <ProductContent handle={handle} locale={locale} searchParams={searchParams} />
     </Suspense>
   );
 }
@@ -56,9 +57,11 @@ export default async function ProductPage({ params }: Props) {
 const ProductContent = async ({
   handle,
   locale,
+  searchParams,
 }: {
   handle: string;
   locale: string;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
   const { originProduct: product } = await getProduct({ handle, locale });
 
@@ -69,7 +72,7 @@ const ProductContent = async ({
   return (
     <>
       <JsonLd data={generateProductJsonLd(product, locale)} />
-      <ProductSessionView handle={handle} locale={locale}>
+      <ProductSessionView handle={handle} locale={locale} searchParams={searchParams}>
         <Suspense
           fallback={
             <Button

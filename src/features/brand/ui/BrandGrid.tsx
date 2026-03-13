@@ -45,7 +45,11 @@ export const BrandGrid = async ({
   const decodedSlug = decodeURIComponent(slug);
   setRequestLocale(locale);
 
-  const gender = awaitedSearchParams._gender as string | undefined;
+  const cookieStore = await headers();
+  const cookieHeader = cookieStore.get('cookie') || '';
+  const genderFromCookie = cookieHeader.includes('gender=man') ? 'man' : cookieHeader.includes('gender=woman') ? 'woman' : undefined;
+
+  const gender = (awaitedSearchParams._gender as string | undefined) || genderFromCookie;
   const searchParamsWithoutGender = Object.fromEntries(
     Object.entries(awaitedSearchParams).filter(([k]) => k !== '_gender'),
   );
