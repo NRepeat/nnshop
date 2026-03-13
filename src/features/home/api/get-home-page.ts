@@ -8,7 +8,6 @@ type RouteProps = {
 };
 
 export const getHomePage = async (params: RouteProps['params']) => {
-  
   const { locale } = params;
   const sanityLocale = await normalizeLocaleForSanity(locale);
   const page = await sanityFetch({

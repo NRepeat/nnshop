@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Jost } from 'next/font/google';
+import { Onest } from 'next/font/google';
 import '../../globals.css';
 import { Providers } from '@/app/providers';
 import { Header } from '@widgets/header/ui/Header';
@@ -12,12 +12,13 @@ import { VisualEditing } from 'next-sanity/visual-editing';
 import { draftMode } from 'next/headers';
 import { Suspense } from 'react';
 import { JsonLd } from '@shared/ui/JsonLd';
+import { ScrollDirectionProvider } from '@shared/ui/ScrollDirectionProvider';
 import { generateOrganizationJsonLd } from '@shared/lib/seo/jsonld';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-const jostSans = Jost({
+const jostSans = Onest({
   variable: '--font-jost-sans',
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext', 'cyrillic'],
   display: 'swap',
   fallback: [
     'system-ui',
@@ -43,8 +44,8 @@ export const metadata: Metadata = {
     type: 'website',
     siteName: 'Mio Mio',
     locale: 'uk_UA',
+    images: [{ url: `${process.env.BLOB_BASE_URL}/og-image.jpg`, width: 1200, height: 630 }],
   },
-  robots: 'noindex',
 };
 
 export const viewport: Viewport = {
@@ -52,6 +53,20 @@ export const viewport: Viewport = {
   initialScale: 1,
   themeColor: '#ffffff',
 };
+async function DraftModeTools() {
+  const { isEnabled } = await draftMode();
+  if (!isEnabled) return null;
+  return (
+    <>
+      <DisableDraftMode />
+      <VisualEditing />
+      <Suspense>
+        <SanityLive />
+      </Suspense>
+    </>
+  );
+}
+
 export async function generateStaticParams() {
   const params = [];
   for (const locale of locales) {
@@ -71,20 +86,22 @@ export default async function RootLayout(props: RootProps) {
   const { locale } = await params;
 
   setRequestLocale(locale);
+
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://cdn.shopify.com" />
+        <script src="https://cdn.pulse.is/livechat/loader.js" data-live-chat-id="6683a3f051e3db46980f8c09" async></script>
         <JsonLd data={generateOrganizationJsonLd()} />
         <meta
           name="google-site-verification"
           content="qD1Qgm9RZihEYdNNxa5cH_88cZEGi-B8-mQcGwJLrAo"
         />
       </head>
-      <body className={`${jostSans.variable} antialiased`}>
+      <body className={`${jostSans.variable} antialiased `}>
         <Providers>
+          <ScrollDirectionProvider>
           <Header locale={locale} />
-
           <main>{children}</main>
 
           {modal && <div id="modal-slot">{modal}</div>}
@@ -92,17 +109,12 @@ export default async function RootLayout(props: RootProps) {
           <Suspense>
             <Footer locale={locale} />
           </Suspense>
+          </ScrollDirectionProvider>
         </Providers>
       </body>
-      {(await draftMode()).isEnabled && (
-        <>
-          <DisableDraftMode />
-          <VisualEditing />
-          <Suspense>
-            <SanityLive />
-          </Suspense>
-        </>
-      )}
+      <Suspense>
+        <DraftModeTools />
+      </Suspense>
       <Analytics />
       <SpeedInsights />
     </html>

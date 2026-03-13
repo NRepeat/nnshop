@@ -2,7 +2,7 @@ import {
   Product as ShopifyProduct,
   ProductVariant,
 } from '@shared/lib/shopify/types/storefront.types';
-import getSymbolFromCurrency from 'currency-symbol-map';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 
 export const ProductPrice = ({
   product,
@@ -41,9 +41,7 @@ export const ProductPrice = ({
     finalPrice = baseAmount;
   }
 
-  const currency =
-    getSymbolFromCurrency(basePriceObj.currencyCode) ||
-    basePriceObj.currencyCode;
+  const currency = getCurrencySymbol(basePriceObj.currencyCode);
 
   return (
     <div className="flex flex-col gap-1">

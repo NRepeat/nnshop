@@ -4,11 +4,14 @@ import { Button } from '@shared/ui/button';
 import { SheetClose } from '@shared/ui/sheet';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@shared/i18n/navigation';
+import { usePostHog } from 'posthog-js/react';
 
 export const CreateOrderButton = () => {
   const t = useTranslations('Header.cart.drawer');
   const nav = useRouter();
+  const posthog = usePostHog();
   const handleCreateOrder = () => {
+    posthog?.capture('checkout_started');
     nav.push('/checkout/info');
   };
 
@@ -16,7 +19,7 @@ export const CreateOrderButton = () => {
     <div className="w-full flex flex-col justify-between px-4 py-4 space-y-4">
       <span>{t('tax_information')}</span>
       <SheetClose asChild>
-        <Button onClick={handleCreateOrder} className="w-full rounded-md">
+        <Button onClick={handleCreateOrder} className="w-full rounded">
           {t('checkout')}
         </Button>
       </SheetClose>

@@ -3,7 +3,6 @@ import { sanityFetch } from '@/shared/sanity/lib/client';
 import { SITE_LOGO_QUERY } from '@/shared/sanity/lib/query';
 import { urlFor } from '@/shared/sanity/lib/image';
 
-export const runtime = 'edge';
 export const alt = 'Mio Mio';
 export const size = {
   width: 1200,
@@ -11,92 +10,109 @@ export const size = {
 };
 export const contentType = 'image/png';
 
-async function loadGoogleFont(font: string, text: string) {
-  const url = `https://fonts.googleapis.com/css2?family=${font}&text=${encodeURIComponent(text)}`;
-  const css = await (await fetch(url)).text();
-  const resource = css.match(
-    /src: url\((.+)\) format\('(opentype|truetype)'\)/,
-  );
-
-  if (resource) {
-    const response = await fetch(resource[1]);
-    if (response.status == 200) {
-      return await response.arrayBuffer();
-    }
-  }
-
-  throw new Error('failed to load font data');
-}
+// Primary: oklch(21.64% 0.049 276.34) ≈ dark navy
+const PRIMARY = '#1E1C2A';
+// Destructive: oklch(0.577 0.245 27.325) ≈ red
+const RED = '#D94020';
+const WHITE = '#FFFFFF';
 
 export default async function Image() {
-  const logoData = await sanityFetch({
-    query: SITE_LOGO_QUERY,
-    revalidate: 3600, // Cache for 1 hour
-  });
-
-  const logoUrl = logoData?.logo?.url
-    ? urlFor(logoData.logo.url).width(150).height(150).url()
-    : null;
-
-  const title = 'Mio Mio - Інтернет-магазин взуття та аксесуарів';
-  const description =
-    'Широкий вибір стильного взуття для чоловіків та жінок';
+  let logoUrl: string | null = null;
+  try {
+    const logoData = await sanityFetch({
+      query: SITE_LOGO_QUERY,
+      revalidate: 3600,
+    });
+    logoUrl = logoData?.logo?.url ? urlFor(logoData.logo.url).width(120).height(120).url() : null;
+  } catch {
+    // fallback: render without logo
+  }
 
   return new ImageResponse(
     (
       <div
-        tw="flex w-full h-full relative items-center justify-center"
-        style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        }}
+        tw="flex w-full h-full"
+        style={{ background: PRIMARY, fontFamily: 'sans-serif' }}
       >
-        {/* Logo in top right corner */}
+        {/* Red accent bar — left edge */}
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: '8px',
+            height: '100%',
+            background: RED,
+          }}
+        />
+
+        {/* Main content */}
+        <div
+          tw="flex flex-col justify-center"
+          style={{ paddingLeft: '80px', paddingRight: '80px', flex: 1 }}
+        >
+          {/* Brand name */}
+          <div
+            style={{
+              fontSize: '100px',
+              fontWeight: 700,
+              color: WHITE,
+              letterSpacing: '-2px',
+              lineHeight: 1,
+              marginBottom: '24px',
+            }}
+          >
+            MIO MIO
+          </div>
+
+          {/* Red underline */}
+          <div
+            style={{
+              width: '80px',
+              height: '4px',
+              background: RED,
+              marginBottom: '28px',
+            }}
+          />
+
+          {/* Tagline */}
+          <div
+            style={{
+              fontSize: '28px',
+              color: 'rgba(255,255,255,0.7)',
+              fontWeight: 400,
+              letterSpacing: '0.5px',
+            }}
+          >
+            Інтернет-магазин взуття та аксесуарів
+          </div>
+        </div>
+
+        {/* Logo watermark — bottom right */}
         {logoUrl && (
           <div
-            tw="absolute flex items-center justify-center bg-white rounded-full shadow-lg"
             style={{
-              top: '32px',
-              right: '32px',
-              padding: '16px',
+              position: 'absolute',
+              bottom: '36px',
+              right: '48px',
+              opacity: 0.9,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={logoUrl}
-              alt="Logo"
+              alt="Mio Mio"
               width={80}
               height={80}
-              style={{
-                objectFit: 'contain',
-              }}
+              style={{ objectFit: 'contain' }}
             />
           </div>
         )}
-
-        {/* Content */}
-        <div tw="flex flex-col items-center justify-center px-16 text-center">
-          <h1
-            tw="text-8xl font-bold text-white mb-6"
-            style={{
-              textShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            }}
-          >
-            Mio Mio
-          </h1>
-          <p tw="text-3xl text-white opacity-90">{description}</p>
-        </div>
       </div>
     ),
-    {
-      ...size,
-      fonts: [
-        {
-          name: 'Inter',
-          data: await loadGoogleFont('Inter', title),
-          weight: 700,
-          style: 'normal',
-        },
-      ],
-    },
+    { ...size },
   );
 }

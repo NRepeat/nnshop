@@ -14,8 +14,8 @@
   },
   "Header": {
     "locale": {
-      "ru": "Російский",
-      "uk": "Український"
+      "ru": "Російська",
+      "uk": "Українська"
     },
     "nav": {
       "home": "Головна",
@@ -323,7 +323,7 @@
     "soldOut": "Продано",
     "outOfStock": "Немає в наявності",
     "addedToCart": "Товар додано в кошик!",
-    "variantNotSelected":"Оберіть розмір",
+    "variantNotSelected": "Оберіть розмір",
     "failedToAdd": "Не вдалося додати в кошик",
     "sessionCreationFailed": "Не вдалося створити сесію. Спробуйте ще раз.",
     "productNotAvailable": "Цей товар зараз недоступний",
@@ -362,6 +362,14 @@
     "elegantEaseDescription": "Натхнення для вашого основного гардеробу",
     "styleWith": "Може сподобатись",
     "atTheFitting": "На примірці",
+    "priceSubscribeButton": "Стежити за ціною",
+    "priceSubscribeTitle": "Стежити за зміною ціни",
+    "priceSubscribeDesc": "Ми повідомимо вас, якщо ціна на цей товар зміниться.",
+    "priceSubscribeEmailPlaceholder": "Ваш email",
+    "priceSubscribeSubmit": "Підписатися",
+    "priceSubscribing": "Підписуємось...",
+    "priceSubscribeSuccess": "Ви підписані на зміни ціни!",
+    "priceSubscribeError": "Не вдалося підписатися. Спробуйте ще раз.",
     "quickOrderDescription": "Введіть номер телефону і ми передзвонимо Вам для обговорення деталей замовлення",
     "selectSize": "Виберіть розмір",
     "contactInfo": "Контактна інформація",
@@ -380,7 +388,9 @@
     "sizeNotFound": "Не вдалося знайти обраний розмір",
     "productUnavailable": "Товар недоступний",
     "nameValidation": "Ім'я повинно містити не менше 2 символів.",
-    "phoneValidation": "Введіть коректний номер телефону."
+    "phoneValidation": "Введіть коректний номер телефону.",
+    "reservedSizeTitle": "Розмір в резерві",
+    "reservedSizeDescription": "Придбання товару можливо після зняття резерву 5-7 днів."
   },
   "CollectionPage": {
     "noProducts": "Нічого не знайдено",
@@ -394,7 +404,16 @@
       "clear": "Очистити",
       "show": "Показати",
       "hide": "Сховати",
-      "priceRange": "Ціна"
+      "priceRange": "Ціна",
+      "labels": {
+        "color": "Колір",
+        "size": "Розмір",
+        "gender": "Стать",
+        "category": "Категорія",
+        "brand": "Бренд",
+        "material": "Матеріал",
+        "pidkladka": "Підкладка"
+      }
     },
     "sort": {
       "sortBy": "Сортувати за",
@@ -468,6 +487,10 @@
     "novaPoshtaDelivery": "Швидка та надійна доставка",
     "ukrPoshta": "Укрпошта",
     "ukrPoshtaDelivery": "Традиційна поштова служба",
+    "selfPickup": "Самовивіз",
+    "selfPickupDelivery": "Забрати з магазину в Запоріжжі",
+    "selfPickupChoosePoint": "Оберіть точку самовивозу",
+    "selfPickupDescription": "Оберіть зручний магазин для самостійного отримання замовлення.",
     "departmentIdRequired": "Потрібен ID відділення",
     "departmentNameRequired": "Потрібна назва відділення",
     "fillAllFields": "Будь ласка, заповніть усі необхідні поля для обраного способу доставки",
@@ -527,7 +550,7 @@
     "shipping": "Доставка",
     "tax": "Податок",
     "items": "товарів",
-    "calculated_next": "Розраховується далі",
+    "calculated_next": "20грн +2% від вартості товару",
     "size_label": "Розмір",
     "quantity_label": "Кількість"
   },
@@ -536,7 +559,8 @@
     "order_id": "Ваш номер замовлення:",
     "order_confirmation": "Підтвердження замовлення",
     "order_confirmation_text": "Ви незабаром отримаєте електронний лист з деталями вашого замовлення.",
-    "continue_shopping": "Продовжити покупки"
+    "continue_shopping": "Продовжити покупки",
+    "total": "Всього"
   },
   "CheckoutSteps": {
     "info": "Контактна інформація",
@@ -550,7 +574,24 @@
     "payment_returns": "Оплата і повернення",
     "public_offer_agreement": "Договір публічної оферти",
     "privacy_policy": "Конфіденційність",
-    "info_column_title": "Інформація"
+    "info_column_title": "Інформація",
+    "categories_column_title": "Категорії",
+    "working_hours_title": "Працюємо",
+    "subscribe_title": "Підписатись на розсилку",
+    "subscribe_placeholder": "Ваш e-mail",
+    "subscribe_button": "Підписатись",
+    "subscribe_success": "Дякуємо! Ви підписані.",
+    "working_hours": "з 10:00 до 19:00, сб-нд до 17:00",
+    "phone1": "097-217-92-92",
+    "phone2": "066-217-92-92",
+    "email": "info@miomio.com.ua",
+    "copyright": "Mio Mio © 2026",
+    "category_woman": "Жінкам",
+    "category_man": "Чоловікам",
+    "category_shoes": "Взуття",
+    "category_clothes": "Одяг",
+    "category_accessories": "Аксесуари",
+    "category_brands": "Бренди"
   },
   "AccountButton": {
     "myAccount": "Мій кабінет",
@@ -558,7 +599,10 @@
     "orders": "Замовлення",
     "favorites": "Обране",
     "settings": "Налаштування",
-    "signOut": "Вийти"
+    "signOut": "Вийти",
+    "signOutConfirmTitle": "Вийти з акаунту?",
+    "signOutConfirmDescription": "Ви впевнені, що хочете вийти з акаунту?",
+    "cancel": "Скасувати"
   },
   "OrderPage": {
     "title": "Мої замовлення",
@@ -573,8 +617,19 @@
     "status": {
       "fulfilled": "Виконано",
       "unfulfilled": "В обробці",
+      "inProgress": "Відправлено",
       "onHold": "Призупинено",
-      "partiallyFulfilled": "Частково виконано"
+      "partiallyFulfilled": "Частково виконано",
+      "cancelled": "Скасовано"
+    },
+    "financialStatus": {
+      "PAID": "Оплачено",
+      "PENDING": "Очікує оплати",
+      "REFUNDED": "Повернено",
+      "PARTIALLY_REFUNDED": "Частково повернено",
+      "VOIDED": "Скасовано",
+      "AUTHORIZED": "Авторизовано",
+      "PARTIALLY_PAID": "Частково оплачено"
     },
     "timeline": {
       "ordered": "Замовлено",
@@ -677,5 +732,35 @@
     "code_applied": "Промокод застосовано",
     "order_note": "Примітка до замовлення",
     "order_note_placeholder": "Введіть примітку до замовлення"
+  },
+  "RecentlyViewed": {
+    "title": "Нещодавно переглянуті"
+  },
+  "Newsletter": {
+    "heading": "Приєднуйтесь до нас і отримайте доступ до закритих розпродажів",
+    "forHer": "Для неї",
+    "forHim": "Для нього",
+    "emailPlaceholder": "Ваш email",
+    "submit": "Підписатися",
+    "success": "Дякуємо! Ви підписані",
+    "emailError": "Введіть коректний email"
+  },
+  "ContactForm": {
+    "name": "Ім'я",
+    "namePlaceholder": "Ваше ім'я",
+    "nameRequired": "Введіть ваше ім'я",
+    "email": "Email",
+    "emailPlaceholder": "your@email.com",
+    "emailRequired": "Введіть email",
+    "emailInvalid": "Введіть коректний email",
+    "phone": "Телефон (необов'язково)",
+    "phonePlaceholder": "+380...",
+    "message": "Повідомлення",
+    "messagePlaceholder": "Ваше запитання або повідомлення...",
+    "messageRequired": "Введіть повідомлення",
+    "send": "Надіслати",
+    "sending": "Надсилається...",
+    "successMessage": "Дякуємо! Ваше повідомлення надіслано.",
+    "errorMessage": "Щось пішло не так. Спробуйте ще раз."
   }
 }

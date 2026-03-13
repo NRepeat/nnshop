@@ -4,7 +4,7 @@ import { Card, CardContent } from '@shared/ui/card';
 import Image from 'next/image';
 import { Link } from '@shared/i18n/navigation';
 import { RemoveItemButton } from '@features/header/cart/ui/RemoveItemButton';
-import getSymbolFromCurrency from 'currency-symbol-map';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { cn } from '@shared/lib/utils';
 import { useTranslations } from 'next-intl';
 
@@ -14,6 +14,7 @@ type CartItemProps = {
     totalPrice: string;
     quantity: number;
     price: string;
+    compareAtPrice?: string | null;
     size: string;
     color: string;
     image: string;
@@ -33,11 +34,13 @@ export const CartItem = ({
 }: CartItemProps) => {
   const t = useTranslations('Header.cart.drawer');
   const sale = Number(product.sale);
-  const originalPrice = Number(product.price); // This is the original price from variant
-  const symbol = getSymbolFromCurrency(currencySymbol);
+  const originalPrice = Number(product.price);
+  const compareAtPrice = product.compareAtPrice ? Number(product.compareAtPrice) : null;
+  const symbol = getCurrencySymbol(currencySymbol);
 
-  // Calculate discounted price
+  // znizka discount takes priority; fallback to Shopify compareAtPrice
   const discountedPrice = sale > 0 ? originalPrice * (1 - sale / 100) : originalPrice;
+  const showCompareAt = sale === 0 && compareAtPrice && compareAtPrice > originalPrice;
 
   return (
     <Card className="overflow-hidden">
@@ -79,21 +82,27 @@ export const CartItem = ({
                 {sale > 0 ? (
                   <div className="flex items-center gap-2">
                     <span className="line-through text-muted-foreground">
-                      {originalPrice.toFixed(0)}
-                      {symbol}
+                      {originalPrice.toFixed(0)}{symbol}
                     </span>
                     <span className="text-red-500 font-medium">
-                      {discountedPrice.toFixed(0)}
-                      {symbol}
+                      {discountedPrice.toFixed(0)}{symbol}
                     </span>
                     <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded">
                       -{sale}%
                     </span>
                   </div>
+                ) : showCompareAt ? (
+                  <div className="flex items-center gap-2">
+                    <span className="line-through text-muted-foreground">
+                      {compareAtPrice!.toFixed(0)}{symbol}
+                    </span>
+                    <span className="text-red-500 font-medium">
+                      {originalPrice.toFixed(0)}{symbol}
+                    </span>
+                  </div>
                 ) : (
                   <span className="font-medium">
-                    {originalPrice.toFixed(0)}
-                    {symbol}
+                    {originalPrice.toFixed(0)}{symbol}
                   </span>
                 )}
               </div>

@@ -21,73 +21,25 @@ import type { Product } from '@shared/lib/shopify/types/storefront.types';
  */
 type SizeChartCategory = 'shoes' | 'clothing';
 
-const PRODUCT_TYPE_MAP: Record<string, SizeChartCategory> = {
-  // ── Shoes — Ukrainian ─────────────────────────────────────
-  взуття: 'shoes',
-  'кросівки та кеди': 'shoes',
-  черевики: 'shoes',
-  'черевики та ботильйони': 'shoes',
-  туфлі: 'shoes',
-  мокасини: 'shoes',
-  сандалії: 'shoes',
-  босоніжки: 'shoes',
-  'сабо та мюлі': 'shoes',
-  'балетки та мокасини': 'shoes',
-  "шльопанці та в'єтнамки": 'shoes',
-  "чоловіче взуття":'shoes',
-
-  // ── Shoes — Russian ───────────────────────────────────────
-  обувь: 'shoes',
-  'кроссовки и кеды': 'shoes',
-  ботинки: 'shoes',
-  'ботинки и ботильоны': 'shoes',
-  туфли: 'shoes',
-  мокасины: 'shoes',
-  сандалии: 'shoes',
-  босоножки: 'shoes',
-  'сабо и мюли': 'shoes',
-  'балетки и мокасины': 'shoes',
-  'шлепанцы и вьетнамки': 'shoes',
-
-  // ── Clothing — Ukrainian ──────────────────────────────────
-  одяг: 'clothing',
-  'футболки та поло': 'clothing',
-  'спортивні костюми': 'clothing',
-  шорти: 'clothing',
-  'штани та брюки': 'clothing',
-  сорочки: 'clothing',
-  'світшоти та кофти': 'clothing',
-  'светри та джемпери': 'clothing',
-  джинси: 'clothing',
-  піджаки: 'clothing',
-  'верхній одяг': 'clothing',
-  'блузи та сорочки': 'clothing',
-  спідниці: 'clothing',
-  'сукні та сарафани': 'clothing',
-
-  // ── Clothing — Russian ────────────────────────────────────
-  одежда: 'clothing',
-  'футболки и поло': 'clothing',
-  'спортивные костюмы': 'clothing',
-  шорты: 'clothing',
-  'брюки и брюки': 'clothing',
-  рубашки: 'clothing',
-  'свитшоты и кофты': 'clothing',
-  'свитера и джемпера': 'clothing',
-  джинсы: 'clothing',
-  пиджаки: 'clothing',
-  'верхняя одежда': 'clothing',
-  'блузы и рубашки': 'clothing',
-  юбки: 'clothing',
-  'платья и сарафаны': 'clothing',
-
-
-};
+const SHOE_KEYWORDS = [
+  // Ukrainian
+  'взуття', 'кросівк', 'кед', 'черевик', 'ботильйон', 'туфл', 'мокасин',
+  'сандал', 'босоніж', 'сабо', 'мюл', 'балетк', 'шльопанц', "в'єтнамк",
+  'лофер', 'чобот', 'угг', 'сліпон',
+  // Russian
+  'обувь', 'кроссовк', 'кед', 'ботинк', 'ботильон', 'туфл', 'мокасин',
+  'сандал', 'босонож', 'сабо', 'мюл', 'балетк', 'шлепанц', 'вьетнамк',
+  'лофер', 'сапог', 'угг', 'слипон',
+  // English
+  'shoe', 'sneaker', 'boot', 'sandal', 'loafer', 'mule', 'slipper',
+  'pump', 'flat', 'moccasin', 'clog',
+];
 
 function getSizeChartCategory(productType?: string): SizeChartCategory {
   if (!productType) return 'clothing';
   const normalized = productType.toLowerCase().trim();
-  return PRODUCT_TYPE_MAP[normalized] ?? 'clothing';
+  const isShoes = SHOE_KEYWORDS.some((kw) => normalized.includes(kw));
+  return isShoes ? 'shoes' : 'clothing';
 }
 
 const ShoesSizeChart = ({ t }: { t: (key: string) => string }) => (
@@ -231,7 +183,6 @@ export const SizeChartDialog = ({
 }: {
   productType?: Product['productType'];
 }) => {
-  console.log(productType, 'productType');
   const t = useTranslations('SizeChartDialog');
   const tProduct = useTranslations('ProductPage');
   const category = getSizeChartCategory(productType);

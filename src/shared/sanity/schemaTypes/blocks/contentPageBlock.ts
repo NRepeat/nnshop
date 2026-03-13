@@ -7,7 +7,7 @@ export const contentPageBlock = defineType({
   fields: [
     defineField({
       name: 'body',
-      type: 'localizedBlockContent',
+      type: 'blockContent',
       title: 'Body',
     }),
   ],

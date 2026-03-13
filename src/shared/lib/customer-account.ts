@@ -45,7 +45,6 @@ export const getUserInfo = async (tokens: {
           userData.email_verified || userData.emailVerified || true,
       };
 
-      console.log('mapped userData', mappedUserData);
       return mappedUserData;
     }
 

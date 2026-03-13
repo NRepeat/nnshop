@@ -42,19 +42,21 @@ export function Post(
         <Title>{title}</Title>
         <Author author={author} />
       </header>
-      {mainImage ? (
-        <figure className="lg:col-span-4 flex flex-col gap-2 items-start">
-          <Image
-            src={urlFor(mainImage).width(400).height(400).url()}
-            width={400}
-            height={400}
-            alt=""
-          />
-        </figure>
-      ) : null}
       {body ? (
-        <div className="lg:col-span-7 lg:col-start-6 prose lg:prose-lg">
+        <div className="lg:col-span-12 prose lg:prose-lg max-w-none">
+          {mainImage && (
+            <figure className="float-left mr-8 mb-4 mt-8 not-prose w-[340px] lg:w-[400px]">
+              <Image
+                src={urlFor(mainImage).width(400).height(400).url()}
+                width={400}
+                height={400}
+                alt=""
+                className="rounded"
+              />
+            </figure>
+          )}
           <PortableText value={body} components={components} />
+          <div className="clear-both" />
           <RelatedPosts
             relatedPosts={relatedPosts}
             documentId={_id}

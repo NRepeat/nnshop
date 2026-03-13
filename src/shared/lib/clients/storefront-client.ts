@@ -67,9 +67,6 @@ export class StorefrontClient implements ShopifyClient {
       }
 
       const delay = this.retryDelay * (this.maxRetries - retries + 1);
-      console.log(
-        `Retrying request after ${delay}ms. Retries left: ${retries - 1}`,
-      );
       await new Promise((resolve) => setTimeout(resolve, delay));
       return this.retryWithBackoff(fn, retries - 1);
     }
@@ -140,7 +137,7 @@ export class StorefrontClient implements ShopifyClient {
     variables,
     language,
     signal,
-    cache = 'force-cache',
+    cache = 'no-store',
     revalidate,
     tags,
   }: {

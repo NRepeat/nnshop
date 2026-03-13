@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@shared/i18n/navigation';
 import { Card, CardContent, CardHeader } from '@shared/ui/card';
 import { OrderStatusBadge } from './OrderStatusBadge';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 
 type LineItem = {
   title: string;
@@ -17,8 +18,9 @@ type OrderCardProps = {
   order: {
     id: string;
     name: string;
-    createdAt: string;
-    displayFulfillmentStatus: string;
+    createdAt?: string;
+    cancelledAt?: string | null;
+    fulfillmentStatus: string;
     totalPriceSet: {
       shopMoney: {
         amount: string;
@@ -74,14 +76,14 @@ export const OrderCard = ({ order }: OrderCardProps) => {
 
   return (
     <Link href={`/orders/${numericId}`}>
-      <Card className="h-full transition-all hover:shadow-md hover:border-primary/50 cursor-pointer">
-        <CardHeader className="pb-2">
+      <Card className="group h-full transition-all hover:shadow-md hover:border-primary/50 cursor-pointer rounded p-4">
+        <CardHeader className="pb-2 px-0">
           <div className="flex items-center justify-between gap-2">
             <span className="font-semibold text-lg">{order.name}</span>
-            <OrderStatusBadge status={order.displayFulfillmentStatus} />
+            <OrderStatusBadge status={order.fulfillmentStatus} />
           </div>
           <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>{new Date(order.createdAt).toLocaleDateString()}</span>
+            <span>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : ''}</span>
             <div className="flex flex-col items-end gap-0.5">
               {hasDiscount && order.subtotalPriceSet ? (
                 <>
@@ -97,7 +99,7 @@ export const OrderCard = ({ order }: OrderCardProps) => {
               ) : (
                 <span className="font-medium text-foreground">
                   {Math.round(Number(order.totalPriceSet.shopMoney.amount))}{' '}
-                  {order.totalPriceSet.shopMoney.currencyCode}
+                  {getCurrencySymbol(order.totalPriceSet.shopMoney.currencyCode)}
                 </span>
               )}
             </div>
@@ -109,13 +111,13 @@ export const OrderCard = ({ order }: OrderCardProps) => {
             </div>
           )}
         </CardHeader>
-        <CardContent>
+        <CardContent className='px-0'>
           {lineItems.length > 0 && (
             <div className="flex gap-2 mt-2">
               {lineItems.map(({ node: item }, index) => (
                 <div
-                  key={index}
-                  className="relative w-14 h-14 rounded-md overflow-hidden bg-muted"
+                  key={item.image?.url ?? `item-${index}`}
+                  className="relative w-14 h-14 rounded overflow-hidden bg-muted"
                 >
                   {item.image?.url ? (
                     <Image
@@ -133,13 +135,13 @@ export const OrderCard = ({ order }: OrderCardProps) => {
                 </div>
               ))}
               {hasMoreItems && (
-                <div className="w-14 h-14 rounded-md bg-muted flex items-center justify-center text-sm text-muted-foreground">
+                <div className="w-14 h-14 rounded bg-muted flex items-center justify-center text-sm text-muted-foreground">
                   +{(order.lineItems?.edges.length || 0) - 4}
                 </div>
               )}
             </div>
           )}
-          <div className="mt-3 text-sm text-primary hover:border-b hover:border-primary w-fit transition-colors">
+          <div className="mt-3 text-sm text-primary group-hover:underline  duration-300 decoration-transparent group-hover:decoration-primary  transition-all w-fit ">
             {t('viewDetails')} →
           </div>
         </CardContent>

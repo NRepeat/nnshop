@@ -44,3 +44,5 @@ next-env.d.ts
 # .husky
 /generated/prisma
 .env*.local
+.claude
+.env.local

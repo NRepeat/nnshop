@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useReducer, memo } from 'react';
+import { toast } from 'sonner';
 import { toggleFavoriteProduct } from '@features/product/api/toggle-favorite';
-import { useRouter } from '@shared/i18n/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@shared/ui/button';
 import { Heart } from 'lucide-react';
 import { cn } from '@shared/lib/utils';
 import { useSession } from '@features/auth/lib/client';
-import { useLocale } from 'next-intl';
 
 export const FavSession = memo(({
   productId,
@@ -20,18 +20,25 @@ export const FavSession = memo(({
 }) => {
   
   const router = useRouter();
+  const params = useParams();
+  const locale = (params?.locale as string) || 'uk';
   const [isFav, setIsFav] = useState(fav);
   const [isProcessing, setIsProcessing] = useState(false);
   const [, forceUpdate] = useReducer(x => x + 1, 0);
-  const locale = useLocale();
   const session = useSession();
 
   const handleToggle = async () => {
     if (isProcessing) return;
-    
+
+    const user = session.data?.user as (NonNullable<typeof session.data>['user'] & { isAnonymous?: boolean }) | undefined;
+    if (!user || user.isAnonymous) {
+      router.push(`/${locale}/auth/sign-in`);
+      return;
+    }
+
     const previousValue = isFav;
     const nextValue = !isFav;
-    
+
     setIsProcessing(true);
     setIsFav(nextValue);
 
@@ -42,19 +49,21 @@ export const FavSession = memo(({
         locale,
         handle,
       );
-      
+
       if (!result.success) {
         setIsFav(previousValue);
         if (result.error === 'AUTH_REQUIRED') {
-          router.push(`/auth/sign-in`, { scroll: false });
+          router.push(`/${locale}/auth/sign-in`);
+        } else {
+          toast("Couldn't save favorite. Try again.");
         }
       } else {
         setIsFav(result.isFavorited);
         router.refresh();
       }
-    } catch (err) {
+    } catch {
       setIsFav(previousValue);
-      console.error('Favorite toggle error:', err);
+      toast("Couldn't save favorite. Try again.");
     } finally {
       setIsProcessing(false);
       forceUpdate();
@@ -71,9 +80,10 @@ export const FavSession = memo(({
       }}
       variant="ghost"
       size="icon"
+      aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
       disabled={isProcessing}
       className={cn(
-        'relative z-20 group hover:bg-transparent transition-opacity hover:[&>svg]:stroke-[#e31e24]',
+        'relative z-20 group hover:bg-transparent transition-opacity hover:[&>svg]:stroke-[#e31e24] h-fit w-fit',
         isProcessing && 'opacity-70 cursor-not-allowed',
       )}
     >

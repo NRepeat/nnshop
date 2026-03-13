@@ -12,7 +12,7 @@ export default async function ContactInfo({ locale }: { locale: string }) {
   const contactInfo = await getContactInfo(session);
   const user = await getUser();
   return (
-    <div className="space-y-6 ">
+    <div className="space-y-6 flex flex-col">
       <div className="flex  gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">

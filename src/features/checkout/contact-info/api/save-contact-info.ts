@@ -1,8 +1,10 @@
 'use server';
 import { auth } from '@features/auth/lib/auth';
-import { contactInfoSchema } from '@features/checkout/schema/contactInfoSchema';
+import { contactInfoSchema, formatPhoneForShopify } from '@features/checkout/schema/contactInfoSchema';
+import { updateCartBuyerIdentity } from '@entities/cart/api/shopify-cart-buyer-identity-update';
 import { prisma } from '@shared/lib/prisma';
 import { headers } from 'next/headers';
+import { captureServerError } from '@shared/lib/posthog/posthog-server';
 import z from 'zod';
 
 const saveContactInfo = async (data: z.infer<typeof contactInfoSchema>) => {
@@ -49,8 +51,28 @@ const saveContactInfo = async (data: z.infer<typeof contactInfoSchema>) => {
         },
       });
     });
+    // Update Shopify cart buyer identity so tax/shipping calculations know who is checking out
+    const cartRecord = await prisma.cart.findFirst({
+      where: { userId: session.user.id, completed: false },
+    });
+    if (cartRecord) {
+      const formattedPhone = formatPhoneForShopify(data.phone, data.countryCode);
+      await updateCartBuyerIdentity(cartRecord.cartToken, {
+        email: data.email,
+        phone: formattedPhone,
+        countryCode: data.countryCode,
+      });
+    }
+
     return transaction;
   } catch (e) {
+    const session = await auth.api.getSession({ headers: await headers() });
+    await captureServerError(e, {
+      service: 'checkout',
+      action: 'save_contact_info',
+      userId: session?.user?.id,
+      extra: { email: data.email },
+    });
     throw new Error(String(e));
   }
 };

@@ -1,7 +1,7 @@
 import { AnnouncementBar } from '@entities/announcement-bar/announcement-bar';
 import {
   CurrentNavigationSession,
-  CurrentNavigationSessionSkilet,
+  CurrentNavigationSessionSkeleton,
 } from '@features/header/navigation/ui/Navigation';
 import { HeaderContent } from '@features/header/ui/HeaderContent';
 import { HeaderContentSkeleton } from '@features/header/ui/HeaderContentSkeleton';
@@ -16,6 +16,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { StickyHeader } from './StickyHeader';
 
 export type HeaderBarProps = Extract<
   NonNullable<HEADER_QUERYResult>['header'],
@@ -34,13 +35,11 @@ export const Header = async ({ locale }: { locale: string }) => {
     <>
       <Suspense
         fallback={
-          <>
-            <div className="w-full bg-foreground py-0.5 h-[50px]">
-              <div className="w-full  justify-center bg-foreground text-background grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 container ">
-                <div className="px-2 md:px-5 items-center  gap-2 w-full justify-start  flex h-full "></div>
-              </div>
+          <div className="w-full bg-foreground py-0.5 h-[50px]">
+            <div className="w-full  justify-center bg-foreground text-background grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 container ">
+              <div className="px-2 md:px-5 items-center  gap-2 w-full justify-start  flex h-full "></div>
             </div>
-          </>
+          </div>
         }
       >
         {headerData?.infoBar && headerData?.header && (
@@ -52,13 +51,12 @@ export const Header = async ({ locale }: { locale: string }) => {
           />
         )}
       </Suspense>
-
-      <header className="sticky top-0 z-30 bg-background md:h-fit flex flex-col items-center">
+      <StickyHeader>
         <div className="container w-full">
           <div className="w-full font-sans text-foreground grid grid-cols-3 text-base py-3">
             <Suspense fallback={<HeaderContentSkeleton />}>
               {headerData?.header && (
-                <HeaderContent locale={locale} {...headerData?.header} />
+                <HeaderContent locale={locale} {...headerData?.header} navDropdowns={headerData?.navDropdowns} />
               )}
             </Suspense>
             <div className="flex items-center justify-center">
@@ -88,7 +86,6 @@ export const Header = async ({ locale }: { locale: string }) => {
                 )}
               </Suspense>
             </div>
-
             <HeaderOptions locale={locale} />
           </div>
           {headerData?.header?.mainCategory && (
@@ -97,16 +94,17 @@ export const Header = async ({ locale }: { locale: string }) => {
             </div>
           )}
         </div>
-
         <div className="hidden md:block w-full">
-          <Suspense fallback={<CurrentNavigationSessionSkilet />}>
+          <Suspense fallback={<CurrentNavigationSessionSkeleton />}>
             <CurrentNavigationSession
               locale={locale}
-              brandsNavigation={headerData?.brandsNavigation}
+              navImages={headerData?.navImages}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              navDropdowns={headerData?.navDropdowns as any}
             />
           </Suspense>
         </div>
-      </header>
+      </StickyHeader>
     </>
   );
 };

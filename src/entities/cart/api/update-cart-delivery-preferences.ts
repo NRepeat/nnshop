@@ -8,6 +8,7 @@ import { revalidateTag } from 'next/cache';
 import { headers } from 'next/headers';
 import { DeliveryInfo } from '@features/checkout/delivery/model/deliverySchema';
 import { ContactInformation } from '~/generated/prisma/client';
+import { getPickupPoint } from '@features/checkout/delivery/lib/pickup-points';
 
 const CART_DELIVERY_ADDRESSES_ADD_MUTATION = `
   #graphql
@@ -58,9 +59,6 @@ export async function updateCartDeliveryPreferences(
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
-      console.warn(
-        'updateCartDeliveryPreferences: Session not found, throwing error.',
-      );
       throw new Error('Session not found');
     }
     const sessionCart = await prisma.cart.findFirst({
@@ -70,11 +68,6 @@ export async function updateCartDeliveryPreferences(
       },
     });
     if (!sessionCart) {
-      console.warn(
-        'updateCartDeliveryPreferences: Cart not found for userId:',
-        session.user.id,
-        ', throwing error.',
-      );
       throw new Error('Cart not found');
     }
 
@@ -99,10 +92,6 @@ export async function updateCartDeliveryPreferences(
         address2: fullAddress || undefined,
       };
 
-      console.log(
-        'updateCartDeliveryPreferences: Constructed deliveryAddressInput for Nova Poshta:',
-        JSON.stringify(deliveryAddressInput),
-      );
     } else if (deliveryInfo.deliveryMethod === 'ukrPoshta') {
       deliveryAddressInput = {
         address1: deliveryInfo.address || '',
@@ -114,15 +103,20 @@ export async function updateCartDeliveryPreferences(
         zip: deliveryInfo.postalCode || '',
         address2: deliveryInfo.apartment || undefined,
       };
-      console.log(
-        'updateCartDeliveryPreferences: Constructed deliveryAddressInput for UkrPoshta:',
-        JSON.stringify(deliveryAddressInput),
-      );
+    } else if (deliveryInfo.deliveryMethod === 'selfPickup') {
+      const point = deliveryInfo.selfPickupPoint
+        ? getPickupPoint(deliveryInfo.selfPickupPoint)
+        : null;
+      deliveryAddressInput = {
+        address1: point ? `Самовивіз: ${point.name}, ${point.address}` : 'Самовивіз',
+        city: point?.city || 'Запоріжжя',
+        countryCode: 'UA',
+        firstName: contactInfo.name || '',
+        lastName: contactInfo.lastName || '',
+        phone: contactInfo.phone || '',
+        zip: '69000',
+      };
     } else {
-      console.warn(
-        'updateCartDeliveryPreferences: Unsupported delivery method:',
-        deliveryInfo.deliveryMethod,
-      );
       return {
         success: false,
         errors: ['Unsupported delivery method'],
@@ -146,6 +140,9 @@ export async function updateCartDeliveryPreferences(
               city: string | null;
               countryCode: string | null;
               zip: string | null;
+              firstName?: string | null;
+              lastName?: string | null;
+              phone?: string | null;
             };
           };
         }[];
@@ -163,17 +160,15 @@ export async function updateCartDeliveryPreferences(
                 city: deliveryAddressInput?.city,
                 countryCode: deliveryAddressInput?.countryCode,
                 zip: deliveryAddressInput?.zip,
+                firstName: deliveryAddressInput?.firstName || null,
+                lastName: deliveryAddressInput?.lastName || null,
+                phone: deliveryAddressInput?.phone || null,
               },
             },
           },
         ],
       },
     });
-
-    console.log(
-      'updateCartDeliveryPreferences: Shopify cartDeliveryAddressesAdd response:',
-      JSON.stringify(response),
-    );
 
     if (response.cartDeliveryAddressesAdd.userErrors.length > 0) {
       console.error(
@@ -198,14 +193,9 @@ export async function updateCartDeliveryPreferences(
       };
     }
 
-    // @ts-ignore
-    revalidateTag(CART_TAGS.CART,{expire:0});
-    // @ts-ignore
-    revalidateTag(CART_TAGS.CART_SESSION,{expire:0});
+    revalidateTag(CART_TAGS.CART, { expire: 0 });
+    revalidateTag(CART_TAGS.CART_SESSION, { expire: 0 });
 
-    console.log(
-      'updateCartDeliveryPreferences: Cart delivery address added successfully!',
-    );
     return {
       success: true,
       cart: response.cartDeliveryAddressesAdd.cart,

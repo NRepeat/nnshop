@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -10,11 +11,13 @@ import {
 } from '@shared/ui/dialog';
 import { Button } from '@shared/ui/button';
 import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
-import { useState, useEffect, useTransition } from 'react';
+import { useState, useEffect, useTransition, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@shared/lib/utils';
 import { CrossedLine } from '@shared/ui/crossed-line';
 import { compareSizes } from '@shared/lib/sort-sizes';
+import { VariantInventory } from '@entities/product/api/getInventoryLevels';
+import { Popover, PopoverContent, PopoverTrigger } from '@shared/ui/popover';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -31,6 +34,7 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { createQuickOrder } from '../api/create-quick-order';
 import { Loader2, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { usePostHog } from 'posthog-js/react';
 export const isValidPhone = (phone: string) => {
   try {
     const phoneNumber = parsePhoneNumberFromString(phone);
@@ -55,6 +59,7 @@ interface QuickBuyModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   sizeOptions: string[] | undefined;
+  inventoryLevels: VariantInventory[];
 }
 
 export const QuickBuyModal = ({
@@ -62,9 +67,11 @@ export const QuickBuyModal = ({
   open,
   onOpenChange,
   sizeOptions,
+  inventoryLevels,
 }: QuickBuyModalProps) => {
   const t = useTranslations('ProductPage');
   const formSchema = createFormSchema(t);
+  const posthog = usePostHog();
 
   const hasSizes = sizeOptions && sizeOptions.length > 0;
 
@@ -72,22 +79,29 @@ export const QuickBuyModal = ({
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [isSuccess, setIsSuccess] = useState(false);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const form = useForm<z.infer<ReturnType<typeof createFormSchema>>>({
     resolver: zodResolver(formSchema),
     mode: 'onChange',
     defaultValues: {
       name: '',
-      phone: '',
+      phone: '+380',
     },
   });
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (open) {
       setStep(hasSizes ? 1 : 2);
       setSelectedSize(null);
       setIsSuccess(false);
-      form.reset();
+      form.reset({ name: '', phone: '+380' });
     }
   }, [open, hasSizes, form]);
 
@@ -103,7 +117,9 @@ export const QuickBuyModal = ({
     setStep(1);
   };
 
-  const onSubmit = async (values: z.infer<ReturnType<typeof createFormSchema>>) => {
+  const onSubmit = async (
+    values: z.infer<ReturnType<typeof createFormSchema>>,
+  ) => {
     // Find the selected variant
     let variantId: string;
 
@@ -111,9 +127,9 @@ export const QuickBuyModal = ({
       const variant = product.variants.edges.find((edge) =>
         edge.node.selectedOptions.some(
           (option) =>
-            option.name.toLowerCase() === 'розмір' &&
-            option.value.toLowerCase() === selectedSize.toLowerCase()
-        )
+            ['розмір', 'размер', 'size'].includes(option.name.toLowerCase()) &&
+            option.value.toLowerCase() === selectedSize.toLowerCase(),
+        ),
       )?.node;
 
       if (!variant) {
@@ -132,20 +148,23 @@ export const QuickBuyModal = ({
     }
 
     // Get discount percentage
-    const discountPercentage = Number(
-      product.metafields.find((m) => m?.key === 'znizka')?.value || '0'
-    ) || 0;
+    const discountPercentage =
+      Number(
+        product.metafields.find((m) => m?.key === 'znizka')?.value || '0',
+      ) || 0;
 
     // Get the variant to extract price
-    const selectedVariant = hasSizes && selectedSize
-      ? product.variants.edges.find((edge) =>
-          edge.node.selectedOptions.some(
-            (option) =>
-              option.name.toLowerCase() === 'розмір' &&
-              option.value.toLowerCase() === selectedSize.toLowerCase()
-          )
-        )?.node
-      : product.variants.edges[0]?.node;
+    const selectedVariant =
+      hasSizes && selectedSize
+        ? product.variants.edges.find((edge) =>
+            edge.node.selectedOptions.some(
+              (option) =>
+                ['розмір', 'размер', 'size'].includes(
+                  option.name.toLowerCase(),
+                ) && option.value.toLowerCase() === selectedSize.toLowerCase(),
+            ),
+          )?.node
+        : product.variants.edges[0]?.node;
 
     const variantPrice = selectedVariant?.price?.amount || '0';
     const variantCurrency = selectedVariant?.price?.currencyCode || 'UAH';
@@ -157,15 +176,23 @@ export const QuickBuyModal = ({
         name: values.name,
         phone: values.phone,
         productTitle: product.title,
-        discountPercentage: discountPercentage > 0 ? discountPercentage : undefined,
+        discountPercentage:
+          discountPercentage > 0 ? discountPercentage : undefined,
         price: variantPrice,
         currencyCode: variantCurrency,
       });
 
       if (result.success) {
+        posthog?.capture('quick_order_placed', {
+          product_title: product.title,
+          product_id: product.id,
+          order_id: result.orderId,
+          order_name: result.orderName,
+          size: selectedSize,
+        });
         setIsSuccess(true);
         toast.success(t('orderSuccess', { orderName: result.orderName || '' }));
-        setTimeout(() => {
+        closeTimerRef.current = setTimeout(() => {
           onOpenChange(false);
         }, 2000);
       } else {
@@ -204,24 +231,64 @@ export const QuickBuyModal = ({
                 const variant = product.variants.edges.find((edge) =>
                   edge.node.selectedOptions.some(
                     (option) =>
-                      option.name.toLowerCase() === 'розмір' &&
-                      option.value.toLowerCase() === s.toLowerCase()
-                  )
+                      ['розмір', 'размер', 'size'].includes(
+                        option.name.toLowerCase(),
+                      ) && option.value.toLowerCase() === s.toLowerCase(),
+                  ),
                 )?.node;
                 const availableForSale = variant?.availableForSale ?? false;
-                return (
+                const qty = variant?.quantityAvailable ?? -1;
+                const isZeroQty = qty === 0;
+                const variantAtFitting =
+                  variant?.currentlyNotInStock === false && isZeroQty;
+                const isUnavailable = !availableForSale && !isZeroQty;
+                const inventoryLevel = variant
+                  ? inventoryLevels.find((inv) => inv.variantId === variant.id)
+                  : undefined;
+                const committed = inventoryLevel?.committed ?? 0;
+                const hasCommitted = committed > 0;
+                const showCrossed =
+                  isUnavailable ||
+                  (isZeroQty && !variantAtFitting && !hasCommitted);
+                const showMuted = (isUnavailable || isZeroQty) && !hasCommitted;
+                const btn = (
                   <Button
-                    key={s}
                     variant={
                       selectedSize === s.toLowerCase() ? 'default' : 'outline'
                     }
-                    className={cn('rounded-md min-w-[50px] relative')}
+                    className={cn(
+                      'rounded min-w-[50px] relative border-primary border',
+                      {
+                        'bg-primary text-white ring-2 ring-offset-1 ring-primary':
+                          selectedSize === s.toLowerCase(),
+                        'opacity-40':
+                          showMuted && selectedSize !== s.toLowerCase(),
+                      },
+                    )}
                     onClick={() => handleSizeSelect(s)}
-                    disabled={!availableForSale}
+                    disabled={isUnavailable}
                   >
                     {s}
-                    {!availableForSale && <CrossedLine />}
+                    {showCrossed && <CrossedLine />}
+                    {hasCommitted && (
+                      <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white leading-none">
+                        !
+                      </span>
+                    )}
                   </Button>
+                );
+                if (!hasCommitted)
+                  return <React.Fragment key={s}>{btn}</React.Fragment>;
+                return (
+                  <Popover key={s}>
+                    <PopoverTrigger asChild>{btn}</PopoverTrigger>
+                    <PopoverContent className="w-56 text-sm p-3" side="top">
+                      <p className="font-medium">Розмір в резерві</p>
+                      <p className="text-muted-foreground mt-1">
+                        Придбання товару можливо після зняття резерву 5-7 днів.
+                      </p>
+                    </PopoverContent>
+                  </Popover>
                 );
               })}
             </div>
@@ -273,14 +340,23 @@ export const QuickBuyModal = ({
         {!isSuccess && (
           <DialogFooter className="mt-4">
             {step === 1 && (
-              <Button onClick={handleNextStep} disabled={!selectedSize || isPending} className="w-full sm:w-auto">
+              <Button
+                onClick={handleNextStep}
+                disabled={!selectedSize || isPending}
+                className="w-full sm:w-auto"
+              >
                 {t('next')}
               </Button>
             )}
             {step === 2 && (
               <div className="flex w-full gap-2">
                 {hasSizes && (
-                  <Button variant="outline" onClick={handlePrevStep} disabled={isPending} className="flex-1">
+                  <Button
+                    variant="outline"
+                    onClick={handlePrevStep}
+                    disabled={isPending}
+                    className="flex-1"
+                  >
                     {t('back')}
                   </Button>
                 )}

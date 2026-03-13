@@ -28,7 +28,6 @@ export const renderView = (
 ) => {
   switch (path) {
     case 'settings':
-    case 'security':
       return (
         <AccountView
           path={path}

@@ -1,13 +1,38 @@
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import Image from 'next/image';
 import Link from 'next/link';
-import getSymbolFromCurrency from 'currency-symbol-map';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { cn } from '@shared/lib/utils';
+import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 
 type ProductCardSPPProps = {
   product: Product;
   className?: string;
   link?: boolean;
+};
+
+const WithLink = ({
+  children,
+  link,
+  handle,
+}: {
+  children: React.ReactNode;
+  link: boolean;
+  handle: string;
+}) => {
+  if (link) {
+    return (
+      <Link
+        prefetch
+        href={`/product/${handle}`}
+        className="block h-full w-full"
+        scroll={true}
+      >
+        {children}
+      </Link>
+    );
+  }
+  return <div className="block h-full w-full">{children}</div>;
 };
 
 export const ProductCardSPP = ({
@@ -20,7 +45,7 @@ export const ProductCardSPP = ({
 
   const priceAmount = parseFloat(product.priceRange?.maxVariantPrice.amount);
   const currencyCode = product.priceRange?.maxVariantPrice.currencyCode;
-  const currencySymbol = getSymbolFromCurrency(currencyCode) || currencyCode;
+  const currencySymbol = getCurrencySymbol(currencyCode);
 
   const discountMeta = Array.isArray(product.metafields)
     ? product.metafields.find((m) => m?.key === 'znizka')
@@ -31,27 +56,11 @@ export const ProductCardSPP = ({
   const discountValue = discountMeta ? parseFloat(discountMeta.value) : 0;
   const hasDiscount = discountValue > 0;
   const discountedPrice = priceAmount * (1 - discountValue / 100);
-  const WithLink = ({ children }: { children: React.ReactNode }) => {
-    if (link) {
-      return (
-        <Link
-          prefetch
-          href={`/product/${product.handle}`}
-          className="block h-full w-full"
-          scroll={true}
-        >
-          {children}
-        </Link>
-      );
-    } else {
-      return <div className="block h-full w-full">{children}</div>;
-    }
-  };
   return (
     <div className={cn('group flex flex-col gap-3 w-full', className)}>
       {/* Контейнер изображения */}
       <div className="relative aspect-[1/1] w-full overflow-hidden bg-background">
-        <WithLink>
+        <WithLink link={link} handle={product.handle}>
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -71,15 +80,21 @@ export const ProductCardSPP = ({
 
       {/* Инфо-блок */}
       <div className="flex flex-col gap-1 px-1">
-        <Link
-          href={`/product/${product.handle}`}
-          className="hover:border-b hover:border-current transition-colors"
-          scroll
-        >
+        {link ? (
+          <Link
+            href={`/product/${product.handle}`}
+            className="hover:border-b hover:border-black border-b border-transparent  transition-colors"
+            scroll
+          >
+            <h3 className="line-clamp-2 text-[13px] leading-tight text-black">
+              {decodeHtmlEntities(product.title)}
+            </h3>
+          </Link>
+        ) : (
           <h3 className="line-clamp-2 text-[13px] leading-tight text-black">
-            {product.title}
+            {decodeHtmlEntities(product.title)}
           </h3>
-        </Link>
+        )}
 
         <div className="mt-1 flex items-center gap-2">
           {hasDiscount ? (

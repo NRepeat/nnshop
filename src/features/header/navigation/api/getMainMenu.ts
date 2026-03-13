@@ -1,6 +1,16 @@
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { GetMainMenuQuery } from '@shared/lib/shopify/types/storefront.generated';
+import { cacheLife, cacheTag } from 'next/cache';
+
+function decodeHtmlEntities(text: string): string {
+  return text
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+}
 // import { cacheLife } from 'next/cache';
 const query = `#graphql
   query GetMainMenu {
@@ -29,12 +39,10 @@ const query = `#graphql
    }
 `;
 
-export const getMainMenu = async ({
-  locale,
-}: {
-  locale: string;
-}) => {
-
+export const getMainMenu = async ({ locale }: { locale: string }) => {
+  'use cache';
+  cacheLife('days');
+  cacheTag('menu');
   const responce = await storefrontClient.request<
     GetMainMenuQuery,
     {
@@ -49,18 +57,24 @@ export const getMainMenu = async ({
   const mainMenu =
     responce.menu?.items.map((item) => ({
       id: item.resourceId,
-      title: item.title,
-      url: `/collection/${item.url?.split('/').pop()}`,
+      title: decodeHtmlEntities(item.title),
+      url: `/${item.url?.split('/').pop()}`,
       items:
         item.items?.map((subItem) => ({
           id: subItem.resourceId,
-          title: subItem.title,
-          url: `/collection/${subItem.url?.split('/').pop()}`,
+          title: decodeHtmlEntities(subItem.title),
+          url: `/${subItem.url?.split('/').pop()}`,
           items:
             subItem.items?.map((subItem) => ({
               id: subItem.resourceId,
-              title: subItem.title,
-              url: `/collection/${subItem.url?.split('/').pop()}`,
+              title: decodeHtmlEntities(subItem.title),
+              url: `/${subItem.url?.split('/').pop()}`,
+              items:
+                subItem.items?.map((child) => ({
+                  id: child.resourceId,
+                  title: decodeHtmlEntities(child.title),
+                  url: `/${child.url?.split('/').pop()}`,
+                })) || [],
             })) || [],
         })) || [],
     })) || [];

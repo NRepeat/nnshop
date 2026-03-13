@@ -21,7 +21,7 @@ export default function NovaPoshtaForm({
   const t = useTranslations('DeliveryForm');
 
   return (
-    <div className=" border border-gray-200 p-6 ">
+    <div className=" border border-gray-200 p-6 rounded">
       <FormField
         control={control}
         name="novaPoshtaDepartment"
@@ -39,7 +39,7 @@ export default function NovaPoshtaForm({
               <div className="relative">
                 <NovaPoshtaButton
                   onDepartmentSelect={handleDepartmentSelect}
-                  className="w-full"
+                  className="w-full "
                   initialText={field.value?.shortName || ''}
                   initialDescription={
                     field.value?.addressParts

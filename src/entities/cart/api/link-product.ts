@@ -2,6 +2,8 @@
 
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { Cart, CartUserError } from '@shared/types/cart/types';
+import { revalidateTag } from 'next/cache';
+import { CART_TAGS } from '@shared/lib/cached-fetch';
 
 const CART_LINES_ADD_MUTATION = `
   mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
@@ -151,6 +153,8 @@ const linkProduct = async ({
       };
     }
 
+    revalidateTag(CART_TAGS.CART, { expire: 0 });
+    revalidateTag(CART_TAGS.CART_ITEMS, { expire: 0 });
     return {
       success: true,
       cart: cartLinesAdd.cart,

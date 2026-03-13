@@ -10,12 +10,12 @@ import {
   type CarouselApi,
 } from '@shared/ui/carousel';
 import { GetCollectionQuery } from '@shared/lib/shopify/types/storefront.generated';
-import getSymbolFromCurrency from 'currency-symbol-map';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@shared/ui/button';
-import Link from 'next/link';
-import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
+import { Link } from '@shared/i18n/navigation';
+import { ProductCard } from '@entities/product/ui/ProductCard';
+import { Product } from '@shared/lib/shopify/types/storefront.types';
 
 type Preview = {
   _key: string;
@@ -40,13 +40,18 @@ type SyncedCarouselsProps = {
   )[];
   previews: Preview[] | undefined | null;
   title: string | undefined;
+  customTitles?: (string | null)[];
+  gender?: string;
 };
 
 export const SyncedCarousels = ({
   collectionsData,
   previews,
+  customTitles,
+  gender,
 }: SyncedCarouselsProps) => {
   const [api1, setApi1] = useState<CarouselApi>();
+  const initTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [api2, setApi2] = useState<CarouselApi>();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
@@ -75,10 +80,11 @@ export const SyncedCarousels = ({
     if (api2) {
       api2.on('select', onSelect);
       api2.on('reInit', onSelect);
-      setTimeout(() => onInit(api2), 0);
+      initTimerRef.current = setTimeout(() => onInit(api2), 0);
     }
 
     return () => {
+      if (initTimerRef.current) clearTimeout(initTimerRef.current);
       if (api1) api1.off('select', onSelect);
       if (api2) {
         api2.off('select', onSelect);
@@ -86,29 +92,36 @@ export const SyncedCarousels = ({
       }
     };
   }, [api1, api2, onSelect, onInit]);
-
+  const previewLinks = collectionsData.map((collection) =>
+    (collection?.collection?.collection?.handle || collection?.alternateHandle || ''),
+  );
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2  md:gap-4 lg:gap-6 w-full container ">
-      <div className="py-8">
+    <div className="grid grid-cols-1 md:grid-cols-2  w-full container gap-2">
+      <div className="py-8 flex justify-center md:justify-start">
         <Carousel opts={{ loop: true }} setApi={setApi1}>
-          <CarouselContent className='[&>div]:-ml-0'>
+          <CarouselContent className="[&>div]:ml-0">
             {previews?.map(
-              (preview) =>
+              (preview, index) =>
                 preview &&
                 preview.asset && (
-                  <CarouselItem key={preview._key}>
+                  <CarouselItem key={preview._key} className="w-full ">
                     <Link
-                      href={`/collection/${preview.handle?.current}`}
+                      href={
+                        gender
+                          ? `/${gender}/${previewLinks[index]}`
+                          : `/${previewLinks[index]}`
+                      }
                       scroll
                       prefetch
+                      className=" w-full overflow-hidden flex justify-center h-full"
                     >
                       <Image
-                        src={urlFor(preview).url()}
+                        src={urlFor(preview).width(800).height(800).auto('format').quality(80).url()}
                         alt={preview.alt || 'Preview image'}
-                        width={500}
-                        height={500}
+                        width={800}
+                        height={800}
                         sizes="(max-width: 768px) 100vw, 50vw"
-                        className="object-contain w-full max-h-[calc(500px)] md:max-h-[calc(700px)]"
+                        className="object-cover w-full max-h-[600px] max-w-[600px] rounded"
                       />
                     </Link>
                   </CarouselItem>
@@ -126,25 +139,22 @@ export const SyncedCarousels = ({
           />
         </Carousel>
       </div>
-      <div className="flex items-center md:py-8 flex-col">
+      <div className="flex items-center md:py-8 flex-col ">
         <Carousel
           opts={{ loop: true }}
           setApi={setApi2}
-          className="flex h-full mb-12 flex-col justify-center items-center"
+          className="flex h-full mb-12 flex-col justify-center items-center "
         >
-          <div className="mb-12">
-            <p className="text-2xl font-bold text-center">{}</p>
-          </div>
-          <CarouselContent className="h-fit">
+          <CarouselContent className="h-fit [&>div]:ml-0  ">
             {collectionsData.filter(Boolean).map((collection, index) => (
-              <CarouselItem key={index}>
+              <CarouselItem key={index} className="pl-1 ">
                 <div className="w-full flex justify-center mb-8">
-                  <h3 className="text-2xl font-medium">
-                    {collection?.collection?.collection?.title}
+                  <h3 className="text-3xl font-medium">
+                    {customTitles?.[index] || collection?.collection?.collection?.title}
                   </h3>
                 </div>
-                <div className="grid grid-cols-3 md:grid-cols-3 gap-2 ml-2 px-4 md:px-2">
-                  {collection?.collection?.collection?.products?.edges
+                <div className="grid grid-cols-3 gap-1 md:gap-2 pb-1">
+                  {collection?.collection?.collection?.products.edges
                     ?.slice(0, 3)
                     .map(
                       (
@@ -154,104 +164,14 @@ export const SyncedCarousels = ({
                       ) =>
                         product && (
                           <div key={product.node.handle} className="group">
-                            <Link
-                              href={`/product/${product.node.handle}`}
-                              scroll={true}
-                              prefetch
-                            >
-                              <div className="relative w-full aspect-square overflow-hidden bg-background mb-3">
-                                <Image
-                                  src={
-                                    product.node.media.edges[0].node
-                                      .previewImage?.url
-                                  }
-                                  alt={product.node.title}
-                                  fill
-                                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                                  className="object-contain transition-transform duration-300 group-hover:scale-105"
-                                />
-                                {/* {product.node.metafield &&
-                                  product.node.metafield.key === 'znizka' &&
-                                  product.node.metafield.value &&
-                                  Number(product.node.metafield.value) > 0 && (
-                                    <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-sm">
-                                      -{product.node.metafield.value}%
-                                    </div>
-                                  )} */}
-                              </div>
-                            </Link>
-
-                            {/* Product Info */}
-                            <div className="space-y-1">
-                              {/* Vendor */}
-                              <Link
-                                href={`/brand/${vendorToHandle(product.node.vendor)}`}
-                              >
-                                <p className="text-xs uppercase tracking-wider text-gray-500 hover:text-gray-700 transition-colors">
-                                  {product.node.vendor}
-                                </p>
-                              </Link>
-
-                              {/* Title */}
-                              <Link href={`/product/${product.node.handle}`}>
-                                <h4 className="text-sm font-medium text-gray-900 line-clamp-2 leading-tight hover:text-gray-700 transition-colors">
-                                  {product.node.title}
-                                </h4>
-                              </Link>
-
-                              {/* Price */}
-                              <div className="flex items-center gap-2 pt-1">
-                                {product.node.metafield &&
-                                product.node.metafield.key === 'znizka' &&
-                                product.node.metafield.value &&
-                                Number(product.node.metafield.value) > 0 ? (
-                                  <>
-                                    <span className="text-sm font-semibold text-gray-900">
-                                      {(
-                                        product.node.priceRange?.maxVariantPrice
-                                          .amount *
-                                        (1 -
-                                          parseFloat(
-                                            product.node.metafield.value,
-                                          ) /
-                                            100)
-                                      ).toFixed(0)}{' '}
-                                      {getSymbolFromCurrency(
-                                        product.node.priceRange?.maxVariantPrice
-                                          .currencyCode,
-                                      ) ||
-                                        product.node.priceRange?.maxVariantPrice
-                                          .currencyCode}
-                                    </span>
-                                    <span className="text-xs text-gray-400 line-through">
-                                      {parseFloat(
-                                        product.node.priceRange?.maxVariantPrice
-                                          .amount,
-                                      ).toFixed(0)}{' '}
-                                      {getSymbolFromCurrency(
-                                        product.node.priceRange?.maxVariantPrice
-                                          .currencyCode,
-                                      ) ||
-                                        product.node.priceRange?.maxVariantPrice
-                                          .currencyCode}
-                                    </span>
-                                  </>
-                                ) : (
-                                  <span className="text-sm font-semibold text-gray-900">
-                                    {parseFloat(
-                                      product.node.priceRange?.maxVariantPrice
-                                        .amount,
-                                    ).toFixed(0)}{' '}
-                                    {getSymbolFromCurrency(
-                                      product.node.priceRange?.maxVariantPrice
-                                        .currencyCode,
-                                    ) ||
-                                      product.node.priceRange?.maxVariantPrice
-                                        .currencyCode}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
+                            <ProductCard
+                              product={product.node as any as Product}
+                              withCarousel={false}
+                              withQuick={false}
+                              withSizes={false}
+                              withInnerShadow
+                              className="px-0 py-0 pb-2 hover:shadow rounded-b rounded-t"
+                            />
                           </div>
                         ),
                     )}
@@ -259,21 +179,12 @@ export const SyncedCarousels = ({
               </CarouselItem>
             ))}
           </CarouselContent>
-          {/*<CarouselNext
-            variant={'ghost'}
-            size={'icon'}
-            className="group-hover:flex  bg-background/70 rounded-full top-1/2 right-2 absolute hidden md:flex"
-          />
-          <CarouselPrevious
-            variant={'ghost'}
-            className="group-hover:flex  bg-background/70 rounded-full top-1/2 left-2 absolute hidden md:flex"
-          />*/}
           <div className="flex justify-center gap-2 mt-4">
             {scrollSnaps.map((_, index) => (
               <Button
                 key={index}
-                className={`w-2 h-2 p-1 px-3 rounded-full ${
-                  index === selectedIndex ? 'bg-gray-800' : 'bg-gray-300'
+                className={`w-2 h-[3px]  py-0 px-3  ${
+                  index === selectedIndex ? 'bg-primary' : 'bg-gray-300'
                 }`}
                 onClick={() => api2?.scrollTo(index)}
               />

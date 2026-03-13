@@ -6,7 +6,6 @@ import { getDeliveryInfo } from '@features/checkout/delivery/api/getDeliveryInfo
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
 import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
-import { createOrder } from '@features/order/api/create';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -46,23 +45,9 @@ export default async function PaymentPage(props: Props) {
     redirect('/checkout/delivery');
   }
 
-  const orderResult = await createOrder(completeCheckoutData, locale);
-  let orderId: string | null = null;
-
-  if (orderResult.success && orderResult.order?.id) {
-    const match = orderResult.order.id.match(/Order\/(\d+)/);
-    orderId = match ? match[1] : null;
-  } else {
-    console.error('Order creation failed:', orderResult.errors);
-  }
-
-  if (!orderId) {
-    redirect('/checkout/info');
-  }
-
   return (
     <Suspense fallback={<PaymentFormSkeleton />}>
-      <Payment draftOrderId={orderId} locale={locale} />
+      <Payment locale={locale} />
     </Suspense>
   );
 }

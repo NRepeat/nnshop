@@ -1,19 +1,16 @@
 import { auth } from '@features/auth/lib/auth';
-import { prisma } from '@shared/lib/prisma';
 import { getCart } from '@entities/cart/api/get';
 import PaymentForm from './PaymentForm';
 import { getPaymentInfo } from '../api/getPaymentInfo';
 import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { redirect, unstable_rethrow } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
 
 export default async function Payment({
-  draftOrderId,
   locale,
 }: {
-  draftOrderId: string;
   locale: string;
 }) {
   const t = await getTranslations({ locale, namespace: 'CheckoutPage' });
@@ -29,7 +26,6 @@ export default async function Payment({
 
   let cartAmount = 0;
   let currency = 'UAH';
-  let draftOrder = null;
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
@@ -40,22 +36,35 @@ export default async function Payment({
       userId: session.user.id,
       locale,
     })) as GetCartQuery | null;
-    if (cartResult && cartResult.cart?.cost?.totalAmount) {
-      cartAmount = parseFloat(cartResult.cart.cost.totalAmount.amount);
+    if (!cartResult?.cart || !cartResult.cart.lines.edges.length) {
+      redirect('/cart');
+    }
+    {
       currency = cartResult.cart.cost.totalAmount.currencyCode;
+      const lines = cartResult.cart.lines.edges;
+      // Calculate znizka-discounted subtotal
+      let localTotal = 0;
+      for (const edge of lines) {
+        const line = edge.node;
+        const price = Number(line.cost.amountPerQuantity.amount);
+        const sale = Number(
+          line.merchandise.product.metafields?.find((m: any) => m?.key === 'znizka')?.value || '0'
+        ) || 0;
+        const discountedPrice = sale > 0 ? price * (1 - sale / 100) : price;
+        localTotal += discountedPrice * line.quantity;
+      }
+      const hasApplicableDiscount = cartResult.cart.discountCodes?.some((d) => d.applicable);
+      // Use the minimum of the two to ensure the customer always pays the lower amount
+      const shopifyTotal = Number(cartResult.cart.cost.totalAmount.amount);
+      const goodsTotal = hasApplicableDiscount ? Math.min(localTotal, shopifyTotal) : localTotal;
+      cartAmount = goodsTotal;
+    }
+    if (cartAmount <= 0) {
+      redirect('/cart');
     }
 
-    draftOrder = await prisma.order.findUnique({
-      where: {
-        shopifyOrderId: 'gid://shopify/Order/' + draftOrderId,
-      },
-    });
-    if (!draftOrder) {
-      throw new Error('Order not found');
-    }
-    if (!draftOrder.shopifyOrderId) {
-      throw new Error('Order ID missing');
-    }
+    const completeCheckoutData = await getCompleteCheckoutData(session);
+
     return (
       <div className="w-full max-w-4xl mx-auto">
         <div className="mb-8">
@@ -67,16 +76,17 @@ export default async function Payment({
 
         <PaymentForm
           defaultValues={existingPaymentInfo}
-          draftOrder={draftOrder}
           amount={cartAmount}
           currency={currency}
+          locale={locale}
           liqpayPublicKey={liqpayPublicKey}
           liqpayPrivateKey={liqpayPrivateKey}
-          completeCheckoutData={await getCompleteCheckoutData(session)}
+          completeCheckoutData={completeCheckoutData}
         />
       </div>
     );
   } catch (error) {
+    unstable_rethrow(error);
     console.error('Error fetching cart data:', error);
     redirect('/');
   }

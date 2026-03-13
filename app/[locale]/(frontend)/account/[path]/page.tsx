@@ -18,7 +18,6 @@ export default async function AccountPage({
 }: {
   params: Promise<{ path: string; locale: string }>;
 }) {
-  // return <></>;
   const { path, locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'Settings.pages' });
@@ -27,9 +26,8 @@ export default async function AccountPage({
     namespace: 'BetterAuthUI',
   });
   const { title, description } = getPageInfo(path, t);
-  // return <></>;
   return (
-    <div className="my-10">
+    <div className="my-8">
       <SettingsPageLayout title={title} description={description}>
         {renderView(path, tBetterAuth)}
       </SettingsPageLayout>

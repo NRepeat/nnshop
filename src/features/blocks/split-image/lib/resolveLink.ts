@@ -2,6 +2,7 @@ import { LinkExternal, LinkInternal } from '@/shared/sanity/types';
 
 export function resolveLink(
   link: LinkInternal | LinkExternal | undefined | null,
+  gender?: string,
 ): string | undefined {
   if (!link) {
     return undefined;
@@ -17,7 +18,7 @@ export function resolveLink(
       case 'product':
         return `/product/${slug}`;
       case 'collection':
-        return `/collection/${slug}`;
+        return slug ? `${gender ? `/${gender}` : ''}/${slug}` : undefined;
       case 'page':
         return `/${slug}`;
       default:

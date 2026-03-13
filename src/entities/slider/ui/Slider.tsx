@@ -2,18 +2,13 @@
 
 import { resolveLink } from '@/features/blocks/split-image/lib/resolveLink';
 import { Carousel, CarouselContent, CarouselItem } from '@/shared/ui/carousel';
-import { PAGE_QUERYResult } from '@/shared/sanity/types';
+import { SliderBlock } from '@/shared/sanity/types';
 import Image from 'next/image';
 import { Link } from '@shared/i18n/navigation';import { useLocale } from 'next-intl';
 import { getLocalizedString } from '@shared/sanity/utils/getLocalizedString';
 
-type HeroSwiperProps = Extract<
-  NonNullable<NonNullable<PAGE_QUERYResult>['content']>[number],
-  { _type: 'sliderBlock' }
-> & {
-  documentId: string;
-  documentType: string;
-  blockIndex: number;
+type HeroSwiperProps = {
+  slides: SliderBlock['slides'];
 };
 export function HeroSwiper({ slides }: HeroSwiperProps) {
   const locale = useLocale();

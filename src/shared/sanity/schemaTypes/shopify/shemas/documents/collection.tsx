@@ -1,7 +1,6 @@
 import React from 'react';
 import { defineField, defineType } from 'sanity';
 import { PackageIcon } from '@sanity/icons';
-import { getExtension } from '@sanity/asset-utils';
 import pluralize from 'pluralize-esm';
 import ShopifyIcon from '@/shared/sanity/components/shopify/icons/Shopify';
 import CollectionHiddenInput from '@/shared/sanity/components/shopify/inputs/CollectionHidden';
@@ -58,6 +57,15 @@ export default defineType({
       options: { field: 'store.slug.current' },
     }),
 
+    // Custom image
+    defineField({
+      name: 'image',
+      title: 'Custom Image',
+      type: 'image',
+      description: 'Override the Shopify collection image (used in homepage grid, carousels, etc.)',
+      options: { hotspot: true },
+      group: 'editorial',
+    }),
     // Vector
     defineField({
       name: 'vector',
@@ -75,6 +83,47 @@ export default defineType({
       title: 'Show hero',
       type: 'boolean',
       description: 'If disabled, page title will be displayed instead',
+      group: 'editorial',
+    }),
+    // Custom title (overrides Shopify title on frontend)
+    defineField({
+      name: 'customTitle',
+      title: 'Custom Title',
+      type: 'localizedString',
+      description: 'Overrides the Shopify collection title on the frontend. Leave empty to use the Shopify title.',
+      group: 'editorial',
+    }),
+    // Nav title override (overrides title shown in navigation dropdown)
+    defineField({
+      name: 'navTitle',
+      title: 'Nav Title Override',
+      type: 'localizedString',
+      description: 'Override the title shown in navigation dropdowns. Leave empty to use the collection title.',
+      group: 'editorial',
+    }),
+    // Nav title color (text color in navigation dropdown)
+    defineField({
+      name: 'navTitleColor',
+      title: 'Nav Title Color',
+      type: 'string',
+      description: 'Highlight color for this item in navigation dropdowns.',
+      group: 'editorial',
+      options: {
+        list: [
+          { title: 'Default', value: 'default' },
+          { title: 'Red (Sale / Outlet)', value: 'red' },
+          { title: 'Orange', value: 'orange' },
+          { title: 'Green', value: 'green' },
+          { title: 'Blue', value: 'blue' },
+        ],
+      },
+    }),
+    // Is Brand
+    defineField({
+      name: 'isBrand',
+      title: 'Is Brand',
+      type: 'boolean',
+      description: 'When enabled, this collection is treated as a brand — the frontend routes to /brand/[slug] instead of the gender collection layout.',
       group: 'editorial',
     }),
     // Hero

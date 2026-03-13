@@ -5,15 +5,22 @@ import { parseBody } from 'next-sanity/webhook';
 import { revalidateSecret } from '@/shared/sanity/env';
 
 // Types that require full layout revalidation (header, footer, etc.)
-const LAYOUT_TYPES = ['siteSettings', 'header', 'footer', 'infoBar'];
+const LAYOUT_TYPES = [
+  'siteSettings',
+  'header',
+  'footer',
+  'infoBar',
+  'page',
+  'product',
+];
 
 export async function POST(req: NextRequest) {
   try {
     const { body, isValidSignature } = await parseBody<{
       type: string;
+      path?: string;
       slug?: string;
     }>(req, revalidateSecret);
-
     if (!isValidSignature) {
       const message = 'Invalid signature';
       return new Response(message, { status: 401 });
@@ -30,17 +37,25 @@ export async function POST(req: NextRequest) {
     // Handle layout-related types (header, footer, siteSettings)
     if (body.type && LAYOUT_TYPES.includes(body.type)) {
       // Revalidate all layouts - this will refresh header/footer on all pages
-      revalidatePath('/', 'layout');
+      if (body?.path) {
+        revalidatePath(body.path, 'layout');
+      } else {
+        revalidatePath('/', 'layout');
+      }
       revalidatedPaths.push('/ (layout)');
 
       // Also revalidate the tag
       revalidateTag(body.type, 'max');
       revalidatedTags.push(body.type);
+      if (body.type === 'product') {
+        revalidatePath('/product/' + body.slug, 'page');
+      }
     }
 
     // Handle slug-based revalidation
     if (body.slug) {
       revalidateTag(body.slug, 'max');
+      revalidatePath(body.slug);
       revalidatedTags.push(body.slug);
     }
 
@@ -56,11 +71,24 @@ export async function POST(req: NextRequest) {
       revalidatedTags.push(`${body.type}:${body.slug}`);
     }
 
-    console.log(
-      '🚀 ~ POST ~    revalidatedPaths',
-      revalidatedTags,
-      revalidatedTags,
-    );
+    // Shopify: collection updates also invalidate the slugs list
+    if (body.type === 'collection') {
+      revalidateTag('collections', 'default');
+      revalidateTag('sitemap-categories', 'default');
+      revalidatedTags.push('collections', 'sitemap-categories');
+    }
+
+    // Sitemap cache invalidation based on content type
+    if (body.type === 'product') {
+      revalidateTag('sitemap-products', 'default');
+      revalidateTag('sitemap-brands', 'default'); // brands derived from product vendors
+      revalidatedTags.push('sitemap-products', 'sitemap-brands');
+    }
+    if (body.type === 'post') {
+      revalidateTag('sitemap-posts', 'default');
+      revalidatedTags.push('sitemap-posts');
+    }
+
     return NextResponse.json({
       status: 200,
       revalidated: true,

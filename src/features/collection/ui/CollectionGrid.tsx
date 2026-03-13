@@ -1,5 +1,8 @@
-import { getCollection } from '@entities/collection/api/getCollection';
-import { notFound } from 'next/navigation';
+import { getCollection, getCollectionFilters } from '@entities/collection/api/getCollection';
+import { notFound, redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import { sanityFetch } from '@shared/sanity/lib/client';
+import { COLLECTION_IS_BRAND_QUERY } from '@shared/sanity/lib/query';
 import { ClientGridWrapper } from './ClientGridWrapper';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
 import {
@@ -10,135 +13,206 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@shared/ui/breadcrumb';
+import { resolveCollectionHandle } from '@entities/collection/lib/resolve-handle';
+import { CollectionFilterBar } from './CollectionFilterBar';
 import { FilterSheet } from './FilterSheet';
-import { ActiveFiltersCarousel } from './ActiveFiltersCarousel';
 import { SortSelect } from './SortSelect';
-import { SearchParams } from '~/app/[locale]/(frontend)/collection/[slug]/page';
-import { cookies, headers } from 'next/headers';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { ActiveFiltersCarousel } from './ActiveFiltersCarousel';
+import { GridToggle } from './GridToggle';
+import { EnableScrollHide } from '@shared/ui/EnableScrollHide';
+import { SearchParams } from '~/app/[locale]/(frontend)/(home)/[gender]/(collection)/[slug]/page';
+import { headers } from 'next/headers';
+import { getTranslations } from 'next-intl/server';
 import { PathSync } from '@entities/path-sync/ui/path-sync';
-import { isProductFavorite } from '@features/product/api/isProductFavorite';
 import { auth } from '@features/auth/lib/auth';
+import { JsonLd } from '@shared/ui/JsonLd';
+import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
+import { prisma } from '@shared/lib/prisma';
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@shared/ui/empty';
+import { PackageSearch } from 'lucide-react';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
+
 export const CollectionGrid = async ({
   params,
   searchParams,
 }: {
-  params: Promise<{ locale: string; slug: string }>;
+  params: Promise<{ locale: string; slug: string; gender: string }>;
   searchParams: Promise<SearchParams>;
 }) => {
-  const [awaitedParams, awaitedSearchParams, cookieStore, t] =
-    await Promise.all([
-      params,
-      searchParams,
-      cookies(),
-      getTranslations('Header'),
-    ]);
-  const { locale, slug } = awaitedParams;
-  const gender = cookieStore.get('gender')?.value || 'woman';
+  const [awaitedParams, awaitedSearchParams, t, tCollection] = await Promise.all([
+    params,
+    searchParams,
+    getTranslations('Header'),
+    getTranslations('CollectionPage'),
+  ]);
+  const { locale, slug, gender } = awaitedParams;
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
+  const resolvedHandle = resolveCollectionHandle(slug, gender);
 
-  const collectionPromises = [
+  const [sanityCollection, currentData, session] = await Promise.all([
+    sanityFetch({
+      query: COLLECTION_IS_BRAND_QUERY,
+      params: { handle: resolvedHandle },
+      tags: [`collection:${resolvedHandle}`],
+    }),
     getCollection({
-      handle: slug,
-      first: 18,
+      handle: resolvedHandle,
+      first: 20,
       locale: locale,
       searchParams: awaitedSearchParams,
+      gender,
     }),
-  ];
+    auth.api.getSession({ headers: await headers() }),
+  ]);
 
-  if (hasFilters) {
-    collectionPromises.push(
-      getCollection({ handle: slug, first: 18, locale: locale }),
-    );
+  if (sanityCollection?.isBrand) {
+    redirect(`/${locale}/brand/${resolvedHandle}?_gender=${gender}`);
   }
 
-  const [currentData, initialData] = await Promise.all(collectionPromises);
-
-  if (!currentData?.collection) {
+  if (!currentData?.collection?.collection) {
     return notFound();
   }
 
   const { collection, alternateHandle } = currentData;
+  const displayTitle =
+    sanityCollection?.customTitle?.[locale as 'uk' | 'ru'] ||
+    collection.collection?.title;
+
   const rawProducts =
     collection.collection?.products.edges
       .map((edge) => edge.node)
       .filter(
         (edge) =>
-          Number(edge.priceRange.minVariantPrice.amount) > 0 ||
-          Number(edge.priceRange.maxVariantPrice.amount) > 0,
+          (edge.priceRange?.minVariantPrice?.amount && Number(edge.priceRange.minVariantPrice.amount) > 0) ||
+          (edge.priceRange?.maxVariantPrice?.amount && Number(edge.priceRange.maxVariantPrice.amount) > 0),
       ) || [];
 
-  const session = await auth.api.getSession({ headers: await headers() });
-  const productsWithFav = await Promise.all(
-    rawProducts.map(async (product) => {
-      const isFav = await isProductFavorite(product.id, session);
-      return {
-        ...product,
-        isFav,
-      };
-    }),
-  );
-  const initialFilters = hasFilters
-    ? initialData?.collection?.collection?.products.filters
-    : collection.collection?.products.filters;
-  console.log(initialFilters,"initialFilters")
+  // Batch check favorites
+  let favoriteProductIds = new Set<string>();
+  if (session?.user?.id) {
+    const favorites = await prisma.favoriteProduct.findMany({
+      where: {
+        userId: session.user.id,
+        productId: { in: rawProducts.map((p) => p.id) },
+      },
+      select: { productId: true },
+    });
+    favoriteProductIds = new Set(favorites.map((f) => f.productId));
+  }
+
+  const productsWithFav = rawProducts.map((product) => ({
+    ...product,
+    isFav: favoriteProductIds.has(product.id),
+  }));
+
+  // Only fetch initialData if we actually have filters to avoid extra request
+  let initialFilters = collection.collection?.products.filters;
+  if (hasFilters) {
+    initialFilters = await getCollectionFilters({
+      handle: resolvedHandle,
+      locale: locale,
+    });
+  }
+
   const targetLocale = locale === 'ru' ? 'uk' : 'ru';
   const paths = {
-    [locale]: `/collection/${slug}`,
-    [targetLocale]: `/collection/${alternateHandle}`,
+    [locale]: `/${gender}/${slug}`,
+    [targetLocale]: `/${gender}/${alternateHandle}`,
   };
   const pageInfo = collection.collection?.products.pageInfo;
 
   return (
     <>
       <PathSync paths={paths} />
-      <div className="pl-2 md:pl-5 flex flex-col gap-4 md:gap-8 mt-8">
-        <Breadcrumb>
+      <JsonLd
+        data={generateBreadcrumbJsonLd([
+          { name: t('nav.home'), url: `${BASE_URL}/${locale}` },
+          {
+            name: gender === 'man' ? t('nav.man') : t('nav.woman'),
+            url: `${BASE_URL}/${locale}/${gender}`,
+          },
+          {
+            name: displayTitle ?? slug,
+            url: `${BASE_URL}/${locale}/${gender}/${slug}`,
+          },
+        ])}
+      />
+      <div className=" flex flex-col  mt-8">
+        <Breadcrumb className="mb-4 md:mb-8">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/${locale}`}>
-                {t('nav.home')}
-              </BreadcrumbLink>
+              <BreadcrumbLink href={`/${locale}`}>{t('nav.home')}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink>
+              <BreadcrumbLink href={`/${locale}/${gender}`}>
                 {gender === 'man' ? t('nav.man') : t('nav.woman')}
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{collection.collection?.title}</BreadcrumbPage>
+              <BreadcrumbPage>{displayTitle}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
 
+        <EnableScrollHide />
+
         <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row justify-between lg:items-end gap-6">
           <div className="flex flex-col gap-3.5 w-full">
-            <h2 className="text-2xl font-bold">
-              {collection.collection?.title}
-            </h2>
+            <h1 className="text-2xl font-bold">{displayTitle}</h1>
             {collection.collection?.products.filters && (
-              <ActiveFiltersCarousel
-                filters={collection.collection?.products.filters}
-              />
+              <Suspense fallback={null}>
+                <ActiveFiltersCarousel
+                  filters={collection.collection.products.filters}
+                />
+              </Suspense>
             )}
           </div>
-          <div className="flex h-full items-end flex-row gap-2 justify-between md:justify-end">
-            <SortSelect defaultValue={awaitedSearchParams.sort as string} />
-            <FilterSheet
-              filters={collection.collection?.products.filters}
-              initialFilters={initialFilters}
-            />
+          <div className="flex h-full items-center flex-row gap-2 justify-between  md:justify-end">
+            <GridToggle />
+            <div className='flex gap-2'>
+              <Suspense fallback={null}>
+                <SortSelect />
+              </Suspense>
+              <FilterSheet
+                filters={collection.collection?.products.filters}
+                initialFilters={initialFilters}
+              />
+            </div>
           </div>
         </div>
 
+        {collection.collection?.products.filters && (
+          <Suspense fallback={null}>
+            <CollectionFilterBar
+              filters={collection.collection.products.filters}
+              initialFilters={initialFilters}
+            />
+          </Suspense>
+        )}
+
         <div className="flex justify-between gap-8 h-full">
-          <ClientGridWrapper
-            initialPageInfo={pageInfo as PageInfo}
-            // @ts-ignore
-            initialProducts={productsWithFav as Product[]}
-          />
+          {productsWithFav.length === 0 ? (
+            <div className="w-full py-16">
+              <Empty>
+                <EmptyHeader>
+                  <PackageSearch className="w-12 h-12 text-muted-foreground" />
+                  <EmptyTitle>{tCollection('noProducts')}</EmptyTitle>
+                  {hasFilters && (
+                    <EmptyDescription>{tCollection('explore')}</EmptyDescription>
+                  )}
+                </EmptyHeader>
+              </Empty>
+            </div>
+          ) : (
+            <ClientGridWrapper
+              initialPageInfo={pageInfo as PageInfo}
+              // @ts-ignore
+              initialProducts={productsWithFav as Product[]}
+              handle={resolvedHandle}
+            />
+          )}
         </div>
       </div>
     </>

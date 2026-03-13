@@ -3,6 +3,76 @@
 @import '@daveyplate/better-auth-ui/css';
 @plugin "@tailwindcss/typography";
 
+/* SendPulse live chat — below sheets/modals */
+sp-live-chat {
+  z-index: 49 !important;
+}
+
+/* Sonner toaster — below sheets/modals (z-[200]) */
+[data-sonner-toaster] {
+  z-index: 199 !important;
+}
+
+/* ─── View Transitions ─────────────────────────────────────── */
+@keyframes vt-fade-in {
+  from { opacity: 0; }
+}
+@keyframes vt-fade-out {
+  to { opacity: 0; }
+}
+@keyframes vt-slide-in {
+  from { opacity: 0; transform: translateY(12px); }
+}
+
+/* Default page cross-fade */
+::view-transition-old(root) {
+  animation: 250ms ease vt-fade-out both;
+}
+::view-transition-new(root) {
+  animation: 300ms ease vt-fade-in both;
+}
+
+/* Shared product image: crossfade (no position morph) */
+::view-transition-group(*) {
+  animation-duration: 0s;
+}
+::view-transition-old(*) {
+  animation: 300ms ease vt-fade-out both;
+}
+::view-transition-new(*) {
+  animation: 300ms ease vt-fade-in both;
+}
+
+/* Restore root and checkout-step (more specific overrides * ) */
+::view-transition-old(root) {
+  animation: 250ms ease vt-fade-out both;
+}
+::view-transition-new(root) {
+  animation: 300ms ease vt-fade-in both;
+}
+::view-transition-group(root) {
+  animation-duration: revert;
+}
+
+
+/* Checkout step transition - slide from right */
+::view-transition-old(checkout-step) {
+  animation: 200ms ease vt-fade-out both;
+}
+::view-transition-new(checkout-step) {
+  animation: 300ms ease vt-slide-in both;
+}
+
+/* Respect reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+::view-transition-old(checkout-step),
+  ::view-transition-new(checkout-step) {
+    animation: none;
+  }
+}
+
 /*@custom-variant dark (&:is(.dark *));*/
 
 @theme inline {

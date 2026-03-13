@@ -6,15 +6,15 @@ import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link'
 type MainCollectionGridProps = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
   { _type: 'mainCollectionGrid' }
-> & { locale: string };
+> & { locale: string; gender?: string };
 
 export const MainCollectionGrid = (props: MainCollectionGridProps) => {
-  const { collections, title, locale } = props;
+  const { collections, title, locale, gender } = props;
 
   if (!collections) return null;
 
   const resolvedCollections = collections.map((collection) => {
-    const pathData = resolveCollectionLink(collection, locale);
+    const pathData = resolveCollectionLink(collection, locale, gender);
     return {
       ...collection,
       ...pathData,
@@ -30,21 +30,25 @@ export const MainCollectionGrid = (props: MainCollectionGridProps) => {
           </p>
         )}
 
-        <div className="flex flex-col gap-5 md:grid md:grid-cols-3 items-center">
-          {resolvedCollections.map((col) => (
-            <div key={col.handle ?? col.id} className='w-full'>
-              <Link href={col.href} prefetch>
-                <div className="flex flex-col relative group w-[370px] aspect-3/4 md:w-full group">
+        <div className="flex flex-col gap-5 md:grid md:grid-cols-3">
+          {resolvedCollections.map((col, index) => (
+            <div key={col.handle ?? col.id} className="w-full   ">
+              <Link href={col.href} prefetch className="block w-full">
+                <div className="relative group w-full aspect-3/4 rounded overflow-hidden">
                   {col.image && col.image.url && (
                     <Image
                       src={col.image.url}
                       alt={col.title ?? ''}
-                      className="object-contain w-full transition-transform duration-700 ease-in-out h-[375px] md:h-[450px] lg:h-[530px] max-h-[530px] group-hover:scale-105"
+                      className="rounded object-cover w-full transition-transform duration-700 ease-in-out  group-hover:scale-105 group-hover:shadow transition-shadow"
                       fill
+                      sizes="(max-width: 640px) 370px, (max-width: 1024px) 50vw, 33vw"
+                      priority={index < 3}
+                      fetchPriority={index === 0 ? 'high' : 'auto'}
                     />
                   )}
-                  <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-black opacity-20 group-hover:scale-105 transition-transform duration-700 ease-in-out"></div>
-                  <h3 className="absolute bottom-5 left-5 text-background text-2xl font-sans font-400">
+                  <div className="pointer-events-none absolute inset-0 rounded inset-shadow-sm " />
+                  <div className=" absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-20 group-hover:scale-105 transition-transform duration-700 ease-in-out"></div>
+                  <h3 className="absolute bottom-5 left-5 text-background text-3xl md:text-4xl font-sans font-400">
                     {col.title}
                   </h3>
                 </div>

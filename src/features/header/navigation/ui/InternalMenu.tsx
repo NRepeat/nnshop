@@ -7,16 +7,20 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@shared/ui/accordion';
+import { ChevronRightIcon } from 'lucide-react';
+import { Button } from '@shared/ui/button';
+
 export const InternalMenu = ({
-  meinMenu,
+  mainMenu,
   onClose,
 }: {
-  meinMenu: {
+  mainMenu: {
     label: string;
     menu: {
       id: Maybe<string> | undefined;
       title: string;
       url: string;
+      outletLink?: { label: string; url: string } | null;
       items: {
         id: Maybe<string> | undefined;
         title: string;
@@ -31,27 +35,34 @@ export const InternalMenu = ({
   }[];
   onClose: (link: string) => void;
 }) => {
-  const tabs = meinMenu
+  const tabs = mainMenu
     .filter((item) => item.menu.length > 0)
     .map((item) => {
       return (
-        <div className="flex flex-col">
-          {item.menu.map((subItem) => {
-            const subId = `sub-${subItem.id || subItem.title}`;
+        <div key={item.label} className="flex flex-col">
+          {item.menu.map((subItem, subIndex) => {
+            const subId = `sub-${subItem.id || subItem.title}-${subIndex}`;
             const hasSubItems = subItem.items && subItem.items.length > 0;
             return (
               <div key={subId} className="w-full h-full flex flex-col flex-1 ">
                 {hasSubItems ? (
-                  <AccordionItem
-                    value={subItem.title}
-                    className="border-none py-0"
-                  >
-                    <AccordionTrigger className="py-4 font-300 transition-colors text-lg">
-                      {subItem.title}
-                    </AccordionTrigger>
+                  <AccordionItem value={subId} className="border-none py-0">
+                    <div className="flex items-center justify-between border-b border-foreground/10">
+                      <Link
+                        href={subItem.url}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          onClose(subItem.url);
+                        }}
+                        className="py-4 font-light transition-colors text-lg flex-1"
+                      >
+                        {subItem.title}
+                      </Link>
+                      <AccordionTrigger className="py-4 !p-0 w-10 justify-center shrink-0 border-none" />
+                    </div>
                     <AccordionContent className=" border-foreground/10 py-4 mb-1 ">
-                      {subItem.items.map((subSubItem) => {
-                        const subSubId = `subsub-${subSubItem.id || subSubItem.title}`;
+                      {subItem.items.map((subSubItem, subSubIndex) => {
+                        const subSubId = `subsub-${subSubItem.id || subSubItem.title}-${subSubIndex}`;
                         const hasGrandChildren =
                           subSubItem.items && subSubItem.items.length > 0;
 
@@ -62,12 +73,19 @@ export const InternalMenu = ({
                                 value={subSubId}
                                 className="border-none"
                               >
-                                <AccordionTrigger
-                                  value={subSubId}
-                                  className="pl-4 py-4  font-normal  text-lg"
-                                >
-                                  {subSubItem.title}
-                                </AccordionTrigger>
+                                <div className="flex items-center justify-between border-b border-foreground/5 pl-4">
+                                  <Link
+                                    href={subSubItem.url}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      onClose(subSubItem.url);
+                                    }}
+                                    className="py-4 font-normal text-lg flex-1"
+                                  >
+                                    {subSubItem.title}
+                                  </Link>
+                                  <AccordionTrigger className="py-4 !p-0 w-10 justify-center shrink-0 border-none" />
+                                </div>
 
                                 <AccordionContent className="">
                                   {subSubItem.items.map((grandChild) => (
@@ -76,10 +94,6 @@ export const InternalMenu = ({
                                       href={grandChild.url}
                                       onClick={(e) => {
                                         e.preventDefault();
-                                        console.log(
-                                          'Navigating to:',
-                                          grandChild.url,
-                                        );
                                         onClose(grandChild.url);
                                       }}
                                       className="block"
@@ -100,7 +114,7 @@ export const InternalMenu = ({
                                   e.preventDefault();
                                   onClose(subSubItem.url);
                                 }}
-                                className="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md text-left transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 pl-4 py-4  font-normal  transition-colors text-lg"
+                                className="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded text-left transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 pl-4 py-4 font-normal transition-colors text-lg"
                               >
                                 {subSubItem.title}
                               </Link>
@@ -108,19 +122,41 @@ export const InternalMenu = ({
                           </div>
                         );
                       })}
+                      {subItem.outletLink?.label && (
+                        <div className="mt-1 border-t border-foreground/10 pt-1">
+                          <Link
+                            href={subItem.outletLink.url}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              onClose(subItem.outletLink!.url);
+                            }}
+                            className="block w-full rounded p-0"
+                          >
+                            <Button
+                              variant="ghost"
+                              className="px-4 h-12 duration-300 decoration-transparent hover:decoration-primary transition-all text-base font-normal font-sans w-full justify-start border-none min-h-10 rounded text-red-500"
+                            >
+                              {subItem.outletLink.label}
+                            </Button>
+                          </Link>
+                        </div>
+                      )}
                     </AccordionContent>
                   </AccordionItem>
                 ) : (
-                  <Link
-                    href={subItem.url}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onClose(subItem.url);
-                    }}
-                    className="pl-6 py-4 text-sm font-normal  hover:border-current transition-colors"
-                  >
-                    {subItem.title}
-                  </Link>
+                  <div className="flex items-center justify-between border-b border-foreground/10">
+                    <Link
+                      href={subItem.url}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onClose(subItem.url);
+                      }}
+                      className="py-4 font-light transition-colors text-lg flex-1 flex items-center justify-between"
+                    >
+                      {subItem.title}
+                      <ChevronRightIcon className="text-muted-foreground pointer-events-none size-4 shrink-0 mr-3" />
+                    </Link>
+                  </div>
                 )}
               </div>
             );
@@ -130,7 +166,10 @@ export const InternalMenu = ({
     });
   return (
     <div className="flex flex-col  px-4 py-8 font-sans h-full flex-1 overflow-y-auto">
-      <Accordion type="multiple" className="w-full  h-full flex-1  pr-1">
+      <Accordion
+        type="multiple"
+        className="w-full  h-full flex-1  pr-1"
+      >
         {tabs}
       </Accordion>
     </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 import { Textarea } from '@shared/ui/textarea';
 import { useCartNoteStore } from '@shared/store/use-cart-note-store';
 import { updateCartNote } from '@entities/cart/api/update-note';
@@ -30,6 +30,7 @@ export const CartNoteTextarea = ({ placeholder }: CartNoteTextareaProps) => {
     <Textarea
       placeholder={placeholder}
       value={note}
+      className='rounded'
       onChange={handleChange}
     />
   );

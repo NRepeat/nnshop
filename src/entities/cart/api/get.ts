@@ -5,6 +5,7 @@ import {
   GetCartQuery,
   GetCartQueryVariables,
 } from '@shared/lib/shopify/types/storefront.generated';
+
 const CART_QUERY = `#graphql
   query GetCart($id: ID!) {
     cart(id: $id) {
@@ -43,6 +44,7 @@ const CART_QUERY = `#graphql
                   id
                   title
                   handle
+                  vendor
                   metafields(   identifiers: [
                   {key: "znizka", namespace: "custom"}]){
                     key
@@ -64,6 +66,16 @@ const CART_QUERY = `#graphql
                 amount
                 currencyCode
               }
+              compareAtAmountPerQuantity {
+                amount
+                currencyCode
+              }
+            }
+            discountAllocations {
+              discountedAmount {
+                amount
+                currencyCode
+              }
             }
             attributes {
               key
@@ -79,6 +91,12 @@ const CART_QUERY = `#graphql
       discountCodes {
         code
         applicable
+      }
+      discountAllocations{
+        discountedAmount{
+          amount
+        }
+
       }
       delivery {
         addresses {
@@ -158,7 +176,7 @@ export const getCart = async ({
       error instanceof DOMException && error.name === 'AbortError' ||
       error instanceof Error && error.name === 'AbortError';
     if (!isAbort) {
-      console.log('🚀 ~ getCart ~ error:', error);
+      console.error('[getCart] error:', error);
     }
     // Return null instead of throwing to prevent page crashes
     return null;

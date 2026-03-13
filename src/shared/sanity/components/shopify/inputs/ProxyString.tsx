@@ -1,6 +1,6 @@
 import { LockIcon } from '@sanity/icons';
 import { Box, Text, TextInput, Tooltip } from '@sanity/ui';
-import { get } from 'lodash';
+import get from 'lodash/get';
 import {
   StringInputProps,
   useFormValue,

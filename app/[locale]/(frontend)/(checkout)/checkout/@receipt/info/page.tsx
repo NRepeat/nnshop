@@ -1,22 +1,20 @@
 import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
 import { User, Truck, CreditCard } from 'lucide-react';
-import { OrderSummary, OrderSummarySkeleton } from '@features/checkout/receipt/ui/OrderSummary';
+import {
+  OrderSummary,
+  OrderSummarySkeleton,
+} from '@features/checkout/receipt/ui/OrderSummary';
+import { Card, CardContent } from '@shared/ui/card';
 
 type Props = {
   params: Promise<{ locale: string }>;
 };
 
-function EmptyCard({
-  icon,
-  label,
-}: {
-  icon: React.ReactNode;
-  label: string;
-}) {
+function EmptyCard({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-md border border-dashed border-gray-200 bg-gray-50/50 p-4">
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-400">
+    <div className="flex items-center gap-3 rounded border border-dashed border-gray-200 bg-gray-50/50 p-4">
+      <div className="flex size-10 shrink-0 items-center justify-center rounded bg-gray-100 text-gray-400">
         {icon}
       </div>
       <div className="flex flex-col gap-2 w-full">
@@ -37,21 +35,34 @@ export default async function InfoReceipt(props: Props) {
   return (
     <>
       {/* Mobile: Collapsible Order Summary */}
-      <div className="md:hidden">
-        <Suspense fallback={<OrderSummarySkeleton />}>
-          <OrderSummary locale={locale} collapsible />
-        </Suspense>
-      </div>
+      <Card className="md:hidden p-4 rounded h-fit">
+        <CardContent className='px-0'>
+          <Suspense fallback={<OrderSummarySkeleton />}>
+            <OrderSummary locale={locale} collapsible />
+          </Suspense>
+        </CardContent>
+      </Card>
 
       {/* Desktop: Full sidebar */}
-      <div className="hidden md:flex flex-col gap-3">
-        <Suspense fallback={<OrderSummarySkeleton />}>
-          <OrderSummary locale={locale} />
-        </Suspense>
-        <EmptyCard icon={<User className="size-5" />} label={t('contact_information')} />
-        <EmptyCard icon={<Truck className="size-5" />} label={t('delivery_information')} />
-        <EmptyCard icon={<CreditCard className="size-5" />} label={t('payment_information')} />
-      </div>
+      <Card className="hidden md:flex  p-4 rounded h-fit">
+        <CardContent className="flex-col gap-3 p-0 flex">
+          <Suspense fallback={<OrderSummarySkeleton />}>
+            <OrderSummary locale={locale} />
+          </Suspense>
+          <EmptyCard
+            icon={<User className="size-5" />}
+            label={t('contact_information')}
+          />
+          <EmptyCard
+            icon={<Truck className="size-5" />}
+            label={t('delivery_information')}
+          />
+          <EmptyCard
+            icon={<CreditCard className="size-5" />}
+            label={t('payment_information')}
+          />
+        </CardContent>
+      </Card>
     </>
   );
 }

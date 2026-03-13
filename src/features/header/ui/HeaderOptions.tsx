@@ -1,5 +1,6 @@
-import { Heart, ShoppingCart, User2 } from 'lucide-react';
+import { Heart, ShoppingCart } from 'lucide-react';
 import CartSheet from '../cart/ui/Sheet';
+import { CartSheetController } from '../cart/ui/CartSheetController';
 import { Button } from '@shared/ui/button';
 import { SearchSession } from '../search/ui/search-session';
 import { Suspense } from 'react';
@@ -10,16 +11,17 @@ export const HeaderOptions = ({ locale }: { locale: string }) => {
   return (
     <div className="col-span-1 flex justify-end gap-1 items-center px-1">
       <SearchSession className="h-full hidden md:block" />
-      <Link href={'/favorites'} className="hidden md:block">
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Favorites"
-          className="group hover:[&>svg]:stroke-[#e31e24]"
-        >
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Favorites"
+        className="hidden md:inline-flex hover:[&>svg]:stroke-[#e31e24]"
+        asChild
+      >
+        <Link href={'/favorites'}>
           <Heart />
-        </Button>
-      </Link>
+        </Link>
+      </Button>
       <Suspense
         fallback={
           <Suspense>
@@ -28,7 +30,6 @@ export const HeaderOptions = ({ locale }: { locale: string }) => {
               size="icon"
               aria-label="Account"
             >
-              <User2 />
             </Button>
           </Suspense>
         }
@@ -47,7 +48,9 @@ export const HeaderOptions = ({ locale }: { locale: string }) => {
           </Button>
         }
       >
-        <CartSheet locale={locale} />
+        <CartSheetController locale={locale}>
+          <CartSheet locale={locale} />
+        </CartSheetController>
       </Suspense>
     </div>
   );

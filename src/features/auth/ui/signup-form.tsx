@@ -4,14 +4,13 @@ import { cn } from '@/shared/lib/utils';
 import { SignUpFormData, createSignUpSchema } from './schema';
 import {
   createGoogleSignInHandler,
-  createShopifySignInHandler,
   createSignUpHandler,
 } from './action';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Image from 'next/image';
 import { Link } from '@shared/i18n/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
@@ -25,7 +24,6 @@ import {
   FormMessage,
 } from '@/shared/ui/form';
 import {
-  Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
@@ -54,15 +52,14 @@ export function SignupForm({
 
   const handleSubmit = createSignUpHandler(tErrors, tSuccess);
   const handleGoogleSignIn = createGoogleSignInHandler(tErrors);
-  const handleShopifySignIn = createShopifySignInHandler(tErrors);
 
   return (
     <div
       className={cn('flex flex-col gap-6 w-full max-w-3xl', className)}
       {...props}
     >
-      <Card className="overflow-hidden p-0 rounded-md shadow-none border-none">
-        <CardContent className="grid p-0 md:grid-cols-2">
+      <Card className="overflow-hidden p-0 rounded shadow border-none">
+        <CardContent className="grid  md:grid-cols-2 px-0">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(async (data) => {
@@ -97,7 +94,7 @@ export function SignupForm({
                           autoComplete="email"
                           placeholder={t('emailPlaceholder')}
                           disabled={isLoading}
-                          className="rounded-md"
+                          className="rounded"
                         />
                       </FormControl>
                       <FormMessage />
@@ -114,7 +111,9 @@ export function SignupForm({
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FieldLabel htmlFor="password">{t('password')}</FieldLabel>
+                        <FieldLabel htmlFor="password">
+                          {t('password')}
+                        </FieldLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -123,7 +122,7 @@ export function SignupForm({
                             autoComplete="new-password"
                             placeholder={t('passwordPlaceholder')}
                             disabled={isLoading}
-                            className="rounded-md"
+                            className="rounded"
                           />
                         </FormControl>
                         <FormMessage />
@@ -146,7 +145,7 @@ export function SignupForm({
                             autoComplete="new-password"
                             placeholder={t('confirmPasswordPlaceholder')}
                             disabled={isLoading}
-                            className="rounded-md"
+                            className="rounded"
                           />
                         </FormControl>
                         <FormMessage />
@@ -154,15 +153,15 @@ export function SignupForm({
                     )}
                   />
                 </div>
-                
+
                 <FieldDescription className="text-[11px] -mt-2">
                   {t('passwordDescription')}
                 </FieldDescription>
 
-                <Button 
-                  type="submit" 
-                  disabled={isLoading} 
-                  className="w-full rounded-md h-11"
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full rounded h-11"
                 >
                   {isLoading ? t('creatingAccount') : t('createAccountButton')}
                 </Button>
@@ -177,7 +176,7 @@ export function SignupForm({
                   {/* <Button
                     variant="outline"
                     type="button"
-                    className="rounded-md h-11"
+                    className="rounded h-11"
                     disabled={isLoading}
                     onClick={async () => {
                       setIsLoading(true);
@@ -194,7 +193,7 @@ export function SignupForm({
                   <Button
                     variant="outline"
                     type="button"
-                    className="rounded-md h-11 group hover:border-[#4285F4] hover:bg-[#4285F4]/5 transition-all"
+                    className="rounded h-11 group hover:border-[#4285F4] hover:bg-[#4285F4]/5 transition-all"
                     disabled={isLoading}
                     onClick={async () => {
                       setIsLoading(true);
@@ -206,13 +205,19 @@ export function SignupForm({
                     }}
                   >
                     <GoogleIcon />
-                    <span className="ml-2 text-xs font-medium uppercase tracking-tighter group-hover:text-[#4285F4] transition-colors">Google</span>
+                    <span className="ml-2 text-xs font-medium uppercase tracking-tighter group-hover:text-[#4285F4] transition-colors">
+                      Google
+                    </span>
                   </Button>
                 </div>
 
                 <p className="text-center text-sm text-muted-foreground mt-2">
                   {t('alreadyHaveAccount')}{' '}
-                  <Link href="/auth/sign-in" scroll={false} className="underline underline-offset-4 font-semibold hover:text-primary transition-colors">
+                  <Link
+                    href="/auth/sign-in"
+                    scroll={false}
+                    className="underline underline-offset-4 font-semibold hover:text-primary transition-colors"
+                  >
                     {t('signIn')}
                   </Link>
                 </p>
@@ -220,38 +225,41 @@ export function SignupForm({
             </form>
           </Form>
 
-          <div className="bg-muted relative hidden md:block ">
+          <div className="bg-muted relative hidden md:block  rounded overflow-hidden">
             <Image
               src="/auth_image.jpeg"
               alt="Signup cover"
               fill
+              sizes="50vw"
               priority
               className="absolute inset-0 h-full w-full object-cover grayscale contrast-125"
             />
           </div>
         </CardContent>
       </Card>
-      
+
       <p className="px-6 text-center text-[11px] text-muted-foreground leading-relaxed uppercase tracking-wide">
         {tCommon('byClickingContinue')}{' '}
-        <Link href="/terms-of-service" className="underline underline-offset-2" scroll={false}>
+        <Link
+          href="/terms-of-service"
+          className="underline underline-offset-2"
+          scroll={false}
+        >
           {tCommon('termsOfService')}
         </Link>{' '}
         {tCommon('and')}{' '}
-        <Link href="/privacy-policy" className="underline underline-offset-2" scroll={false}> 
+        <Link
+          href="/privacy-policy"
+          className="underline underline-offset-2"
+          scroll={false}
+        >
           {tCommon('privacyPolicy')}
-        </Link>.
+        </Link>
+        .
       </p>
     </div>
   );
 }
-
-const ShopifyIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 147.5 192.5" preserveAspectRatio="xMidYMid meet">
-    <path fill="#95BF47" d="M131.5 341.9c-.1-.9-.9-1.3-1.5-1.3s-13.7-1-13.7-1-9.1-9.1-10.2-10c-1-1-2.9-.7-3.7-.5-.1 0-2 .6-5.1 1.6-3.1-8.9-8.4-17-17.9-17h-.9c-2.6-3.4-6-5-8.8-5-22 0-32.6 27.5-35.9 41.5-8.6 2.7-14.7 4.5-15.4 4.8-4.8 1.5-4.9 1.6-5.5 6.1-.5 3.4-13 100.1-13 100.1l97.3 18.2L150 468c.1-.2-18.4-125.2-18.5-126.1zm-39.6-9.8c-2.4.7-5.3 1.6-8.2 2.6v-1.8c0-5.4-.7-9.8-2-13.3 5 .6 8.1 6.1 10.2 12.5zm-16.3-11.4c1.3 3.4 2.2 8.2 2.2 14.8v1c-5.4 1.7-11.1 3.4-17 5.3 3.3-12.6 9.6-18.8 14.8-21.1zm-6.4-6.2c1 0 2 .4 2.8 1-7.1 3.3-14.6 11.6-17.7 28.4-4.7 1.5-9.2 2.8-13.5 4.2 3.6-12.8 12.6-33.6 28.4-33.6z" transform="translate(-2.5 -302.1)"/>
-    <path fill="#5E8E3E" d="M130 340.4c-.6 0-13.7-1-13.7-1s-9.1-9.1-10.2-10c-.4-.4-.9-.6-1.3-.6l-7.3 150.6 52.8-11.4s-18.5-125.2-18.6-126.1c-.4-.9-1.1-1.3-1.7-1.5z" transform="translate(-2.5 -302.1)"/>
-  </svg>
-);
 
 const GoogleIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24">

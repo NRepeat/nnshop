@@ -32,7 +32,7 @@ export default function PaymentMethodButton({
         onSelectPaymentMethod(method.id);
       }}
       className={clsx(
-        'flex items-center gap-4 w-full p-4 rounded-md border transition-all text-left',
+        'flex items-center gap-4 w-full p-4 rounded border transition-all text-left',
         {
           'border-primary bg-primary/5': isSelected,
           'border-gray-200 hover:border-gray-300': !isSelected,
@@ -41,7 +41,7 @@ export default function PaymentMethodButton({
     >
       <div
         className={clsx(
-          'w-10 h-10 rounded-md flex items-center justify-center shrink-0',
+          'w-10 h-10 rounded flex items-center justify-center shrink-0',
           {
             'bg-primary/10': isSelected,
             'bg-gray-100': !isSelected,

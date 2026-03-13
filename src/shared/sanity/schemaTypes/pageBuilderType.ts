@@ -4,6 +4,7 @@ export const pageBuilderType = defineType({
   name: 'pageBuilder',
   type: 'array',
   of: [
+    defineArrayMember({ type: 'sharedSectionRef' }),
     defineArrayMember({ type: 'heroSlider' }),
     defineArrayMember({ type: 'mainCollectionGrid' }),
     defineArrayMember({ type: 'hero' }),
@@ -20,6 +21,7 @@ export const pageBuilderType = defineType({
     defineArrayMember({ type: 'elegantEase' }),
     defineArrayMember({ type: 'productComments' }),
     defineArrayMember({ type: 'collectionsWithPreviews' }),
+    defineArrayMember({ type: 'popularPosts' }),
   ],
   options: {
     insertMenu: {

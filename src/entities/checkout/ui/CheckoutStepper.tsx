@@ -19,12 +19,29 @@ type StepConfig = {
 
 const steps: StepConfig[] = [
   { key: 'info', href: '/checkout/info', icon: <User className="w-4 h-4" /> },
-  { key: 'delivery', href: '/checkout/delivery', icon: <Truck className="w-4 h-4" /> },
-  { key: 'payment', href: '/checkout/payment', icon: <CreditCard className="w-4 h-4" /> },
-  { key: 'success', href: '/checkout/success', icon: <CheckCircle className="w-4 h-4" /> },
+  {
+    key: 'delivery',
+    href: '/checkout/delivery',
+    icon: <Truck className="w-4 h-4" />,
+  },
+  {
+    key: 'payment',
+    href: '/checkout/payment',
+    icon: <CreditCard className="w-4 h-4" />,
+  },
+  {
+    key: 'success',
+    href: '/checkout/success',
+    icon: <CheckCircle className="w-4 h-4" />,
+  },
 ];
 
-const stepOrder: (CheckoutStep | 'success')[] = ['info', 'delivery', 'payment', 'success'];
+const stepOrder: (CheckoutStep | 'success')[] = [
+  'info',
+  'delivery',
+  'payment',
+  'success',
+];
 
 export const CheckoutStepper = ({ completedSteps }: CheckoutStepperProps) => {
   const t = useTranslations('CheckoutSteps');
@@ -72,12 +89,12 @@ export const CheckoutStepper = ({ completedSteps }: CheckoutStepperProps) => {
 
   return (
     <div className="w-full py-4">
-      <div className="flex items-center justify-between container">
+      <div className="flex items-center justify-between container ">
         {steps.map((step, index) => {
           const isActive = step.key === currentStep;
-          const isCompleted = isStepCompleted(step.key) || index < currentStepIndex;
+          const isCompleted =
+            isStepCompleted(step.key) || index < currentStepIndex;
           const isAccessible = isStepAccessible(step.key);
-      
 
           const StepIcon = (
             <div
@@ -87,7 +104,7 @@ export const CheckoutStepper = ({ completedSteps }: CheckoutStepperProps) => {
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-muted-foreground',
                 isActive && 'ring-2 ring-primary ring-offset-2',
-                !isAccessible && !isActive && 'cursor-not-allowed opacity-50'
+                !isAccessible && !isActive && 'cursor-not-allowed opacity-50',
               )}
             >
               {step.icon}
@@ -95,18 +112,24 @@ export const CheckoutStepper = ({ completedSteps }: CheckoutStepperProps) => {
           );
 
           return (
-            <div key={step.key} className="flex flex-col items-center first:items-start last:items-end flex-1 h-12">
+            <div
+              key={step.key}
+              className="flex flex-col items-center first:items-start last:items-end flex-1 h-12"
+            >
               <div className="flex items-center w-full">
                 {index > 0 && (
                   <div
                     className={cn(
                       'h-1 flex-1 transition-colors',
-                      index <= currentStepIndex ? 'bg-primary' : 'bg-muted'
+                      index <= currentStepIndex ? 'bg-primary' : 'bg-muted',
                     )}
                   />
                 )}
                 {isAccessible ? (
-                  <Link href={step.href} className="hover:opacity-80 transition-opacity">
+                  <Link
+                    href={step.href}
+                    className="hover:opacity-80 transition-opacity"
+                  >
                     {StepIcon}
                   </Link>
                 ) : (
@@ -116,17 +139,24 @@ export const CheckoutStepper = ({ completedSteps }: CheckoutStepperProps) => {
                   <div
                     className={cn(
                       'h-1 flex-1 transition-colors',
-                      index < currentStepIndex ? 'bg-primary' : 'bg-muted'
+                      index < currentStepIndex ? 'bg-primary' : 'bg-muted',
                     )}
                   />
                 )}
               </div>
               <span
                 className={cn(
-                  'text-xs mt-2 text-center',
+                  'text-xs mt-2 font-medium transition-colors',
+                  // Dynamic alignment logic
+                  index === 0
+                    ? 'text-left'
+                    : index === steps.length - 1
+                      ? 'text-right'
+                      : 'text-center',
+
                   isCompleted || isActive
-                    ? 'text-foreground font-medium'
-                    : 'text-muted-foreground'
+                    ? 'text-foreground'
+                    : 'text-muted-foreground',
                 )}
               >
                 {t(step.key)}

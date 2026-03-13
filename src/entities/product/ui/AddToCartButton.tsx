@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useTransition, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@shared/ui/button';
 import addToCart from '../api/add-to-cart';
@@ -9,6 +9,8 @@ import { Product } from '@shared/types/product/types';
 import { useTranslations } from 'next-intl';
 import clsx from 'clsx';
 import { authClient } from '@features/auth/lib/auth-client';
+import { useCartUIStore } from '@shared/store/use-cart-ui-store';
+import { useRouter } from 'next/navigation';
 
 function SubmitButton({
   variant = 'default',
@@ -35,7 +37,7 @@ function SubmitButton({
       type="submit"
       //@ts-expect-error
       variant={variant}
-      className="w-full h-10 md:h-14 text-md rounded-md"
+      className="w-full h-10 md:h-14 text-md rounded"
       disabled={disabled || pending}
       aria-disabled={pending}
     >
@@ -49,17 +51,33 @@ export function AddToCartButton({
   selectedVariant,
   className,
   variant,
+  disabled,
+  onSuccess,
 }: {
   product: Product;
   selectedVariant?: ProductVariant;
   className?: string;
   variant?: string;
+  disabled?: boolean;
+  onSuccess?: () => void;
 }) {
   const [isPending, setIsPending] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
+  const [isRefreshing, startRefresh] = useTransition();
+  const [shouldOpenCart, setShouldOpenCart] = useState(false);
+  const scrollYRef = useRef(0);
+  const router = useRouter();
   const t = useTranslations('ProductPage');
+  const { openCart } = useCartUIStore();
 
-  // Check product availability
+  // Open cart only after refresh completes, then restore scroll position
+  useEffect(() => {
+    if (!isRefreshing && shouldOpenCart) {
+      window.scrollTo({ top: scrollYRef.current, behavior: 'instant' });
+      openCart();
+      setShouldOpenCart(false);
+    }
+  }, [isRefreshing, shouldOpenCart, openCart]);
+
   const isProductAvailable = selectedVariant
     ? selectedVariant?.quantityAvailable !== 0
     : //@ts-ignore
@@ -71,7 +89,6 @@ export function AddToCartButton({
       toast.warning(t('variantNotSelected')+"!",{style:{justifyContent:"center",backgroundColor:"#FFF4E5",color:"#B98900",border:"1px solid #FFCC47"}});
       return
     }
-    // Check if product is available before proceeding
     if (!isProductAvailable) {
       toast.error(t('productNotAvailable'));
       return;
@@ -98,13 +115,24 @@ export function AddToCartButton({
 
       const formData = new FormData();
       formData.append('variantId', variantId!);
+      formData.append('productTitle', product?.title ?? '');
+      formData.append('productHandle', product?.handle ?? '');
+      formData.append('price', selectedVariant?.price?.amount ?? product?.priceRange?.maxVariantPrice?.amount ?? '');
+      formData.append('currency', selectedVariant?.price?.currencyCode ?? product?.priceRange?.maxVariantPrice?.currencyCode ?? 'UAH');
+      formData.append('size', selectedVariant?.selectedOptions?.find(o => ['розмір','размер','size'].includes(o.name.toLowerCase()))?.value ?? '');
+      formData.append('$current_url', window.location.href);
 
       const result = await addToCart(null, formData);
 
       if (result.success) {
         toast.success(t('addedToCart'));
+        scrollYRef.current = window.scrollY;
+        setShouldOpenCart(true);
+        startRefresh(() => {
+          router.refresh();
+        });
+        onSuccess?.();
       } else {
-        // Show specific error message or generic one
         const errorMessage =
           result.message === 'No products available'
             ? t('productNotAvailable')
@@ -120,7 +148,7 @@ export function AddToCartButton({
   };
 
   return (
-    <form ref={formRef} className="w-full" onSubmit={handleSubmit}>
+    <form className="w-full" onSubmit={handleSubmit}>
       <input
         type="hidden"
         name="variantId"
@@ -133,7 +161,7 @@ export function AddToCartButton({
       <div className={clsx('product-form__buttons mt-1 md:mt-4', className)}>
         <SubmitButton
           variant={variant}
-          disabled={!isProductAvailable}
+          disabled={!isProductAvailable || (disabled ?? false)}
           isProductAvailable={!isProductAvailable}
           pending={isPending}
         />

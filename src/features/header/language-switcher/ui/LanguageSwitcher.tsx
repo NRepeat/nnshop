@@ -9,7 +9,7 @@ import {
 } from '@/shared/ui/dropdown-menu';
 import { useTranslations } from 'use-intl';
 import { usePathname, useRouter } from '@shared/i18n/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { cn } from '@shared/lib/utils';
 import { usePathStore } from '@/shared/store/use-path-store';
 export const parseLocale = {
@@ -33,18 +33,24 @@ export function LanguageSwitcher({
   const [selectedLocale, setSelectedLocale] = useState<string | undefined>(
     locale,
   );
+  const localeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const alternatePaths = usePathStore((state) => state.alternatePaths);
   const router = useRouter();
+  const [, startTransition] = useTransition();
   const changeLocale = (newLocale: string) => {
     setSelectedLocale(newLocale);
     const targetPath = alternatePaths?.[newLocale] || pathname;
-    // router.replace(pathname, { locale: newLocale });
-    router.replace(targetPath, { locale: newLocale });
+    startTransition(() => {
+      router.replace(targetPath, { locale: newLocale });
+    });
   };
   useEffect(() => {
     if (locale && selectedLocale !== locale) {
-      setTimeout(() => setSelectedLocale(locale), 0);
+      localeTimerRef.current = setTimeout(() => setSelectedLocale(locale), 0);
     }
+    return () => {
+      if (localeTimerRef.current) clearTimeout(localeTimerRef.current);
+    };
   }, [locale, selectedLocale]);
 
   return (
@@ -52,19 +58,19 @@ export function LanguageSwitcher({
       <DropdownMenuTrigger asChild className={className}>
         <Button
           variant="default"
-          className="h-full border-b-2 border-foreground bg-foreground hover:border-b-2 hover:border-b-foreground transition-colors"
+          className="h-full"
         >
           {parseLocale[selectedLocale as keyof typeof parseLocale]}
           <span className="sr-only">Switch language</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="rounded-md gap-2"
+        className="rounded gap-2"
         align={align}
         side={side}
       >
         <DropdownMenuItem
-          className={cn('rounded-md', {
+          className={cn('rounded', {
             'bg-gray-200': selectedLocale === 'uk',
           })}
           onClick={() => changeLocale('uk')}
@@ -72,7 +78,7 @@ export function LanguageSwitcher({
           {t('uk')}
         </DropdownMenuItem>
         <DropdownMenuItem
-          className={cn('rounded-md', {
+          className={cn('rounded', {
             'bg-gray-200': selectedLocale === 'ru',
           })}
           onClick={() => changeLocale('ru')}

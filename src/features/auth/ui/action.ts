@@ -3,6 +3,7 @@
 import { client } from '@/features/auth/lib/client';
 import { SignInFormData, SignUpFormData } from './schema';
 import { toast } from 'sonner';
+import posthog from 'posthog-js';
 
 // Helper function to get translations on the client side
 const getClientTranslation = (key: string, fallback: string) => {
@@ -128,9 +129,12 @@ export const createSignInHandler = (
         return;
       }
 
+      posthog.identify(data.email, { email: data.email });
+      posthog.capture('user_signed_in', { method: 'email' });
       toast.success(tSuccess('welcomeBack'));
       window.location.href = '/';
     } catch (error) {
+      posthog.captureException(error);
       console.error('Sign in error:', error);
       toast.error(tErrors('unexpectedError'));
     }
@@ -159,9 +163,12 @@ export const createSignUpHandler = (
         return;
       }
 
+      posthog.identify(data.email, { email: data.email });
+      posthog.capture('user_signed_up', { method: 'email' });
       toast.success(tSuccess('accountCreated'));
       window.location.href = '/';
     } catch (error) {
+      posthog.captureException(error);
       console.error('Sign up error:', error);
       toast.error(tErrors('unexpectedError'));
     }
@@ -176,6 +183,7 @@ export const createGoogleSignInHandler = (tErrors: (key: string) => string) => {
         callbackURL: '/',
       });
     } catch (error) {
+      posthog.captureException(error);
       console.error('Google sign in error:', error);
       toast.error(tErrors('googleSignInFailed'));
     }
@@ -191,6 +199,7 @@ export const createShopifySignInHandler = (
         provider: 'shopify',
       });
     } catch (error) {
+      posthog.captureException(error);
       console.error('Shopify sign in error:', error);
       toast.error(tErrors('shopifySignInFailed'));
     }

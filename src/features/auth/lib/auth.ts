@@ -7,7 +7,6 @@ import { anonymousCartBuyerIdentityUpdate } from '../../../entities/cart/api/ano
 import { prisma } from '../../../shared/lib/prisma';
 import { sendEvent } from '../../../shared/lib/mailer';
 import { linkAnonymousDataToUser } from './on-link-account';
-import { createShopifyCustomer } from '@entities/customer/api/create-customer';
 
 const betterAuthSecret = process.env.BETTER_AUTH_SECRET;
 const betterAuthUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -51,14 +50,7 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        after: async (user) => {
-          console.log('[databaseHooks] User created:', {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            isAnonymous: (user as any).isAnonymous,
-          });
-        },
+        after: async () => {},
       },
     },
   },
@@ -81,28 +73,36 @@ export const auth = betterAuth({
     anonymous({
       emailDomainName: 'gmail.com',
       onLinkAccount: async ({ anonymousUser, newUser }) => {
-        console.log('[onLinkAccount] START', {
-          anonymousUserId: anonymousUser.user.id,
-          newUserId: newUser.user.id,
-          newUserEmail: newUser.user.email,
-        });
-        try {
-          const results = await Promise.allSettled([
-            anonymousCartBuyerIdentityUpdate({ anonymousUser, newUser }),
-            linkAnonymousDataToUser({
-              anonymousUserId: anonymousUser.user.id,
-              newUserId: newUser.user.id,
-            }),
-          ]);
-          console.log('[onLinkAccount] RESULTS', {
-            cartUpdate: results[0].status,
-            cartUpdateReason: results[0].status === 'rejected' ? results[0].reason?.message : undefined,
-            dataLink: results[1].status,
-            dataLinkReason: results[1].status === 'rejected' ? results[1].reason?.message : undefined,
+        const [cartMergeResult, dataLinkResult] = await Promise.allSettled([
+          anonymousCartBuyerIdentityUpdate({ anonymousUser, newUser }),
+          linkAnonymousDataToUser({
+            anonymousUserId: anonymousUser.user.id,
+            newUserId: newUser.user.id,
+          }),
+        ]);
+
+        if (cartMergeResult.status === 'rejected') {
+          console.error('[onLinkAccount] cart merge failed', {
+            step: 'anonymous-cart-buyer-identity-update',
+            userId: newUser.user.id,
+            orderId: undefined,
+            error:
+              cartMergeResult.reason instanceof Error
+                ? cartMergeResult.reason.message
+                : String(cartMergeResult.reason),
           });
-          console.log('[onLinkAccount] DONE');
-        } catch (error) {
-          console.error('[onLinkAccount] ERROR:', error);
+        }
+
+        if (dataLinkResult.status === 'rejected') {
+          console.error('[onLinkAccount] data link failed', {
+            step: 'link-anonymous-data-to-user',
+            userId: newUser.user.id,
+            orderId: undefined,
+            error:
+              dataLinkResult.reason instanceof Error
+                ? dataLinkResult.reason.message
+                : String(dataLinkResult.reason),
+          });
         }
       },
     }),

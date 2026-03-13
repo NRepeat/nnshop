@@ -1,9 +1,14 @@
+import { PortableText } from 'next-sanity';
+import { components as portableTextComponents } from '@shared/sanity/components/portableText';
 import { Features } from '@entities/feature';
 import {
   HeroBanner,
   MainCollectionGrid,
   ProductCarousel,
   MainCollectionGridSkeleton,
+  PopularPosts,
+  ProductCarouselSkeleton,
+  PreviewsCollectionsSkeleton,
 } from '@entities/home/ui';
 import { BrandGrid } from '@entities/home/ui/BrendGrid/BrendGrid';
 import { PreviewsCollections } from '@entities/home/ui/previews-collections';
@@ -18,12 +23,179 @@ import ProductComments from '@entities/product/ui/ProductComments';
 import { notFound } from 'next/navigation';
 import { getHomePage } from '../api/get-home-page';
 import { Locale } from '@/shared/i18n/routing';
-import { Suspense } from 'react';
+import { Fragment, Suspense } from 'react';
 import { HeroSwiper } from '@entities/slider/ui/Slider';
+import type { PAGE_QUERYResult, SliderBlock } from '@shared/sanity/types';
+
+type PageContent = NonNullable<
+  NonNullable<PAGE_QUERYResult>['content']
+>[number];
+type CollectionsCarouselBlock = Extract<
+  PageContent,
+  { _type: 'collectionsCarousel' }
+>;
+type SharedSectionRefBlock = {
+  _type: 'sharedSectionRef';
+  _key: string;
+  section?: { content?: PageContent[] };
+};
 
 type HeroPageProps = {
   locale: Locale;
   gender: string;
+};
+
+const renderBlock = (
+  block: PageContent,
+  locale: Locale,
+  gender: string,
+): React.ReactNode => {
+  switch (block._type) {
+    case 'heroSlider': {
+      const hero = block as any;
+      const videoSrc = hero.videoFile || hero.videoUrl;
+      return (
+        <Fragment key={block._key}>
+          <HeroBanner {...hero} gender={gender} />
+        </Fragment>
+      );
+    }
+
+    case 'mainCollectionGrid':
+      return (
+        <Suspense
+          key={block._key}
+          fallback={<MainCollectionGridSkeleton />}
+        >
+          <MainCollectionGrid
+            locale={locale}
+            gender={gender}
+            {...(block as any)}
+          />
+        </Suspense>
+      );
+
+    case 'productCarousel':
+      return (
+        <Suspense key={block._key} fallback={<ProductCarouselSkeleton />}>
+          <ProductCarousel
+            locale={locale}
+            gender={gender}
+            {...(block as any)}
+          />
+        </Suspense>
+      );
+
+    case 'splitImage':
+      return (
+        <Suspense key={block._key} fallback={<SplitImageSkeleton />}>
+          <SplitImage locale={locale} gender={gender} {...(block as any)} />
+        </Suspense>
+      );
+
+    case 'features':
+      return <Features key={block._key} locale={locale} {...(block as any)} />;
+
+    case 'brandGridBlock':
+      return <BrandGrid key={block._key} locale={locale} gender={gender} {...(block as any)} />;
+
+    case 'collectionsWithPreviews':
+      return (
+        <Suspense key={block._key} fallback={<PreviewsCollectionsSkeleton />}>
+          <PreviewsCollections
+            locale={locale}
+            gender={gender}
+            {...(block as any)}
+          />
+        </Suspense>
+      );
+
+    case 'hero':
+      return <Hero key={block._key} {...(block as any)} />;
+
+    case 'faqs':
+      return <FAQs key={block._key} locale={locale} {...(block as any)} />;
+
+    case 'similarProducts':
+      return block.collection ? (
+        <Suspense
+          key={block._key}
+          fallback={<div className="h-96 animate-pulse bg-gray-100" />}
+        >
+          <SimilarProducts
+            collection={
+              block.collection as unknown as Parameters<
+                typeof SimilarProducts
+              >[0]['collection']
+            }
+          />
+        </Suspense>
+      ) : null;
+
+    case 'collectionsCarousel': {
+      const carousel = block as unknown as CollectionsCarouselBlock;
+      return (
+        <CollectionsCarousel
+          key={block._key}
+          collections={carousel.collections}
+          title={carousel.title}
+          action_text={carousel.action_text}
+          gender={gender}
+        />
+      );
+    }
+
+    case 'sliderBlock':
+      return (
+        <HeroSwiper
+          key={block._key}
+          slides={(block as unknown as SliderBlock).slides}
+        />
+      );
+
+    case 'elegantEase':
+      return <ElegantEase key={block._key} />;
+
+    case 'popularPosts':
+      return (
+        <PopularPosts
+          key={block._key}
+          {...(block as Parameters<typeof PopularPosts>[0])}
+        />
+      );
+
+    case 'productComments':
+      return <ProductComments key={block._key} />;
+
+    case 'contentPageBlock':
+      return (
+        <section key={block._key} className="container py-8">
+          <div className="prose max-w-none">
+            {block.body && <PortableText value={block.body as any} components={portableTextComponents} />}
+          </div>
+        </section>
+      );
+
+    case 'productDetails':
+      // Product details is typically used on product pages
+      return null;
+
+    case 'sharedSectionRef': {
+      const sharedContent = (block as unknown as SharedSectionRefBlock).section?.content;
+      if (!Array.isArray(sharedContent)) return null;
+      return (
+        <Fragment key={(block as unknown as SharedSectionRefBlock)._key}>
+          {sharedContent.map((innerBlock) => renderBlock(innerBlock, locale, gender))}
+        </Fragment>
+      );
+    }
+
+    default:
+      console.warn(
+        `Unknown block type: ${(block as { _type: string })._type}`,
+      );
+      return null;
+  }
 };
 
 export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
@@ -37,96 +209,7 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
   }
   return (
     <main className="flex flex-col">
-      {content.map((block) => {
-        switch (block._type) {
-          case 'heroSlider':
-            return <HeroBanner key={block._key} {...block} />;
-
-          case 'mainCollectionGrid':
-            return (
-              <Suspense key={block._key} fallback={<MainCollectionGridSkeleton />}>
-                <MainCollectionGrid locale={locale} {...block} />
-              </Suspense>
-            );
-
-          case 'productCarousel':
-            return (
-              <ProductCarousel key={block._key} locale={locale} {...block} />
-            );
-
-          case 'splitImage':
-            return (
-              <Suspense key={block._key} fallback={<SplitImageSkeleton />}>
-                <SplitImage locale={locale} {...block} />
-              </Suspense>
-            );
-
-          case 'features':
-            return <Features key={block._key} locale={locale} {...block} />;
-
-          case 'brandGridBlock':
-            return <BrandGrid key={block._key} locale={locale} {...block} />;
-
-          case 'collectionsWithPreviews':
-            return (
-              <PreviewsCollections
-                key={block._key}
-                locale={locale}
-                {...block}
-              />
-            );
-
-          case 'hero':
-            return <Hero key={block._key} {...block} />;
-
-          case 'faqs':
-            return <FAQs key={block._key} {...(block as any)} />;
-
-          case 'similarProducts':
-            return block.collection ? (
-              <Suspense key={block._key} fallback={<div className="h-96 animate-pulse bg-gray-100" />}>
-                <SimilarProducts collection={block.collection as any} />
-              </Suspense>
-            ) : null;
-
-          case 'collectionsCarousel':
-            return (
-              <CollectionsCarousel
-                key={block._key}
-                collections={block.collections as any}
-                title={block.title as any}
-                action_text={block.action_text as any}
-              />
-            );
-
-          case 'sliderBlock':
-            return <HeroSwiper key={block._key} {...(block as any)} />;
-
-          case 'elegantEase':
-            return <ElegantEase key={block._key} />;
-
-          case 'productComments':
-            return <ProductComments key={block._key} />;
-
-          case 'contentPageBlock':
-            // Content page block - render portable text
-            return (
-              <section key={block._key} className="container py-8">
-                <div className="prose max-w-none">
-                  {/* Portable text content would be rendered here */}
-                </div>
-              </section>
-            );
-
-          case 'productDetails':
-            // Product details is typically used on product pages
-            return null;
-
-          default:
-            console.warn(`Unknown block type: ${(block as any)._type}`);
-            return null;
-        }
-      })}
+      {(content as PageContent[]).map((block) => renderBlock(block, locale, gender))}
     </main>
   );
 };

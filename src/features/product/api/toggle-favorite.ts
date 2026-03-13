@@ -2,6 +2,9 @@
 import { prisma } from '@shared/lib/prisma';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { Session, User } from 'better-auth';
+import { captureServerEvent } from '@shared/lib/posthog/posthog-server';
+import { auth } from '@features/auth/lib/auth';
+import { headers } from 'next/headers';
 
 export const toggleFavoriteProduct = async (
   productId: string,
@@ -9,11 +12,14 @@ export const toggleFavoriteProduct = async (
   locale: string,
   handle?: string,
 ) => {
-  if (!session?.user?.id) {
+  const serverSession = await auth.api.getSession({ headers: await headers() });
+  const isAnonymous = (serverSession?.user as (NonNullable<typeof serverSession>['user'] & { isAnonymous?: boolean }) | undefined)?.isAnonymous;
+
+  if (!serverSession?.user?.id || isAnonymous) {
     return { success: false, error: 'AUTH_REQUIRED' };
   }
 
-  const userId = session.user.id;
+  const userId = serverSession.user.id;
 
   try {
     const existingFavorite = await prisma.favoriteProduct.findUnique({
@@ -39,6 +45,12 @@ export const toggleFavoriteProduct = async (
     if (handle) {
       revalidatePath(`/${locale}/product/${handle}`, 'page');
     }
+
+    await captureServerEvent(
+      userId,
+      isFavorited ? 'product_favorited' : 'product_unfavorited',
+      { product_id: productId, product_handle: handle },
+    );
 
     return { success: true, isFavorited };
   } catch (error) {

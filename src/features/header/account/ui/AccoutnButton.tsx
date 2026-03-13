@@ -65,12 +65,6 @@ export const AccountButton = async ({
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem>
-            <Link href="/account/settings" className="font-medium w-full">
-              {t('myAccount')}
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
             <Link href="/orders" className="w-full">
               {t('orders')}
             </Link>
@@ -78,11 +72,6 @@ export const AccountButton = async ({
           <DropdownMenuItem>
             <Link href="/favorites" className="w-full">
               {t('favorites')}
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link href="/account/settings" className="w-full">
-              {t('settings')}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />

@@ -1,12 +1,22 @@
+// SEC-02: CSRF PROTECTION VERIFIED — Next.js built-in Origin/Host header comparison
+// is active for this Server Action. On every invocation, Next.js compares the Origin
+// header to the Host header (or X-Forwarded-Host). Cross-origin requests are rejected
+// automatically (HTTP 403). No serverActions.allowedOrigins is configured in
+// next.config.ts, so only requests from the same origin (miomio.com.ua) are accepted.
+// Ref: https://nextjs.org/docs/app/guides/data-security#csrf-protection
+// Note: next.config.ts allowedDevOrigins controls dev server cross-origin access only;
+// it does NOT affect Server Action CSRF protection.
 'use server';
 import { getCart } from '@entities/cart/api/get';
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { headers } from 'next/headers';
+import { captureServerError } from '@shared/lib/posthog/posthog-server';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { formatPhoneForShopify } from '@features/checkout/schema/contactInfoSchema';
+import { getPickupPoint } from '@features/checkout/delivery/lib/pickup-points';
 
 type OrderResult = {
   id: string;
@@ -62,6 +72,7 @@ export async function createOrder(
   completeCheckoutData: Omit<CheckoutData, 'paymentInfo'> | null,
   locale: string = 'uk',
   sendReceipt: boolean = false,
+  paymentMethod?: string,
 ): Promise<{
   success: boolean;
   order?: OrderResult;
@@ -70,33 +81,13 @@ export async function createOrder(
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
-      console.error('SESSION NOT FOUND');
+      await captureServerError(new Error('Session not found during order creation'), {
+        service: 'checkout',
+        action: 'create_order_no_session',
+      });
       return {
         success: false,
         errors: ['Session not found'],
-      };
-    }
-
-    // Prevent duplicate orders on page refresh (5-minute window)
-    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-    const recentOrder = await prisma.order.findFirst({
-      where: {
-        userId: session.user.id,
-        draft: false,
-        createdAt: { gte: fiveMinutesAgo },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    if (recentOrder?.shopifyOrderId) {
-      return {
-        success: true,
-        order: {
-          id: recentOrder.shopifyOrderId,
-          name: recentOrder.orderName || '',
-          totalPriceSet: { shopMoney: { amount: '0', currencyCode: 'UAH' } },
-          lineItems: { edges: [] },
-        },
       };
     }
 
@@ -104,23 +95,24 @@ export async function createOrder(
       userId: session.user.id,
       locale,
     })) as GetCartQuery | null;
-    if (!result) {
-      console.error('CART NOT FOUND');
+    if (!result || !result.cart) {
+      await captureServerError(new Error('Cart not found during order creation'), {
+        service: 'checkout',
+        action: 'create_order_no_cart',
+        userId: session.user.id,
+      });
       return {
         success: false,
         errors: ['Cart  NOT FOUND'],
       };
     }
     const cart = result.cart;
-    if (!cart) {
-      console.error('CART NOT FOUND');
-      return {
-        success: false,
-        errors: ['Cart  NOT FOUND'],
-      };
-    }
     if (!cart.lines || !cart.lines.edges.length) {
-      console.error('CART HAS NO ITEMS');
+      await captureServerError(new Error('Cart empty during order creation'), {
+        service: 'checkout',
+        action: 'create_order_empty_cart',
+        userId: session.user.id,
+      });
       return {
         success: false,
         errors: ['Cart has no items'],
@@ -129,6 +121,33 @@ export async function createOrder(
 
     const currencyCode = cart.cost.totalAmount.currencyCode || 'UAH';
 
+    // Calculate znizka-discounted subtotal (same logic as Payment.tsx)
+    let localTotal = 0;
+    for (const edge of cart.lines.edges as any[]) {
+      const line = edge.node;
+      const price = parseFloat(line.cost.amountPerQuantity.amount);
+      const sale =
+        Number(
+          line.merchandise.product.metafields?.find(
+            (m: any) => m?.key === 'znizka',
+          )?.value || '0',
+        ) || 0;
+      const discountedPrice = sale > 0 ? price * (1 - sale / 100) : price;
+      localTotal += discountedPrice * line.quantity;
+    }
+
+    const applicableDiscounts = (cart.discountCodes ?? []).filter(
+      (d) => d.applicable,
+    );
+    const hasApplicableDiscount = applicableDiscounts.length > 0;
+    const shopifyTotal = Number(cart.cost.totalAmount.amount);
+    const goodsTotal = hasApplicableDiscount
+      ? Math.min(localTotal, shopifyTotal)
+      : localTotal;
+
+    // Scale line item prices so order total matches what the customer pays
+    const discountRatio = localTotal > 0 ? goodsTotal / localTotal : 1;
+
     const lineItems = cart.lines.edges
       .map((edge: any) => {
         const lineItem = edge.node;
@@ -136,36 +155,31 @@ export async function createOrder(
           return null;
         }
 
-        const product = lineItem.merchandise.product;
-        const amountPerQuantity = parseFloat(lineItem.cost.amountPerQuantity.amount);
+        const product = lineItem.merchandise.product as any;
+        const amountPerQuantity = parseFloat(
+          lineItem.cost.amountPerQuantity.amount,
+        );
 
         // Get discount percentage from metafield
-        const sale = Number(
-          product.metafields?.find((m: any) => m?.key === 'znizka')?.value || '0'
-        ) || 0;
+        const sale =
+          Number(
+            product.metafields?.find((m: any) => m?.key === 'znizka')?.value ||
+              '0',
+          ) || 0;
 
         const item: any = {
           variantId: lineItem.merchandise.id,
           quantity: lineItem.quantity,
         };
 
-        // Apply discount via priceSet if exists
-        if (sale > 0) {
-          const discountedPrice = amountPerQuantity * (1 - sale / 100);
-          item.priceSet = {
-            shopMoney: {
-              amount: discountedPrice.toFixed(2),
-              currencyCode,
-            },
-          };
-        } else {
-          item.priceSet = {
-            shopMoney: {
-              amount: amountPerQuantity.toFixed(2),
-              currencyCode,
-            },
-          };
-        }
+        const basePrice =
+          sale > 0 ? amountPerQuantity * (1 - sale / 100) : amountPerQuantity;
+        item.priceSet = {
+          shopMoney: {
+            amount: (basePrice * discountRatio).toFixed(2),
+            currencyCode,
+          },
+        };
 
         return item;
       })
@@ -176,28 +190,6 @@ export async function createOrder(
       currency: currencyCode,
       financialStatus: 'PENDING',
     };
-
-    // Add note from cart if present
-    if (cart.note) {
-      order.note = cart.note;
-    }
-
-    // Add discount codes from cart if present
-    if (cart.discountCodes && cart.discountCodes.length > 0) {
-      const applicableDiscounts = cart.discountCodes.filter((d) => d.applicable);
-      if (applicableDiscounts.length > 0) {
-        // Save discount codes as custom attributes for reference
-        if (!order.customAttributes) {
-          order.customAttributes = [];
-        }
-        applicableDiscounts.forEach((discount, index) => {
-          order.customAttributes.push({
-            key: `discount_code_${index + 1}`,
-            value: discount.code,
-          });
-        });
-      }
-    }
 
     if (!completeCheckoutData) {
       throw new Error('Checkout data is missing');
@@ -210,7 +202,7 @@ export async function createOrder(
     const formattedPhone = completeCheckoutData.contactInfo.phone
       ? formatPhoneForShopify(
           completeCheckoutData.contactInfo.phone,
-          completeCheckoutData.contactInfo.countryCode
+          completeCheckoutData.contactInfo.countryCode,
         )
       : '';
 
@@ -218,20 +210,108 @@ export async function createOrder(
       order.phone = formattedPhone;
     }
 
-    const selectedDelivery = cart.delivery.addresses.find(
+    const selectedDelivery = cart.delivery?.addresses?.find(
       (a) => a.selected,
     )?.address;
-    const shippingAddress = {
-      address1: selectedDelivery?.address1 || '',
-      city: selectedDelivery?.city || '',
-      country: selectedDelivery?.countryCode || '',
-      firstName: completeCheckoutData.contactInfo.name || '',
-      lastName: completeCheckoutData.contactInfo.lastName || '',
-      phone: formattedPhone,
-      zip: selectedDelivery?.zip || '',
-      address2: selectedDelivery?.address2 || undefined,
-    };
+
+    // For self-pickup, build address from DB delivery info (cart address may lag)
+    const deliveryMethod = completeCheckoutData.deliveryInfo?.deliveryMethod;
+    let shippingAddress: any;
+    if (deliveryMethod === 'selfPickup') {
+      const point = completeCheckoutData.deliveryInfo?.selfPickupPoint
+        ? getPickupPoint(completeCheckoutData.deliveryInfo.selfPickupPoint)
+        : null;
+      shippingAddress = {
+        address1: point ? `Самовивіз: ${point.name}, ${point.address}` : 'Самовивіз',
+        city: point?.city || 'Запоріжжя',
+        country: 'UA',
+        firstName: completeCheckoutData.contactInfo.name || '',
+        lastName: completeCheckoutData.contactInfo.lastName || '',
+        phone: formattedPhone,
+        zip: '69000',
+      };
+    } else if (deliveryMethod === 'novaPoshta') {
+      // Prefer DB department data — more reliable than cart sync
+      const dept = completeCheckoutData.deliveryInfo?.novaPoshtaDepartment;
+      const npAddress2 =
+        dept?.addressParts?.street && dept?.addressParts?.building
+          ? `${dept.addressParts.street}, ${dept.addressParts.building}`
+          : selectedDelivery?.address2 || undefined;
+      shippingAddress = {
+        address1: dept?.shortName || selectedDelivery?.address1 || '',
+        city: dept?.addressParts?.city || selectedDelivery?.city || '',
+        country: 'UA',
+        firstName: completeCheckoutData.contactInfo.name || '',
+        lastName: completeCheckoutData.contactInfo.lastName || '',
+        phone: formattedPhone,
+        zip: '00000',
+        address2: npAddress2,
+      };
+    } else {
+      // ukrPoshta — use cart-synced address
+      shippingAddress = {
+        address1: selectedDelivery?.address1 || '',
+        city: selectedDelivery?.city || '',
+        country: selectedDelivery?.countryCode || '',
+        firstName: completeCheckoutData.contactInfo.name || '',
+        lastName: completeCheckoutData.contactInfo.lastName || '',
+        phone: formattedPhone,
+        zip: selectedDelivery?.zip || '',
+        address2: selectedDelivery?.address2 || undefined,
+      };
+    }
     order.shippingAddress = shippingAddress;
+
+    // Build order note
+    const noteLines: string[] = [];
+    if (cart.note) {
+      noteLines.push(cart.note);
+    }
+
+    if (applicableDiscounts.length > 0) {
+      noteLines.push(
+        `Промокод: ${applicableDiscounts.map((d) => d.code).join(', ')}`,
+      );
+    }
+
+    if (deliveryMethod === 'selfPickup') {
+      const point = completeCheckoutData.deliveryInfo?.selfPickupPoint
+        ? getPickupPoint(completeCheckoutData.deliveryInfo.selfPickupPoint)
+        : null;
+      const pickupLabel = point
+        ? `${point.name} — ${point.fullAddress}`
+        : 'Самовивіз';
+      noteLines.push(`🏪 Самовивіз: ${pickupLabel}`);
+    }
+
+    if (paymentMethod) {
+      const paymentLabel =
+        paymentMethod === 'after-delivered'
+          ? 'Оплата при отриманні'
+          : paymentMethod === 'pay-now'
+            ? 'За реквізитами'
+            : paymentMethod;
+      noteLines.push(`Метод оплати: ${paymentLabel}`);
+    }
+    if (completeCheckoutData.contactInfo.preferViber) {
+      noteLines.push('⚠️ Не телефонуйте, надішліть повідомлення у Viber');
+    }
+    // Append brand info per line item for CRM visibility
+    const vendorLines: string[] = [];
+    for (const edge of cart.lines.edges as any[]) {
+      const vendor = edge.node.merchandise.product?.vendor;
+      const title = edge.node.merchandise.product?.title;
+      if (vendor && vendor !== title) {
+        vendorLines.push(`${title}: ${vendor}`);
+      }
+    }
+    if (vendorLines.length > 0) {
+      noteLines.push(`Бренди: ${vendorLines.join(', ')}`);
+    }
+
+    if (noteLines.length > 0) {
+      order.note = noteLines.join('\n');
+    }
 
     const orderResponse = await adminClient.client.request<
       {
@@ -242,13 +322,16 @@ export async function createOrder(
       },
       {
         order: any;
-        options: { sendReceipt: boolean };
+        options: { sendReceipt: boolean; inventoryBehaviour: string };
       }
     >({
       query: ORDER_CREATE_MUTATION,
       variables: {
         order,
-        options: { sendReceipt },
+        options: {
+          sendReceipt,
+          inventoryBehaviour: 'DECREMENT_IGNORING_POLICY',
+        },
       },
     });
 
@@ -256,9 +339,11 @@ export async function createOrder(
     const userErrors = orderResponse.orderCreate.userErrors;
 
     if (userErrors.length > 0) {
-      console.error(' ADMIN API USER ERRORS:', JSON.stringify(userErrors, null, 2));
-      userErrors.forEach(error => {
-        console.error(`Field: ${error.field}, Message: ${error.message}`);
+      await captureServerError(new Error('Shopify Order Creation Failed (Admin API)'), {
+        service: 'checkout',
+        action: 'create_order_shopify_error',
+        userId: session.user.id,
+        extra: { userErrors },
       });
       return {
         success: false,
@@ -267,39 +352,52 @@ export async function createOrder(
     }
 
     if (!createdOrder) {
-      console.error(' NO ORDER RETURNED FROM ADMIN API');
+      await captureServerError(new Error('Shopify Order Creation Failed - No Order (Admin API)'), {
+        service: 'checkout',
+        action: 'create_order_no_order',
+        userId: session.user.id,
+      });
       return {
         success: false,
         errors: ['Failed to create order - no order returned'],
       };
     }
 
-    // Delete any existing draft orders for this user
-    await prisma.order.deleteMany({
-      where: { userId: session.user.id, draft: true },
-    });
+    // DB save is best-effort — Shopify order already exists and is confirmed
+    try {
+      // Delete any existing draft orders for this user
+      await prisma.order.deleteMany({
+        where: { userId: session.user.id, draft: true },
+      });
 
-    await prisma.order.create({
-      data: {
-        shopifyOrderId: createdOrder.id,
-        orderName: createdOrder.name,
+      await prisma.order.create({
+        data: {
+          shopifyOrderId: createdOrder.id,
+          orderName: createdOrder.name,
+          userId: session.user.id,
+          draft: false,
+        },
+      });
+    } catch (dbError) {
+      await captureServerError(dbError, {
+        service: 'checkout',
+        action: 'create_order_db_save_error',
         userId: session.user.id,
-        draft: false,
-      },
-    });
+        extra: { orderId: createdOrder.id },
+      });
+      // Do NOT re-throw — Shopify order exists; user must see success state
+    }
 
     return {
       success: true,
       order: createdOrder,
     };
   } catch (error) {
-    console.error(
-      ' ERROR CREATING ORDER WITH ADMIN API:',
-      error,
-    );
-    console.error(' ERROR DETAILS:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
+    const session = await auth.api.getSession({ headers: await headers() });
+    await captureServerError(error, {
+      service: 'checkout',
+      action: 'create_order_unexpected_error',
+      userId: session?.user?.id,
     });
     return {
       success: false,

@@ -6,6 +6,19 @@ import clsx from 'clsx';
 import { Link, usePathname } from '@shared/i18n/navigation';
 import { ProductVariant } from '@shared/lib/shopify/types/storefront.types';
 
+const CLOTHING_ORDER = ['xxs','xs','s','m','l','xl','xxl','xxxl','3xl','4xl','one size'];
+
+const sortSizes = (values: string[]) =>
+  [...values].sort((a, b) => {
+    const aNum = parseFloat(a);
+    const bNum = parseFloat(b);
+    if (!isNaN(aNum) && !isNaN(bNum)) return aNum - bNum;
+    const aIdx = CLOTHING_ORDER.indexOf(a.toLowerCase());
+    const bIdx = CLOTHING_ORDER.indexOf(b.toLowerCase());
+    if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+    return a.localeCompare(b);
+  });
+
 const Option = ({
   product,
   selectedVariant,
@@ -24,7 +37,7 @@ const Option = ({
           <div key={option.name}>
             <Label className="text-sm font-medium">{option.name}</Label>
             <div className="flex flex-wrap gap-2 mx-2">
-              {option.values.map((value) => {
+              {sortSizes(option.values).map((value) => {
                 const currentOptionValue =
                   selectedVariant?.selectedOptions.find(
                     (opt) => opt.name === option.name,
@@ -56,6 +69,8 @@ const Option = ({
                   );
                 });
 
+                const isAvailable = !!newVariant?.node.availableForSale;
+
                 const newVariantId = newVariant
                   ? newVariant.node.id.split('/').pop()
                   : undefined;
@@ -63,18 +78,20 @@ const Option = ({
                   ? `${pathname.split('/variant/')[0]}/variant/${newVariantId}`
                   : pathname;
 
+                const isSelected =
+                  currentOptionValue.toLowerCase() === value.toLowerCase();
+
                 return (
                   <Link
                     href={newPath}
                     scroll={false}
                     key={value}
-                    className={clsx('rounded-full px-4 py-2', {
-                      'bg-black text-white':
-                        currentOptionValue.toLowerCase() ===
-                        value.toLowerCase(),
+                    className={clsx('relative rounded-full px-4 py-2', {
+                      'bg-black text-white': isSelected,
+                      'border border-gray-300 text-gray-400 line-through':
+                        !isSelected && !isAvailable,
                       'border border-gray-300':
-                        currentOptionValue.toLowerCase() !==
-                        value.toLowerCase(),
+                        !isSelected && isAvailable,
                     })}
                   >
                     {value}

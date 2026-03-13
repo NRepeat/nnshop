@@ -11,6 +11,12 @@ export const infoBar = defineType({
       description: 'The number to display in the info bar.',
     },
     {
+      name: 'viberPhone',
+      type: 'string',
+      title: 'Viber Phone Number (digits only)',
+      description: 'Raw digits for Viber deep link, e.g. 380991234567. No +, no spaces.',
+    },
+    {
       name: 'text',
       type: 'localizedString',
       title: 'Text',

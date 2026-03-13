@@ -1,21 +1,23 @@
 interface Address {
-  firstName: string;
-  lastName: string;
-  address1: string;
-  city: string;
-  zip: string;
-  country: string;
-  phone: string;
+  firstName?: string;
+  lastName?: string;
+  address1?: string;
+  address2?: string;
+  city?: string;
+  zip?: string;
+  country?: string;
+  phone?: string;
 }
 
 export interface Order {
   id: string;
   name: string;
   processedAt: string;
-  displayFulfillmentStatus: string;
+  fulfillmentStatus: string;
+  financialStatus?: string;
   email: string;
-  shippingAddress: Address;
-  billingAddress: Address;
+  shippingAddress?: Address;
+  billingAddress?: Address;
   lineItems: {
     edges: {
       node: {
@@ -28,7 +30,7 @@ export interface Order {
             currencyCode: string;
           };
         };
-        image: {
+        image?: {
           url: string;
         };
       };

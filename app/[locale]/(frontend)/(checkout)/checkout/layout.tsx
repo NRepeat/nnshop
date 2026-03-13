@@ -1,7 +1,7 @@
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
-import { Suspense } from 'react';
+import { redirect, unstable_rethrow } from 'next/navigation';
+import { Suspense, ViewTransition } from 'react';
 import { CheckoutStepper } from '@entities/checkout/ui/CheckoutStepper';
 import { getCompletedSteps } from '@features/checkout/api/getCompletedSteps';
 import { Skeleton } from '@shared/ui/skeleton';
@@ -9,7 +9,7 @@ import { connection } from 'next/server';
 
 function CheckoutLayoutSkeleton() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col mt-8">
       <div className="w-full py-4">
         <div className="flex items-center justify-between container">
           {[1, 2, 3, 4].map((i) => (
@@ -40,8 +40,11 @@ function ReceiptSkeleton() {
   return (
     <div className="hidden md:flex flex-col gap-3">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="rounded-md flex items-center gap-3  border border-gray-100 bg-white p-4 animate-pulse">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-gray-100" />
+        <div
+          key={i}
+          className="rounded flex items-center gap-3  border border-gray-100 bg-white p-4 animate-pulse"
+        >
+          <div className="flex size-10 shrink-0 items-center justify-center rounded bg-gray-100" />
           <div className="flex flex-col gap-2 w-full">
             <div className="h-3 w-24 rounded-full bg-gray-100" />
             <div className="h-3 w-40 rounded-full bg-gray-100" />
@@ -68,6 +71,7 @@ async function CheckoutLayoutContent({
       redirect('/auth/sign-in');
     }
   } catch (error) {
+    unstable_rethrow(error);
     console.error('Checkout auth error:', error);
     redirect('/auth/sign-in');
   }
@@ -75,13 +79,15 @@ async function CheckoutLayoutContent({
   const completedSteps = await getCompletedSteps();
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <CheckoutStepper completedSteps={completedSteps} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 mb-10 container flex-1">
-        {children}
-        <Suspense fallback={<ReceiptSkeleton />}>
-          {receipt}
-        </Suspense>
+    <div className="container mb-6 h-fit min-h-screen">
+      <div className="flex flex-col mt-8 space-y-8">
+        <CheckoutStepper completedSteps={completedSteps} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+          <ViewTransition name="checkout-step">
+            {children}
+          </ViewTransition>
+          <Suspense fallback={<ReceiptSkeleton />}>{receipt}</Suspense>
+        </div>
       </div>
     </div>
   );

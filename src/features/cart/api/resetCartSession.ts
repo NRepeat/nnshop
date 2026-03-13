@@ -46,11 +46,8 @@ const resetCartSession = async (completedOrderId?: string) => {
       });
 
       // Invalidate cart cache after completing order
-      // @ts-ignore
       revalidateTag(CART_TAGS.CART, { expire: 0 });
-      // @ts-ignore
       revalidateTag(CART_TAGS.CART_ITEMS, { expire: 0 });
-      // @ts-ignore
       revalidateTag(CART_TAGS.CART_SESSION, { expire: 0 });
     } else {
       const session = await auth.api.getSession({ headers: await headers() });
@@ -83,11 +80,8 @@ const resetCartSession = async (completedOrderId?: string) => {
       });
 
       // Invalidate cart cache after completing order
-      // @ts-ignore
       revalidateTag(CART_TAGS.CART, { expire: 0 });
-      // @ts-ignore
       revalidateTag(CART_TAGS.CART_ITEMS, { expire: 0 });
-      // @ts-ignore
       revalidateTag(CART_TAGS.CART_SESSION, { expire: 0 });
     }
   } catch (e) {

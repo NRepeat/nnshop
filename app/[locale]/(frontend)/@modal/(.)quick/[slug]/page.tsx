@@ -7,26 +7,27 @@ import { getReletedProducts } from '@entities/product/api/get-related-products';
 import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
 import { ProductViewProvider } from '@widgets/product-view/ui/ProductViewProvider';
 
-import { notFound } from 'next/navigation';
+import { notFound, unstable_rethrow } from 'next/navigation';
 import { Suspense } from 'react';
 import { getProduct } from '@entities/product/api/getProduct';
+import { getInventoryLevels } from '@entities/product/api/getInventoryLevels';
 import { GallerySession } from '@widgets/product-view/ui/GallerySession';
 import { setRequestLocale } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { auth } from '@features/auth/lib/auth';
 import { isProductFavorite } from '@features/product/api/isProductFavorite';
-import { ProductSessionViewSkeleton } from './ProductSessionViewSkeleton';
 import { Button } from '@shared/ui/button';
 import { Heart } from 'lucide-react';
 import { connection } from 'next/server';
-
+import Gallery from '@features/product/ui/Gallery';
+import type { Image as ShoipifyImage } from '@shared/lib/shopify/types/storefront.types';
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
 };
 
 export default async function ProductQuickViewPage({ params }: Props) {
   return (
-    <Suspense fallback={<ProductSessionViewSkeleton />}>
+    <Suspense fallback={null}>
       <ProductSession params={params} />
     </Suspense>
   );
@@ -37,7 +38,6 @@ const ProductSessionView = async ({ params }: Props) => {
 
   try {
     const { locale, slug } = await params;
-    const handle = decodeURIComponent(slug);
     setRequestLocale(locale);
     const { originProduct } = await getProduct({
       handle: slug,
@@ -82,46 +82,60 @@ const ProductSessionView = async ({ params }: Props) => {
         ),
       );
     }
-    const session = await auth.api.getSession({ headers: await headers() });
+    const variantIds = product.variants.edges.map((e) => e.node.id);
+    const [session, inventoryLevels] = await Promise.all([
+      auth.api.getSession({ headers: await headers() }),
+      getInventoryLevels(variantIds),
+    ]);
     const isFavorite = await isProductFavorite(product.id, session);
+    const images = product.images.edges
+      .map((edge) => edge.node)
+      .filter(Boolean);
+
     return (
-      <div className="mt-10">
-        <ProductViewProvider
-          favCommponent={
-            <Suspense
-              fallback={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="group animate-pulse bg-gray-200 dark:bg-gray-700"
-                >
-                  <Heart className="h-4 w-4" />
-                </Button>
-              }
+      <div className="mt-10 min-h-[70vh]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12 relative">
+          <ProductViewProvider
+            product={product as ShopifyProduct}
+            boundProducts={boundProducts}
+            attributes={attributes}
+            inventoryLevels={inventoryLevels}
+          >
+            <Gallery
+              images={images as any}
+              productId={product.id}
+              quiqView={true}
             >
-              <GallerySession
-                product={product as ShopifyProduct}
-                isFavorite={isFavorite}
-              />
-            </Suspense>
-          }
-          product={product as ShopifyProduct}
-          boundProducts={boundProducts}
-          attributes={attributes}
-        />
+              <Suspense
+                fallback={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="group animate-pulse bg-gray-200 "
+                  >
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                }
+              >
+                <GallerySession
+                  product={product as ShopifyProduct}
+                  isFavorite={isFavorite}
+                />
+              </Suspense>
+            </Gallery>
+          </ProductViewProvider>
+        </div>
       </div>
     );
+
   } catch (e) {
+    unstable_rethrow(e);
     console.error(e);
     return notFound();
   }
 };
 
 const ProductSession = async ({ params }: Props) => {
-  // const p = await params;
-  // const response = await getProduct({ handle: p.slug, locale: p.locale });
-  // const product = response?.originProduct;
-  // console.log(product);
   return (
     <QuickView open={Boolean(params)}>
       <ProductSessionView params={params} />

@@ -4,6 +4,7 @@ import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
+import { captureServerEvent, captureServerError } from '@shared/lib/posthog/posthog-server';
 
 type QuickOrderInput = {
   variantId: string;
@@ -131,12 +132,6 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
       ],
     };
 
-    // Log the input for debugging
-    console.log(
-      'Quick Order - Creating order with input:',
-      JSON.stringify(order, null, 2),
-    );
-
     // Create order in Shopify
     const orderResponse = await adminClient.client.request<
       {
@@ -147,28 +142,28 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
       },
       {
         order: any;
-        options: { sendReceipt: boolean };
+        options: { sendReceipt: boolean; inventoryBehaviour: string };
       }
     >({
       query: ORDER_CREATE_MUTATION,
       variables: {
         order,
-        options: { sendReceipt: false },
+        options: {
+          sendReceipt: false,
+          inventoryBehaviour: 'DECREMENT_IGNORING_POLICY',
+        },
       },
     });
-
-    console.log(
-      'Quick Order - Shopify response:',
-      JSON.stringify(orderResponse, null, 2),
-    );
 
     const { order: createdOrder, userErrors } = orderResponse.orderCreate;
 
     if (userErrors.length > 0) {
-      console.error(
-        'Quick Order - User Errors:',
-        JSON.stringify(userErrors, null, 2),
-      );
+      await captureServerError(new Error('Shopify Order Creation Failed'), {
+        service: 'product',
+        action: 'create_quick_order_shopify_error',
+        userId,
+        extra: { userErrors, variantId: orderData.variantId },
+      });
       return {
         success: false,
         errors: userErrors.map((error) => error.message),
@@ -176,7 +171,12 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
     }
 
     if (!createdOrder) {
-      console.error('Quick Order - No order returned');
+      await captureServerError(new Error('Shopify Order Creation Failed - No Order'), {
+        service: 'product',
+        action: 'create_quick_order_no_order',
+        userId,
+        extra: { variantId: orderData.variantId },
+      });
       return {
         success: false,
         errors: ['Failed to create quick order'],
@@ -193,13 +193,35 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
       });
     }
 
+    const distinctId = userId ?? 'anonymous';
+    await captureServerEvent(distinctId, 'quick_order_placed', {
+      order_id: createdOrder.id,
+      order_name: createdOrder.name,
+      product_title: orderData.productTitle,
+      variant_id: orderData.variantId,
+      price: orderData.price,
+      currency: orderData.currencyCode,
+      amount: createdOrder.totalPriceSet.shopMoney.amount,
+    });
+
     return {
       success: true,
       orderId: createdOrder.id,
       orderName: createdOrder.name,
     };
   } catch (error) {
-    console.error('Quick Order - Error:', error);
+    const session = await auth.api.getSession({ headers: await headers() });
+    const userId = session?.user?.id;
+
+    await captureServerError(error, {
+      service: 'product',
+      action: 'create_quick_order',
+      userId,
+      extra: {
+        variantId: orderData.variantId,
+        productTitle: orderData.productTitle,
+      },
+    });
     return {
       success: false,
       errors: [

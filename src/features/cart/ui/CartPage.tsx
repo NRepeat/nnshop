@@ -5,15 +5,16 @@ import { Separator } from '@shared/ui/separator';
 import { Button } from '@shared/ui/button';
 import { Link } from '@shared/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import getSymbolFromCurrency from 'currency-symbol-map';
 import { DiscountCodeInput } from './DiscountCodeInput';
 import { CartNoteTextarea } from '@features/header/cart/ui/CartNoteTextarea';
 import { CartItem } from './CartItem';
+import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 
 type CartItemType = {
   id: string;
   title: string;
   price: string;
+  compareAtPrice?: string | null;
   size: string;
   handle: string;
   totalPrice: string;
@@ -66,12 +67,12 @@ export const CartPageContent = ({
         <Card className="sticky top-24">
           <CardContent className="p-6 space-y-4">
             <div className="space-y-2">
-              {/* <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-sm">
                 <span>{t('subtotal')}</span>
                 <span>
-                  {getSymbolFromCurrency(currencySymbol)} {subtotal.toFixed(0)}
+                  {getCurrencySymbol(currencySymbol)} {subtotal.toFixed(0)}
                 </span>
-              </div> */}
+              </div>
               {discountCodes.some((d) => d.applicable) && (
                 <div className="flex justify-between text-sm text-green-600">
                   <span>{t('discount')}</span>
@@ -82,12 +83,12 @@ export const CartPageContent = ({
 
             <Separator />
 
-            {/* <div className="flex justify-between font-medium text-lg">
+            <div className="flex justify-between font-medium text-lg">
               <span>{t('total')}</span>
               <span>
-                {getSymbolFromCurrency(currencySymbol)} {subtotal.toFixed(0)}
+                {getCurrencySymbol(currencySymbol)} {subtotal.toFixed(0)}
               </span>
-            </div> */}
+            </div>
 
             <Separator />
 

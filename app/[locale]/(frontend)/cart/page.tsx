@@ -82,11 +82,7 @@ const CartPageSession = async ({
     );
   }
 
-  const sizeLabel = {
-    uk: 'Розмір',
-    ru: 'Розмір',
-    en: 'Розмір',
-  }[locale] || 'Розмір';
+  const SIZE_NAMES = ['розмір', 'размер', 'size'];
 
   const items = cart.cart.lines.edges.map((item) => {
     const product = item.node.merchandise.product;
@@ -95,6 +91,9 @@ const CartPageSession = async ({
         product.metafields.find((m) => m?.key === 'znizka')?.value || '0',
       ) || 0;
     const price = Number(item.node.cost.amountPerQuantity.amount);
+    const compareAtPrice = (item.node.cost as any).compareAtAmountPerQuantity?.amount
+      ? Number((item.node.cost as any).compareAtAmountPerQuantity.amount)
+      : null;
     const quantity = item.node.quantity;
     const discountedPrice = price - (price * sale) / 100;
     const totalPrice = sale > 0 ? discountedPrice * quantity : price * quantity;
@@ -103,14 +102,15 @@ const CartPageSession = async ({
       id: item.node.id,
       title: product.title,
       price: item.node.cost.amountPerQuantity.amount,
+      compareAtPrice: compareAtPrice && compareAtPrice > price ? compareAtPrice.toString() : null,
       handle: product.handle,
       size:
         item.node.merchandise.selectedOptions.find(
-          (option) => option.name === sizeLabel,
+          (option) => SIZE_NAMES.includes(option.name.toLowerCase()),
         )?.value || '',
       color:
         item.node.merchandise.selectedOptions.find(
-          (option) => option.name === 'Color',
+          (option) => option.name.toLowerCase() === 'color' || option.name.toLowerCase() === 'колір',
         )?.value || '',
       quantity: item.node.quantity,
       totalPrice: totalPrice.toString(),

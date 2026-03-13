@@ -60,7 +60,7 @@ function NavigationMenuItem({
 }
 
 const navigationMenuTriggerStyle = cva(
-  'group   hover:text-accent-foreground focus:bg-background focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=open]:border-b data-[state=open]:border-accent-foreground data-[state=open]:text-accent-foreground data-[state=open]:focus:bg-background transition-[color,box-shadow,border]',
+  ' hover:bg-muted',
 );
 
 function NavigationMenuTrigger({
@@ -113,17 +113,17 @@ function NavigationMenuViewport({
   ...props
 }: React.ComponentProps<typeof NavigationMenuPrimitive.Viewport>) {
   return (
-    <div className="absolute top-full left-0 w-full isolate z-50">
+    <div className="absolute top-[85%] left-0 w-full isolate z-50">
       <NavigationMenuPrimitive.Viewport
         data-slot="navigation-menu-viewport"
         className={cn(
-          'origin-top text-popover-foreground overflow-hidden',
+          'origin-top text-popover-foreground overflow-hidden shadow',
           'data-[state=open]:animate-in data-[state=closed]:animate-out',
           'data-[state=closed]:zoom-out-100 data-[state=open]:zoom-in-95',
           'relative',
           'h-[var(--radix-navigation-menu-viewport-height)]',
           'w-full!',
-          'bg-background border-t',
+          'bg-background border-t border-primary',
           className,
         )}
         {...props}

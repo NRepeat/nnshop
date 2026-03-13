@@ -7,36 +7,45 @@ import {
   FilterValue,
 } from '@shared/lib/shopify/types/storefront.types';
 import { cn } from '@shared/lib/utils';
+import { toFilterSlug } from '@shared/lib/filterSlug';
 import { Checkbox } from '@shared/ui/checkbox';
 import { Spinner } from '@/shared/ui/Spinner';
+import he from 'he';
 
 type Props = {
   filter: Filter;
+  initialFilter?: Filter;
 };
 
-export function NuqsListFilter({ filter }: Props) {
+export function NuqsListFilter({ filter, initialFilter }: Props) {
   const [isPending, startTransition] = useTransition();
   const [changingFilter, setChangingFilter] = useState<string | null>(null);
   const filterKey = filter.id.split('.').pop() || filter.id;
 
   const [selectedValues, setSelectedValues] = useQueryState(
     filterKey,
-    parseAsArrayOf(parseAsString)
+    parseAsArrayOf(parseAsString, ';')
       .withDefault([])
-      .withOptions({ shallow: false, history: 'replace' }),
+      .withOptions({ shallow: false, history: 'replace', throttleMs: 500 }),
   );
 
   const handleFilterChange = (value: FilterValue) => {
-    setChangingFilter(value.label);
+    const slug = toFilterSlug(value.label);
+    setChangingFilter(slug);
     startTransition(() => {
-      const newSelection = selectedValues.includes(value.label)
-        ? selectedValues.filter((item) => item !== value.label)
-        : [...selectedValues, value.label];
+      const newSelection = selectedValues.includes(slug)
+        ? selectedValues.filter((item) => item !== slug)
+        : [...selectedValues, slug];
       setSelectedValues(newSelection.length > 0 ? newSelection : null);
     });
   };
 
-  const shouldCollapse = filter.values.length > 6;
+  const displayValues = (initialFilter ?? filter).values.map((v) => {
+    const live = filter.values.find((fv) => fv.label === v.label);
+    return live ?? { ...v, count: 0 };
+  });
+
+  const shouldCollapse = displayValues.length > 6;
 
   return (
     <div
@@ -45,11 +54,9 @@ export function NuqsListFilter({ filter }: Props) {
       })}
     >
       <ul className="space-y-2">
-        {[...filter.values]
-          // .sort((a, b) => a.label.localeCompare(b.label))
-          .map((value) => {
-            const isChecked = selectedValues.includes(value.label);
-            const isChanging = changingFilter === value.label;
+        {displayValues.map((value) => {
+            const isChecked = selectedValues.includes(toFilterSlug(value.label));
+            const isChanging = changingFilter === toFilterSlug(value.label);
 
             return (
               <li key={value.label} className="cursor-pointer">
@@ -58,17 +65,18 @@ export function NuqsListFilter({ filter }: Props) {
                     <Spinner />
                   ) : (
                     <Checkbox
-                      disabled={false} // value.count will always be > 0 now
+                      disabled={value.count === 0 && !isChecked}
                       checked={isChecked}
                       onCheckedChange={() => handleFilterChange(value)}
+                      className='h-6 w-6 cursor-pointer'
                     />
                   )}
                   <span
-                    className={cn({
-                      // 'text-muted-foreground line-through': value.count === 0, // No longer needed
+                    className={cn('text-md', {
+                      'text-muted-foreground': value.count === 0 && !isChecked,
                     })}
                   >
-                    {value.label} ({value.count})
+                    {he.decode(value.label)} ({value.count})
                   </span>
                 </label>
               </li>

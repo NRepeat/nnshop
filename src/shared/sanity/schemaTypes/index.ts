@@ -1,5 +1,7 @@
 import { elegantEaseType } from './blocks/elegantEaseType';
 import { productCommentsType } from './blocks/productCommentsType';
+import { sharedSectionType } from './sharedSectionType';
+import { sharedSectionRef } from './blocks/sharedSectionRefType';
 import { type SchemaTypeDefinition } from 'sanity';
 import { contentBlocksType } from './contentBlocksType';
 import { blockCatalogType } from './blockCatalogType';
@@ -33,23 +35,32 @@ import { contentPageBlock } from './blocks/contentPageBlock';
 import { mainCollectionGrid } from './blocks/mainCollectionGrid';
 import { topicType } from './blocks/topicType';
 import { productDetailsType } from './blocks/productDetailsType';
-import { heroSlide, heroSlider } from './blocks/heroSlider';
+import { heroSlide, heroSlideButton, heroSlider } from './blocks/heroSlider';
 import { infoBar } from './blocks/info-bar';
 import { headerType } from './headerType';
 import { brandGridBlock } from './blocks/brendGrid';
 import { collectionsWithPreviews } from './blocks/collection-with-images';
+import { popularPosts } from './blocks/popularPosts';
 import { brandsNavigation } from './blocks/brandsNavigation';
+import { navImageItem } from './blocks/navImageItem';
+import { navDropdownImages } from './blocks/navDropdownImages';
+import { footerSettings } from './shopify/shemas/objects/global/footer';
 
 // const blocks = [heroSlider, heroSlide, mainCollectionGrid];
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
     // Reusable block types
+    sharedSectionType,
+    sharedSectionRef,
     contentBlocksType,
     blockCatalogType,
 
     collectionsWithPreviews,
     brandsNavigation,
+    navImageItem,
+    navDropdownImages,
+    footerSettings,
     brandGridBlock,
     infoBar,
     headerType,
@@ -83,8 +94,10 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     productDetailsType,
     elegantEaseType,
     productCommentsType,
+    heroSlideButton,
     heroSlide,
     heroSlider,
     mainCollectionGrid,
+    popularPosts,
   ],
 };

@@ -70,7 +70,7 @@
 .modal {
   position: relative;
   width: 80%;
-  height: 80%;
+  height: 70%;
   background-color: white;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -126,16 +126,28 @@
 }
 
 @media screen and (max-width: 767px) {
+  .modalOverlay {
+    align-items: flex-end;
+  }
+
   .modal {
     width: 100vw;
-    height: 100vh;
+    height: 70vh !important;
+    border-radius: 12px 12px 0 0;
   }
 
   .modalHeader {
-    display: none;
+    height: 48px;
+    line-height: 48px;
+    padding: 0 16px;
+  }
+
+  .modalHeader h2 {
+    font-size: 16px;
+    line-height: 48px;
   }
 
   .modalIframe {
-    height: 100%;
+    height: calc(100% - 49px);
   }
 }

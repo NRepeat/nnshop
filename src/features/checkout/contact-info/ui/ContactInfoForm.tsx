@@ -1,11 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { toast } from 'sonner';
 import { useRouter } from '@shared/i18n/navigation';
-import { getContactInfoSchema, ContactInfoFormData } from '../schema/contactInfoSchema';
+import {
+  getContactInfoSchema,
+  ContactInfoFormData,
+} from '../schema/contactInfoSchema';
 import {
   Form,
   FormControl,
@@ -23,6 +25,7 @@ import clsx from 'clsx';
 import { ContactInformation } from '~/generated/prisma/client';
 import { User } from 'better-auth';
 import { Checkbox } from '@shared/ui/checkbox';
+import { usePostHog } from 'posthog-js/react';
 
 export default function ContactInfoForm({
   contactInfo,
@@ -33,6 +36,13 @@ export default function ContactInfoForm({
 }) {
   const router = useRouter();
   const t = useTranslations('ContactInfoForm');
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    posthog?.capture('checkout_started', {
+      $current_url: window.location.href,
+    });
+  }, [posthog]);
 
   const contactInfoSchema = getContactInfoSchema(t);
 
@@ -56,12 +66,16 @@ export default function ContactInfoForm({
     try {
       const result = await saveContactInfo(data);
       if (result) {
+        posthog?.capture('checkout_contact_info_saved', {
+          $current_url: window.location.href,
+        });
         toast.success(t('contactInformationSaved'));
         router.push(`/checkout/delivery`);
       } else {
         toast.error(t('errorSavingContactInformation'));
       }
     } catch (error) {
+      posthog?.captureException(error);
       console.error('Error saving contact info:', error);
       toast.error(t('errorSavingContactInformation'));
     }
@@ -69,10 +83,14 @@ export default function ContactInfoForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8"
+        autoComplete="on"
+      >
         {form.formState.isSubmitted &&
           Object.keys(form.formState.errors).length > 0 && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+            <div className="p-4 bg-red-50 border border-red-200 rounded">
               <h4 className="text-red-800 font-medium text-sm mb-2">
                 {t('pleaseFixErrors')}
               </h4>
@@ -98,6 +116,7 @@ export default function ContactInfoForm({
                 <FormControl>
                   <Input
                     placeholder={t('enterYourName')}
+                    autoComplete="given-name"
                     {...field}
                     className={clsx(
                       form.formState.isSubmitted &&
@@ -122,6 +141,7 @@ export default function ContactInfoForm({
                 <FormControl>
                   <Input
                     placeholder={t('enterYourLastName')}
+                    autoComplete="family-name"
                     {...field}
                     className={clsx(
                       form.formState.isSubmitted &&
@@ -148,6 +168,7 @@ export default function ContactInfoForm({
                 <Input
                   type="email"
                   placeholder={t('enterYourEmail')}
+                  autoComplete="email"
                   {...field}
                   className={clsx(
                     form.formState.isSubmitted &&
@@ -200,6 +221,7 @@ export default function ContactInfoForm({
                   <Input
                     type="tel"
                     placeholder="+380 50 123 45 67"
+                    autoComplete="tel"
                     {...field}
                     className={clsx(
                       form.formState.isSubmitted &&
@@ -218,14 +240,15 @@ export default function ContactInfoForm({
           control={form.control}
           name="preferViber"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+            <FormItem className="flex flex-row items-center space-x-1 space-y-0">
               <FormControl>
                 <Checkbox
                   checked={field.value}
                   onCheckedChange={field.onChange}
+                  className="h-6 w-6"
                 />
               </FormControl>
-              <FormLabel className="text-sm font-normal cursor-pointer">
+              <FormLabel className="text-sm font-normal cursor-pointer ">
                 {t('preferViber')}
               </FormLabel>
             </FormItem>
@@ -234,7 +257,7 @@ export default function ContactInfoForm({
 
         <Button
           type="submit"
-          className="w-full rounded-md"
+          className="w-full rounded"
           size="lg"
           disabled={form.formState.isSubmitting}
         >

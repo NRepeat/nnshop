@@ -26,6 +26,7 @@ model User {
   deliveryInformation DeliveryInformation?
   paymentInformation  PaymentInformation?
   favoriteProducts    FavoriteProduct[]
+  recentlyViewed      RecentlyViewedProduct[]
 
   @@unique([email])
   @@map("user")
@@ -58,6 +59,8 @@ model DeliveryInformation {
   user                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId               String                @unique
   novaPoshtaDepartment NovaPoshtaDepartment?
+
+  @@index([userId])
 }
 
 model PaymentInformation {
@@ -76,8 +79,8 @@ model PaymentInformation {
 }
 
 model Cart {
-  id            String  @id @default(cuid())
-  cartToken     String  @unique
+  id            String @id @default(cuid())
+  cartToken     String @unique
   discountCodes Json?
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -178,4 +181,30 @@ model FavoriteProduct {
 
   @@unique([userId, productId])
   @@index([userId])
+}
+
+model RecentlyViewedProduct {
+  id            String   @id @default(cuid())
+  userId        String
+  productId     String
+  productHandle String
+  viewedAt      DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([viewedAt])
+  @@map("recently_viewed_product")
+}
+
+model NewsletterSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  gender       String
+  subscribedAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("newsletter_subscriber")
 }

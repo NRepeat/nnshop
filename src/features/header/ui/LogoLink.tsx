@@ -22,10 +22,11 @@ export const LogoLink = async ({
     >
       <div className="flex justify-center w-full items-center">
         <Image
-          src={iconUrl}
-          width={304}
-          height={24}
+          src={`${iconUrl}?w=360&fm=webp&q=80`}
+          width={360}
+          height={28}
           alt={alt}
+          priority
           className="w-full h-full max-w-[180px]"
         />
       </div>

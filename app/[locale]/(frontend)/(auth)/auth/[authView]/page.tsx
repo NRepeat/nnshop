@@ -1,28 +1,7 @@
-import { authViewPaths } from '@daveyplate/better-auth-ui/server';
 import { getTranslations } from 'next-intl/server';
 import { AuthViewRenderer } from '@/features/auth/ui/auth-view-renderer';
-import { locales } from '@shared/i18n/routing';
 import { Suspense } from 'react';
-// export async function generateStaticParams() {
-//   const params = [];
-//   for (const locale of locales) {
-//     // for (const authView of Object.values(authViewPaths)) {
-//     params.push({ locale: locale });
-//     // }
-//   }
-//   return params;
-// }
-// export function generateStaticParams() {
-//   return locales.flatMap((locale) =>
-//     Object.values(authViewPaths).map((path) => ({
-//       locale,
-//       path,
-//     })),
-//   );
-// }
-// export function generateStaticParams() {
-//   return Object.values(authViewPaths).map((path) => ({ authView: path }));
-// }
+
 const AuthSession = async ({
   params,
 }: {
@@ -34,7 +13,7 @@ const AuthSession = async ({
     namespace: 'BetterAuthUI',
   });
   return (
-    <main className="flex  flex-col items-center justify-center self-center min-h-[60vh] w-full">
+    <main className="flex  flex-col items-center  self-center h-fit min-h-screen w-full">
       <AuthViewRenderer authView={authView} tBetterAuth={tBetterAuth} />
     </main>
   );

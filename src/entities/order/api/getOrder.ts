@@ -65,11 +65,15 @@ const GET_ORDER_BY_ID_QUERY = `
 
 export const getOrder = async (orderId: string): Promise<Order> => {
   const response = await adminClient.client.request<
-    { order: Order },
+    { order: Record<string, unknown> },
     { id: string }
   >({
     query: GET_ORDER_BY_ID_QUERY,
     variables: { id: `${orderId}` },
   });
-  return response.order;
+  const raw = response.order;
+  return {
+    ...raw,
+    fulfillmentStatus: raw.displayFulfillmentStatus,
+  } as Order;
 };

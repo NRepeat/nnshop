@@ -24,7 +24,9 @@ export const getNovaPoshtaDepartmentSchema = (t: (key: string) => string) =>
 export const getDeliverySchema = (t: (key: string) => string) =>
   z
     .object({
-      deliveryMethod: z.enum(['novaPoshta', 'ukrPoshta']).default('novaPoshta'),
+      deliveryMethod: z
+        .enum(['novaPoshta', 'ukrPoshta', 'selfPickup'])
+        .default('novaPoshta'),
       // Nova Poshta fields - полная структура данных
       novaPoshtaDepartment: getNovaPoshtaDepartmentSchema(t).optional(),
       // UkrPoshta fields
@@ -33,6 +35,8 @@ export const getDeliverySchema = (t: (key: string) => string) =>
       apartment: z.string().optional(),
       city: z.string().optional(),
       postalCode: z.string().optional(),
+      // Self-pickup field
+      selfPickupPoint: z.string().optional(),
     })
     .refine(
       (data) => {
@@ -47,6 +51,10 @@ export const getDeliverySchema = (t: (key: string) => string) =>
         // If UkrPoshta is selected, address fields are required
         if (data.deliveryMethod === 'ukrPoshta') {
           return data.country && data.address && data.city && data.postalCode;
+        }
+        // If self-pickup is selected, a pickup point must be chosen
+        if (data.deliveryMethod === 'selfPickup') {
+          return !!data.selfPickupPoint;
         }
         return true;
       },

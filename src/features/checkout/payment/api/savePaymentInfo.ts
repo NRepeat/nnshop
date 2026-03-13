@@ -2,37 +2,42 @@
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { headers } from 'next/headers';
+import { captureServerError } from '@shared/lib/posthog/posthog-server';
 import { PaymentInfo } from '../schema/paymentSchema';
 import { User } from '~/generated/prisma/client';
 
 export async function savePaymentInfo(
   data: PaymentInfo,
-  orderId: string,
+  shopifyOrderId: string,
 ): Promise<{ success: boolean; user?: User | null; message: string }> {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
+
+    // Find the DB order by shopifyOrderId
+    const order = await prisma.order.findFirst({
+      where: { shopifyOrderId: shopifyOrderId },
+    });
+    const dbOrderId = order?.id || shopifyOrderId;
+
     if (!session) {
-      const order = await prisma.order.findUnique({ where: { id: orderId } });
       if (!order) throw new Error('Order not found');
       const user = await prisma.user.findUnique({ where: { id: order.userId } });
       if (!user) {
         throw new Error('User not found');
       }
       await prisma.user.update({
-        where: {
-          id: user.id,
-        },
+        where: { id: user.id },
         data: {
           paymentInformation: {
             upsert: {
               where: { userId: user.id },
               create: {
                 ...data,
-                orderId: orderId,
+                orderId: dbOrderId,
               },
               update: {
                 ...data,
-                orderId: orderId,
+                orderId: dbOrderId,
               },
             },
           },
@@ -52,11 +57,11 @@ export async function savePaymentInfo(
               where: { userId: session.user.id },
               create: {
                 ...data,
-                orderId: orderId,
+                orderId: dbOrderId,
               },
               update: {
                 ...data,
-                orderId: orderId,
+                orderId: dbOrderId,
               },
             },
           },
@@ -70,7 +75,13 @@ export async function savePaymentInfo(
       };
     }
   } catch (error) {
-    console.error('Error saving payment info:', error);
+    const session = await auth.api.getSession({ headers: await headers() });
+    await captureServerError(error, {
+      service: 'checkout',
+      action: 'save_payment_info',
+      userId: session?.user?.id,
+      extra: { shopifyOrderId, amount: data.amount },
+    });
     return {
       success: false,
       message:

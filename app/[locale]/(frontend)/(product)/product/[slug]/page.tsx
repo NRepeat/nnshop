@@ -1,4 +1,3 @@
-
 import { auth } from '@features/auth/lib/auth';
 import { FavSession } from '@features/header/ui/FavSession';
 import { isProductFavorite } from '@features/product/api/isProductFavorite';
@@ -16,7 +15,7 @@ import { generateProductMetadata } from '@shared/lib/seo/generateMetadata';
 import { generateProductJsonLd } from '@shared/lib/seo/jsonld';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { connection } from 'next/server';
-
+import { ProductViewSkeleton } from '@widgets/product-view/ui/ProductViewSkeleton';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -42,41 +41,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-// export async function generateStaticParams() {
-//   try {
-//     const params = [];
-//     for (const locale of locales) {
-//       const allProductsHandlers = await getAllProductHandles(locale);
-
-//       const localeParams = allProductsHandlers.slice(0, 100).map((handle) => ({
-//         slug: handle,
-//         locale: locale,
-//       }));
-
-//       params.push(...localeParams);
-//     }
-
-//     return params;
-//   } catch (error) {
-//     console.error('Failed to generate static params for products:', error);
-//     // Fallback to empty array - pages will be generated on-demand
-//     return [];
-//   }
-// }
-
 export default async function ProductPage({ params }: Props) {
   const { slug, locale } = await params;
   const handle = decodeURIComponent(slug);
-  // return <ProductViewSkeleton />;
-  const { originProduct: product } = await getProduct({
-    handle,
-    locale,
-  });
   setRequestLocale(locale);
+
+  return (
+    <Suspense fallback={<ProductViewSkeleton handle={handle} />}>
+      <ProductContent handle={handle} locale={locale} />
+    </Suspense>
+  );
+}
+
+const ProductContent = async ({
+  handle,
+  locale,
+}: {
+  handle: string;
+  locale: string;
+}) => {
+  const { originProduct: product } = await getProduct({ handle, locale });
 
   if (!product) {
     return notFound();
   }
+
   return (
     <>
       <JsonLd data={generateProductJsonLd(product, locale)} />
@@ -86,7 +75,7 @@ export default async function ProductPage({ params }: Props) {
             <Button
               variant="ghost"
               size="icon"
-              className="group animate-pulse bg-gray-200 dark:bg-gray-700"
+              className="group animate-pulse bg-transparent p-0"
             >
               <Heart className="h-4 w-4" />
             </Button>
@@ -97,7 +86,7 @@ export default async function ProductPage({ params }: Props) {
       </ProductSessionView>
     </>
   );
-}
+};
 
 const ProductSession = async ({
   handle,

@@ -11,9 +11,11 @@ import { Form } from '@shared/ui/form';
 import { saveDeliveryInfo } from '../api/saveDeliveryInfo';
 import NovaPoshtaForm from './NovaPoshtaForm';
 import UkrPoshtaForm from './UkrPoshtaForm';
+import SelfPickupForm from './SelfPickupForm';
 import DeliveryMethodSelection from './DeliveryMethodSelection';
 import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { usePostHog } from 'posthog-js/react';
 
 interface DeliveryFormProps {
   defaultValues?: DeliveryInfo | null;
@@ -22,6 +24,7 @@ interface DeliveryFormProps {
 export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
   const router = useRouter();
   const t = useTranslations('DeliveryForm');
+  const posthog = usePostHog();
 
   const deliverySchema = getDeliverySchema(t);
 
@@ -40,6 +43,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
       apartment: defaultValues?.apartment || '',
       city: defaultValues?.city || '',
       postalCode: defaultValues?.postalCode || '',
+      selfPickupPoint: defaultValues?.selfPickupPoint || '',
     },
   });
 
@@ -58,12 +62,17 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
       const result = await saveDeliveryInfo(data);
 
       if (result.success) {
+        posthog?.capture('checkout_delivery_saved', {
+          delivery_method: data.deliveryMethod,
+          $current_url: window.location.href,
+        });
         toast.success(t('deliveryInformationSavedSuccessfully'));
         router.push('/checkout/payment');
       } else {
         toast.error(result.message);
       }
     } catch (error) {
+      posthog?.captureException(error);
       console.error('Error saving delivery info:', error);
       toast.error(t('errorSavingDeliveryInformation'));
     }
@@ -76,7 +85,7 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {form.formState.isSubmitted &&
             Object.keys(form.formState.errors).length > 0 && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+              <div className="p-4 bg-red-50 border border-red-200 rounded">
                 <h4 className="text-red-800 font-medium text-sm mb-2">
                   {t('pleaseFixErrors')}
                 </h4>
@@ -101,10 +110,12 @@ export default function DeliveryForm({ defaultValues }: DeliveryFormProps) {
 
           {selectedDeliveryMethod === 'ukrPoshta' && <UkrPoshtaForm />}
 
+          {selectedDeliveryMethod === 'selfPickup' && <SelfPickupForm />}
+
           <div className="">
             <Button
               type="submit"
-              className="w-full rounded-md "
+              className="w-full rounded "
               size="lg"
               disabled={form.formState.isSubmitting}
             >

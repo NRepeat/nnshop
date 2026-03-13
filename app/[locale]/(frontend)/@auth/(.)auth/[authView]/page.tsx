@@ -4,19 +4,7 @@ import { QuickView } from '@widgets/product-view';
 import { Suspense } from 'react';
 import { AuthModalSkeleton } from './AuthModalSkeleton';
 
-// export async function generateStaticParams() {
-//   const params = [];
-//   for (const locale of locales) {
-//     // for (const authView of Object.values(authViewPaths)) {
-//     params.push({ locale: locale });
-//     // }
-//   }
-//   return params;
-// }
 
-// export function generateStaticParams() {
-//   return Object.values(authViewPaths).map((path) => ({ authView: path }));
-// }
 const AuthSession = async ({
   params,
 }: {
@@ -28,7 +16,7 @@ const AuthSession = async ({
     namespace: 'BetterAuthUI',
   });
   return (
-    <QuickView open={Boolean(params)}>
+    <QuickView open={Boolean(params)} className='px-1.5'>
       <main className=" flex grow flex-col items-center justify-center self-center  ">
         <AuthViewRenderer authView={authView} tBetterAuth={tBetterAuth} />
       </main>

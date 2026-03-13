@@ -1,4 +1,4 @@
-import { Sheet, SheetTrigger } from '@shared/ui/sheet';
+import { SheetTrigger } from '@shared/ui/sheet';
 import { EmptyState } from './EmptyState';
 import Content from './Content';
 import { ShoppingCart } from 'lucide-react';
@@ -19,11 +19,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
       })) as GetCartQuery | null)
     : null;
   const cartId = cart?.cart?.id;
-  const sizeLabel = {
-    uk: 'Розмір',
-    ru: 'Розмір',
-    en: 'Розмір',
-  }[locale];
+  const SIZE_NAMES = ['розмір', 'размер', 'size'];
 
   const items = cart?.cart?.lines.edges.map((item) => {
     const product = item.node.merchandise.product;
@@ -41,13 +37,19 @@ const CartSheet = async ({ locale }: { locale: string }) => {
     const discountedPrice = sale > 0 ? originalPrice * (1 - sale / 100) : originalPrice;
     const totalPrice = discountedPrice * quantity;
 
+    const compareAtAmount = (item.node.cost as any).compareAtAmountPerQuantity?.amount;
+    const compareAtPrice = compareAtAmount && Number(compareAtAmount) > originalPrice
+      ? Number(compareAtAmount).toString()
+      : null;
+
     return {
       id: item.node.id,
       title: product.title,
       price: originalPrice.toString(),
+      compareAtPrice,
       handle: product.handle,
       size: item.node.merchandise.selectedOptions.find(
-        (option) => option.name === sizeLabel,
+        (option) => SIZE_NAMES.includes(option.name.toLowerCase()),
       )?.value,
       color: item.node.merchandise.selectedOptions.find(
         (option) => option.name === 'Color',
@@ -73,15 +75,20 @@ const CartSheet = async ({ locale }: { locale: string }) => {
     (acc, item) => acc + Number(item.quantity),
     0,
   );
-  const discountCodes = cart?.cart?.discountCodes || [];
+  const discountCodes = (cart?.cart?.discountCodes || []).filter((d) => d.applicable);
+  const hasApplicableDiscount = discountCodes.length > 0;
 
-  // Get subtotal and total from Shopify cart
-  const subtotalAmount = Number(cart?.cart?.cost?.subtotalAmount?.amount || estimateTotal);
-  const totalAmount = Number(cart?.cart?.cost?.totalAmount?.amount || estimateTotal);
-  const discountAmount = subtotalAmount - totalAmount;
+  // subtotalAmount = locally calculated total with znizka applied
+  const subtotalAmount = estimateTotal || 0;
+  // Use Shopify's authoritative total (based on full prices minus code discount)
+  const shopifyTotal = Number(cart?.cart?.cost.totalAmount.amount ?? subtotalAmount);
+  // Total shown: Shopify total when code applied, znizka subtotal otherwise
+  const totalAmount = hasApplicableDiscount ? shopifyTotal : subtotalAmount;
+  // Effective discount = what user saves on top of znizka prices
+  const discountAmount = hasApplicableDiscount ? Math.max(0, subtotalAmount - shopifyTotal) : 0;
 
   return (
-    <Sheet >
+    <>
       <SheetTrigger
         className="cursor-pointer relative"
         asChild
@@ -106,7 +113,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
         totalAmount={totalAmount}
         discountAmount={discountAmount}
       />
-    </Sheet>
+    </>
   );
 };
 
@@ -133,7 +140,7 @@ const CartWithEmptyState = ({
   totalAmount: number;
   discountAmount: number;
 }) => {
-  if (!cartId) {
+  if (!cartId || !products || products.length === 0) {
     return <EmptyState locale={locale} />;
   } else {
     return (

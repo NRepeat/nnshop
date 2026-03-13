@@ -80,17 +80,39 @@ export const OrderDetails = async ({
   localOrder,
 }: OrderDetailsProps) => {
   const t = await getTranslations({ locale, namespace: 'OrderPage.details' });
+  const tOrder = await getTranslations({ locale, namespace: 'OrderPage' });
   const tDelivery = await getTranslations({ locale, namespace: 'DeliveryForm' });
   const tPayment = await getTranslations({ locale, namespace: 'PaymentForm' });
 
   const user = localOrder?.user;
-  const contact = user?.contactInformation;
-  const delivery = user?.deliveryInformation;
-  const payment = user?.paymentInformation;
+  const contact = user?.contactInformation ?? (
+    (order.shippingAddress?.firstName || order.email)
+      ? {
+          name: order.shippingAddress?.firstName ?? '',
+          lastName: order.shippingAddress?.lastName ?? '',
+          email: order.email ?? '',
+          phone: order.shippingAddress?.phone ?? '',
+        }
+      : null
+  );
+  const delivery = user?.deliveryInformation ?? (
+    order.shippingAddress?.address1
+      ? {
+          deliveryMethod: 'address',
+          country: order.shippingAddress.country ?? null,
+          address: order.shippingAddress.address1 ?? null,
+          apartment: order.shippingAddress.address2 ?? null,
+          city: order.shippingAddress.city ?? null,
+          postalCode: order.shippingAddress.zip ?? null,
+          novaPoshtaDepartment: null,
+        }
+      : null
+  );
+  const payment = user?.paymentInformation ?? null;
 
   return (
-    <div className="mt-4 space-y-6">
-      <Card className="shadow-sm">
+    <div className="space-y-6">
+      <Card className="shadow px-0 rounded"  >
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -103,17 +125,17 @@ export const OrderDetails = async ({
                 })}
               </p>
             </div>
-            <OrderStatusBadge status={order.displayFulfillmentStatus} />
+            <OrderStatusBadge status={order.fulfillmentStatus} />
           </div>
         </CardHeader>
-        <CardContent>
-          <OrderTimeline status={order.displayFulfillmentStatus} />
+        <CardContent className=''>
+          <OrderTimeline status={order.fulfillmentStatus} />
         </CardContent>
       </Card>
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-6">
-          <Card className="shadow-sm">
+          <Card className="shadow px-0 rounded ">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <User className="w-4 h-4" />
@@ -135,7 +157,7 @@ export const OrderDetails = async ({
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm">
+          <Card className="shadow px-0 rounded">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <MapPin className="w-4 h-4" />
@@ -185,7 +207,7 @@ export const OrderDetails = async ({
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm">
+          <Card className="shadow px-0 rounded ">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <CreditCard className="w-4 h-4" />
@@ -207,6 +229,12 @@ export const OrderDetails = async ({
                     {payment.amount} {payment.currency}
                   </p>
                 </div>
+              ) : order.financialStatus ? (
+                <div className="space-y-1 text-sm">
+                  <p className="font-medium">
+                    {tOrder(`financialStatus.${order.financialStatus}` as any) || order.financialStatus}
+                  </p>
+                </div>
               ) : (
                 <p className="text-sm text-muted-foreground">—</p>
               )}
@@ -215,7 +243,7 @@ export const OrderDetails = async ({
         </div>
 
         <div>
-          <Card className="shadow-sm">
+          <Card className="shadow px-0 rounded sticky top-[150px]">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Package className="w-4 h-4" />
@@ -224,12 +252,12 @@ export const OrderDetails = async ({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {order.lineItems.edges.map(({ node: item }, index) => (
+                {order.lineItems.edges.map(({ node: item }) => (
                   <div
-                    key={index}
+                    key={`${item.title}-${item.variant?.title}`}
                     className="flex items-start gap-4"
                   >
-                    <div className="relative w-16 h-16 rounded-md overflow-hidden bg-muted shrink-0">
+                    <div className="relative w-16 h-16 rounded overflow-hidden bg-muted shrink-0">
                       {item.image?.url ? (
                         <Image
                           src={item.image.url}
@@ -245,7 +273,7 @@ export const OrderDetails = async ({
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate">{item.title}</p>
+                      <p className="font-medium text-sm truncate text-wrap">{item.title}</p>
                       <p className="text-sm text-muted-foreground">
                         {item.variant.title}
                       </p>

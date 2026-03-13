@@ -4,6 +4,7 @@ import {
   GetAllProductsQuery,
   GetAllProductsQueryVariables,
 } from '@shared/lib/shopify/types/storefront.generated';
+import { cacheLife, cacheTag } from 'next/cache';
 
 const GET_ALL_BRANDS_QUERY = `#graphql
   query GetAllProducts($first: Int!, $after: String) {
@@ -23,6 +24,9 @@ const GET_ALL_BRANDS_QUERY = `#graphql
 `;
 
 export async function getAllBrands(locale: string = 'uk') {
+  'use cache';
+  cacheLife('days');
+  cacheTag('brands');
   try {
     const brands = new Set<string>();
     let hasNextPage = true;

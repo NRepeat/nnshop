@@ -3,6 +3,7 @@ import { CollectionGridSkeleton } from '@features/collection/ui/CollectionGridSk
 import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { getCollection } from '@entities/collection/api/getCollection';
+import { generateBrandMetadata } from '@shared/lib/seo/generateMetadata';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -22,14 +23,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       locale,
     });
 
-    if (!collection) {
+    if (!collection.collection) {
       return { title: 'Brand Not Found' };
     }
 
-    return {
-      title: `${collection.collection?.title}`,
-      description: collection.collection?.description,
-    };
+    return generateBrandMetadata(
+      {
+        title: collection.collection.title,
+        image: collection.collection.image ?? null,
+      },
+      locale,
+      decodedSlug
+    );
   } catch {
     return { title: 'Brand Not Found' };
   }

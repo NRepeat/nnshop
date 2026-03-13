@@ -5,3 +5,6 @@ export * from './topic';
 export * from './cardCarousel';
 export * from './stories-carousel';
 export * from './MainCollectionGridSkeleton';
+export * from './ProductCarouselSkeleton';
+export * from './PreviewsCollectionsSkeleton';
+export * from './popular-posts';
