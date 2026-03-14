@@ -40,18 +40,19 @@ export async function POST(req: NextRequest) {
     return new Response('Server misconfigured', { status: 500 });
   }
 
-  // Vercel sends NDJSON (newline-delimited JSON)
-  const entries: VercelLogEntry[] = rawBody
-    .split('\n')
-    .filter(Boolean)
-    .map((line) => {
-      try {
-        return JSON.parse(line);
-      } catch {
-        return null;
-      }
-    })
-    .filter(Boolean);
+  // Vercel sends JSON array or NDJSON depending on encoding setting
+  let entries: VercelLogEntry[] = [];
+  try {
+    const parsed = JSON.parse(rawBody);
+    entries = Array.isArray(parsed) ? parsed : [parsed];
+  } catch {
+    // fallback: try NDJSON
+    entries = rawBody
+      .split('\n')
+      .filter(Boolean)
+      .map((line) => { try { return JSON.parse(line); } catch { return null; } })
+      .filter(Boolean) as VercelLogEntry[];
+  }
 
   // Only alert on errors/fatals or 5xx responses
   const critical = entries.filter(
