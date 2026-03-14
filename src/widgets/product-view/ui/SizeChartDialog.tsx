@@ -208,7 +208,7 @@ export const SizeChartDialog = ({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto" aria-describedby={undefined}>
         <ChartComponent t={t} />
       </DialogContent>
     </Dialog>

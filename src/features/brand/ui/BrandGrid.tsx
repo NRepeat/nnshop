@@ -1,7 +1,12 @@
 import { getCollection } from '@entities/collection/api/getCollection';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@shared/ui/empty';
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from '@shared/ui/empty';
 import { PackageSearch } from 'lucide-react';
 import { ClientGridWrapper } from '@features/collection/ui/ClientGridWrapper';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
@@ -33,13 +38,14 @@ export const BrandGrid = async ({
   params: Promise<{ locale: string; slug: string }>;
   searchParams: Promise<SearchParams>;
 }) => {
-  const [awaitedParams, awaitedSearchParams, t, tBrands, tCollection] = await Promise.all([
-    params,
-    searchParams,
-    getTranslations('Header'),
-    getTranslations('BrandsPage'),
-    getTranslations('CollectionPage'),
-  ]);
+  const [awaitedParams, awaitedSearchParams, t, tBrands, tCollection] =
+    await Promise.all([
+      params,
+      searchParams,
+      getTranslations('Header'),
+      getTranslations('BrandsPage'),
+      getTranslations('CollectionPage'),
+    ]);
 
   const { locale, slug } = awaitedParams;
   const decodedSlug = decodeURIComponent(slug);
@@ -47,9 +53,14 @@ export const BrandGrid = async ({
 
   const cookieStore = await headers();
   const cookieHeader = cookieStore.get('cookie') || '';
-  const genderFromCookie = cookieHeader.includes('gender=man') ? 'man' : cookieHeader.includes('gender=woman') ? 'woman' : undefined;
+  const genderFromCookie = cookieHeader.includes('gender=man')
+    ? 'man'
+    : cookieHeader.includes('gender=woman')
+      ? 'woman'
+      : undefined;
 
-  const gender = (awaitedSearchParams._gender as string | undefined) || genderFromCookie;
+  const gender =
+    (awaitedSearchParams._gender as string | undefined) || genderFromCookie;
   const searchParamsWithoutGender = Object.fromEntries(
     Object.entries(awaitedSearchParams).filter(([k]) => k !== '_gender'),
   );
@@ -68,7 +79,13 @@ export const BrandGrid = async ({
 
   if (hasFilters) {
     collectionPromises.push(
-      getCollection({ handle: decodedSlug, first: 20, locale: locale, gender, genderTag: gender }),
+      getCollection({
+        handle: decodedSlug,
+        first: 20,
+        locale: locale,
+        gender,
+        genderTag: gender,
+      }),
     );
   }
 
@@ -86,7 +103,9 @@ export const BrandGrid = async ({
         (edge) =>
           (Number(edge.priceRange.minVariantPrice.amount) > 0 ||
             Number(edge.priceRange.maxVariantPrice.amount) > 0) &&
-          (edge.totalInventory === null || edge.totalInventory === undefined || edge.totalInventory > 0),
+          (edge.totalInventory === null ||
+            edge.totalInventory === undefined ||
+            edge.totalInventory > 0),
       ) || [];
 
   const session = await auth.api.getSession({ headers: await headers() });
@@ -123,16 +142,7 @@ export const BrandGrid = async ({
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
-            {gender ? (
-              <>
-                <BreadcrumbItem>
-                  <BreadcrumbLink href={`/${locale}/${gender}`}>
-                    {gender === 'man' ? t('nav.man') : t('nav.woman')}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-              </>
-            ) : (
+            {
               <>
                 <BreadcrumbItem>
                   <BreadcrumbLink href={`/${locale}/brands`}>
@@ -141,7 +151,7 @@ export const BrandGrid = async ({
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
               </>
-            )}
+            }
             <BreadcrumbItem>
               <BreadcrumbPage>
                 {decodeHtmlEntities(collection.collection?.title ?? '')}
@@ -200,7 +210,9 @@ export const BrandGrid = async ({
                   <PackageSearch className="w-12 h-12 text-muted-foreground" />
                   <EmptyTitle>{tCollection('noProducts')}</EmptyTitle>
                   {hasFilters && (
-                    <EmptyDescription>{tCollection('explore')}</EmptyDescription>
+                    <EmptyDescription>
+                      {tCollection('explore')}
+                    </EmptyDescription>
                   )}
                 </EmptyHeader>
               </Empty>

@@ -6,6 +6,8 @@ import { genders } from '@shared/i18n/routing';
 import { useTransition, useState, useEffect } from 'react';
 import { detectGenderFromHandle } from '@entities/collection/lib/resolve-handle';
 import { DEFAULT_GENDER } from '@shared/config/shop';
+import { usePostHog } from 'posthog-js/react';
+import { useSearchParams } from 'next/navigation';
 
 export const NavButton = ({
   children,
@@ -21,7 +23,9 @@ export const NavButton = ({
   className?: string;
 }) => {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const posthog = usePostHog();
   const [isPending, startTransition] = useTransition();
   const [optimisticSlug, setOptimisticSlug] = useState<string | null>(null);
 
@@ -29,7 +33,11 @@ export const NavButton = ({
     setOptimisticSlug(null);
   }, [pathname]);
 
-  const genderInUrl = pathname.split('/').find((segment) => genders.includes(segment));
+  const segments = pathname.split('/').filter(Boolean);
+  const isBrandPage = segments[0] === 'brand';
+  const genderInUrl = isBrandPage
+    ? (searchParams.get('_gender') ?? undefined)
+    : pathname.split('/').find((segment) => genders.includes(segment));
   const resolvedActive = genderInUrl ? genderInUrl === slug : (gender || DEFAULT_GENDER) === slug;
   const isActive = optimisticSlug ? optimisticSlug === slug : resolvedActive;
 
@@ -37,7 +45,18 @@ export const NavButton = ({
     setOptimisticSlug(slug);
     document.cookie = `gender=${slug};path=/;max-age=${60 * 60 * 24 * 365}`;
 
-    const segments = pathname.split('/').filter(Boolean);
+    posthog?.capture('gender_switched', { gender: slug, previous_gender: genderInUrl ?? gender ?? DEFAULT_GENDER });
+
+    if (isBrandPage) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('_gender', slug);
+      startTransition(() => {
+        router.push(`/brand/${segments[1]}?${params.toString()}`);
+        setTimeout(() => router.refresh(), 0);
+      });
+      return;
+    }
+
     const currentHandle = segments[1];
 
     let destination = `/${slug}`;

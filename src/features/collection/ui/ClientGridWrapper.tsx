@@ -19,19 +19,23 @@ export const ClientGridWrapper = ({
   gender?: string;
 }) => {
   const locale = useLocale();
-  const [products, setProducts] =
-    useState<(Product & { isFav: boolean })[]>(initialProducts);
-  const [pageInfo, setPageInfo] = useState(initialPageInfo);
+  const [extraProducts, setExtraProducts] = useState<(Product & { isFav: boolean })[]>([]);
 
-  const handleDataLoaded = (newProducts: Product[], newPageInfo: any) => {
-    setProducts((prev) => {
+  // Reset extra pages when the server sends new filtered results
+  useEffect(() => {
+    setExtraProducts([]);
+  }, [initialProducts]);
+
+  const handleDataLoaded = (newProducts: Product[], _newPageInfo: any) => {
+    setExtraProducts((prev) => {
       const map = new Map();
-      prev?.forEach((p) => map.set(p.id, p));
+      prev.forEach((p) => map.set(p.id, p));
       newProducts.forEach((p) => map.set(p.id, p));
       return Array.from(map.values());
     });
-    setPageInfo(newPageInfo);
   };
+
+  const products = [...initialProducts, ...extraProducts];
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
@@ -50,7 +54,7 @@ export const ClientGridWrapper = ({
           <div className="w-full items-center">
             <Suspense fallback={null}>
               <LoadMore
-                initialPageInfo={pageInfo}
+                initialPageInfo={initialPageInfo}
                 onDataLoadedAction={handleDataLoaded}
                 locale={locale}
                 handle={handle}
