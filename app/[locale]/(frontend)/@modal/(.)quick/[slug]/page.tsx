@@ -20,7 +20,6 @@ import { Button } from '@shared/ui/button';
 import { Heart } from 'lucide-react';
 import { connection } from 'next/server';
 import Gallery from '@features/product/ui/Gallery';
-import type { Image as ShoipifyImage } from '@shared/lib/shopify/types/storefront.types';
 import { ProductSessionViewSkeleton } from './ProductSessionViewSkeleton';
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
