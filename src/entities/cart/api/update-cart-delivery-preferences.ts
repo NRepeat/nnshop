@@ -1,4 +1,5 @@
 'use server';
+import { DEFAULT_COUNTRY_CODE } from '@shared/config/shop';
 import { auth } from '@features/auth/lib/auth';
 import { CART_TAGS } from '@shared/lib/cached-fetch';
 import { prisma } from '@shared/lib/prisma';
@@ -84,7 +85,7 @@ export async function updateCartDeliveryPreferences(
       deliveryAddressInput = {
         address1: deliveryInfo.novaPoshtaDepartment?.shortName || '',
         city: deliveryInfo.novaPoshtaDepartment?.addressParts?.city,
-        countryCode: 'UA',
+        countryCode: DEFAULT_COUNTRY_CODE,
         firstName: contactInfo.name,
         lastName: contactInfo.lastName,
         phone: contactInfo.phone,
@@ -110,7 +111,7 @@ export async function updateCartDeliveryPreferences(
       deliveryAddressInput = {
         address1: point ? `Самовивіз: ${point.name}, ${point.address}` : 'Самовивіз',
         city: point?.city || 'Запоріжжя',
-        countryCode: 'UA',
+        countryCode: DEFAULT_COUNTRY_CODE,
         firstName: contactInfo.name || '',
         lastName: contactInfo.lastName || '',
         phone: contactInfo.phone || '',

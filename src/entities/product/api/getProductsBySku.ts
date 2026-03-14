@@ -1,6 +1,7 @@
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { cacheLife, cacheTag } from 'next/cache';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 
 const QUERY = `#graphql
   query GetProductsBySku($query: String!, $first: Int!) {
@@ -28,7 +29,7 @@ const QUERY = `#graphql
             name
             optionValues { name }
           }
-          metafield(namespace: "custom", key: "znizka") {
+          metafield(namespace: "custom", key: "${DISCOUNT_METAFIELD_KEY}") {
             key
             value
           }

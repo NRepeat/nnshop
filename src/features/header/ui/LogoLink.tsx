@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import Image from 'next/image';
 import Link from 'next/link';
+import { DEFAULT_GENDER } from '@shared/config/shop';
 
 interface LogoLinkProps {
   iconUrl: string;
@@ -14,7 +15,7 @@ export const LogoLink = async ({
   locale,
 }: LogoLinkProps) => {
   const cookie = await cookies();
-  const gender = cookie.get('gender')?.value || 'woman';
+  const gender = cookie.get('gender')?.value || DEFAULT_GENDER;
   return (
     <Link
       href={'/' + locale + '/' + gender}

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from '@shared/i18n/navigation';
 import { genders } from '@shared/i18n/routing';
 import { useTransition, useState, useEffect } from 'react';
 import { detectGenderFromHandle } from '@entities/collection/lib/resolve-handle';
+import { DEFAULT_GENDER } from '@shared/config/shop';
 
 export const NavButton = ({
   children,
@@ -29,7 +30,7 @@ export const NavButton = ({
   }, [pathname]);
 
   const genderInUrl = pathname.split('/').find((segment) => genders.includes(segment));
-  const resolvedActive = genderInUrl ? genderInUrl === slug : (gender || 'woman') === slug;
+  const resolvedActive = genderInUrl ? genderInUrl === slug : (gender || DEFAULT_GENDER) === slug;
   const isActive = optimisticSlug ? optimisticSlug === slug : resolvedActive;
 
   const onClick = () => {

@@ -50,6 +50,7 @@ export const RecentlyViewedSection = () => {
       withCarousel={false}
       withQuick={false}
       className="hover:shadow rounded-b rounded-t pt-0 px-0"
+      source="recently_viewed"
     />
   ));
 

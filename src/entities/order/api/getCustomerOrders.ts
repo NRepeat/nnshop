@@ -1,6 +1,5 @@
 import { fetchProductImages } from './fetchProductImages';
-
-const PRICE_APP_URL = process.env.PRICE_APP_URL ?? 'https://prod.nnninc.uk';
+import { PRICE_APP_URL, DEFAULT_CURRENCY_CODE } from '@shared/config/shop';
 
 type ExternalLineItem = {
   title: string;
@@ -68,7 +67,7 @@ export async function getCustomerOrders(
     fulfillmentStatus: order.cancelledAt ? 'СКАСОВАНО' : order.fulfillmentStatus,
     financialStatus: order.financialStatus,
     totalPriceSet: {
-      shopMoney: order.total ?? { amount: '0', currencyCode: 'UAH' },
+      shopMoney: order.total ?? { amount: '0', currencyCode: DEFAULT_CURRENCY_CODE },
     },
     subtotalPriceSet: order.subtotal
       ? { shopMoney: order.subtotal }

@@ -11,8 +11,10 @@ import {
 } from '@/shared/ui/select';
 import { useQueryState, parseAsString } from 'nuqs';
 import { useTranslations } from 'next-intl';
+import { usePostHog } from 'posthog-js/react';
 
 export function SortSelect() {
+  const posthog = usePostHog();
   const t = useTranslations('CollectionPage.sort');
 
   const [sort, setSort] = useQueryState(
@@ -27,6 +29,7 @@ export function SortSelect() {
 
   const handleSortChange = (value: string) => {
     setSort(value === 'trending' ? null : value);
+    posthog?.capture('collection_sort_changed', { sort_type: value });
   };
 
   return (

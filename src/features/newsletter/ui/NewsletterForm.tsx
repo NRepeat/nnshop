@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { DEFAULT_GENDER } from '@shared/config/shop';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
@@ -28,7 +29,7 @@ export const NewsletterForm = () => {
 
   const form = useForm<NewsletterFieldValues, unknown, NewsletterFormData>({
     resolver: zodResolver(newsletterSchema),
-    defaultValues: { email: '', gender: 'woman' },
+    defaultValues: { email: '', gender: DEFAULT_GENDER },
   });
 
   if (submitted) {

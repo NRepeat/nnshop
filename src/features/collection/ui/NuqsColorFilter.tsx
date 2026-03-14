@@ -2,6 +2,7 @@
 
 import { useQueryState, parseAsArrayOf, parseAsString } from 'nuqs';
 import { useState, useTransition, useEffect } from 'react';
+import { usePostHog } from 'posthog-js/react';
 import {
   Filter,
   FilterValue,
@@ -19,6 +20,7 @@ type Props = {
 
 
 export function NuqsColorFilter({ filter, initialFilter }: Props) {
+  const posthog = usePostHog();
   const filterKey = filter.id.split('.').pop() || filter.id;
   const [isPending, startTransition] = useTransition();
   const [changingFilter, setChangingFilter] = useState<string | null>(null);
@@ -36,9 +38,16 @@ export function NuqsColorFilter({ filter, initialFilter }: Props) {
 
   const handleFilterChange = (value: FilterValue) => {
     const slug = toFilterSlug(value.label);
+    const isSelected = selectedValues.includes(slug);
+    posthog?.capture('collection_filter_applied', {
+      filter_type: 'color',
+      filter_name: filterKey,
+      filter_value: slug,
+      action: isSelected ? 'removed' : 'added',
+    });
     setChangingFilter(slug);
     startTransition(() => {
-      const newSelection = selectedValues.includes(slug)
+      const newSelection = isSelected
         ? selectedValues.filter((item) => item !== slug)
         : [...selectedValues, slug];
       setSelectedValues(newSelection.length > 0 ? newSelection : null);

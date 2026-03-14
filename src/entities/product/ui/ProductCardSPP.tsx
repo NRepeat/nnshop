@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { cn } from '@shared/lib/utils';
 import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 
 type ProductCardSPPProps = {
   product: Product;
@@ -48,8 +49,8 @@ export const ProductCardSPP = ({
   const currencySymbol = getCurrencySymbol(currencyCode);
 
   const discountMeta = Array.isArray(product.metafields)
-    ? product.metafields.find((m) => m?.key === 'znizka')
-    : (product as any).metafield?.key === 'znizka'
+    ? product.metafields.find((m) => m?.key === DISCOUNT_METAFIELD_KEY)
+    : (product as any).metafield?.key === DISCOUNT_METAFIELD_KEY
       ? (product as any).metafield
       : null;
 

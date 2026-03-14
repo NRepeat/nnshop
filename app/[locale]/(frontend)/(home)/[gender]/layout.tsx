@@ -12,7 +12,7 @@ export default async function LocaleLayout({
 
   setRequestLocale(locale);
   return (
-    <div className="">
+    <div>
       <SetGenderCookie gender={gender} />
       {children}
     </div>

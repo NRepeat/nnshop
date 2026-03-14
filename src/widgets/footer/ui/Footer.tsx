@@ -5,6 +5,7 @@ import { sanityFetch } from '@shared/sanity/lib/client';
 import { FOOTER_QUERY } from '@shared/sanity/lib/query';
 import { Phone, Mail } from 'lucide-react';
 import { FooterNewsletterForm } from './FooterNewsletterForm';
+import { FACEBOOK_URL, INSTAGRAM_URL } from '@shared/config/brand';
 
 // Inline brand icons (lucide-react has no brand icons)
 const FacebookIcon = () => (
@@ -55,12 +56,12 @@ export const Footer = async ({ locale }: { locale: string }) => {
   const socialLinks: Array<{ platform: string; url: string; icon: React.ReactNode }> = [
     {
       platform: 'facebook',
-      url: footer?.socialLinks?.find((l: { platform?: string | null }) => l.platform === 'facebook')?.url ?? 'https://facebook.com',
+      url: footer?.socialLinks?.find((l: { platform?: string | null }) => l.platform === 'facebook')?.url ?? FACEBOOK_URL,
       icon: <FacebookIcon />,
     },
     {
       platform: 'instagram',
-      url: footer?.socialLinks?.find((l: { platform?: string | null }) => l.platform === 'instagram')?.url ?? 'https://instagram.com',
+      url: footer?.socialLinks?.find((l: { platform?: string | null }) => l.platform === 'instagram')?.url ?? INSTAGRAM_URL,
       icon: <InstagramIcon />,
     },
   ];

@@ -1,5 +1,6 @@
 'use server';
 
+import { DEFAULT_COUNTRY_CODE } from '@shared/config/shop';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { auth } from '@features/auth/lib/auth';
@@ -12,6 +13,7 @@ type QuickOrderInput = {
   name: string;
   phone: string;
   productTitle: string;
+  selectedSize?: string;
   discountPercentage?: number;
   price: string;
   currencyCode: string;
@@ -106,13 +108,13 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
       lineItems: [lineItem],
       currency: orderData.currencyCode,
       financialStatus: 'PENDING',
-      note: `Быстрый заказ: ${orderData.productTitle}`,
+      note: `Быстрый заказ: ${orderData.productTitle}${orderData.selectedSize ? ` (Розмір: ${orderData.selectedSize})` : ''}`,
       shippingAddress: {
         firstName: firstName,
         lastName: lastName,
         address1: 'Быстрый заказ',
         city: 'Не указан',
-        country: 'UA',
+        country: DEFAULT_COUNTRY_CODE,
         phone: orderData.phone,
         zip: '',
       },

@@ -42,7 +42,7 @@ export async function addToCartAction(productVariantId: string) {
     if (!session) {
       return {
         success: false,
-        error: 'No session found. Please refresh the page and try again.'
+        error: 'No session found. Please refresh the page and try again.',
       };
     }
 
@@ -67,18 +67,30 @@ export async function addToCartAction(productVariantId: string) {
           query: CART_LINES_UPDATE,
           variables: {
             cartId: sessionCart.cartToken,
-            lines: [{ id: existingLine.node.id, quantity: existingLine.node.quantity + 1 }],
+            lines: [
+              {
+                id: existingLine.node.id,
+                quantity: existingLine.node.quantity + 1,
+              },
+            ],
           },
         });
         if (updated?.cartLinesUpdate?.userErrors?.length) {
-          return { success: false, error: updated.cartLinesUpdate.userErrors[0].message };
+          return {
+            success: false,
+            error: updated.cartLinesUpdate.userErrors[0].message,
+          };
         }
         revalidateTag(CART_TAGS.CART, { expire: 0 });
         revalidateTag(CART_TAGS.CART_ITEMS, { expire: 0 });
         return { success: true, cart: updated.cartLinesUpdate.cart };
       }
 
-      result = await linkProduct({ cartId: sessionCart.cartToken, quantity: 1, productVariantId });
+      result = await linkProduct({
+        cartId: sessionCart.cartToken,
+        quantity: 1,
+        productVariantId,
+      });
       if (result.success) {
         revalidateTag(CART_TAGS.CART, { expire: 0 });
         revalidateTag(CART_TAGS.CART_ITEMS, { expire: 0 });

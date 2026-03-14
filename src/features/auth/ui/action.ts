@@ -129,7 +129,6 @@ export const createSignInHandler = (
         return;
       }
 
-      posthog.identify(data.email, { email: data.email });
       posthog.capture('user_signed_in', { method: 'email' });
       toast.success(tSuccess('welcomeBack'));
       window.location.href = '/';
@@ -163,7 +162,6 @@ export const createSignUpHandler = (
         return;
       }
 
-      posthog.identify(data.email, { email: data.email });
       posthog.capture('user_signed_up', { method: 'email' });
       toast.success(tSuccess('accountCreated'));
       window.location.href = '/';
@@ -180,7 +178,7 @@ export const createGoogleSignInHandler = (tErrors: (key: string) => string) => {
     try {
       await client.signIn.social({
         provider: 'google',
-        callbackURL: '/',
+        callbackURL: '/?signed_in=google',
       });
     } catch (error) {
       posthog.captureException(error);

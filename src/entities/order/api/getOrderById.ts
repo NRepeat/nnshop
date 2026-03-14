@@ -1,7 +1,6 @@
 import { Order } from '../model/types';
 import { fetchProductImages } from './fetchProductImages';
-
-const PRICE_APP_URL = process.env.PRICE_APP_URL ?? 'https://prod.nnninc.uk';
+import { PRICE_APP_URL, DEFAULT_CURRENCY_CODE } from '@shared/config/shop';
 
 export async function getOrderById(
   orderId: string,
@@ -53,7 +52,7 @@ export async function getOrderById(
           quantity: item.quantity,
           variant: {
             title: item.variantTitle ?? '',
-            price: item.price ?? { amount: '0', currencyCode: 'UAH' },
+            price: item.price ?? { amount: '0', currencyCode: DEFAULT_CURRENCY_CODE },
           },
           image: item.productHandle && images[item.productHandle]
             ? { url: images[item.productHandle] }
@@ -62,16 +61,16 @@ export async function getOrderById(
       })),
     },
     subtotalPriceSet: {
-      presentmentMoney: order.subtotal ?? { amount: '0', currencyCode: 'UAH' },
+      presentmentMoney: order.subtotal ?? { amount: '0', currencyCode: DEFAULT_CURRENCY_CODE },
     },
     totalShippingPriceSet: {
-      presentmentMoney: order.totalShipping ?? { amount: '0', currencyCode: 'UAH' },
+      presentmentMoney: order.totalShipping ?? { amount: '0', currencyCode: DEFAULT_CURRENCY_CODE },
     },
     totalTaxSet: {
-      presentmentMoney: order.totalTax ?? { amount: '0', currencyCode: 'UAH' },
+      presentmentMoney: order.totalTax ?? { amount: '0', currencyCode: DEFAULT_CURRENCY_CODE },
     },
     totalPriceSet: {
-      presentmentMoney: order.total ?? { amount: '0', currencyCode: 'UAH' },
+      presentmentMoney: order.total ?? { amount: '0', currencyCode: DEFAULT_CURRENCY_CODE },
     },
   } as Order;
 }

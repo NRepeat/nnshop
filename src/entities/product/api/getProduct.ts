@@ -2,6 +2,7 @@ import { storefrontClient } from '@shared/lib/shopify/client';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { GetProductByHandleQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { cacheLife, cacheTag } from 'next/cache';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 
 export const PRODUCT_METAFIELDS_FRAGMENT = `#graphql
   fragment ProductMetafields on Product {
@@ -10,7 +11,7 @@ export const PRODUCT_METAFIELDS_FRAGMENT = `#graphql
         {key: "recommended_products", namespace: "custom"},
         {key: "bound-products", namespace: "custom"},
         {key: "attributes", namespace: "custom"},
-        {key: "znizka", namespace: "custom"},
+        {key: "${DISCOUNT_METAFIELD_KEY}", namespace: "custom"},
         {key: "color", namespace: "custom"},
         {key: "kolektsiya", namespace: "custom"},
         {key: "styl", namespace: "custom"},

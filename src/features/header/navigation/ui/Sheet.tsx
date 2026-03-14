@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import NavigationSheet from './NavigationSheet';
 import { cookies } from 'next/headers';
+import { DEFAULT_GENDER } from '@shared/config/shop';
 import { stripGenderFromHandle } from '../utils/strip-gender-from-handle';
 import { sanityFetch } from '@shared/sanity/lib/client';
 import { FOOTER_QUERY } from '@shared/sanity/lib/query';
@@ -81,7 +82,7 @@ const MenuSheet = async ({
   navDropdowns?: NavDropdowns | null;
 }) => {
   const cookie = await cookies();
-  const gender = cookie.get('gender')?.value || 'woman';
+  const gender = cookie.get('gender')?.value || DEFAULT_GENDER;
 
   const [t, allItems, footerData] = await Promise.all([
     getTranslations({ locale, namespace: 'Header.nav.drawer' }),

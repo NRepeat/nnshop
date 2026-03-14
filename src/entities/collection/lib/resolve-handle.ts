@@ -33,7 +33,9 @@ export function resolveCollectionHandle(
   for (const suffix of suffixes) {
     // Try inserting suffix at every position within the slug parts
     for (let i = 0; i <= parts.length; i++) {
-      const candidate = [...parts.slice(0, i), suffix, ...parts.slice(i)].join('-');
+      const candidate = [...parts.slice(0, i), suffix, ...parts.slice(i)].join(
+        '-',
+      );
       if (knownHandles.has(candidate)) return candidate;
     }
   }

@@ -1,6 +1,7 @@
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { prisma } from '@shared/lib/prisma';
 import { storefrontClient } from '@shared/lib/shopify/client';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 import {
   GetCartQuery,
   GetCartQueryVariables,
@@ -46,7 +47,7 @@ const CART_QUERY = `#graphql
                   handle
                   vendor
                   metafields(   identifiers: [
-                  {key: "znizka", namespace: "custom"}]){
+                  {key: "${DISCOUNT_METAFIELD_KEY}", namespace: "custom"}]){
                     key
                     value
                   }

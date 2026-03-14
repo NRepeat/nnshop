@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 import {
   Product as ShopifyProduct,
   ProductVariant,
@@ -123,7 +124,7 @@ export const ProductInfo = ({
   }, [cleanHtml]);
 
   const sale =
-    product.metafields.find((m) => m?.key === 'znizka')?.value || '0';
+    product.metafields.find((m) => m?.key === DISCOUNT_METAFIELD_KEY)?.value || '0';
   const sku = product.variants.edges[0].node.sku;
 
   const COLOR_NAMES = ['колір', 'цвет', 'color'];
@@ -214,8 +215,17 @@ export const ProductInfo = ({
                         showMuted && size.toLowerCase() !== s.toLowerCase(),
                     },
                   )}
-                  onClick={() => startSizeTransition(() => setSize(s.toLowerCase()))}
-                  disabled={isUnavailable}
+                  onClick={() => {
+                    if (isUnavailable) {
+                      posthog?.capture('out_of_stock_size_selected', {
+                        product_handle: product.handle,
+                        product_type: product.productType,
+                        size: s,
+                      });
+                    } else {
+                      startSizeTransition(() => setSize(s.toLowerCase()));
+                    }
+                  }}
                 >
                   {s.toUpperCase()}
                   {showCrossed && <CrossedLine />}
@@ -267,6 +277,11 @@ export const ProductInfo = ({
                   className={cn('group', {
                     'pointer-events-none opacity-50': !availableForSale,
                   })}
+                  onClick={() => posthog?.capture('product_color_variant_selected', {
+                    product_handle: product.handle,
+                    selected_color: c.name,
+                    target_product: c.product,
+                  })}
                 >
                   <div
                     className={cn(
@@ -303,7 +318,13 @@ export const ProductInfo = ({
           {(isDescOverflowing || isDescExpanded) && (
             <button
               type="button"
-              onClick={() => setDescExpanded((v) => !v)}
+              onClick={() => {
+                posthog?.capture('product_description_expanded', {
+                  product_handle: product.handle,
+                  action: isDescExpanded ? 'collapsed' : 'expanded',
+                });
+                setDescExpanded((v) => !v);
+              }}
               className="mt-1 text-sm text-gray-500 hover:text-gray-800 underline underline-offset-2 transition-colors"
             >
               {isDescExpanded ? 'Згорнути' : 'Показати більше'}
@@ -372,10 +393,26 @@ export const ProductInfo = ({
         open={isPriceSubscribeOpen}
         onOpenChange={setPriceSubscribeOpen}
         shopifyProductId={product.id}
-        shopifyVariantId={selectedVariant?.id}
       />
       {/* Аккордеон деталей */}
-      <Accordion type="single" collapsible className="w-full border-t mt-4">
+      <Accordion
+        type="single"
+        collapsible
+        className="w-full border-t mt-4"
+        onValueChange={(value) => {
+          if (value === 'details') {
+            posthog?.capture('product_accordion_opened', {
+              product_handle: product.handle,
+              section: 'details',
+            });
+          } else if (value === 'shipping') {
+            posthog?.capture('product_accordion_opened', {
+              product_handle: product.handle,
+              section: 'shipping',
+            });
+          }
+        }}
+      >
         <AccordionItem value="details">
           <AccordionTrigger className="text-sm uppercase">
             {t('details')}

@@ -8,6 +8,7 @@
 // it does NOT affect Server Action CSRF protection.
 'use server';
 import { getCart } from '@entities/cart/api/get';
+import { DISCOUNT_METAFIELD_KEY, DEFAULT_CURRENCY_CODE, DEFAULT_COUNTRY_CODE } from '@shared/config/shop';
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
@@ -119,7 +120,7 @@ export async function createOrder(
       };
     }
 
-    const currencyCode = cart.cost.totalAmount.currencyCode || 'UAH';
+    const currencyCode = cart.cost.totalAmount.currencyCode || DEFAULT_CURRENCY_CODE;
 
     // Calculate znizka-discounted subtotal (same logic as Payment.tsx)
     let localTotal = 0;
@@ -129,7 +130,7 @@ export async function createOrder(
       const sale =
         Number(
           line.merchandise.product.metafields?.find(
-            (m: any) => m?.key === 'znizka',
+            (m: any) => m?.key === DISCOUNT_METAFIELD_KEY,
           )?.value || '0',
         ) || 0;
       const discountedPrice = sale > 0 ? price * (1 - sale / 100) : price;
@@ -163,7 +164,7 @@ export async function createOrder(
         // Get discount percentage from metafield
         const sale =
           Number(
-            product.metafields?.find((m: any) => m?.key === 'znizka')?.value ||
+            product.metafields?.find((m: any) => m?.key === DISCOUNT_METAFIELD_KEY)?.value ||
               '0',
           ) || 0;
 
@@ -224,7 +225,7 @@ export async function createOrder(
       shippingAddress = {
         address1: point ? `Самовивіз: ${point.name}, ${point.address}` : 'Самовивіз',
         city: point?.city || 'Запоріжжя',
-        country: 'UA',
+        country: DEFAULT_COUNTRY_CODE,
         firstName: completeCheckoutData.contactInfo.name || '',
         lastName: completeCheckoutData.contactInfo.lastName || '',
         phone: formattedPhone,
@@ -240,7 +241,7 @@ export async function createOrder(
       shippingAddress = {
         address1: dept?.shortName || selectedDelivery?.address1 || '',
         city: dept?.addressParts?.city || selectedDelivery?.city || '',
-        country: 'UA',
+        country: DEFAULT_COUNTRY_CODE,
         firstName: completeCheckoutData.contactInfo.name || '',
         lastName: completeCheckoutData.contactInfo.lastName || '',
         phone: formattedPhone,
@@ -308,6 +309,19 @@ export async function createOrder(
     if (vendorLines.length > 0) {
       noteLines.push(`Бренди: ${vendorLines.join(', ')}`);
     }
+
+    // Append size per line item for CRM visibility
+    // const sizeLines: string[] = [];
+    // for (const edge of cart.lines.edges as any[]) {
+    //   const variantTitle = edge.node.merchandise?.title;
+    //   const productTitle = edge.node.merchandise.product?.title;
+    //   if (variantTitle && variantTitle !== 'Default Title') {
+    //     sizeLines.push(`${productTitle}: ${variantTitle}`);
+    //   }
+    // }
+    // if (sizeLines.length > 0) {
+    //   noteLines.push(`Розміри: ${sizeLines.join(', ')}`);
+    // }
 
     if (noteLines.length > 0) {
       order.note = noteLines.join('\n');

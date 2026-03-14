@@ -11,6 +11,7 @@ import { cn } from '@shared/lib/utils';
 import { toFilterSlug } from '@shared/lib/filterSlug';
 import { Spinner } from '@shared/ui/Spinner';
 import he from 'he';
+import { usePostHog } from 'posthog-js/react';
 
 type Props = {
   filter: Filter;
@@ -26,6 +27,7 @@ export function NuqsButtonFilter({
   isSizeFilter = false,
 }: Props) {
   const [isPending, startTransition] = useTransition();
+  const posthog = usePostHog();
   const filterKey = filter.id.split('.').pop() || filter.id;
   const [changingFilter, setChangingFilter] = useState<string | null>(null);
   const [selectedValues, setSelectedValues] = useQueryState(
@@ -41,9 +43,16 @@ export function NuqsButtonFilter({
 
   const handleFilterChange = (value: FilterValue) => {
     const slug = toFilterSlug(value.label);
+    const isSelected = selectedValues.includes(slug);
+    posthog?.capture('collection_filter_applied', {
+      filter_type: isSizeFilter ? 'size' : filterKey,
+      filter_name: filterKey,
+      filter_value: slug,
+      action: isSelected ? 'removed' : 'added',
+    });
     setChangingFilter(slug);
     startTransition(() => {
-      const newSelection = selectedValues.includes(slug)
+      const newSelection = isSelected
         ? selectedValues.filter((item) => item !== slug)
         : [...selectedValues, slug];
       setSelectedValues(newSelection.length > 0 ? newSelection : null);

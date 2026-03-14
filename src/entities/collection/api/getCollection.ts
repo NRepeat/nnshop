@@ -2,6 +2,7 @@
 import { toFilterSlug } from '@shared/lib/filterSlug';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { storefrontClient } from '@shared/lib/shopify/client';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 import { getProductsByIds } from '@entities/product/api/getProductsByIds';
 import {
   GetCollectionQuery,
@@ -12,7 +13,6 @@ import {
 } from '@shared/lib/shopify/types/storefront.generated';
 import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
 import { cacheLife, cacheTag } from 'next/cache';
-
 
 const GetCollectionLightweight = `#graphql
   query GetCollectionLight(
@@ -108,7 +108,7 @@ const GetCollectionWithProducts = `#graphql
             totalInventory
             tags
             createdAt
-            metafield(namespace:"custom",key:"znizka"){
+            metafield(namespace:"custom",key:"${DISCOUNT_METAFIELD_KEY}"){
                        value
                        namespace
                        key
@@ -236,7 +236,10 @@ export const getCollectionSlugs = async () => {
   try {
     const [ruCollection, ukCollection] = await Promise.all(
       locales.map((language) =>
-        storefrontClient.request<GetCollectionsHandlesQuery, GetCollectionsHandlesQueryVariables>({
+        storefrontClient.request<
+          GetCollectionsHandlesQuery,
+          GetCollectionsHandlesQueryVariables
+        >({
           query: GET_COLLECTION_SLUGS,
           language,
         }),
@@ -247,8 +250,12 @@ export const getCollectionSlugs = async () => {
       throw new Error('No collections found');
     }
 
-    ruCollection.collections.edges.forEach((edge) => handlesSet.add(edge.node.handle));
-    ukCollection.collections.edges.forEach((edge) => handlesSet.add(edge.node.handle));
+    ruCollection.collections.edges.forEach((edge) =>
+      handlesSet.add(edge.node.handle),
+    );
+    ukCollection.collections.edges.forEach((edge) =>
+      handlesSet.add(edge.node.handle),
+    );
 
     return Array.from(handlesSet);
   } catch (error) {
@@ -281,7 +288,6 @@ export const getCollectionFilters = async ({
   return collection.collection?.products.filters;
 };
 
-
 async function fetchAllCollectionEdges({
   handle,
   locale,
@@ -290,7 +296,12 @@ async function fetchAllCollectionEdges({
   handle: string;
   locale: string;
   filters: ProductFilter[];
-}): Promise<{ edges: any[]; filters: any[]; collectionId: string; collectionTitle: string }> {
+}): Promise<{
+  edges: any[];
+  filters: any[];
+  collectionId: string;
+  collectionTitle: string;
+}> {
   const allEdges: any[] = [];
   let cursor: string | null = null;
   let hasNextPage = true;
@@ -322,7 +333,12 @@ async function fetchAllCollectionEdges({
     cursor = products.pageInfo.endCursor ?? null;
   }
 
-  return { edges: allEdges, filters: collectionFilters, collectionId, collectionTitle };
+  return {
+    edges: allEdges,
+    filters: collectionFilters,
+    collectionId,
+    collectionTitle,
+  };
 }
 
 export const getCollection = async ({
@@ -353,34 +369,33 @@ export const getCollection = async ({
   cacheTag(`collection:${handle}`);
   cacheTag(handle);
 
-  const t0 = Date.now();
-  const log = (label: string) =>
-    console.log(`[getCollection][${handle}] ${label} +${Date.now() - t0}ms`);
 
   if (!locale) throw new Error('getCollection: locale is required');
   if (!handle) throw new Error('getCollection: handle is required');
 
   const filters: ProductFilter[] = [{ available: true }];
-
-  if (genderTag) {
-    const genderMetafieldValue = genderTag === 'man' ? 'choloviche' : genderTag === 'woman' ? 'zhinoche' : null;
-    if (genderMetafieldValue) {
-      filters.push({ productMetafield: { namespace: 'custom', key: 'gender', value: genderMetafieldValue } });
-    }
-  }
+  //Mnay product without gender tag, go to Shopify
+  // if (genderTag) {
+  //   const genderMetafieldValue = genderTag === 'man' ? 'choloviche' : genderTag === 'woman' ? 'zhinoche' : null;
+  //   if (genderMetafieldValue) {
+  //     filters.push({ productMetafield: { namespace: 'custom', key: 'gender', value: genderMetafieldValue } });
+  //   }
+  // }
 
   if (searchParams) {
-    log('fetching filter definitions...');
     const filterDefinitions = await getCollectionFilters({ handle, locale });
-    log('filter definitions ready');
-
     if (filterDefinitions) {
       for (const [key, value] of Object.entries(searchParams)) {
-        if (key === 'minPrice' || key === 'maxPrice' || key === 'sort') continue;
+        if (key === 'minPrice' || key === 'maxPrice' || key === 'sort')
+          continue;
 
-        const definition = filterDefinitions.find((f) => f.id.endsWith(`.${key}`));
+        const definition = filterDefinitions.find((f) =>
+          f.id.endsWith(`.${key}`),
+        );
         if (definition) {
-          const values = Array.isArray(value) ? value : (value as string).split(';');
+          const values = Array.isArray(value)
+            ? value
+            : (value as string).split(';');
           values.forEach((v) => {
             const filterValue = definition.values.find(
               (def) => toFilterSlug(def.label) === v,
@@ -409,17 +424,26 @@ export const getCollection = async ({
   if (isDefaultSort) {
     // Fetch all product IDs (lightweight) to apply custom sort_order metafield sorting,
     // then fetch full data only for the current page.
-    log('fetchAllCollectionEdges (defaultSort)...');
-    const { edges: allEdges, filters: shopifyFilters, collectionId: colId, collectionTitle: colTitle } = await fetchAllCollectionEdges({
+    const {
+      edges: allEdges,
+      filters: shopifyFilters,
+      collectionId: colId,
+      collectionTitle: colTitle,
+    } = await fetchAllCollectionEdges({
       handle,
       locale,
       filters,
     });
-    log(`fetchAllCollectionEdges done — ${allEdges.length} products`);
 
     allEdges.sort((a: any, b: any) => {
-      const aVal = a.node.sortOrder?.value != null ? parseFloat(a.node.sortOrder.value) : Infinity;
-      const bVal = b.node.sortOrder?.value != null ? parseFloat(b.node.sortOrder.value) : Infinity;
+      const aVal =
+        a.node.sortOrder?.value != null
+          ? parseFloat(a.node.sortOrder.value)
+          : Infinity;
+      const bVal =
+        b.node.sortOrder?.value != null
+          ? parseFloat(b.node.sortOrder.value)
+          : Infinity;
       if (aVal !== bVal) return aVal - bVal;
       const aDate = a.node.createdAt ? new Date(a.node.createdAt).getTime() : 0;
       const bDate = b.node.createdAt ? new Date(b.node.createdAt).getTime() : 0;
@@ -436,9 +460,7 @@ export const getCollection = async ({
     const slicedEdges = allEdges.slice(startIndex, startIndex + pageSize);
     const productIds = slicedEdges.map((e: any) => e.node.id);
 
-    log(`getProductsByIds (${productIds.length} ids)...`);
     const fullProducts = await getProductsByIds(productIds, locale);
-    log('getProductsByIds done');
 
     const fullProductsMap = new Map(fullProducts.map((p) => [p.id, p]));
 
@@ -455,7 +477,10 @@ export const getCollection = async ({
           pageInfo: {
             hasNextPage: startIndex + pageSize < allEdges.length,
             hasPreviousPage: startIndex > 0,
-            endCursor: startIndex + pageSize < allEdges.length ? String(startIndex + pageSize) : null,
+            endCursor:
+              startIndex + pageSize < allEdges.length
+                ? String(startIndex + pageSize)
+                : null,
             startCursor: String(startIndex),
           },
           edges: slicedEdges.map((e: any) => ({
@@ -470,12 +495,20 @@ export const getCollection = async ({
     let sortKey = 'RELEVANCE';
     let reverse = false;
     switch (sort) {
-      case 'price-asc':    sortKey = 'PRICE';   reverse = false; break;
-      case 'price-desc':   sortKey = 'PRICE';   reverse = true;  break;
-      case 'created-desc': sortKey = 'CREATED'; reverse = true;  break;
+      case 'price-asc':
+        sortKey = 'PRICE';
+        reverse = false;
+        break;
+      case 'price-desc':
+        sortKey = 'PRICE';
+        reverse = true;
+        break;
+      case 'created-desc':
+        sortKey = 'CREATED';
+        reverse = true;
+        break;
     }
 
-    log('storefrontClient.request...');
     collection = await storefrontClient.request<
       GetCollectionQuery,
       {
@@ -490,21 +523,27 @@ export const getCollection = async ({
       }
     >({
       query: GetCollectionWithProducts,
-      variables: { handle, filters, first, after, last, before, sortKey, reverse },
+      variables: {
+        handle,
+        filters,
+        first,
+        after,
+        last,
+        before,
+        sortKey,
+        reverse,
+      },
       language: locale.toUpperCase() as StorefrontLanguageCode,
     });
-    log('storefrontClient.request done');
   }
 
   const collectionId = collection.collection?.id;
   if (!collectionId) {
-    log('no collectionId — returning early');
     return { collection, alternateHandle: '' };
   }
 
   const targetLocale = locale === 'ru' ? 'UK' : 'RU';
 
-  log('fetching alternateHandle...');
   const alternateRequest = await storefrontClient.request<
     { collection: { handle: string } },
     { id: string }
@@ -518,7 +557,6 @@ export const getCollection = async ({
     variables: { id: collectionId },
     language: targetLocale as StorefrontLanguageCode,
   });
-  log(`done — total ${Date.now() - t0}ms`);
 
   return {
     collection,

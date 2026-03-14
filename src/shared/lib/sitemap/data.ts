@@ -3,6 +3,7 @@ import { storefrontClient } from '@shared/lib/shopify/client';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 import { client as sanityClient } from '@/shared/sanity/lib/client';
+import { DEFAULT_GENDER } from '@shared/config/shop';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -79,7 +80,7 @@ function getGenderFromHandle(handle: string): string {
   for (const [gender, patterns] of Object.entries(GENDER_SLUG_PATTERNS)) {
     if (patterns.some((p) => handle.includes(p))) return gender;
   }
-  return 'woman';
+  return DEFAULT_GENDER;
 }
 
 // ---------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { DEFAULT_COUNTRY_CODE } from '@shared/config/shop';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useRouter } from '@shared/i18n/navigation';
@@ -57,7 +58,7 @@ export default function ContactInfoForm({
       lastName: contactInfo?.lastName || '',
       email: contactInfo?.email || user?.email || '',
       phone: contactInfo?.phone || '+380',
-      countryCode: contactInfo?.countryCode || 'UA',
+      countryCode: contactInfo?.countryCode || DEFAULT_COUNTRY_CODE,
       preferViber: contactInfo?.preferViber || false,
     },
   });
@@ -66,6 +67,10 @@ export default function ContactInfoForm({
     try {
       const result = await saveContactInfo(data);
       if (result) {
+        posthog?.setPersonProperties({
+          email: data.email,
+          name: [data.name, data.lastName].filter(Boolean).join(' ') || undefined,
+        });
         posthog?.capture('checkout_contact_info_saved', {
           $current_url: window.location.href,
         });

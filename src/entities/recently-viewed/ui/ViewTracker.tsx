@@ -8,9 +8,10 @@ import { usePostHog } from 'posthog-js/react';
 type ViewTrackerProps = {
   productHandle: string;
   productId: string;
+  productTitle?: string;
 };
 
-export const ViewTracker = ({ productHandle, productId }: ViewTrackerProps) => {
+export const ViewTracker = ({ productHandle, productId, productTitle }: ViewTrackerProps) => {
   const posthog = usePostHog();
 
   useEffect(() => {
@@ -24,13 +25,14 @@ export const ViewTracker = ({ productHandle, productId }: ViewTrackerProps) => {
       posthog?.capture('product_viewed', {
         product_id: productId,
         product_handle: productHandle,
+        product_title: productTitle,
         $current_url: window.location.href,
         $screen_width: window.screen.width,
         $screen_height: window.screen.height,
       });
     };
     track();
-  }, [productHandle, productId, posthog]);
+  }, [productHandle, productId, productTitle, posthog]);
 
   return null;
 };

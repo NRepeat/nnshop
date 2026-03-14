@@ -5,6 +5,7 @@ import { RemoveItemButton } from './RemoveItemButton';
 import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { cn } from '@shared/lib/utils';
 import { useTranslations } from 'next-intl';
+import { DEFAULT_CURRENCY_CODE } from '@shared/config/shop';
 
 const CartItem = ({
   product,
@@ -69,7 +70,7 @@ const CartItem = ({
                     ? Math.round(originalPrice * product.quantity).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
                     : Math.round(compareAtPrice! * product.quantity).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
                 </span>
-                <span> {getCurrencySymbol('UAH')}</span>
+                <span> {getCurrencySymbol(DEFAULT_CURRENCY_CODE)}</span>
               </p>
             )}
             <p
@@ -82,7 +83,7 @@ const CartItem = ({
                   .toString()
                   .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
               </span>
-              <span>{getCurrencySymbol('UAH')}</span>
+              <span>{getCurrencySymbol(DEFAULT_CURRENCY_CODE)}</span>
             </p>
             <div className="absolute top-2 -right-0.5 mr-1 mt-1 z-10">
               <RemoveItemButton cartId={cartId} itemId={itemId} />

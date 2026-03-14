@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { subscribeToNewsletter } from '@features/newsletter/api/subscribe';
 import { usePostHog } from 'posthog-js/react';
+import { DEFAULT_GENDER } from '@shared/config/shop';
 
 export const FooterNewsletterForm = () => {
   const t = useTranslations('Footer');
@@ -14,8 +15,8 @@ export const FooterNewsletterForm = () => {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
-    await subscribeToNewsletter({ email, gender: 'woman' });
-    posthog?.capture('newsletter_subscribed', { email });
+    await subscribeToNewsletter({ email, gender: DEFAULT_GENDER });
+    posthog?.capture('newsletter_subscribed', { location: 'footer' });
     setSubmitted(true);
   }
 

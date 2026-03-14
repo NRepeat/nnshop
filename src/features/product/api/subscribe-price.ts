@@ -1,15 +1,13 @@
 'use server';
 
-const PRICE_APP_URL = process.env.PRICE_APP_URL ?? 'https://prod.nnninc.uk';
+import { PRICE_APP_URL } from '@shared/config/shop';
 
 export async function subscribeToPriceChanges({
   email,
   shopifyProductId,
-  shopifyVariantId,
 }: {
   email: string;
   shopifyProductId: string;
-  shopifyVariantId?: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
     const res = await fetch(`${PRICE_APP_URL}/api/price-subscription`, {
@@ -18,7 +16,6 @@ export async function subscribeToPriceChanges({
       body: JSON.stringify({
         email,
         shopifyProductId,
-        shopifyVariantId,
         subscriptionType: 'ANY_CHANGE',
       }),
     });

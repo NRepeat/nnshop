@@ -4,6 +4,7 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
 } from '@shared/ui/navigation-menu';
+import { DEFAULT_GENDER, GENDERS } from '@shared/config/shop';
 import { getMainMenu } from '../api/getMainMenu';
 import { getCollectionImages } from '../api/getCollectionImages';
 import { getTranslations } from 'next-intl/server';
@@ -84,9 +85,9 @@ export const CurrentNavigationSession = async ({
   const headerGender = headersList.get('x-gender');
   const currentGender =
     gender ||
-    (headerGender && ['woman', 'man'].includes(headerGender) ? headerGender : null) ||
-    (['woman', 'man'].includes(cookieGender ?? '') ? cookieGender : null) ||
-    'woman';
+    (headerGender && GENDERS.includes(headerGender as any) ? headerGender : null) ||
+    (GENDERS.includes(cookieGender as any) ? cookieGender : null) ||
+    DEFAULT_GENDER;
   return (
     <Navigation
       gender={currentGender}

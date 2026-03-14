@@ -1,4 +1,5 @@
 import { PostHog } from 'posthog-node';
+import { logger } from './logger';
 
 let _client: PostHog | null = null;
 
@@ -41,10 +42,14 @@ export async function captureServerError(
   const errorMessage = error instanceof Error ? error.message : String(error);
   const errorStack = error instanceof Error ? error.stack : undefined;
 
-  console.error(`[PostHog Error Tracking] ${context.service}:${context.action}`, {
-    message: errorMessage,
-    userId: context.userId,
-    ...context.extra,
+  logger.error(`${context.service}:${context.action} — ${errorMessage}`, {
+    service: context.service,
+    action: context.action,
+    user_id: context.userId,
+    stack: errorStack,
+    ...Object.fromEntries(
+      Object.entries(context.extra ?? {}).map(([k, v]) => [k, String(v)]),
+    ),
   });
 
   client.capture({

@@ -8,6 +8,7 @@ import { Button } from '@shared/ui/button';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 
 const CartSheet = async ({ locale }: { locale: string }) => {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -26,7 +27,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
 
     // Get sale percentage from metafield
     const sale = Number(
-      product.metafields.find((m) => m?.key === 'znizka')?.value || '0',
+      product.metafields.find((m) => m?.key === DISCOUNT_METAFIELD_KEY)?.value || '0',
     ) || 0;
 
     // Get original price from cart

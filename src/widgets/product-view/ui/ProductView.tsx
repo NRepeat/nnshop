@@ -21,12 +21,12 @@ import { Suspense } from 'react';
 import Gallery from '@features/product/ui/Gallery';
 import { getReletedProducts } from '@entities/product/api/get-related-products';
 import { cleanSlug } from '@shared/lib/utils/cleanSlug';
+import { DEFAULT_GENDER } from '@shared/config/shop';
+import { SITE_URL } from '@shared/config/brand';
 
 const RelatedProducts = dynamic(() => import('./RelatedProducts').then(mod => mod.RelatedProducts));
 
 const RecentlyViewedSection = dynamic(() => import('@entities/recently-viewed/ui/RecentlyViewedSection').then(mod => mod.RecentlyViewedSection));
-
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
 
 export async function ProductView({
   product,
@@ -43,7 +43,7 @@ export async function ProductView({
 }) {
   const tHeader = await getTranslations({ locale, namespace: 'Header' });
   const cookieStore = await cookies();
-  const gender = cookieStore.get('gender')?.value || 'woman';
+  const gender = cookieStore.get('gender')?.value || DEFAULT_GENDER;
   const awaitedSearchParams = searchParams ? await searchParams : {};
   const collectionFromUrl = awaitedSearchParams.collection as string | undefined;
 
@@ -77,31 +77,31 @@ export async function ProductView({
   const collectionHandle = cleanSlug(selectedCollection?.handle);
 
   const breadcrumbItems = [
-    { name: tHeader('nav.home'), url: `${BASE_URL}/${locale}` },
+    { name: tHeader('nav.home'), url: `${SITE_URL}/${locale}` },
     {
       name: gender === 'man' ? tHeader('nav.man') : tHeader('nav.woman'),
-      url: `${BASE_URL}/${locale}/${gender}`,
+      url: `${SITE_URL}/${locale}/${gender}`,
     },
     ...(displayCategory
       ? [
           {
             name: displayCategory,
-            url: collectionHandle 
-              ? `${BASE_URL}/${locale}/${gender}/${collectionHandle}` 
-              : `${BASE_URL}/${locale}/search?q=${displayCategory}`,
+            url: collectionHandle
+              ? `${SITE_URL}/${locale}/${gender}/${collectionHandle}`
+              : `${SITE_URL}/${locale}/search?q=${displayCategory}`,
           },
         ]
       : product.vendor
         ? [
             {
               name: product.vendor,
-              url: `${BASE_URL}/${locale}/brand/${vendorToHandle(product.vendor)}`,
+              url: `${SITE_URL}/${locale}/brand/${vendorToHandle(product.vendor)}`,
             },
           ]
         : []),
     {
       name: product.title,
-      url: `${BASE_URL}/${locale}/product/${product.handle}`,
+      url: `${SITE_URL}/${locale}/product/${product.handle}`,
     },
   ];
 

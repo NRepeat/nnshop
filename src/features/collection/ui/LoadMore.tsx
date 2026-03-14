@@ -8,6 +8,7 @@ import { useInView } from 'react-intersection-observer';
 import { getCollectionProducts } from '../api/getCollectionProducts';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { usePostHog } from 'posthog-js/react';
 
 export default function LoadMore({
   handle,
@@ -23,6 +24,7 @@ export default function LoadMore({
   gender?: string;
 }) {
   const t = useTranslations('LoadMore');
+  const posthog = usePostHog();
   const [pageInfo, setPageInfo] = useState<PageInfo>(initialPageInfo);
   const [isPending, startTransition] = useTransition();
   const { inView } = useInView();
@@ -68,6 +70,7 @@ export default function LoadMore({
 
   useEffect(() => {
     if (inView && !isPending && pageInfo?.hasNextPage) {
+      posthog?.capture('collection_load_more', { method: 'auto', collection_handle: handle });
       handleLoadMore();
     }
   }, [inView, isPending, pageInfo, handleLoadMore]);
@@ -84,7 +87,10 @@ export default function LoadMore({
 
       <Button
         variant="default"
-        onClick={handleLoadMore}
+        onClick={() => {
+          posthog?.capture('collection_load_more', { method: 'manual', collection_handle: handle });
+          handleLoadMore();
+        }}
         disabled={isPending}
         className="px-8 rounded"
       >

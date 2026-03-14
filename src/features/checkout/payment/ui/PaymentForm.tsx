@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { DEFAULT_CURRENCY_CODE } from '@shared/config/shop';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useRouter } from '@shared/i18n/navigation';
@@ -32,7 +33,7 @@ interface PaymentFormProps {
 export default function PaymentForm({
   defaultValues,
   amount,
-  currency = 'UAH',
+  currency = DEFAULT_CURRENCY_CODE,
   locale,
   completeCheckoutData,
 }: PaymentFormProps) {

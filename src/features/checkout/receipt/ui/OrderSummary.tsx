@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
 import { getCart } from '@entities/cart/api/get';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
@@ -133,7 +134,7 @@ export async function OrderSummary({
     const product = line.merchandise.product;
     const sale =
       Number(
-        product.metafields?.find((m) => m?.key === 'znizka')?.value || '0',
+        product.metafields?.find((m) => m?.key === DISCOUNT_METAFIELD_KEY)?.value || '0',
       ) || 0;
     const price = Number(line.cost.amountPerQuantity.amount);
     const compareAtAmount = (line.cost as any).compareAtAmountPerQuantity?.amount;

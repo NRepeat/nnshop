@@ -42,7 +42,10 @@ export const SearchClient = ({ className }: { className?: string }) => {
 
   const handleSearch = () => {
     if (query) {
-      posthog?.capture('search_submitted', { query });
+      posthog?.capture('search_submitted', {
+        query,
+        results_count: results?.products?.length ?? null,
+      });
       router.push(`/search?q=${query}`);
       setIsOpen(false);
     }
@@ -71,6 +74,12 @@ export const SearchClient = ({ className }: { className?: string }) => {
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!loading && results && debouncedQuery && results.products?.length === 0) {
+      posthog?.capture('search_no_results', { query: debouncedQuery });
+    }
+  }, [loading, results, debouncedQuery, posthog]);
 
   useEffect(() => {
     if (debouncedQuery.length >= 1) {

@@ -7,6 +7,7 @@ import { getTranslations } from 'next-intl/server';
 import clsx from 'clsx';
 import { getMainMenu } from '../api/getMainMenu';
 import { cleanSlug } from '@shared/lib/utils/cleanSlug';
+import { DEFAULT_GENDER, GENDERS } from '@shared/config/shop';
 
 const BRANDS_SLUGS = ['brand', 'бренд', 'брендi', 'бренди'];
 function isBrandsItem(item: { url: string; title: string }) {
@@ -60,7 +61,7 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
     cookieGenderGet(),
     buildLevel2Map(locale),
   ]);
-  const currentGender = (['woman', 'man'].includes(gender ?? '') ? gender : null) || 'woman';
+  const currentGender = (GENDERS.includes(gender as any) ? gender : null) || DEFAULT_GENDER;
 
   const links =
     props.mainCategory?.map((category) => {
@@ -117,7 +118,7 @@ const GenderSession = async ({
   className?: string;
 }) => {
   const rawGender = await cookieGenderGet();
-  const gender = (['woman', 'man'].includes(rawGender ?? '') ? rawGender : null) || 'woman';
+  const gender = (GENDERS.includes(rawGender as any) ? rawGender : null) || DEFAULT_GENDER;
   return (
     <NavButton gender={gender} slug={slug} level2Map={level2Map} className={className}>
       {label}
