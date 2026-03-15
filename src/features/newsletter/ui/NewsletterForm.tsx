@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { DEFAULT_GENDER } from '@shared/config/shop';
+import { usePostHog } from 'posthog-js/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
@@ -26,6 +27,7 @@ type NewsletterFieldValues = z.input<typeof newsletterSchema>;
 export const NewsletterForm = () => {
   const t = useTranslations('Newsletter');
   const [submitted, setSubmitted] = useState(false);
+  const posthog = usePostHog();
 
   const form = useForm<NewsletterFieldValues, unknown, NewsletterFormData>({
     resolver: zodResolver(newsletterSchema),
@@ -38,7 +40,7 @@ export const NewsletterForm = () => {
 
   async function onSubmit(data: NewsletterFormData) {
     await subscribeToNewsletter(data);
-    // Always treat as success — duplicate email is silent per CONTEXT.md
+    posthog?.capture('newsletter_subscribed', { location: 'newsletter_section', gender: data.gender });
     setSubmitted(true);
   }
 

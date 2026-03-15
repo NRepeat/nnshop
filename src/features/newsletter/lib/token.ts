@@ -1,0 +1,25 @@
+import { createHmac } from 'crypto';
+
+const SECRET = process.env.NEWSLETTER_UNSUBSCRIBE_SECRET ?? process.env.AUTH_SECRET ?? 'fallback-secret';
+
+export function generateUnsubscribeToken(email: string): string {
+  return createHmac('sha256', SECRET).update(email).digest('hex');
+}
+
+export function verifyUnsubscribeToken(email: string, token: string): boolean {
+  const expected = generateUnsubscribeToken(email);
+  // Constant-time comparison
+  if (expected.length !== token.length) return false;
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) {
+    diff |= expected.charCodeAt(i) ^ token.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
+export function generateUnsubscribeUrl(email: string): string {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? '';
+  const token = generateUnsubscribeToken(email);
+  const params = new URLSearchParams({ email, token });
+  return `${appUrl}/uk/newsletter/unsubscribe?${params.toString()}`;
+}

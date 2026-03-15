@@ -15,7 +15,6 @@ import { NavigationItemClient } from './NavigationItemClient';
 import { NavigationTriggerClient } from './NavigationTriggerClient';
 import { NavigationContentLink } from './NavigationContentLink';
 import { NavDropdownContent } from './NavDropdownContent';
-import { stripGenderFromHandle } from '../utils/strip-gender-from-handle';
 import { Button } from '@shared/ui/button';
 import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 
