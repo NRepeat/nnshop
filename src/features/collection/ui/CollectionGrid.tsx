@@ -31,6 +31,7 @@ import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
 import { prisma } from '@shared/lib/prisma';
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@shared/ui/empty';
 import { PackageSearch } from 'lucide-react';
+import { toFilterSlug } from '@shared/lib/filterSlug';
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
 
 export const CollectionGrid = async ({
@@ -79,13 +80,7 @@ export const CollectionGrid = async ({
   const { collection, alternateHandle } = currentData;
   const canonicalHandle = collection.collection?.handle;
 
-  // 1. If the handle in the URL is actually for the other locale (Shopify confirmed)
-  if (canonicalHandle && resolvedHandle === alternateHandle && resolvedHandle !== canonicalHandle) {
-    const targetLocale = locale === 'ru' ? 'uk' : 'ru';
-    redirect(`/${targetLocale}/${gender}/${resolvedHandle}`);
-  }
-
-  // 2. SEO REDIRECT: If the requested handle is not canonical for current locale (e.g. old handle)
+  // SEO REDIRECT: If the requested handle is not canonical for current locale (e.g. old handle or other-locale handle)
   if (canonicalHandle && resolvedHandle !== canonicalHandle) {
     redirect(`/${locale}/${gender}/${canonicalHandle}`);
   }
@@ -104,15 +99,62 @@ export const CollectionGrid = async ({
     '',
   );
 
+  // Extract selected variant-level filters.
+  // variantOption filters → match by option name + value.
+  // productMetafield (rozmir etc.) → Shopify stores Metaobject GIDs in the input,
+  //   but the filter label IS the display value (e.g. "46") which matches variant selectedOptions.
+  const selectedVariantOptions: { name?: string; value: string }[] = [];
+  if (hasFilters) {
+    const filterDefs = collection.collection?.products.filters ?? [];
+    for (const [key, value] of Object.entries(awaitedSearchParams)) {
+      if (key === 'minPrice' || key === 'maxPrice' || key === 'sort') continue;
+      const definition = filterDefs.find((f) => f.id.endsWith(`.${key}`));
+      if (!definition) continue;
+      const values = Array.isArray(value) ? value : (value as string).split(';');
+      values.forEach((v) => {
+        const filterValue = definition.values.find((def) => toFilterSlug(def.label) === v);
+        if (filterValue) {
+          try {
+            const parsed = JSON.parse(filterValue.input);
+            if (parsed.variantOption) {
+              selectedVariantOptions.push({ name: parsed.variantOption.name, value: parsed.variantOption.value });
+            } else if (parsed.productMetafield && definition.id === 'filter.p.m.custom.rozmir') {
+              // Use the label ("46") — it matches variant selectedOptions value
+              selectedVariantOptions.push({ value: filterValue.label });
+            }
+          } catch {}
+        }
+      });
+    }
+  }
+
   const rawProducts =
     collection.collection?.products.edges
       .map((edge) => edge.node)
-      .filter(
-        (edge) =>
-          ((edge.priceRange?.minVariantPrice?.amount && Number(edge.priceRange.minVariantPrice.amount) > 0) ||
-            (edge.priceRange?.maxVariantPrice?.amount && Number(edge.priceRange.maxVariantPrice.amount) > 0)) &&
-          (edge.totalInventory === null || edge.totalInventory === undefined || edge.totalInventory > 0),
-      ) || [];
+      .filter((product) => {
+        const hasPrice =
+          (product.priceRange?.minVariantPrice?.amount && Number(product.priceRange.minVariantPrice.amount) > 0) ||
+          (product.priceRange?.maxVariantPrice?.amount && Number(product.priceRange.maxVariantPrice.amount) > 0);
+        if (!hasPrice) return false;
+
+        if (selectedVariantOptions.length === 0) {
+          return product.totalInventory === null || product.totalInventory === undefined || product.totalInventory > 0;
+        }
+
+        // At least one variant must match ALL selected options AND have stock
+        return product.variants.edges.some((variantEdge) => {
+          const variant = variantEdge.node;
+          if (!variant.availableForSale) return false;
+          if (variant.quantityAvailable !== null && variant.quantityAvailable !== undefined && variant.quantityAvailable <= 0) {
+            return false;
+          }
+          return selectedVariantOptions.every((option) =>
+            variant.selectedOptions.some((o) =>
+              (option.name ? o.name === option.name : true) && o.value === option.value,
+            ),
+          );
+        });
+      }) || [];
 
   // Batch check favorites
   let favoriteProductIds = new Set<string>();
@@ -188,11 +230,6 @@ export const CollectionGrid = async ({
         <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row justify-between lg:items-end gap-6">
           <div className="flex flex-col gap-3.5 w-full">
             {displayTitle && <h1 className="text-2xl font-bold">{displayTitle}</h1>}
-            {collection.collection?.description && (
-              <h2 className="text-sm text-muted-foreground font-normal">
-                {collection.collection.description}
-              </h2>
-            )}
             {collection.collection?.products.filters && (
               <Suspense fallback={null}>
                 <ActiveFiltersCarousel

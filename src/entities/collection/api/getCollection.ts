@@ -3,7 +3,6 @@ import { toFilterSlug } from '@shared/lib/filterSlug';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
-import { getProductsByIds } from '@entities/product/api/getProductsByIds';
 import {
   GetCollectionQuery,
   GetCollectionFiltersQuery,
@@ -14,46 +13,6 @@ import {
 import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
 import { cacheLife, cacheTag } from 'next/cache';
 
-const GetCollectionLightweight = `#graphql
-  query GetCollectionLight(
-    $handle: String!
-    $filters: [ProductFilter!]
-    $first: Int
-    $after: String
-  ) {
-    collection(handle: $handle) {
-      id
-      title
-      handle
-      products(first: $first filters: $filters after: $after) {
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-        edges {
-          node {
-            id
-            createdAt
-            sortOrder: metafield(namespace:"custom", key:"sort_order") {
-              value
-            }
-          }
-        }
-        filters {
-          id
-          label
-          type
-          values {
-            id
-            label
-            count
-            input
-          }
-        }
-      }
-    }
-  }
-`;
 
 const GetCollectionWithProducts = `#graphql
   query GetCollection(
@@ -112,9 +71,6 @@ const GetCollectionWithProducts = `#graphql
                        value
                        namespace
                        key
-            }
-            sortOrder: metafield(namespace:"custom",key:"sort_order"){
-                       value
             }
             variants(first: 250) {
               edges {
@@ -288,58 +244,6 @@ export const getCollectionFilters = async ({
   return collection.collection?.products.filters;
 };
 
-async function fetchAllCollectionEdges({
-  handle,
-  locale,
-  filters,
-}: {
-  handle: string;
-  locale: string;
-  filters: ProductFilter[];
-}): Promise<{
-  edges: any[];
-  filters: any[];
-  collectionId: string;
-  collectionTitle: string;
-}> {
-  const allEdges: any[] = [];
-  let cursor: string | null = null;
-  let hasNextPage = true;
-  let collectionFilters: any[] = [];
-  let collectionId = '';
-  let collectionTitle = '';
-
-  while (hasNextPage) {
-    const batch: any = await storefrontClient.request<any, any>({
-      query: GetCollectionLightweight,
-      variables: { handle, filters, first: 250, after: cursor ?? undefined },
-      language: locale.toUpperCase() as StorefrontLanguageCode,
-    });
-
-    const col = batch.collection;
-    if (!col) break;
-
-    if (allEdges.length === 0) {
-      collectionId = col.id ?? '';
-      collectionTitle = col.title ?? '';
-      collectionFilters = col.products?.filters ?? [];
-    }
-
-    const products = col.products;
-    if (!products) break;
-
-    allEdges.push(...products.edges);
-    hasNextPage = products.pageInfo.hasNextPage;
-    cursor = products.pageInfo.endCursor ?? null;
-  }
-
-  return {
-    edges: allEdges,
-    filters: collectionFilters,
-    collectionId,
-    collectionTitle,
-  };
-}
 
 export const getCollection = async ({
   handle,
@@ -384,6 +288,7 @@ export const getCollection = async ({
 
   if (searchParams) {
     const filterDefinitions = await getCollectionFilters({ handle, locale });
+    console.log(filterDefinitions);
     if (filterDefinitions) {
       for (const [key, value] of Object.entries(searchParams)) {
         if (key === 'minPrice' || key === 'maxPrice' || key === 'sort')
@@ -417,125 +322,50 @@ export const getCollection = async ({
   }
 
   const sort = searchParams?.sort as string | undefined;
-  const isDefaultSort = !sort || sort === 'trending';
 
-  let collection: GetCollectionQuery;
-
-  if (isDefaultSort) {
-    // Fetch all product IDs (lightweight) to apply custom sort_order metafield sorting,
-    // then fetch full data only for the current page.
-    const {
-      edges: allEdges,
-      filters: shopifyFilters,
-      collectionId: colId,
-      collectionTitle: colTitle,
-    } = await fetchAllCollectionEdges({
-      handle,
-      locale,
-      filters,
-    });
-
-    allEdges.sort((a: any, b: any) => {
-      const aVal =
-        a.node.sortOrder?.value != null
-          ? parseFloat(a.node.sortOrder.value)
-          : Infinity;
-      const bVal =
-        b.node.sortOrder?.value != null
-          ? parseFloat(b.node.sortOrder.value)
-          : Infinity;
-      if (aVal !== bVal) return aVal - bVal;
-      const aDate = a.node.createdAt ? new Date(a.node.createdAt).getTime() : 0;
-      const bDate = b.node.createdAt ? new Date(b.node.createdAt).getTime() : 0;
-      return bDate - aDate;
-    });
-
-    const pageSize = first || last || 20;
-    const startIndex = after
-      ? parseInt(after, 10)
-      : before
-        ? Math.max(0, parseInt(before, 10) - pageSize)
-        : 0;
-
-    const slicedEdges = allEdges.slice(startIndex, startIndex + pageSize);
-    const productIds = slicedEdges.map((e: any) => e.node.id);
-
-    const fullProducts = await getProductsByIds(productIds, locale);
-
-    const fullProductsMap = new Map(fullProducts.map((p) => [p.id, p]));
-
-    // Build a minimal GetCollectionQuery-shaped response
-    collection = {
-      collection: {
-        id: colId,
-        title: colTitle,
-        handle,
-        description: '',
-        seo: { description: null },
-        image: null,
-        products: {
-          pageInfo: {
-            hasNextPage: startIndex + pageSize < allEdges.length,
-            hasPreviousPage: startIndex > 0,
-            endCursor:
-              startIndex + pageSize < allEdges.length
-                ? String(startIndex + pageSize)
-                : null,
-            startCursor: String(startIndex),
-          },
-          edges: slicedEdges.map((e: any) => ({
-            ...e,
-            node: { ...e.node, ...(fullProductsMap.get(e.node.id) ?? {}) },
-          })),
-          filters: shopifyFilters,
-        },
-      },
-    } as any;
-  } else {
-    let sortKey = 'RELEVANCE';
-    let reverse = false;
-    switch (sort) {
-      case 'price-asc':
-        sortKey = 'PRICE';
-        reverse = false;
-        break;
-      case 'price-desc':
-        sortKey = 'PRICE';
-        reverse = true;
-        break;
-      case 'created-desc':
-        sortKey = 'CREATED';
-        reverse = true;
-        break;
-    }
-
-    collection = await storefrontClient.request<
-      GetCollectionQuery,
-      {
-        handle: string;
-        filters?: ProductFilter[];
-        first?: number;
-        after?: string;
-        last?: number;
-        before?: string;
-        sortKey?: string;
-        reverse?: boolean;
-      }
-    >({
-      query: GetCollectionWithProducts,
-      variables: {
-        handle,
-        filters,
-        first,
-        after,
-        last,
-        before,
-        sortKey,
-        reverse,
-      },
-      language: locale.toUpperCase() as StorefrontLanguageCode,
-    });
+  let sortKey = 'MANUAL';
+  let reverse = false;
+  switch (sort) {
+    case 'price-asc':
+      sortKey = 'PRICE';
+      reverse = false;
+      break;
+    case 'price-desc':
+      sortKey = 'PRICE';
+      reverse = true;
+      break;
+    case 'created-desc':
+      sortKey = 'CREATED';
+      reverse = true;
+      break;
   }
+
+  const collection = await storefrontClient.request<
+    GetCollectionQuery,
+    {
+      handle: string;
+      filters?: ProductFilter[];
+      first?: number;
+      after?: string;
+      last?: number;
+      before?: string;
+      sortKey?: string;
+      reverse?: boolean;
+    }
+  >({
+    query: GetCollectionWithProducts,
+    variables: {
+      handle,
+      filters,
+      first,
+      after,
+      last,
+      before,
+      sortKey,
+      reverse,
+    },
+    language: locale.toUpperCase() as StorefrontLanguageCode,
+  });
 
   const collectionId = collection.collection?.id;
   if (!collectionId) {

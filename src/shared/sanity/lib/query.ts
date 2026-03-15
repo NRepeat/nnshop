@@ -1087,21 +1087,21 @@ export const HEADER_QUERY = defineQuery(`
         columns[]{
           _key,
           "title": coalesce(title[$locale], title.uk, title.ru, collection->titles[$locale], collection->titles.uk, collection->store.title, ""),
-          "url": collection->store.slug.current,
+          "url": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),
           items[]->{
             _id,
             "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, titles[$locale], titles.uk, store.title, ""),
-            "handle": store.slug.current,
+            "handle": coalesce(handles[$locale]),
             "navTitleColor": navTitleColor
           },
           "outletLink": outletLink {
             "label": coalesce(label[$locale], label.uk, label.ru, ""),
-            "collectionHandle": collection->store.slug.current,
+            "collectionHandle": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),
             url
           },
           "actionButton": actionButton {
             "label": coalesce(label[$locale], label.uk, label.ru, ""),
-            "collectionHandle": collection->store.slug.current,
+            "collectionHandle": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),
             url
           }
         }
@@ -1112,21 +1112,21 @@ export const HEADER_QUERY = defineQuery(`
         columns[]{
           _key,
           "title": coalesce(title[$locale], title.uk, title.ru, collection->titles[$locale], collection->titles.uk, collection->store.title, ""),
-          "url": collection->store.slug.current,
+          "url": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),
           items[]->{
             _id,
             "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, titles[$locale], titles.uk, store.title, ""),
-            "handle": store.slug.current,
+            "handle": coalesce(handles[$locale]),
             "navTitleColor": navTitleColor
           },
           "outletLink": outletLink {
             "label": coalesce(label[$locale], label.uk, label.ru, ""),
-            "collectionHandle": collection->store.slug.current,
+            "collectionHandle": coalesce(collection->handles[$locale]),
             url
           },
           "actionButton": actionButton {
             "label": coalesce(label[$locale], label.uk, label.ru, ""),
-            "collectionHandle": collection->store.slug.current,
+            "collectionHandle": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),
             url
           }
         }

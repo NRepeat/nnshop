@@ -163,7 +163,7 @@ export const BrandGrid = async ({
         <EnableScrollHide />
 
         <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row justify-between lg:items-end gap-6">
-          <div className="flex flex-col gap-3.5 w-full">
+          <div className="flex flex-col gap-3.5 w-full min-w-0">
             <h1 className="text-2xl font-bold">
               {decodeHtmlEntities(collection.collection?.title ?? '')}
             </h1>
@@ -180,7 +180,7 @@ export const BrandGrid = async ({
               </Suspense>
             )}
           </div>
-          <div className="flex h-full  items-center flex-row gap-2 justify-between md:justify-end">
+          <div className="flex h-full items-center flex-row gap-2 justify-between md:justify-end flex-shrink-0">
             <Suspense fallback={null}>
               <SortSelect />
             </Suspense>

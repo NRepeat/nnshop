@@ -39,7 +39,7 @@ export function LanguageSwitcher({
   const alternatePaths = usePathStore((state) => state.alternatePaths);
   const router = useRouter();
   const posthog = usePostHog();
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
   const changeLocale = (newLocale: string) => {
     setSelectedLocale(newLocale);
     posthog?.capture('locale_switched', {
@@ -66,9 +66,13 @@ export function LanguageSwitcher({
       <DropdownMenuTrigger asChild className={className}>
         <Button
           variant="default"
-          className="h-full"
+          className={cn('h-full transition-opacity duration-200', {
+            'opacity-50': isPending,
+          })}
         >
-          {parseLocale[selectedLocale as keyof typeof parseLocale]}
+          <span className={cn('transition-all duration-200', { 'blur-[2px]': isPending })}>
+            {parseLocale[selectedLocale as keyof typeof parseLocale]}
+          </span>
           <span className="sr-only">Switch language</span>
         </Button>
       </DropdownMenuTrigger>

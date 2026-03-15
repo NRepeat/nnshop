@@ -133,6 +133,7 @@ export const createSignInHandler = (
       toast.success(tSuccess('welcomeBack'));
       window.location.href = '/';
     } catch (error) {
+      if (!(error instanceof Error)) return;
       posthog.captureException(error);
       console.error('Sign in error:', error);
       toast.error(tErrors('unexpectedError'));
@@ -166,6 +167,7 @@ export const createSignUpHandler = (
       toast.success(tSuccess('accountCreated'));
       window.location.href = '/';
     } catch (error) {
+      if (!(error instanceof Error)) return;
       posthog.captureException(error);
       console.error('Sign up error:', error);
       toast.error(tErrors('unexpectedError'));
@@ -178,9 +180,11 @@ export const createGoogleSignInHandler = (tErrors: (key: string) => string) => {
     try {
       await client.signIn.social({
         provider: 'google',
-        callbackURL: '/?signed_in=google',
+        callbackURL: '/uk/woman',
       });
     } catch (error) {
+      // DOM Events thrown when page navigation interrupts JS are not real errors
+      if (!(error instanceof Error)) return;
       posthog.captureException(error);
       console.error('Google sign in error:', error);
       toast.error(tErrors('googleSignInFailed'));
@@ -197,6 +201,7 @@ export const createShopifySignInHandler = (
         provider: 'shopify',
       });
     } catch (error) {
+      if (!(error instanceof Error)) return;
       posthog.captureException(error);
       console.error('Shopify sign in error:', error);
       toast.error(tErrors('shopifySignInFailed'));

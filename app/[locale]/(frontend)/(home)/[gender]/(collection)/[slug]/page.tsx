@@ -7,11 +7,12 @@ import {
   getCollection,
   getCollectionSlugs,
 } from '@entities/collection/api/getCollection';
-import { resolveCollectionHandle } from '@entities/collection/lib/resolve-handle';
+import { resolveCollectionHandle, detectGenderFromHandle } from '@entities/collection/lib/resolve-handle';
 import { generateCollectionMetadata } from '@shared/lib/seo/generateMetadata';
 import { setRequestLocale } from 'next-intl/server';
 import { sanityFetch } from '@shared/sanity/lib/client';
 import { COLLECTION_IS_BRAND_QUERY } from '@shared/sanity/lib/query';
+import { redirect } from 'next/navigation';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -83,8 +84,38 @@ export async function generateStaticParams() {
 }
 
 export default async function CollectionPage({ params, searchParams }: Props) {
-  const { locale } = await params;
+  const { locale, slug, gender } = await params;
   setRequestLocale(locale);
+
+  const decodedSlug = decodeURIComponent(slug);
+  const allSlugs = await getCollectionSlugs();
+  const resolvedHandle = resolveCollectionHandle(decodedSlug, gender, new Set(allSlugs));
+
+  const [sanityCollection, { collection }] = await Promise.all([
+    sanityFetch({
+      query: COLLECTION_IS_BRAND_QUERY,
+      params: { handle: resolvedHandle },
+      tags: [`collection:${resolvedHandle}`],
+    }),
+    getCollection({ handle: resolvedHandle, first: 1, locale }),
+  ]);
+
+  if (sanityCollection?.isBrand) {
+    redirect(`/${locale}/brand/${resolvedHandle}`);
+  }
+
+  const canonicalHandle = collection.collection?.handle;
+
+  if (canonicalHandle && resolvedHandle !== canonicalHandle) {
+    redirect(`/${locale}/${gender}/${canonicalHandle}`);
+  }
+
+  if (canonicalHandle) {
+    const collectionGender = detectGenderFromHandle(canonicalHandle);
+    if (collectionGender && collectionGender !== gender) {
+      redirect(`/${locale}/${collectionGender}/${canonicalHandle}`);
+    }
+  }
 
   return (
     <div className="container mb-10">

@@ -9,6 +9,7 @@ import { useDebounce } from 'use-debounce';
 import { PredictiveSearchQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { usePostHog } from 'posthog-js/react';
 import { Link, useRouter } from '@shared/i18n/navigation';
+import { useLocale } from 'next-intl';
 import {
   Empty,
   EmptyDescription,
@@ -26,6 +27,7 @@ type PredictiveSearchResult = NonNullable<
 
 export const SearchClient = ({ className }: { className?: string }) => {
   const t = useTranslations('Search');
+  const locale = useLocale();
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -87,7 +89,7 @@ export const SearchClient = ({ className }: { className?: string }) => {
       const controller = new AbortController();
       fetch('/api/predictive-search', {
         method: 'POST',
-        body: JSON.stringify({ query: debouncedQuery }),
+        body: JSON.stringify({ query: debouncedQuery, locale }),
         headers: {
           'Content-Type': 'application/json',
         },
