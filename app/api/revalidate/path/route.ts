@@ -12,6 +12,7 @@ const LAYOUT_TYPES = [
   'infoBar',
   'page',
   'product',
+  'promotionBanner',
 ];
 
 export async function POST(req: NextRequest) {

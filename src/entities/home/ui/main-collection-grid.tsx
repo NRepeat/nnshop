@@ -29,7 +29,7 @@ export const MainCollectionGrid = (props: MainCollectionGridProps) => {
             {title as any as string}
           </p>
         )}
-
+        
         <div className="flex flex-col gap-5 md:grid md:grid-cols-3">
           {resolvedCollections.map((col, index) => (
             <div key={col.handle ?? col.id} className="w-full   ">

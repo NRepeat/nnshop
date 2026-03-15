@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { ClientGrid } from './ClientGrid';
 import LoadMore from './LoadMore';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
@@ -21,19 +21,16 @@ export const ClientGridWrapper = ({
   const locale = useLocale();
   const [extraProducts, setExtraProducts] = useState<(Product & { isFav: boolean })[]>([]);
 
-  // Reset extra pages when the server sends new filtered results
-  useEffect(() => {
-    setExtraProducts([]);
-  }, [initialProducts]);
+  // key prop on this component handles reset when handle/filters change — no useEffect needed
 
-  const handleDataLoaded = (newProducts: Product[], _newPageInfo: any) => {
+  const handleDataLoaded = useCallback((newProducts: Product[], _newPageInfo: any) => {
     setExtraProducts((prev) => {
       const map = new Map();
       prev.forEach((p) => map.set(p.id, p));
       newProducts.forEach((p) => map.set(p.id, p));
       return Array.from(map.values());
     });
-  };
+  }, []);
 
   const products = [...initialProducts, ...extraProducts];
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -69,7 +66,7 @@ export const ClientGridWrapper = ({
         <Button
           onClick={scrollToTop}
           aria-label="Scroll to top"
-          className="fixed bottom-6 right-6 z-50 w-10 h-10 bg-black text-white rounded-full shadow-lg flex items-center justify-center hover:bg-neutral-800 transition-colors"
+          className="fixed bottom-24 right-8.5 z-20 w-10 h-10 bg-black text-white rounded-full shadow-lg flex items-center justify-center hover:bg-neutral-800 transition-colors"
         >
           <ArrowUp className="w-5 h-5" />
         </Button>

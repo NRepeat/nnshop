@@ -5,6 +5,7 @@ import { sanityFetch } from '@shared/sanity/lib/client';
 import { FOOTER_QUERY } from '@shared/sanity/lib/query';
 import { Phone, Mail } from 'lucide-react';
 import { FooterNewsletterForm } from './FooterNewsletterForm';
+import { FooterSocialLinks } from './FooterSocialLinks';
 import { FACEBOOK_URL, INSTAGRAM_URL } from '@shared/config/brand';
 
 // Inline brand icons (lucide-react has no brand icons)
@@ -142,20 +143,7 @@ export const Footer = async ({ locale }: { locale: string }) => {
             </Link>
 
             {/* Social icons */}
-            <div className="flex gap-3">
-              {socialLinks.map((link) => (
-                <a
-                  key={link.platform}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 border border-white/30 rounded flex items-center justify-center text-white/70 hover:text-white hover:border-white transition-colors"
-                  aria-label={link.platform}
-                >
-                  {link.icon}
-                </a>
-              ))}
-            </div>
+            <FooterSocialLinks links={socialLinks} />
 
             {/* Newsletter */}
             <div className="flex flex-col gap-2">

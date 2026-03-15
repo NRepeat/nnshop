@@ -180,14 +180,14 @@ export async function OrderSummary({
   const discountCodes = cart.discountCodes || [];
   const hasApplicableDiscount = discountCodes.some((d) => d.applicable);
 
-  // Use Shopify's authoritative total (based on full prices minus code discounts)
-  const shopifyTotal = Number(cart.cost.totalAmount.amount);
-  // Total shown to user: min(znizka subtotal, shopify code total) — same logic as Payment.tsx
-  const totalAmount = hasApplicableDiscount ? Math.min(subtotal, shopifyTotal) : subtotal;
-  // Effective discount = difference between what user sees (znizka prices) and what they pay
-  const discountAmount = hasApplicableDiscount ? Math.max(0, subtotal - shopifyTotal) : 0;
+  // cart.cost.totalAmount does not reflect discount codes — use discountAllocations instead
+  const cartDiscountTotal = (cart.discountAllocations || []).reduce(
+    (sum, d) => sum + Number(d.discountedAmount.amount),
+    0,
+  );
+  const discountAmount = hasApplicableDiscount ? Math.min(subtotal, cartDiscountTotal) : 0;
+  const totalAmount = Math.max(0, subtotal - discountAmount);
   const grandTotal = totalAmount;
-
   const content = (
     <>
       {/* Items List */}

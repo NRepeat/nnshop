@@ -55,10 +55,13 @@ export default async function Payment({
         localTotal += discountedPrice * line.quantity;
       }
       const hasApplicableDiscount = cartResult.cart.discountCodes?.some((d) => d.applicable);
-      // Use the minimum of the two to ensure the customer always pays the lower amount
-      const shopifyTotal = Number(cartResult.cart.cost.totalAmount.amount);
-      const goodsTotal = hasApplicableDiscount ? Math.min(localTotal, shopifyTotal) : localTotal;
-      cartAmount = goodsTotal;
+      // cart.cost.totalAmount does not reflect discount codes — use discountAllocations instead
+      const cartDiscountTotal = (cartResult.cart.discountAllocations || []).reduce(
+        (sum: number, d: any) => sum + Number(d.discountedAmount.amount),
+        0,
+      );
+      const discountAmount = hasApplicableDiscount ? Math.min(localTotal, cartDiscountTotal) : 0;
+      cartAmount = Math.max(0, localTotal - discountAmount);
     }
     if (cartAmount <= 0) {
       redirect('/cart');

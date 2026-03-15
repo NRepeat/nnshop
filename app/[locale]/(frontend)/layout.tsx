@@ -13,6 +13,7 @@ import { draftMode } from 'next/headers';
 import { Suspense } from 'react';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { ScrollDirectionProvider } from '@shared/ui/ScrollDirectionProvider';
+import { SessionBanner } from '@features/session-banner';
 import { generateOrganizationJsonLd } from '@shared/lib/seo/jsonld';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -105,6 +106,9 @@ export default async function RootLayout(props: RootProps) {
           <main>{children}</main>
 
           {modal && <div id="modal-slot">{modal}</div>}
+          <Suspense>
+            <SessionBanner locale={locale} />
+          </Suspense>
           {auth && <div id="auth-slot">{auth}</div>}
           <Suspense>
             <Footer locale={locale} />

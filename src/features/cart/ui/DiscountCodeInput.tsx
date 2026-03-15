@@ -120,9 +120,9 @@ export const DiscountCodeInput = ({
             >
               <div className="flex items-center gap-2">
                 {discount.applicable ? (
-                  <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                  <Check className="h-4 w-4 text-green-600 " />
                 ) : (
-                  <Tag className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                  <Tag className="h-4 w-4 text-yellow-600 " />
                 )}
                 <span className="font-medium">{discount.code}</span>
                 {!discount.applicable && (

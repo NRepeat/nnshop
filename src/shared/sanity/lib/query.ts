@@ -1155,6 +1155,29 @@ export const FOOTER_QUERY = defineQuery(`
   }
 `);
 
+export const PROMOTION_BANNER_QUERY = defineQuery(
+  `*[_type == "promotionBanner" && enabled == true][0]{
+    _id,
+    enabled,
+    image,
+    "imageAlt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru),
+    "title": coalesce(title[$language], title.uk, title.ru),
+    "description": coalesce(description[$language], description.uk, description.ru),
+    discountCode,
+    actionButton {
+      "label": coalesce(label[$language], label.uk, label.ru),
+      url
+    },
+    behavior {
+      trigger,
+      delaySeconds,
+      scrollPercent,
+      cooldownHours,
+      showOnce
+    }
+  }`
+);
+
 export const COLLECTION_IS_BRAND_QUERY = defineQuery(
   `*[_type == "collection" && (store.slug.current == $handle || handles.uk == $handle || handles.ru == $handle)][0]{ 
     isBrand, 
