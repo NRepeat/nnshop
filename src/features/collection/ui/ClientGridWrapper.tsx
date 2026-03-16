@@ -6,17 +6,27 @@ import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
 import { useLocale } from 'next-intl';
 import { ArrowUp } from 'lucide-react';
 import { Button } from '@shared/ui/button';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
+
+function getEffectivePrice(product: Product): number {
+  const base = parseFloat((product as any).priceRange?.maxVariantPrice?.amount ?? '0');
+  const meta = (product as any).metafield;
+  const discount = meta?.key === DISCOUNT_METAFIELD_KEY && meta?.value ? parseFloat(meta.value) : 0;
+  return base * (1 - discount / 100);
+}
 
 export const ClientGridWrapper = ({
   initialPageInfo,
   initialProducts,
   handle,
   gender,
+  sort,
 }: {
   initialProducts: (Product & { isFav: boolean })[];
   initialPageInfo: PageInfo;
   handle: string;
   gender?: string;
+  sort?: string;
 }) => {
   const locale = useLocale();
   const [extraProducts, setExtraProducts] = useState<(Product & { isFav: boolean })[]>([]);
@@ -32,7 +42,14 @@ export const ClientGridWrapper = ({
     });
   }, []);
 
-  const products = [...initialProducts, ...extraProducts];
+  const combined = [...initialProducts, ...extraProducts];
+  const products =
+    sort === 'price-asc' || sort === 'price-desc'
+      ? [...combined].sort((a, b) => {
+          const diff = getEffectivePrice(a) - getEffectivePrice(b);
+          return sort === 'price-asc' ? diff : -diff;
+        })
+      : combined;
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {

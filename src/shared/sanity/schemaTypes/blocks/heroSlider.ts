@@ -252,12 +252,20 @@ export const heroSlider = {
       of: [{ type: 'heroSlide' }],
     },
     {
-      title: 'Video File',
+      title: 'Video File (MP4)',
       name: 'videoFile',
       type: 'file',
       group: 'video',
-      description: 'Upload an MP4 video. If set, replaces the image slider entirely.',
-      options: { accept: 'video/mp4,video/webm,video/*' },
+      description: 'Upload an MP4 video. Used as fallback for Safari.',
+      options: { accept: 'video/mp4' },
+    },
+    {
+      title: 'Video File (WebM)',
+      name: 'videoFileWebm',
+      type: 'file',
+      group: 'video',
+      description: 'Upload a WebM video. Used in Chrome/Firefox for better compression.',
+      options: { accept: 'video/webm' },
     },
     {
       title: 'Video Poster (Thumbnail)',

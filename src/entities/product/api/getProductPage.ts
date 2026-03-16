@@ -5,6 +5,6 @@ export const getProductPage = async () => {
   return sanityFetch({
     query: PAGE_QUERY,
     params: { slug: 'product-page' },
-    revalidate: 3600,
+    tags: ['page', 'page:product-page'],
   });
 };

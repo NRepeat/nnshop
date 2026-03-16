@@ -32,7 +32,17 @@ import { prisma } from '@shared/lib/prisma';
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@shared/ui/empty';
 import { PackageSearch } from 'lucide-react';
 import { toFilterSlug } from '@shared/lib/filterSlug';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
+
+function getEffectivePrice(product: { priceRange?: { maxVariantPrice?: { amount: any } }; metafield?: { key?: string; value?: string } | null }): number {
+  const base = parseFloat(product.priceRange?.maxVariantPrice?.amount ?? '0');
+  const discount =
+    product.metafield?.key === DISCOUNT_METAFIELD_KEY && product.metafield?.value
+      ? parseFloat(product.metafield.value)
+      : 0;
+  return base * (1 - discount / 100);
+}
 
 export const CollectionGrid = async ({
   params,
@@ -103,7 +113,9 @@ export const CollectionGrid = async ({
   // variantOption filters → match by option name + value.
   // productMetafield (rozmir etc.) → Shopify stores Metaobject GIDs in the input,
   //   but the filter label IS the display value (e.g. "46") which matches variant selectedOptions.
-  const selectedVariantOptions: { name?: string; value: string }[] = [];
+  // Group by URL param key: OR within same key, AND across keys
+  // e.g. rozmir=[46,48] AND color=[black] → variant must be (46 OR 48) AND black
+  const optionGroups = new Map<string, { name?: string; values: Set<string> }>();
   if (hasFilters) {
     const filterDefs = collection.collection?.products.filters ?? [];
     for (const [key, value] of Object.entries(awaitedSearchParams)) {
@@ -117,10 +129,16 @@ export const CollectionGrid = async ({
           try {
             const parsed = JSON.parse(filterValue.input);
             if (parsed.variantOption) {
-              selectedVariantOptions.push({ name: parsed.variantOption.name, value: parsed.variantOption.value });
-            } else if (parsed.productMetafield && definition.id === 'filter.p.m.custom.rozmir') {
-              // Use the label ("46") — it matches variant selectedOptions value
-              selectedVariantOptions.push({ value: filterValue.label });
+              if (!optionGroups.has(key)) optionGroups.set(key, { name: parsed.variantOption.name, values: new Set() });
+              optionGroups.get(key)!.values.add(parsed.variantOption.value);
+            } else if (parsed.productMetafield) {
+              // Only rozmir (size) metafield values also exist as variant options,
+              // so only those need client-side filtering. All other product metafields
+              // (material, підкладка, підошва, etc.) are handled by Shopify server-side.
+              if (parsed.productMetafield.key === 'rozmir') {
+                if (!optionGroups.has(key)) optionGroups.set(key, { values: new Set() });
+                optionGroups.get(key)!.values.add(filterValue.label);
+              }
             }
           } catch {}
         }
@@ -137,20 +155,21 @@ export const CollectionGrid = async ({
           (product.priceRange?.maxVariantPrice?.amount && Number(product.priceRange.maxVariantPrice.amount) > 0);
         if (!hasPrice) return false;
 
-        if (selectedVariantOptions.length === 0) {
+        if (optionGroups.size === 0) {
           return product.totalInventory === null || product.totalInventory === undefined || product.totalInventory > 0;
         }
 
-        // At least one variant must match ALL selected options AND have stock
+        // At least one variant must satisfy ALL option groups (AND between groups)
+        // within each group, any one value is enough (OR within group)
         return product.variants.edges.some((variantEdge) => {
           const variant = variantEdge.node;
           if (!variant.availableForSale) return false;
           if (variant.quantityAvailable !== null && variant.quantityAvailable !== undefined && variant.quantityAvailable <= 0) {
             return false;
           }
-          return selectedVariantOptions.every((option) =>
+          return [...optionGroups.values()].every(({ name, values }) =>
             variant.selectedOptions.some((o) =>
-              (option.name ? o.name === option.name : true) && o.value === option.value,
+              (name ? o.name === name : true) && values.has(o.value),
             ),
           );
         });
@@ -167,6 +186,14 @@ export const CollectionGrid = async ({
       select: { productId: true },
     });
     favoriteProductIds = new Set(favorites.map((f) => f.productId));
+  }
+
+  const sortParam = awaitedSearchParams.sort as string | undefined;
+  if (sortParam === 'price-asc' || sortParam === 'price-desc') {
+    rawProducts.sort((a, b) => {
+      const diff = getEffectivePrice(a) - getEffectivePrice(b);
+      return sortParam === 'price-asc' ? diff : -diff;
+    });
   }
 
   const productsWithFav = rawProducts.map((product) => ({
@@ -281,6 +308,7 @@ export const CollectionGrid = async ({
               // @ts-ignore
               initialProducts={productsWithFav as Product[]}
               handle={resolvedHandle}
+              sort={sortParam}
             />
           )}
         </div>

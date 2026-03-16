@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import NavigationSheet from './NavigationSheet';
 import { cookies } from 'next/headers';
 import { DEFAULT_GENDER } from '@shared/config/shop';
-import { stripGenderFromHandle } from '../utils/strip-gender-from-handle';
+import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 import { sanityFetch } from '@shared/sanity/lib/client';
 import { FOOTER_QUERY } from '@shared/sanity/lib/query';
 import { HEADER_QUERYResult } from '@shared/sanity/types';
@@ -94,7 +94,7 @@ const MenuSheet = async ({
   const items = mainMenuRaw.length > 0 ? mainMenuRaw : null;
 
   const withGender = (url: string) => {
-    const stripped = stripGenderFromHandle(url);
+    const stripped = cleanSlug(url);
     if (stripped === `/${gender}`) return `/${gender}`;
     return `/${gender}${stripped}`;
   };

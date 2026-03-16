@@ -1,8 +1,9 @@
 'use client';
 
 import { useQueryState, parseAsArrayOf, parseAsString } from 'nuqs';
-import { useTransition, useState } from 'react';
+import { useTransition, useState, useRef, useEffect } from 'react';
 import { usePostHog } from 'posthog-js/react';
+import { ChevronDown } from 'lucide-react';
 import {
   Filter,
   FilterValue,
@@ -55,13 +56,27 @@ export function NuqsListFilter({ filter, initialFilter }: Props) {
   });
 
   const shouldCollapse = displayValues.length > 6;
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isAtBottom, setIsAtBottom] = useState(false);
+
+  useEffect(() => {
+    if (!shouldCollapse) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    const check = () => setIsAtBottom(el.scrollTop + el.clientHeight >= el.scrollHeight - 4);
+    check();
+    el.addEventListener('scroll', check);
+    return () => el.removeEventListener('scroll', check);
+  }, [shouldCollapse, displayValues.length]);
 
   return (
-    <div
-      className={cn({
-        'max-h-56 overflow-y-auto custom-scroll pr-2': shouldCollapse,
-      })}
-    >
+    <div className={cn({ 'relative': shouldCollapse })}>
+      <div
+        ref={scrollRef}
+        className={cn({
+          'max-h-56 overflow-y-scroll custom-scroll pr-2': shouldCollapse,
+        })}
+      >
       <ul className="space-y-2">
         {displayValues.map((value) => {
             const isChecked = selectedValues.includes(toFilterSlug(value.label));
@@ -92,6 +107,12 @@ export function NuqsListFilter({ filter, initialFilter }: Props) {
             );
           })}
       </ul>
+      </div>
+      {shouldCollapse && !isAtBottom && (
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent flex items-end justify-center pb-0.5">
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+        </div>
+      )}
     </div>
   );
 }

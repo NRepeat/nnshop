@@ -533,6 +533,7 @@ export const HOME_PAGE =
               title,
               description,
               "videoFile": videoFile.asset->url,
+              "videoFileWebm": videoFileWebm.asset->url,
               "videoPoster": videoPoster.asset->url,
               videoUrl,
               videoTitle,

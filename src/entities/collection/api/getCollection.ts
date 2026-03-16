@@ -288,7 +288,6 @@ export const getCollection = async ({
 
   if (searchParams) {
     const filterDefinitions = await getCollectionFilters({ handle, locale });
-    console.log(filterDefinitions);
     if (filterDefinitions) {
       for (const [key, value] of Object.entries(searchParams)) {
         if (key === 'minPrice' || key === 'maxPrice' || key === 'sort')

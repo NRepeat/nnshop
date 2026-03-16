@@ -17,7 +17,7 @@ export const getHomePage = async (params: RouteProps['params']) => {
       slug: params.gender,
     },
     tags: [params.gender, 'page'],
-    revalidate: 60,
+    revalidate: 604800,
   });
 
   return page;

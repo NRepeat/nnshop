@@ -22,6 +22,7 @@ type HeroSliderBase = Extract<
 type HeroSliderProps = HeroSliderBase & {
   gender?: string;
   videoFile?: string | null;
+  videoFileWebm?: string | null;
   videoPoster?: string | null;
   videoUrl?: string | null;
   videoTitle?: string | null;
@@ -131,6 +132,7 @@ function buildOverlayBg(
 
 type VideoHeroProps = {
   src: string;
+  srcWebm?: string | null;
   poster?: string | null;
   textPosition: string;
   titleColor?: string | null;
@@ -143,7 +145,7 @@ type VideoHeroProps = {
   isFirst?: boolean;
 };
 
-function VideoHero({ src, poster, textPosition, titleColor, descriptionColor, title, description, overlay, href, compact, isFirst }: VideoHeroProps) {
+function VideoHero({ src, srcWebm, poster, textPosition, titleColor, descriptionColor, title, description, overlay, href, compact, isFirst }: VideoHeroProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -151,7 +153,7 @@ function VideoHero({ src, poster, textPosition, titleColor, descriptionColor, ti
     if (!el) return;
     el.muted = true;
     el.play().catch(() => {});
-  }, [src]);
+  }, []);
 
   const pos = textPosition;
   const overlayBg = buildOverlayBg(overlay?.color, overlay?.opacity);
@@ -160,16 +162,18 @@ function VideoHero({ src, poster, textPosition, titleColor, descriptionColor, ti
     <>
       <video
         ref={videoRef}
-        src={src}
         poster={poster ?? undefined}
         autoPlay
         muted
         loop
         playsInline
-        preload="auto"
+        preload="none"
         disablePictureInPicture
         className="absolute inset-0 w-full h-full object-cover"
-      />
+      >
+        {srcWebm && <source src={srcWebm} type="video/webm" />}
+        <source src={src} type="video/mp4" />
+      </video>
       <div
         className="absolute inset-0"
         style={{ backgroundColor: overlayBg }}
@@ -433,7 +437,7 @@ function ImageSlider({ slides, gender, compact, isFirst }: { slides: Slide[]; ge
 // HeroBanner
 
 export const HeroBanner = (props: HeroSliderProps) => {
-  const { slides, gender, videoFile, videoPoster, videoUrl, compact, isFirst } = props;
+  const { slides, gender, videoFile, videoFileWebm, videoPoster, videoUrl, compact, isFirst } = props;
   const hasVideo = !!(videoFile || videoUrl);
 
   if (!hasVideo && (!slides || slides.length === 0)) return null;
@@ -443,6 +447,7 @@ export const HeroBanner = (props: HeroSliderProps) => {
       {hasVideo ? (
         <VideoHero
           src={props.videoFile || props.videoUrl || ''}
+          srcWebm={videoFileWebm}
           poster={videoPoster}
           textPosition={props.videoTextPosition ?? 'bottom-left'}
           titleColor={props.videoTitleColor}

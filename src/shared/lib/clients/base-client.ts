@@ -45,6 +45,15 @@ export abstract class BaseShopifyClient implements ShopifyClient {
     const data = await response.json();
 
     if (data.errors && data.errors.length > 0) {
+      const isThrottled = data.errors.some(
+        (e: { extensions?: { code?: string } }) => e.extensions?.code === 'THROTTLED',
+      );
+      if (isThrottled) {
+        const retryAfter: number = data.errors[0]?.extensions?.retryAfter ?? 2;
+        const throttleError = new Error(`GraphQL Error: Throttled`) as Error & { retryAfter: number };
+        throttleError.retryAfter = retryAfter;
+        throw throttleError;
+      }
       const errorMessages = data.errors
         .map((error: { message: string }) => error.message)
         .join(', ');
@@ -61,13 +70,27 @@ export abstract class BaseShopifyClient implements ShopifyClient {
     query: string;
     variables: V;
   }): Promise<T> {
-    const response = await fetch(this.baseUrl, {
-      method: 'POST',
-      headers: await this.buildHeaders(),
-      body: await this.buildBody(query, variables),
-    });
+    const MAX_RETRIES = 3;
+    let attempt = 0;
+    while (true) {
+      const response = await fetch(this.baseUrl, {
+        method: 'POST',
+        headers: await this.buildHeaders(),
+        body: await this.buildBody(query, variables),
+      });
 
-    const result = await this.parseResponse<T>(response);
-    return result.data as T;
+      try {
+        const result = await this.parseResponse<T>(response);
+        return result.data as T;
+      } catch (e: any) {
+        if (e.retryAfter !== undefined && attempt < MAX_RETRIES) {
+          const delay = Math.ceil(e.retryAfter * 1000) + attempt * 500;
+          await new Promise((res) => setTimeout(res, delay));
+          attempt++;
+          continue;
+        }
+        throw e;
+      }
+    }
   }
 }

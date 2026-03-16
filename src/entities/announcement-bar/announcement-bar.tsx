@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { parseLocale } from '@features/header/language-switcher/ui/LanguageSwitcher';
 import { DEFAULT_GENDER } from '@shared/config/shop';
-import { TELEGRAM_URL } from '@shared/config/brand';
+import { TELEGRAM_URL, TELEGRAM_CHANNEL_URL } from '@shared/config/brand';
 import { ViberIcon } from '@widgets/footer/ui/Footer';
 
 type AnnouncementBarProps = Extract<
@@ -52,7 +52,7 @@ export const AnnouncementBar = async (props: AnnouncementBarProps) => {
               {telephone}
             </a>
             <a
-              href={TELEGRAM_URL}
+              href={TELEGRAM_CHANNEL_URL}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Telegram"

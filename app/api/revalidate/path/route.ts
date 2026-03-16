@@ -37,26 +37,17 @@ export async function POST(req: NextRequest) {
 
     // Handle layout-related types (header, footer, siteSettings)
     if (body.type && LAYOUT_TYPES.includes(body.type)) {
-      // Revalidate all layouts - this will refresh header/footer on all pages
-      if (body?.path) {
-        revalidatePath(body.path, 'layout');
-      } else {
-        revalidatePath('/', 'layout');
-      }
-      revalidatedPaths.push('/ (layout)');
-
-      // Also revalidate the tag
+      // Revalidate the tag only — avoid wiping the entire site cache
       revalidateTag(body.type, 'max');
       revalidatedTags.push(body.type);
-      if (body.type === 'product') {
-        revalidatePath('/product/' + body.slug, 'page');
+      if (body.type === 'product' && body.slug) {
+        revalidatePath('/[locale]/product/[slug]', 'page');
       }
     }
 
     // Handle slug-based revalidation
     if (body.slug) {
       revalidateTag(body.slug, 'max');
-      revalidatePath(body.slug);
       revalidatedTags.push(body.slug);
     }
 
@@ -82,7 +73,7 @@ export async function POST(req: NextRequest) {
     // Sitemap cache invalidation based on content type
     if (body.type === 'product') {
       revalidateTag('sitemap-products', 'max');
-      revalidateTag('sitemap-brands', 'max'); // brands derived from product vendors
+      revalidateTag('sitemap-brands', 'max');
       revalidatedTags.push('sitemap-products', 'sitemap-brands');
     }
     if (body.type === 'post') {

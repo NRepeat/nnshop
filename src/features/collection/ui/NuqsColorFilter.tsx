@@ -59,7 +59,11 @@ export function NuqsColorFilter({ filter, initialFilter }: Props) {
     return live ?? { ...v, count: 0 };
   });
 
+  const shouldScroll = displayValues.length > 8;
+
   return (
+    <div className={cn({ 'relative': shouldScroll })}>
+    <div className={cn('pr-1', { 'max-h-56 overflow-y-scroll custom-scroll': shouldScroll })}>
     <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 p-1">
       {[...displayValues]
         .sort((a, b) => a.label.localeCompare(b.label))
@@ -97,6 +101,11 @@ export function NuqsColorFilter({ filter, initialFilter }: Props) {
             </label>
           );
         })}
+    </div>
+    </div>
+    {shouldScroll && (
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent" />
+    )}
     </div>
   );
 }
