@@ -65,6 +65,7 @@ export interface SitemapPost {
   slug: string;
   language: string;
   updatedAt: string;
+  translations?: Array<{ slug: string; language: string }>;
 }
 
 // ---------------------------------------------------------------------------
@@ -253,7 +254,11 @@ const POSTS_FOR_SITEMAP_QUERY = `
   *[_type == "post" && defined(slug.current) && !(_id in path("drafts.**"))] {
     "slug": slug.current,
     language,
-    "updatedAt": _updatedAt
+    "updatedAt": _updatedAt,
+    "translations": *[_type == "translation.metadata" && references(^._id)][0].translations[].value->{
+      "slug": slug.current,
+      language
+    }
   }
 `;
 
