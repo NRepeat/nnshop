@@ -27,7 +27,6 @@ export async function getAllBrands(locale: string = 'uk') {
   'use cache';
   cacheLife('max');
   cacheTag('brands');
-  cacheTag('sitemap-brands');
   try {
     const brands = new Set<string>();
     let hasNextPage = true;

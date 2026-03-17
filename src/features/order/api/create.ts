@@ -297,32 +297,6 @@ export async function createOrder(
     if (completeCheckoutData.contactInfo.preferViber) {
       noteLines.push('⚠️ Не телефонуйте, надішліть повідомлення у Viber');
     }
-    // Append brand info per line item for CRM visibility
-    const vendorLines: string[] = [];
-    for (const edge of cart.lines.edges as any[]) {
-      const vendor = edge.node.merchandise.product?.vendor;
-      const title = edge.node.merchandise.product?.title;
-      if (vendor && vendor !== title) {
-        vendorLines.push(`${title}: ${vendor}`);
-      }
-    }
-    if (vendorLines.length > 0) {
-      noteLines.push(`Бренди: ${vendorLines.join(', ')}`);
-    }
-
-    // Append size per line item for CRM visibility
-    // const sizeLines: string[] = [];
-    // for (const edge of cart.lines.edges as any[]) {
-    //   const variantTitle = edge.node.merchandise?.title;
-    //   const productTitle = edge.node.merchandise.product?.title;
-    //   if (variantTitle && variantTitle !== 'Default Title') {
-    //     sizeLines.push(`${productTitle}: ${variantTitle}`);
-    //   }
-    // }
-    // if (sizeLines.length > 0) {
-    //   noteLines.push(`Розміри: ${sizeLines.join(', ')}`);
-    // }
-
     if (noteLines.length > 0) {
       order.note = noteLines.join('\n');
     }

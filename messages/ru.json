@@ -428,7 +428,15 @@
     "contact_info_description": "Пожалуйста, предоставьте свои контактные данные",
     "delivery_title": "Доставка",
     "payment_title": "Оплата",
-    "payment_description": "Завершите заказ безопасной обработкой платежей"
+    "payment_description": "Завершите заказ безопасной обработкой платежей",
+    "authGate": {
+      "title": "Есть аккаунт?",
+      "subtitle": "Войдите для быстрого оформления или продолжите как гость",
+      "signIn": "Войти",
+      "signUp": "Зарегистрироваться",
+      "hide": "Скрыть",
+      "continueAsGuest": "Продолжить без регистрации"
+    }
   },
   "NotFound": {
     "errorCode": "404",
@@ -585,6 +593,7 @@
     "phone1": "097-217-92-92",
     "phone2": "066-217-92-92",
     "email": "info@miomio.com.ua",
+    "address": "пр. Соборний 186, м. Запоріжжя",
     "copyright": "Mio Mio © 2026",
     "category_woman": "Женщинам",
     "category_man": "Мужчинам",

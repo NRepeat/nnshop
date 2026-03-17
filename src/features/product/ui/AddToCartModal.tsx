@@ -38,15 +38,17 @@ export const AddToCartModal = ({
 
   const [selectedSize, setSelectedSize] = useState<string>('');
 
-  const selectedVariant = selectedSize
-    ? product.variants.edges.find((edge) =>
-        edge.node.selectedOptions.some(
-          (opt) =>
-            SIZE_NAMES.includes(opt.name.toLowerCase()) &&
-            opt.value.toLowerCase() === selectedSize.toLowerCase(),
-        ),
-      )?.node
-    : undefined;
+  const selectedVariant = hasSizes
+    ? (selectedSize
+        ? product.variants.edges.find((edge) =>
+            edge.node.selectedOptions.some(
+              (opt) =>
+                SIZE_NAMES.includes(opt.name.toLowerCase()) &&
+                opt.value.toLowerCase() === selectedSize.toLowerCase(),
+            ),
+          )?.node
+        : undefined)
+    : product.variants.edges[0]?.node;
 
   const handleOpenChange = (val: boolean) => {
     if (!val) setSelectedSize('');

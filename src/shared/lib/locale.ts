@@ -16,7 +16,7 @@ export async function getAvailableLocales(): Promise<SanityLocale[]> {
   try {
     const locales = await sanityFetch({
       query: LOCALES_QUERY,
-      revalidate: 3600,
+      tags: ['locales'],
     });
     return locales || [];
   } catch (error) {
@@ -32,7 +32,7 @@ export async function getDefaultLocale(): Promise<string> {
   try {
     const defaultLocale = await sanityFetch({
       query: DEFAULT_LOCALE_QUERY,
-      revalidate: 3600,
+      tags: ['locales'],
     });
     return defaultLocale || 'uk';
   } catch (error) {

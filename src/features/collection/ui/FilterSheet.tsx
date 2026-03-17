@@ -55,7 +55,11 @@ export function FilterSheet({ filters, initialFilters, hideVendor }: Props) {
         </div>
         <div className="sticky bottom-0 bg-background border-t border-muted px-5 py-4">
           <SheetClose asChild>
-            <Button className="w-full" size="lg">
+            <Button
+              className="w-full"
+              size="lg"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            >
               {t('filters.apply')}
             </Button>
           </SheetClose>

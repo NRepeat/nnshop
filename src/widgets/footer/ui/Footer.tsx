@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Link } from '@shared/i18n/navigation';
 import Logo from '@shared/assets/Logo';
 import { getTranslations } from 'next-intl/server';
@@ -157,6 +158,12 @@ export const Footer = async ({ locale }: { locale: string }) => {
             <div className="flex gap-2 items-center">
               <VisaIcon />
               <MastercardIcon />
+              <Image
+                src="/logo_liqpay_for black.svg"
+                alt="LiqPay"
+                width={48}
+                height={30}
+              />
             </div>
           </div>
 
@@ -242,6 +249,10 @@ export const Footer = async ({ locale }: { locale: string }) => {
                 >
                   {email}
                 </a>
+              </div>
+
+              <div className="flex flex-col gap-0.5 text-white/60 text-sm pt-1">
+                <span>{t('address')}</span>
               </div>
             </div>
           </div>

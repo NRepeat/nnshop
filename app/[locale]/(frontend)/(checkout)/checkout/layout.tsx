@@ -1,6 +1,3 @@
-import { auth } from '@features/auth/lib/auth';
-import { headers } from 'next/headers';
-import { redirect, unstable_rethrow } from 'next/navigation';
 import { Suspense, ViewTransition } from 'react';
 import { CheckoutStepper } from '@entities/checkout/ui/CheckoutStepper';
 import { getCompletedSteps } from '@features/checkout/api/getCompletedSteps';
@@ -64,17 +61,6 @@ async function CheckoutLayoutContent({
   receipt: React.ReactNode;
 }) {
   await connection();
-
-  try {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) {
-      redirect('/auth/sign-in');
-    }
-  } catch (error) {
-    unstable_rethrow(error);
-    console.error('Checkout auth error:', error);
-    redirect('/auth/sign-in');
-  }
 
   const completedSteps = await getCompletedSteps();
 

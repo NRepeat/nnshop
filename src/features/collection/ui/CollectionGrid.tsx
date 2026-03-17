@@ -32,6 +32,7 @@ import { prisma } from '@shared/lib/prisma';
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@shared/ui/empty';
 import { PackageSearch } from 'lucide-react';
 import { toFilterSlug } from '@shared/lib/filterSlug';
+import { filterProducts } from '@features/collection/lib/filterProducts';
 import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
 
@@ -109,17 +110,21 @@ export const CollectionGrid = async ({
     '',
   );
 
-  // Extract selected variant-level filters.
-  // variantOption filters → match by option name + value.
-  // productMetafield (rozmir etc.) → Shopify stores Metaobject GIDs in the input,
-  //   but the filter label IS the display value (e.g. "46") which matches variant selectedOptions.
-  // Group by URL param key: OR within same key, AND across keys
-  // e.g. rozmir=[46,48] AND color=[black] → variant must be (46 OR 48) AND black
-  const optionGroups = new Map<string, { name?: string; values: Set<string> }>();
+  // Build selectedSizeSlugs from URL params (direct, independent of filterDefs)
+  const selectedSizeSlugs = new Set<string>();
+  if (hasFilters && awaitedSearchParams.rozmir) {
+    const vals = Array.isArray(awaitedSearchParams.rozmir)
+      ? awaitedSearchParams.rozmir
+      : (awaitedSearchParams.rozmir as string).split(';');
+    vals.forEach((v) => selectedSizeSlugs.add(v));
+  }
+
+  // Build optionGroups for variantOption filters (color, etc.) via filterDefs
+  const optionGroups = new Map<string, { name: string; values: Set<string> }>();
   if (hasFilters) {
     const filterDefs = collection.collection?.products.filters ?? [];
     for (const [key, value] of Object.entries(awaitedSearchParams)) {
-      if (key === 'minPrice' || key === 'maxPrice' || key === 'sort') continue;
+      if (key === 'minPrice' || key === 'maxPrice' || key === 'sort' || key === 'rozmir') continue;
       const definition = filterDefs.find((f) => f.id.endsWith(`.${key}`));
       if (!definition) continue;
       const values = Array.isArray(value) ? value : (value as string).split(';');
@@ -131,14 +136,6 @@ export const CollectionGrid = async ({
             if (parsed.variantOption) {
               if (!optionGroups.has(key)) optionGroups.set(key, { name: parsed.variantOption.name, values: new Set() });
               optionGroups.get(key)!.values.add(parsed.variantOption.value);
-            } else if (parsed.productMetafield) {
-              // Only rozmir (size) metafield values also exist as variant options,
-              // so only those need client-side filtering. All other product metafields
-              // (material, підкладка, підошва, etc.) are handled by Shopify server-side.
-              if (parsed.productMetafield.key === 'rozmir') {
-                if (!optionGroups.has(key)) optionGroups.set(key, { values: new Set() });
-                optionGroups.get(key)!.values.add(filterValue.label);
-              }
             }
           } catch {}
         }
@@ -146,34 +143,17 @@ export const CollectionGrid = async ({
     }
   }
 
-  const rawProducts =
-    collection.collection?.products.edges
-      .map((edge) => edge.node)
-      .filter((product) => {
-        const hasPrice =
-          (product.priceRange?.minVariantPrice?.amount && Number(product.priceRange.minVariantPrice.amount) > 0) ||
-          (product.priceRange?.maxVariantPrice?.amount && Number(product.priceRange.maxVariantPrice.amount) > 0);
-        if (!hasPrice) return false;
+  const allEdgeProducts = collection.collection?.products.edges.map((e) => e.node) ?? [];
+  const rawProducts = filterProducts(allEdgeProducts, selectedSizeSlugs, optionGroups);
 
-        if (optionGroups.size === 0) {
-          return product.totalInventory === null || product.totalInventory === undefined || product.totalInventory > 0;
-        }
-
-        // At least one variant must satisfy ALL option groups (AND between groups)
-        // within each group, any one value is enough (OR within group)
-        return product.variants.edges.some((variantEdge) => {
-          const variant = variantEdge.node;
-          if (!variant.availableForSale) return false;
-          if (variant.quantityAvailable !== null && variant.quantityAvailable !== undefined && variant.quantityAvailable <= 0) {
-            return false;
-          }
-          return [...optionGroups.values()].every(({ name, values }) =>
-            variant.selectedOptions.some((o) =>
-              (name ? o.name === name : true) && values.has(o.value),
-            ),
-          );
-        });
-      }) || [];
+  // Fetch unfiltered filter definitions for sidebar (separate from filtered collection response)
+  let initialFilters = collection.collection?.products.filters;
+  if (hasFilters) {
+    initialFilters = await getCollectionFilters({
+      handle: resolvedHandle,
+      locale: locale,
+    });
+  }
 
   // Batch check favorites
   let favoriteProductIds = new Set<string>();
@@ -200,15 +180,6 @@ export const CollectionGrid = async ({
     ...product,
     isFav: favoriteProductIds.has(product.id),
   }));
-
-  // Only fetch initialData if we actually have filters to avoid extra request
-  let initialFilters = collection.collection?.products.filters;
-  if (hasFilters) {
-    initialFilters = await getCollectionFilters({
-      handle: resolvedHandle,
-      locale: locale,
-    });
-  }
 
   const targetLocale = locale === 'ru' ? 'uk' : 'ru';
   const paths = {

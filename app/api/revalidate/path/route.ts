@@ -1,4 +1,4 @@
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidateTag } from 'next/cache';
 import { type NextRequest, NextResponse } from 'next/server';
 import { parseBody } from 'next-sanity/webhook';
 
@@ -10,9 +10,8 @@ const LAYOUT_TYPES = [
   'header',
   'footer',
   'infoBar',
-  'page',
-  'product',
   'promotionBanner',
+  'locale',
 ];
 
 export async function POST(req: NextRequest) {
@@ -40,9 +39,12 @@ export async function POST(req: NextRequest) {
       // Revalidate the tag only — avoid wiping the entire site cache
       revalidateTag(body.type, 'max');
       revalidatedTags.push(body.type);
-      if (body.type === 'product' && body.slug) {
-        revalidatePath('/[locale]/product/[slug]', 'page');
-      }
+    }
+
+    // Homepage uses gender-based tags ('man', 'woman') and 'homepage'
+    if (body.type === 'homePage' || body.type === 'homepage') {
+      revalidateTag('homepage', 'max');
+      revalidatedTags.push('homepage');
     }
 
     // Handle slug-based revalidation
@@ -61,6 +63,12 @@ export async function POST(req: NextRequest) {
     if (body.slug && body.type) {
       revalidateTag(`${body.type}:${body.slug}`, 'max');
       revalidatedTags.push(`${body.type}:${body.slug}`);
+    }
+
+    // Locale updates invalidate the locales cache
+    if (body.type === 'locale') {
+      revalidateTag('locales', 'max');
+      revalidatedTags.push('locales');
     }
 
     // Shopify: collection updates also invalidate the slugs list

@@ -262,7 +262,7 @@ export const POST_WITH_FALLBACK_QUERY =
 }`);
 
 export const PAGE_QUERY =
-  defineQuery(`*[_type == "page" && slug == $slug][0]{
+  defineQuery(`*[_type == "page" && slug == $slug && language == $language][0]{
   ...,
   "seo": {
   "title": coalesce(seo.title, title, ""),

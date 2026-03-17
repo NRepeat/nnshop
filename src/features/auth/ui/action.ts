@@ -116,6 +116,7 @@ export const onShopifySignIn = async () => {
 export const createSignInHandler = (
   tErrors: (key: string) => string,
   tSuccess: (key: string) => string,
+  callbackUrl?: string,
 ) => {
   return async (data: SignInFormData) => {
     try {
@@ -131,7 +132,7 @@ export const createSignInHandler = (
 
       posthog.capture('user_signed_in', { method: 'email' });
       toast.success(tSuccess('welcomeBack'));
-      window.location.href = '/';
+      window.location.href = callbackUrl || '/';
     } catch (error) {
       if (!(error instanceof Error)) return;
       posthog.captureException(error);
@@ -144,6 +145,7 @@ export const createSignInHandler = (
 export const createSignUpHandler = (
   tErrors: (key: string) => string,
   tSuccess: (key: string) => string,
+  callbackUrl?: string,
 ) => {
   return async (data: SignUpFormData) => {
     try {
@@ -165,7 +167,7 @@ export const createSignUpHandler = (
 
       posthog.capture('user_signed_up', { method: 'email' });
       toast.success(tSuccess('accountCreated'));
-      window.location.href = '/';
+      window.location.href = callbackUrl || '/';
     } catch (error) {
       if (!(error instanceof Error)) return;
       posthog.captureException(error);
@@ -175,12 +177,15 @@ export const createSignUpHandler = (
   };
 };
 
-export const createGoogleSignInHandler = (tErrors: (key: string) => string) => {
+export const createGoogleSignInHandler = (
+  tErrors: (key: string) => string,
+  callbackUrl?: string,
+) => {
   return async () => {
     try {
       await client.signIn.social({
         provider: 'google',
-        callbackURL: '/uk/woman',
+        callbackURL: callbackUrl || '/uk/woman',
       });
     } catch (error) {
       // DOM Events thrown when page navigation interrupts JS are not real errors

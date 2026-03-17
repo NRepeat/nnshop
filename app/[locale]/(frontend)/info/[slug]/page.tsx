@@ -106,7 +106,7 @@ export default async function InfoPage({ params }: Props) {
   const pageContent = await sanityFetch({
     query: PAGE_QUERY,
     params: { language: sanityLocale, slug },
-    tags: ['page', `page:${slug}`],
+    tags: [`page:${slug}`],
   });
 
   if (!pageContent) notFound();

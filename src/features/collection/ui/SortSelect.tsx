@@ -30,11 +30,12 @@ export function SortSelect() {
   const handleSortChange = (value: string) => {
     setSort(value === 'trending' ? null : value);
     posthog?.capture('collection_sort_changed', { sort_type: value });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
     <Select value={sort} onValueChange={handleSortChange}>
-      <SelectTrigger aria-label={t('sortBy')} className="min-w-[160px] w-auto rounded border-primary bg-white text-black">
+      <SelectTrigger aria-label={t('sortBy')} className="w-[150px] sm:w-auto sm:min-w-[200px] rounded border-primary bg-white text-black [&>span]:truncate">
         <SelectValue placeholder={t('sortBy')} />
       </SelectTrigger>
       <SelectContent className="rounded">

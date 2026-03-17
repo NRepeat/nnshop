@@ -6,8 +6,6 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { cookieGenderGet } from '@features/header/navigation/api/setCookieGender';
-import { GENDERS, DEFAULT_GENDER } from '@shared/config/shop';
 
 type Props = {
   params: Promise<{ locale: string }>;

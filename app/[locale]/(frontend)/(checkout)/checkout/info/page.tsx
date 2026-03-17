@@ -1,6 +1,9 @@
 import { Suspense } from 'react';
 import { ContactInfo } from '@features/checkout';
+import { CheckoutAuthGate } from '@features/checkout/contact-info/ui/CheckoutAuthGate';
 import { Skeleton } from '@shared/ui/skeleton';
+import { auth } from '@features/auth/lib/auth';
+import { headers } from 'next/headers';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -8,7 +11,7 @@ type Props = {
 
 function ContactInfoFormSkeleton() {
   return (
-    <div className="space-y-6 ">
+    <div className="space-y-6">
       <div className="space-y-2">
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-4 w-64" />
@@ -29,9 +32,15 @@ function ContactInfoFormSkeleton() {
 export default async function InfoPage(props: Props) {
   const { locale } = await props.params;
 
+  const session = await auth.api.getSession({ headers: await headers() });
+  const isAnonymous = !session || (session.user as { isAnonymous?: boolean }).isAnonymous === true;
+
   return (
-    <Suspense fallback={<ContactInfoFormSkeleton />}>
-      <ContactInfo locale={locale} />
-    </Suspense>
+    <div className="space-y-8">
+      <Suspense fallback={<ContactInfoFormSkeleton />}>
+        <ContactInfo locale={locale} />
+      </Suspense>
+      {isAnonymous && <CheckoutAuthGate />}
+    </div>
   );
 }
