@@ -1,19 +1,14 @@
 import { fetchRedirects } from '@/shared/sanity/lib/fetchRedirects';
 import { withPostHogConfig } from '@posthog/nextjs-config';
-import bundleAnalyzer from '@next/bundle-analyzer';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
-const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
-  analyzerMode: 'static',
-  openAnalyzer: false,
-});
 
 const nextConfig: NextConfig = {
   experimental: {
     viewTransition: true,
   },
+  productionBrowserSourceMaps: true,
   typescript: {
     ignoreBuildErrors: false,
   },
@@ -59,6 +54,10 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        source: '/video-cdn/:path*',
+        destination: 'https://cdn.sanity.io/files/ru43j1ro/development/:path*',
+      },
+      {
         source: '/ingest/static/:path*',
         destination: 'https://us-assets.i.posthog.com/static/:path*',
       },
@@ -91,14 +90,12 @@ const nextConfig: NextConfig = {
 };
 const withNextIntl = createNextIntlPlugin('./src/shared/i18n/request.ts');
 
-export default withBundleAnalyzer(
-  withPostHogConfig(withNextIntl(nextConfig), {
-    personalApiKey: process.env.POSTHOG_PERSONAL_API_KEY!,
-    projectId: process.env.POSTHOG_PROJECT_ID!,
-    host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-    sourcemaps: {
-      enabled: process.env.NODE_ENV === 'production',
-      deleteAfterUpload: true,
-    },
-  }),
-);
+export default withPostHogConfig(withNextIntl(nextConfig), {
+  personalApiKey: process.env.POSTHOG_PERSONAL_API_KEY!,
+  projectId: process.env.POSTHOG_PROJECT_ID!,
+  host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+  sourcemaps: {
+    enabled: process.env.NODE_ENV === 'production',
+    deleteAfterUpload: true,
+  },
+});

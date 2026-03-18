@@ -87,6 +87,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   const { locale, slug, gender } = await params;
   setRequestLocale(locale);
 
+
   const decodedSlug = decodeURIComponent(slug);
   const allSlugs = await getCollectionSlugs();
   const resolvedHandle = resolveCollectionHandle(decodedSlug, gender, new Set(allSlugs));

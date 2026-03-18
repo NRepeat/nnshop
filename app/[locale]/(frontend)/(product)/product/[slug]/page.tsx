@@ -47,6 +47,7 @@ export default async function ProductPage({ params, searchParams }: Props) {
   const handle = decodeURIComponent(slug);
   setRequestLocale(locale);
 
+
   return (
     <Suspense fallback={<ProductViewSkeleton handle={handle} />}>
       <ProductContent
