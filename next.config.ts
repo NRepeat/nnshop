@@ -13,7 +13,6 @@ const withBundleAnalyzer = bundleAnalyzer({
 const nextConfig: NextConfig = {
   experimental: {
     viewTransition: true,
-    nextScriptWorkers: true,
   },
   typescript: {
     ignoreBuildErrors: false,

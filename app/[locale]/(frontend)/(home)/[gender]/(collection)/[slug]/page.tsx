@@ -2,7 +2,6 @@ import { CollectionGrid } from '@features/collection/ui/CollectionGrid';
 import { CollectionGridSkeleton } from '@features/collection/ui/CollectionGridSkeleton';
 import { locales } from '@shared/i18n/routing';
 import { Suspense } from 'react';
-import ReactDOM from 'react-dom';
 import { Metadata } from 'next';
 import {
   getCollection,
@@ -88,7 +87,6 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   const { locale, slug, gender } = await params;
   setRequestLocale(locale);
 
-  ReactDOM.preconnect('https://cdn.shopify.com');
 
   const decodedSlug = decodeURIComponent(slug);
   const allSlugs = await getCollectionSlugs();

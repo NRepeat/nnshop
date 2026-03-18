@@ -5,7 +5,6 @@ import { ProductSessionView } from '@features/product/ui/ProductSessionView';
 import { setRequestLocale } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { Suspense } from 'react';
-import ReactDOM from 'react-dom';
 import { getProduct } from '@entities/product/api/getProduct';
 import { notFound } from 'next/navigation';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
@@ -48,7 +47,6 @@ export default async function ProductPage({ params, searchParams }: Props) {
   const handle = decodeURIComponent(slug);
   setRequestLocale(locale);
 
-  ReactDOM.preconnect('https://cdn.shopify.com');
 
   return (
     <Suspense fallback={<ProductViewSkeleton handle={handle} />}>

@@ -24,8 +24,7 @@
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:report": "playwright show-report",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "postinstall": "partytown copylib public/~partytown"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@builder.io/partytown": "^0.10.3",
