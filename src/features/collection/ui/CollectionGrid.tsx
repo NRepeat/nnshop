@@ -188,6 +188,17 @@ export const CollectionGrid = async ({
   };
   const pageInfo = collection.collection?.products.pageInfo;
 
+  const serializableOptionGroups: Record<
+    string,
+    { name: string; values: string[] }
+  > = {};
+  optionGroups.forEach((group, key) => {
+    serializableOptionGroups[key] = {
+      name: group.name,
+      values: Array.from(group.values),
+    };
+  });
+
   return (
     <>
       <PathSync paths={paths} />
@@ -280,6 +291,8 @@ export const CollectionGrid = async ({
               initialProducts={productsWithFav as Product[]}
               handle={resolvedHandle}
               sort={sortParam}
+              selectedSizeSlugs={Array.from(selectedSizeSlugs)}
+              optionGroups={serializableOptionGroups}
             />
           )}
         </div>

@@ -28,6 +28,8 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
+import { toFilterSlug } from '@shared/lib/filterSlug';
+import { filterProducts } from '@features/collection/lib/filterProducts';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -96,17 +98,61 @@ export const BrandGrid = async ({
   }
 
   const { collection } = currentData;
-  const rawProducts =
-    collection.collection?.products.edges
-      .map((edge) => edge.node)
-      .filter(
-        (edge) =>
-          (Number(edge.priceRange.minVariantPrice.amount) > 0 ||
-            Number(edge.priceRange.maxVariantPrice.amount) > 0) &&
-          (edge.totalInventory === null ||
-            edge.totalInventory === undefined ||
-            edge.totalInventory > 0),
-      ) || [];
+
+  // Build selectedSizeSlugs from URL params (direct, independent of filterDefs)
+  const selectedSizeSlugs = new Set<string>();
+  if (hasFilters && searchParamsWithoutGender.rozmir) {
+    const vals = Array.isArray(searchParamsWithoutGender.rozmir)
+      ? searchParamsWithoutGender.rozmir
+      : (searchParamsWithoutGender.rozmir as string).split(';');
+    vals.forEach((v) => selectedSizeSlugs.add(v));
+  }
+
+  // Build optionGroups for variantOption filters (color, etc.) via filterDefs
+  const optionGroups = new Map<string, { name: string; values: Set<string> }>();
+  if (hasFilters) {
+    const filterDefs = collection.collection?.products.filters ?? [];
+    for (const [key, value] of Object.entries(searchParamsWithoutGender)) {
+      if (
+        key === 'minPrice' ||
+        key === 'maxPrice' ||
+        key === 'sort' ||
+        key === 'rozmir'
+      )
+        continue;
+      const definition = filterDefs.find((f) => f.id.endsWith(`.${key}`));
+      if (!definition) continue;
+      const values = Array.isArray(value)
+        ? value
+        : (value as string).split(';');
+      values.forEach((v) => {
+        const filterValue = definition.values.find(
+          (def) => toFilterSlug(def.label) === v,
+        );
+        if (filterValue) {
+          try {
+            const parsed = JSON.parse(filterValue.input);
+            if (parsed.variantOption) {
+              if (!optionGroups.has(key))
+                optionGroups.set(key, {
+                  name: parsed.variantOption.name,
+                  values: new Set(),
+                });
+              optionGroups.get(key)!.values.add(parsed.variantOption.value);
+            }
+          } catch {}
+        }
+      });
+    }
+  }
+
+  const allEdgeProducts =
+    collection.collection?.products.edges.map((e) => e.node) ?? [];
+  const rawProducts = filterProducts(
+    allEdgeProducts,
+    selectedSizeSlugs,
+    optionGroups,
+  );
 
   const session = await auth.api.getSession({ headers: await headers() });
   let favoriteProductIds = new Set<string>();
@@ -130,6 +176,17 @@ export const BrandGrid = async ({
     : collection.collection?.products.filters;
 
   const pageInfo = collection.collection?.products.pageInfo;
+
+  const serializableOptionGroups: Record<
+    string,
+    { name: string; values: string[] }
+  > = {};
+  optionGroups.forEach((group, key) => {
+    serializableOptionGroups[key] = {
+      name: group.name,
+      values: Array.from(group.values),
+    };
+  });
 
   return (
     <>
@@ -224,6 +281,8 @@ export const BrandGrid = async ({
               initialProducts={productsWithFav as Product[]}
               handle={decodedSlug}
               gender={gender}
+              selectedSizeSlugs={Array.from(selectedSizeSlugs)}
+              optionGroups={serializableOptionGroups}
             />
           )}
         </div>

@@ -94,6 +94,7 @@ export default async function RootLayout(props: RootProps) {
     <html lang={locale} suppressHydrationWarning>
       <head>
         <Script
+          id="google-tag-manager"
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-05RL9JZJKK"
           strategy="afterInteractive"
@@ -108,7 +109,8 @@ export default async function RootLayout(props: RootProps) {
           `}
         </Script>
         <Script
-          src="https://cdn.pulse.is/livechat/loader.js"
+          id="pulse-live-chat"
+          src="/assets/pulse/livechat/loader.js"
           data-live-chat-id="6683a3f051e3db46980f8c09"
           async
         ></Script>

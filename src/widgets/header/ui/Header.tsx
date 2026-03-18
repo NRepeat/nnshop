@@ -103,7 +103,6 @@ export const Header = async ({ locale }: { locale: string }) => {
             <CurrentNavigationSession
               locale={locale}
               navImages={headerData?.navImages}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               navDropdowns={headerData?.navDropdowns as any}
             />
           </Suspense>

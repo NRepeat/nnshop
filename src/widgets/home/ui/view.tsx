@@ -12,7 +12,7 @@ export const PageContent = async ({
   const { locale, gender } = await params;
   setRequestLocale(locale);
 
-  return (
+  return (  
     <div className="flex flex-col h-fit min-h-screen">
       <Suspense fallback={<HomePageSkeleton />}>
         <HeroPageBuilder gender={gender} locale={locale} />

@@ -90,11 +90,12 @@ model Cart {
 }
 
 model Order {
-  id                  String  @id @default(cuid())
-  shopifyOrderId      String? @unique
-  shopifyDraftOrderId String? @unique
+  id                  String   @id @default(cuid())
+  shopifyOrderId      String?  @unique
+  shopifyDraftOrderId String?  @unique
   orderName           String?
-  draft               Boolean @default(false)
+  draft               Boolean  @default(false)
+  usedDiscountCodes   String[]
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String

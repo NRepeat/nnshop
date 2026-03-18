@@ -278,14 +278,6 @@ export const getCollection = async ({
   if (!handle) throw new Error('getCollection: handle is required');
 
   const filters: ProductFilter[] = [{ available: true }];
-  //Mnay product without gender tag, go to Shopify
-  // if (genderTag) {
-  //   const genderMetafieldValue = genderTag === 'man' ? 'choloviche' : genderTag === 'woman' ? 'zhinoche' : null;
-  //   if (genderMetafieldValue) {
-  //     filters.push({ productMetafield: { namespace: 'custom', key: 'gender', value: genderMetafieldValue } });
-  //   }
-  // }
-
   if (searchParams) {
     const filterDefinitions = await getCollectionFilters({ handle, locale });
     if (filterDefinitions) {

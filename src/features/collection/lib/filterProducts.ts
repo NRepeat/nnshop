@@ -17,6 +17,7 @@ export type FilterProduct = {
   variants: {
     edges: { node: FilterVariant }[];
   };
+  handle: string;
 };
 
 export type OptionGroup = {
@@ -57,6 +58,7 @@ export function filterProducts<T extends FilterProduct>(
         Number(product.priceRange.minVariantPrice.amount) > 0) ||
       (product.priceRange?.maxVariantPrice?.amount &&
         Number(product.priceRange.maxVariantPrice.amount) > 0);
+
     if (!hasPrice) return false;
 
     if (selectedSizeSlugs.size === 0 && optionGroups.size === 0) {
@@ -74,12 +76,16 @@ export function filterProducts<T extends FilterProduct>(
         const sizeOpt = variant.selectedOptions.find((o) =>
           SIZE_OPTION_NAMES.includes(o.name.toLowerCase()),
         );
-        if (!sizeOpt || !selectedSizeSlugs.has(toFilterSlug(sizeOpt.value))) return false;
+        if (!sizeOpt || !selectedSizeSlugs.has(toFilterSlug(sizeOpt.value)))
+          return false;
       }
 
       if (optionGroups.size > 0) {
-        const matchesOptions = [...optionGroups.values()].every(({ name, values }) =>
-          variant.selectedOptions.some((o) => o.name === name && values.has(o.value)),
+        const matchesOptions = [...optionGroups.values()].every(
+          ({ name, values }) =>
+            variant.selectedOptions.some(
+              (o) => o.name === name && values.has(o.value),
+            ),
         );
         if (!matchesOptions) return false;
       }

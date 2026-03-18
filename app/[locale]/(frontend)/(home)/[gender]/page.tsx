@@ -7,6 +7,15 @@ type Props = {
   params: Promise<{ locale: Locale; gender: string }>;
 };
 
+export function generateStaticParams() {
+  return [
+    { locale: 'uk', gender: 'woman' },
+    { locale: 'uk', gender: 'man' },
+    { locale: 'ru', gender: 'woman' },
+    { locale: 'ru', gender: 'man' },
+  ];
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, gender } = await params;
 
@@ -43,6 +52,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     `/${gender}`,
   );
 }
+
+
+
 export default async function Page({ params }: Props) {
   return <PageContent params={params} />;
 }

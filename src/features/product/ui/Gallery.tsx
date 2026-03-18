@@ -180,7 +180,7 @@ const Gallery = ({
                         fill
                         className="object-cover"
                         loading="lazy"
-                        sizes="(max-width: 768px) 33vw, (max-width: 1024px) 33vw, 20vw"
+                        sizes="(max-width: 768px) 20vw, (max-width: 1024px) 12vw, 10vw"
                         placeholder="blur"
                         blurDataURL={BLUR_DATA_URL}
                       />

@@ -124,6 +124,7 @@ export async function createOrder(
 
     // Calculate znizka-discounted subtotal (same logic as Payment.tsx)
     let localTotal = 0;
+    let shopifySubtotal = 0;
     for (const edge of cart.lines.edges as any[]) {
       const line = edge.node;
       const price = parseFloat(line.cost.amountPerQuantity.amount);
@@ -135,16 +136,23 @@ export async function createOrder(
         ) || 0;
       const discountedPrice = sale > 0 ? price * (1 - sale / 100) : price;
       localTotal += discountedPrice * line.quantity;
+      shopifySubtotal += price * line.quantity;
     }
 
     const applicableDiscounts = (cart.discountCodes ?? []).filter(
       (d) => d.applicable,
     );
     const hasApplicableDiscount = applicableDiscounts.length > 0;
-    const shopifyTotal = Number(cart.cost.totalAmount.amount);
-    const goodsTotal = hasApplicableDiscount
-      ? Math.min(localTotal, shopifyTotal)
-      : localTotal;
+    // cart.cost.totalAmount does not reflect discount codes — use discountAllocations instead
+    const cartDiscountTotal = ((cart as any).discountAllocations || []).reduce(
+      (sum: number, d: any) => sum + Number(d.discountedAmount.amount),
+      0,
+    );
+    // Shopify calculates the discount on original prices; derive rate and apply to sale subtotal
+    const discountRate = hasApplicableDiscount && shopifySubtotal > 0
+      ? cartDiscountTotal / shopifySubtotal
+      : 0;
+    const goodsTotal = localTotal * (1 - discountRate);
 
     // Scale line item prices so order total matches what the customer pays
     const discountRatio = localTotal > 0 ? goodsTotal / localTotal : 1;
@@ -364,6 +372,7 @@ export async function createOrder(
           orderName: createdOrder.name,
           userId: session.user.id,
           draft: false,
+          usedDiscountCodes: applicableDiscounts.map((d) => d.code.toUpperCase()),
         },
       });
     } catch (dbError) {

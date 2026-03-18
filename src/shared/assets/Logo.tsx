@@ -7,6 +7,7 @@ const Logo = (props: { className?: string }) => (
     alt="Logo"
     width={150}
     height={150}
+    unoptimized
     className={props.className}
   />
 );

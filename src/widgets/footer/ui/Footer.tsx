@@ -158,12 +158,6 @@ export const Footer = async ({ locale }: { locale: string }) => {
             <div className="flex gap-2 items-center">
               <VisaIcon />
               <MastercardIcon />
-              <Image
-                src="/logo_liqpay_for black.svg"
-                alt="LiqPay"
-                width={48}
-                height={30}
-              />
             </div>
           </div>
 

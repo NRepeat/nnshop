@@ -13,7 +13,6 @@ import {
 import { urlFor } from '@shared/sanity/lib/image';
 import { HOME_PAGEResult } from '@shared/sanity/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Head from 'next/head';
 
 type HeroSliderBase = Extract<
   NonNullable<NonNullable<HOME_PAGEResult>['content']>[number],
@@ -133,12 +132,8 @@ function buildOverlayBg(
 
 const getProxiedVideoUrl = (originalUrl: string | null | undefined) => {
   if (!originalUrl) return '';
-  return originalUrl.replace(
-    'https://cdn.sanity.io/files/ru43j1ro/development/',
-    '/video-cdn/',
-  );
+  return originalUrl
 };
-
 type VideoHeroProps = {
   src: string;
   srcWebm?: string | null;
@@ -188,16 +183,14 @@ function VideoHero({
   const Tag = isFirst ? 'h1' : 'h2';
   const inner = (
     <>
-      {isFirst && proxiedSrc && (
-        <Head>
-          <link
-            rel="preload"
-            as="video"
-            href={proxiedSrc}
-            type="video/mp4"
-            fetchPriority="high"
-          />
-        </Head>
+      {poster && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={poster}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 w-full h-full object-cover max-h-[75vh]"
+        />
       )}
       <video
         ref={videoRef}
@@ -206,6 +199,8 @@ function VideoHero({
         muted
         loop
         playsInline
+        //@ts-ignore
+        fetchpriority="high"
         preload="auto"
         disablePictureInPicture
         className="absolute inset-0 w-full h-full object-cover max-h-[75vh]"
@@ -509,7 +504,7 @@ export const HeroBanner = (props: HeroSliderProps) => {
   if (!hasVideo && (!slides || slides.length === 0)) return null;
 
   return (
-    <div className="hero-banner relative w-full overflow-hidden  mx-auto">
+    <div className="hero-banner relative w-full overflow-hidden">
       {hasVideo ? (
         <VideoHero
           src={props.videoFile || props.videoUrl || ''}

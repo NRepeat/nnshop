@@ -3,11 +3,10 @@ import { withPostHogConfig } from '@posthog/nextjs-config';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
-
 const nextConfig: NextConfig = {
   experimental: {
     viewTransition: true,
-    cssChunking: true
+    cssChunking: true,
   },
   // productionBrowserSourceMaps: true,
   typescript: {
@@ -28,7 +27,8 @@ const nextConfig: NextConfig = {
     'www.miomio.com.ua',
   ],
   images: {
-    formats: ['image/avif', 'image/webp'],
+    loader: 'custom',
+    loaderFile: './lib/imageLoader.ts',
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 31536000,
@@ -55,8 +55,16 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: '/video-cdn/:path*',
-        destination: 'https://cdn.sanity.io/files/ru43j1ro/development/:path*',
+        source: '/assets/pulse/:path*',
+        destination: 'https://cdn.pulse.is/:path*',
+      },
+      {
+        source: '/assets/shopify-cdn/:path*',
+        destination: 'https://cdn.shopify.com/:path*',
+      },
+      {
+        source: '/assets/sanity-cdn/:path*',
+        destination: 'https://cdn.sanity.io/:path*',
       },
       {
         source: '/ingest/static/:path*',
@@ -86,6 +94,15 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        source: '/assets/pulse/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
     ];
   },
 };
@@ -97,6 +114,6 @@ export default withPostHogConfig(withNextIntl(nextConfig), {
   host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
   sourcemaps: {
     enabled: process.env.NODE_ENV === 'production',
-    deleteAfterUpload: true,
+    deleteAfterUpload: false,
   },
 });

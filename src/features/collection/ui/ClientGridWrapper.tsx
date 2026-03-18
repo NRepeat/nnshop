@@ -1,4 +1,5 @@
 'use client';
+import * as React from 'react';
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { ClientGrid } from './ClientGrid';
 import LoadMore from './LoadMore';
@@ -7,6 +8,7 @@ import { useLocale } from 'next-intl';
 import { ArrowUp } from 'lucide-react';
 import { Button } from '@shared/ui/button';
 import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
+import { filterProducts } from '../lib/filterProducts';
 
 function getEffectivePrice(product: Product): number {
   const base = parseFloat((product as any).priceRange?.maxVariantPrice?.amount ?? '0');
@@ -21,26 +23,48 @@ export const ClientGridWrapper = ({
   handle,
   gender,
   sort,
+  selectedSizeSlugs = [],
+  optionGroups = {},
 }: {
   initialProducts: (Product & { isFav: boolean })[];
   initialPageInfo: PageInfo;
   handle: string;
   gender?: string;
   sort?: string;
+  selectedSizeSlugs?: string[];
+  optionGroups?: Record<string, { name: string; values: string[] }>;
 }) => {
   const locale = useLocale();
-  const [extraProducts, setExtraProducts] = useState<(Product & { isFav: boolean })[]>([]);
+  const [extraProducts, setExtraProducts] = useState<
+    (Product & { isFav: boolean })[]
+  >([]);
+
+  // Convert serializable props back to Set/Map for filterProducts
+  const sizeSet = React.useMemo(
+    () => new Set(selectedSizeSlugs),
+    [selectedSizeSlugs],
+  );
+  const groupMap = React.useMemo(() => {
+    const map = new Map<string, { name: string; values: Set<string> }>();
+    Object.entries(optionGroups).forEach(([key, group]) => {
+      map.set(key, { name: group.name, values: new Set(group.values) });
+    });
+    return map;
+  }, [optionGroups]);
 
   // key prop on this component handles reset when handle/filters change — no useEffect needed
 
-  const handleDataLoaded = useCallback((newProducts: Product[], _newPageInfo: any) => {
-    setExtraProducts((prev) => {
-      const map = new Map();
-      prev.forEach((p) => map.set(p.id, p));
-      newProducts.forEach((p) => map.set(p.id, p));
-      return Array.from(map.values());
-    });
-  }, []);
+  const handleDataLoaded = useCallback(
+    (newProducts: Product[], _newPageInfo: any) => {
+      setExtraProducts((prev) => {
+        const map = new Map();
+        prev.forEach((p) => map.set(p.id, p));
+        newProducts.forEach((p) => map.set(p.id, p));
+        return Array.from(map.values());
+      });
+    },
+    [],
+  );
 
   const combined = [...initialProducts, ...extraProducts];
   const products =
@@ -64,7 +88,15 @@ export const ClientGridWrapper = ({
     <div className="flex h-full w-full justify-between">
       <div className="flex flex-col w-full items-end justify-between">
         <div className="flex flex-col w-full justify-between  pt-0 min-h-screen h-fit">
-          <ClientGrid products={products as (Product & { isFav: boolean })[]} />
+          <ClientGrid
+            products={
+              filterProducts(
+                products,
+                sizeSet,
+                groupMap,
+              ) as (Product & { isFav: boolean })[]
+            }
+          />
           <div className="w-full items-center">
             <Suspense fallback={null}>
               <LoadMore

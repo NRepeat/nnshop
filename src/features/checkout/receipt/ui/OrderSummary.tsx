@@ -175,6 +175,7 @@ export async function OrderSummary({
 
   // Calculate totals with discounts
   const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
+  const shopifySubtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   // Get discount codes from cart
   const discountCodes = cart.discountCodes || [];
@@ -185,7 +186,9 @@ export async function OrderSummary({
     (sum, d) => sum + Number(d.discountedAmount.amount),
     0,
   );
-  const discountAmount = hasApplicableDiscount ? Math.min(subtotal, cartDiscountTotal) : 0;
+  // Shopify calculates the discount on original prices; derive rate and apply to sale subtotal
+  const discountRate = hasApplicableDiscount && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
+  const discountAmount = subtotal * discountRate;
   const totalAmount = Math.max(0, subtotal - discountAmount);
   const grandTotal = totalAmount;
   const content = (

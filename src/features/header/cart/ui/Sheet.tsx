@@ -85,7 +85,10 @@ const CartSheet = async ({ locale }: { locale: string }) => {
     (sum, d) => sum + Number(d.discountedAmount.amount),
     0,
   );
-  const discountAmount = hasApplicableDiscount ? Math.min(subtotalAmount, cartDiscountTotal) : 0;
+  // Shopify calculates the discount on original prices; derive rate and apply to sale subtotal
+  const shopifySubtotal = mockProducts?.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0) || 0;
+  const discountRate = hasApplicableDiscount && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
+  const discountAmount = subtotalAmount * discountRate;
   const totalAmount = Math.max(0, subtotalAmount - discountAmount);
 
   return (

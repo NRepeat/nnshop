@@ -45,6 +45,7 @@ export default async function Payment({
       const lines = cartResult.cart.lines.edges;
       // Calculate znizka-discounted subtotal
       let localTotal = 0;
+      let shopifySubtotal = 0;
       for (const edge of lines) {
         const line = edge.node;
         const price = Number(line.cost.amountPerQuantity.amount);
@@ -53,6 +54,7 @@ export default async function Payment({
         ) || 0;
         const discountedPrice = sale > 0 ? price * (1 - sale / 100) : price;
         localTotal += discountedPrice * line.quantity;
+        shopifySubtotal += price * line.quantity;
       }
       const hasApplicableDiscount = cartResult.cart.discountCodes?.some((d) => d.applicable);
       // cart.cost.totalAmount does not reflect discount codes — use discountAllocations instead
@@ -60,7 +62,9 @@ export default async function Payment({
         (sum: number, d: any) => sum + Number(d.discountedAmount.amount),
         0,
       );
-      const discountAmount = hasApplicableDiscount ? Math.min(localTotal, cartDiscountTotal) : 0;
+      // Shopify calculates the discount on original prices; derive rate and apply to sale subtotal
+      const discountRate = hasApplicableDiscount && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
+      const discountAmount = localTotal * discountRate;
       cartAmount = Math.max(0, localTotal - discountAmount);
     }
     if (cartAmount <= 0) {
