@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   experimental: {
     viewTransition: true,
   },
-  productionBrowserSourceMaps: true,
+  // productionBrowserSourceMaps: true,
   typescript: {
     ignoreBuildErrors: false,
   },
