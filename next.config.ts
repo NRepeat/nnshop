@@ -7,6 +7,7 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const nextConfig: NextConfig = {
   experimental: {
     viewTransition: true,
+    cssChunking: true
   },
   // productionBrowserSourceMaps: true,
   typescript: {
