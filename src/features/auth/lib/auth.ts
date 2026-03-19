@@ -68,8 +68,10 @@ export const auth = betterAuth({
   },
   trustedOrigins: [
     betterAuthUrl,
-    'https://www.miomio.com.ua',
     'https://miomio.com.ua',
+    'https://www.miomio.com.ua',
+    'https://nmactunel.nninc.uk',
+    'https://staging.miomio.com.ua',
   ],
 
   plugins: [
