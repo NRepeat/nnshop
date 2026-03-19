@@ -1,15 +1,15 @@
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
+import { SITE_URL, BRAND_NAME, INSTAGRAM_URL, FACEBOOK_URL } from '@shared/config/brand';
 
 export function generateOrganizationJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Mio Mio',
-    url: BASE_URL,
-    logo: `${BASE_URL}/logo.png`,
+    name: BRAND_NAME,
+    url: SITE_URL,
+    logo: `${SITE_URL}/logo.png`,
     sameAs: [
-      'https://instagram.com/miomio.ua',
-      'https://facebook.com/miomio.ua',
+      INSTAGRAM_URL,
+      FACEBOOK_URL,
     ],
     contactPoint: {
       '@type': 'ContactPoint',

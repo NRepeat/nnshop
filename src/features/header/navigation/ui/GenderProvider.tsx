@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState,useCallback } from 'react';
 import { saveGenderPreference } from '../api/saveGender';
 import { cookieGenderSet } from '../api/setCookieGender';
+import { usePostHog } from 'posthog-js/react';
 
 type Gender = 'woman' | 'man';
 
@@ -21,10 +22,15 @@ export function GenderProvider({
   children: React.ReactNode;
   initialGender: Gender;
 }) {
+  const posthog = usePostHog();
   const [gender, setGenderState] = useState<Gender>(initialGender);
   const [isLoading, setIsLoading] = useState(false);
 
   const setGender = useCallback(async (newGender: Gender) => {
+    posthog?.capture('gender_switched', {
+      gender: newGender,
+      previous_gender: gender,
+    });
     setGenderState(newGender);
     setIsLoading(true);
 
@@ -41,7 +47,7 @@ export function GenderProvider({
     } finally {
       setIsLoading(false);
     }
-  }, [initialGender]);
+  }, [initialGender, gender, posthog]);
 
   return (
     <GenderContext.Provider value={{ gender, setGender, isLoading }}>

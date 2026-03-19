@@ -1,6 +1,7 @@
 'use client';
 import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { Card, CardContent } from '@/shared/ui/card';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 import Image from 'next/image';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import clsx from 'clsx';
@@ -22,6 +23,7 @@ import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { ZoomIn } from 'lucide-react';
 import { AddToCartModal } from '@features/product/ui/AddToCartModal';
+import { usePostHog } from 'posthog-js/react';
 
 type ProductCardProps = {
   product: Product;
@@ -32,6 +34,7 @@ type ProductCardProps = {
   withQuick?: boolean;
   withInnerShadow?: boolean;
   withSizes?: boolean;
+  source?: string;
 };
 
 export const ProductCard = ({
@@ -43,6 +46,7 @@ export const ProductCard = ({
   withInnerShadow,
   withSizes = true,
   addToCard,
+  source = 'collection',
 }: ProductCardProps) => {
   const t = useTranslations('ProductCard');
   const tPage = useTranslations('ProductPage');
@@ -111,6 +115,7 @@ export const ProductCard = ({
     .splice(0, 5);
 
   const nav = useRouter();
+  const posthog = usePostHog();
   const isNew = product.tags.includes('новий') || product.tags.includes('new');
   const [api2, setApi2] = useState<CarouselApi>();
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -188,6 +193,12 @@ export const ProductCard = ({
         prefetch
         className="absolute inset-0 z-10"
         aria-label={product.title}
+        onClick={() => posthog?.capture('product_card_clicked', {
+          product_handle: product.handle,
+          product_title: product.title,
+          price: product.priceRange?.minVariantPrice?.amount,
+          source,
+        })}
       />
       <CardContent className="flex flex-col p-1 py-3 md:p-2 md:py-2.5  border-0 shadow-none h-full gap-4 bg-transparent">
         {withInnerShadow && (
@@ -225,8 +236,8 @@ export const ProductCard = ({
                           className="object-cover w-full h-full"
                           src={image.url}
                           alt={image.altText || ''}
-                          priority={index === 0 ? true : undefined}
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          loading={index === 0 ? 'eager' : 'lazy'}
+                          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                           fill
                         />
                       </div>
@@ -273,7 +284,12 @@ export const ProductCard = ({
                       onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
-                        nav.push(`/quick/${product.handle}`, { scroll: false });
+                        posthog?.capture('product_quick_view_opened', {
+                          product_handle: product.handle,
+                          source,
+                        });
+                        const currentQuery = window.location.search;
+                        nav.push(`/quick/${product.handle}${currentQuery}`, { scroll: false });
                       }}
                       className='cursor-pointer'
                     >
@@ -302,6 +318,7 @@ export const ProductCard = ({
                     ''
                   }
                   fill
+                  loading="lazy"
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 />
               </div>
@@ -312,7 +329,12 @@ export const ProductCard = ({
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      nav.push(`/quick/${product.handle}`, { scroll: false });
+                      posthog?.capture('product_quick_view_opened', {
+                        product_handle: product.handle,
+                        source,
+                      });
+                      const currentQuery = window.location.search;
+                      nav.push(`/quick/${product.handle}${currentQuery}`, { scroll: false });
                     }}
                   >
                     {t('quickView')}
@@ -353,7 +375,7 @@ export const ProductCard = ({
             </div>
             <div className="mt-auto flex flex-col gap-2">
               {product.metafield &&
-              product.metafield.key === 'znizka' &&
+              product.metafield.key === DISCOUNT_METAFIELD_KEY &&
               product.metafield.value &&
               Number(product.metafield.value) > 0 ? (
                 <div className="flex items-center gap-2 flex-wrap">

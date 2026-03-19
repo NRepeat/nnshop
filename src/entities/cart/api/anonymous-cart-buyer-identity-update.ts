@@ -219,13 +219,16 @@ export const anonymousCartBuyerIdentityUpdate = async ({
 
       if (mergedCartId === null) {
         // Total failure: all retries exhausted — log and notify user, leave both carts intact
-        console.error('[cart-merge] addLinesToCart total failure after retries', {
-          step: 'shopify-cart-lines-add-total-failure',
-          userId: newUser.user.id,
-          anonUserId: anonymousUser.user.id,
-          orderId: undefined,
-          error: 'All 3 retry attempts failed',
-        });
+        console.error(
+          '[cart-merge] addLinesToCart total failure after retries',
+          {
+            step: 'shopify-cart-lines-add-total-failure',
+            userId: newUser.user.id,
+            anonUserId: anonymousUser.user.id,
+            orderId: undefined,
+            error: 'All 3 retry attempts failed',
+          },
+        );
         toast("Couldn't sync your cart. Your items are still saved.");
         return;
       }
@@ -241,13 +244,16 @@ export const anonymousCartBuyerIdentityUpdate = async ({
     if (updatedCartId) {
       finalCartToken = updatedCartId;
     } else {
-      console.error('[cart-merge] updateShopifyBuyerIdentity non-fatal failure', {
-        step: 'shopify-buyer-identity-update-non-fatal',
-        userId: newUser.user.id,
-        anonUserId: anonymousUser.user.id,
-        orderId: undefined,
-        error: 'Buyer identity update failed; continuing with merge',
-      });
+      console.error(
+        '[cart-merge] updateShopifyBuyerIdentity non-fatal failure',
+        {
+          step: 'shopify-buyer-identity-update-non-fatal',
+          userId: newUser.user.id,
+          anonUserId: anonymousUser.user.id,
+          orderId: undefined,
+          error: 'Buyer identity update failed; continuing with merge',
+        },
+      );
     }
 
     // 5c. Wrap all DB mutations in a Prisma transaction (RELY-01)
@@ -282,13 +288,17 @@ export const anonymousCartBuyerIdentityUpdate = async ({
     if (updatedCartId) {
       finalCartToken = updatedCartId;
     } else {
-      console.error('[cart-merge] updateShopifyBuyerIdentity non-fatal failure (no-userCart path)', {
-        step: 'shopify-buyer-identity-update-non-fatal',
-        userId: newUser.user.id,
-        anonUserId: anonymousUser.user.id,
-        orderId: undefined,
-        error: 'Buyer identity update failed; continuing with cart reassignment',
-      });
+      console.error(
+        '[cart-merge] updateShopifyBuyerIdentity non-fatal failure (no-userCart path)',
+        {
+          step: 'shopify-buyer-identity-update-non-fatal',
+          userId: newUser.user.id,
+          anonUserId: anonymousUser.user.id,
+          orderId: undefined,
+          error:
+            'Buyer identity update failed; continuing with cart reassignment',
+        },
+      );
     }
 
     // 6b. Wrap DB mutation in a Prisma transaction (RELY-01)
@@ -304,13 +314,16 @@ export const anonymousCartBuyerIdentityUpdate = async ({
         });
       });
     } catch (error) {
-      console.error('[cart-merge] prisma transaction failed (no-userCart path)', {
-        step: 'prisma-cart-reassign-failed',
-        userId: newUser.user.id,
-        anonUserId: anonymousUser.user.id,
-        orderId: undefined,
-        error: error instanceof Error ? error.message : String(error),
-      });
+      console.error(
+        '[cart-merge] prisma transaction failed (no-userCart path)',
+        {
+          step: 'prisma-cart-reassign-failed',
+          userId: newUser.user.id,
+          anonUserId: anonymousUser.user.id,
+          orderId: undefined,
+          error: error instanceof Error ? error.message : String(error),
+        },
+      );
     }
   }
 };

@@ -4,6 +4,7 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
 } from '@shared/ui/navigation-menu';
+import { DEFAULT_GENDER, GENDERS } from '@shared/config/shop';
 import { getMainMenu } from '../api/getMainMenu';
 import { getCollectionImages } from '../api/getCollectionImages';
 import { getTranslations } from 'next-intl/server';
@@ -14,7 +15,6 @@ import { NavigationItemClient } from './NavigationItemClient';
 import { NavigationTriggerClient } from './NavigationTriggerClient';
 import { NavigationContentLink } from './NavigationContentLink';
 import { NavDropdownContent } from './NavDropdownContent';
-import { stripGenderFromHandle } from '../utils/strip-gender-from-handle';
 import { Button } from '@shared/ui/button';
 import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 
@@ -84,9 +84,11 @@ export const CurrentNavigationSession = async ({
   const headerGender = headersList.get('x-gender');
   const currentGender =
     gender ||
-    (headerGender && ['woman', 'man'].includes(headerGender) ? headerGender : null) ||
-    (['woman', 'man'].includes(cookieGender ?? '') ? cookieGender : null) ||
-    'woman';
+    (headerGender && GENDERS.includes(headerGender as any)
+      ? headerGender
+      : null) ||
+    (GENDERS.includes(cookieGender as any) ? cookieGender : null) ||
+    DEFAULT_GENDER;
   return (
     <Navigation
       gender={currentGender}
@@ -188,11 +190,13 @@ const Navigation = async ({
   const sanityHandles = (
     navDropdowns?.[gender as 'woman' | 'man'] ?? []
   ).flatMap((d) =>
-    (d.columns ?? []).flatMap((col) =>
+   {
+    return  (d.columns ?? []).flatMap((col) =>
       (col.items ?? [])
         .filter((item): item is NonNullable<SanityColumnItem> => item != null)
         .map((item) => item.handle),
-    ),
+    )
+   }
   );
   const shopifyHandles = items.flatMap((item) =>
     item.items
@@ -222,13 +226,17 @@ const Navigation = async ({
   const topBrands =
     brandsMenuItem?.items?.flatMap((sub) =>
       sub.items?.length > 0
-        ? sub.items.map((child) => ({ title: child.title, url: cleanSlug(child.url) }))
+        ? sub.items.map((child) => ({
+            title: child.title,
+            url: cleanSlug(child.url),
+          }))
         : [{ title: sub.title, url: cleanSlug(sub.url) }],
     ) || [];
 
   const withGender = (url: string) => {
-    const stripped = stripGenderFromHandle(cleanSlug(url));
-    const path = stripped === `/${gender}` ? `/${gender}` : `/${gender}${stripped}`;
+    const stripped = cleanSlug(url);
+    const path =
+      stripped === `/${gender}` ? `/${gender}` : `/${gender}${stripped}`;
     return cleanSlug(path);
   };
 
@@ -299,7 +307,9 @@ const Navigation = async ({
                         ? {
                             label: col.outletLink.label,
                             url: col.outletLink.collectionHandle
-                              ? withGender(`/${col.outletLink.collectionHandle}`)
+                              ? withGender(
+                                  `/${col.outletLink.collectionHandle}`,
+                                )
                               : (col.outletLink.url ?? '#'),
                           }
                         : null,
@@ -475,7 +485,7 @@ const Navigation = async ({
                   ))}
                 </ul>
                 <div className="mt-3 border-t border-border pt-3">
-                  <NavigationItemClient href="/brands" className='px-0'>
+                  <NavigationItemClient href="/brands" className="px-0">
                     <span className="text-sm font-medium hover:underline transition-all px-4">
                       {t('allBrands')} →
                     </span>

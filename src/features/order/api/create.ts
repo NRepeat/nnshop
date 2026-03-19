@@ -8,6 +8,7 @@
 // it does NOT affect Server Action CSRF protection.
 'use server';
 import { getCart } from '@entities/cart/api/get';
+import { DISCOUNT_METAFIELD_KEY, DEFAULT_CURRENCY_CODE, DEFAULT_COUNTRY_CODE } from '@shared/config/shop';
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
@@ -119,31 +120,39 @@ export async function createOrder(
       };
     }
 
-    const currencyCode = cart.cost.totalAmount.currencyCode || 'UAH';
+    const currencyCode = cart.cost.totalAmount.currencyCode || DEFAULT_CURRENCY_CODE;
 
     // Calculate znizka-discounted subtotal (same logic as Payment.tsx)
     let localTotal = 0;
+    let shopifySubtotal = 0;
     for (const edge of cart.lines.edges as any[]) {
       const line = edge.node;
       const price = parseFloat(line.cost.amountPerQuantity.amount);
       const sale =
         Number(
           line.merchandise.product.metafields?.find(
-            (m: any) => m?.key === 'znizka',
+            (m: any) => m?.key === DISCOUNT_METAFIELD_KEY,
           )?.value || '0',
         ) || 0;
       const discountedPrice = sale > 0 ? price * (1 - sale / 100) : price;
       localTotal += discountedPrice * line.quantity;
+      shopifySubtotal += price * line.quantity;
     }
 
     const applicableDiscounts = (cart.discountCodes ?? []).filter(
       (d) => d.applicable,
     );
     const hasApplicableDiscount = applicableDiscounts.length > 0;
-    const shopifyTotal = Number(cart.cost.totalAmount.amount);
-    const goodsTotal = hasApplicableDiscount
-      ? Math.min(localTotal, shopifyTotal)
-      : localTotal;
+    // cart.cost.totalAmount does not reflect discount codes — use discountAllocations instead
+    const cartDiscountTotal = ((cart as any).discountAllocations || []).reduce(
+      (sum: number, d: any) => sum + Number(d.discountedAmount.amount),
+      0,
+    );
+    // Shopify calculates the discount on original prices; derive rate and apply to sale subtotal
+    const discountRate = hasApplicableDiscount && shopifySubtotal > 0
+      ? cartDiscountTotal / shopifySubtotal
+      : 0;
+    const goodsTotal = localTotal * (1 - discountRate);
 
     // Scale line item prices so order total matches what the customer pays
     const discountRatio = localTotal > 0 ? goodsTotal / localTotal : 1;
@@ -163,7 +172,7 @@ export async function createOrder(
         // Get discount percentage from metafield
         const sale =
           Number(
-            product.metafields?.find((m: any) => m?.key === 'znizka')?.value ||
+            product.metafields?.find((m: any) => m?.key === DISCOUNT_METAFIELD_KEY)?.value ||
               '0',
           ) || 0;
 
@@ -224,7 +233,7 @@ export async function createOrder(
       shippingAddress = {
         address1: point ? `Самовивіз: ${point.name}, ${point.address}` : 'Самовивіз',
         city: point?.city || 'Запоріжжя',
-        country: 'UA',
+        country: DEFAULT_COUNTRY_CODE,
         firstName: completeCheckoutData.contactInfo.name || '',
         lastName: completeCheckoutData.contactInfo.lastName || '',
         phone: formattedPhone,
@@ -240,7 +249,7 @@ export async function createOrder(
       shippingAddress = {
         address1: dept?.shortName || selectedDelivery?.address1 || '',
         city: dept?.addressParts?.city || selectedDelivery?.city || '',
-        country: 'UA',
+        country: DEFAULT_COUNTRY_CODE,
         firstName: completeCheckoutData.contactInfo.name || '',
         lastName: completeCheckoutData.contactInfo.lastName || '',
         phone: formattedPhone,
@@ -296,19 +305,6 @@ export async function createOrder(
     if (completeCheckoutData.contactInfo.preferViber) {
       noteLines.push('⚠️ Не телефонуйте, надішліть повідомлення у Viber');
     }
-    // Append brand info per line item for CRM visibility
-    const vendorLines: string[] = [];
-    for (const edge of cart.lines.edges as any[]) {
-      const vendor = edge.node.merchandise.product?.vendor;
-      const title = edge.node.merchandise.product?.title;
-      if (vendor && vendor !== title) {
-        vendorLines.push(`${title}: ${vendor}`);
-      }
-    }
-    if (vendorLines.length > 0) {
-      noteLines.push(`Бренди: ${vendorLines.join(', ')}`);
-    }
-
     if (noteLines.length > 0) {
       order.note = noteLines.join('\n');
     }
@@ -376,6 +372,7 @@ export async function createOrder(
           orderName: createdOrder.name,
           userId: session.user.id,
           draft: false,
+          usedDiscountCodes: applicableDiscounts.map((d) => d.code.toUpperCase()),
         },
       });
     } catch (dbError) {

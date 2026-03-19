@@ -13,9 +13,12 @@ import { draftMode } from 'next/headers';
 import { Suspense } from 'react';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { ScrollDirectionProvider } from '@shared/ui/ScrollDirectionProvider';
+import { SessionBanner } from '@features/session-banner';
 import { generateOrganizationJsonLd } from '@shared/lib/seo/jsonld';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import Script from 'next/script';
+
 const jostSans = Onest({
   variable: '--font-jost-sans',
   subsets: ['latin', 'latin-ext', 'cyrillic'],
@@ -90,8 +93,27 @@ export default async function RootLayout(props: RootProps) {
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://cdn.shopify.com" />
-        <script src="https://cdn.pulse.is/livechat/loader.js" data-live-chat-id="6683a3f051e3db46980f8c09" async></script>
+        <Script
+          id="google-tag-manager"
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-05RL9JZJKK"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive" async>
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-05RL9JZJKK');
+          `}
+        </Script>
+        <Script
+          id="pulse-live-chat"
+          src="/assets/pulse/livechat/loader.js"
+          data-live-chat-id="6683a3f051e3db46980f8c09"
+          async
+        ></Script>
         <JsonLd data={generateOrganizationJsonLd()} />
         <meta
           name="google-site-verification"
@@ -101,14 +123,17 @@ export default async function RootLayout(props: RootProps) {
       <body className={`${jostSans.variable} antialiased `}>
         <Providers>
           <ScrollDirectionProvider>
-          <Header locale={locale} />
-          <main>{children}</main>
+            <Header locale={locale} />
+            <main>{children}</main>
 
-          {modal && <div id="modal-slot">{modal}</div>}
-          {auth && <div id="auth-slot">{auth}</div>}
-          <Suspense>
-            <Footer locale={locale} />
-          </Suspense>
+            {modal && <div id="modal-slot">{modal}</div>}
+            <Suspense>
+              <SessionBanner locale={locale} />
+            </Suspense>
+            {auth && <div id="auth-slot">{auth}</div>}
+            <Suspense>
+              <Footer locale={locale} />
+            </Suspense>
           </ScrollDirectionProvider>
         </Providers>
       </body>

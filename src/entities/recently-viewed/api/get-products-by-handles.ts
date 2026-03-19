@@ -1,6 +1,7 @@
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 
 const PRODUCT_FIELDS = `
   id
@@ -11,7 +12,7 @@ const PRODUCT_FIELDS = `
   vendor
   totalInventory
   tags
-  metafield(namespace:"custom",key:"znizka"){
+  metafield(namespace:"custom",key:"${DISCOUNT_METAFIELD_KEY}"){
     value
     namespace
     key

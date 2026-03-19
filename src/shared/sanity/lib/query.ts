@@ -262,7 +262,7 @@ export const POST_WITH_FALLBACK_QUERY =
 }`);
 
 export const PAGE_QUERY =
-  defineQuery(`*[_type == "page" && slug == $slug][0]{
+  defineQuery(`*[_type == "page" && slug == $slug && language == $language][0]{
   ...,
   "seo": {
   "title": coalesce(seo.title, title, ""),
@@ -533,6 +533,7 @@ export const HOME_PAGE =
               title,
               description,
               "videoFile": videoFile.asset->url,
+              "videoFileWebm": videoFileWebm.asset->url,
               "videoPoster": videoPoster.asset->url,
               videoUrl,
               videoTitle,
@@ -1087,21 +1088,21 @@ export const HEADER_QUERY = defineQuery(`
         columns[]{
           _key,
           "title": coalesce(title[$locale], title.uk, title.ru, collection->titles[$locale], collection->titles.uk, collection->store.title, ""),
-          "url": collection->store.slug.current,
+          "url": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),
           items[]->{
             _id,
             "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, titles[$locale], titles.uk, store.title, ""),
-            "handle": store.slug.current,
+            "handle": coalesce(handles[$locale]),
             "navTitleColor": navTitleColor
           },
           "outletLink": outletLink {
             "label": coalesce(label[$locale], label.uk, label.ru, ""),
-            "collectionHandle": collection->store.slug.current,
+            "collectionHandle": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),
             url
           },
           "actionButton": actionButton {
             "label": coalesce(label[$locale], label.uk, label.ru, ""),
-            "collectionHandle": collection->store.slug.current,
+            "collectionHandle": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),
             url
           }
         }
@@ -1112,21 +1113,21 @@ export const HEADER_QUERY = defineQuery(`
         columns[]{
           _key,
           "title": coalesce(title[$locale], title.uk, title.ru, collection->titles[$locale], collection->titles.uk, collection->store.title, ""),
-          "url": collection->store.slug.current,
+          "url": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),
           items[]->{
             _id,
             "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, titles[$locale], titles.uk, store.title, ""),
-            "handle": store.slug.current,
+            "handle": coalesce(handles[$locale]),
             "navTitleColor": navTitleColor
           },
           "outletLink": outletLink {
             "label": coalesce(label[$locale], label.uk, label.ru, ""),
-            "collectionHandle": collection->store.slug.current,
+            "collectionHandle": coalesce(collection->handles[$locale]),
             url
           },
           "actionButton": actionButton {
             "label": coalesce(label[$locale], label.uk, label.ru, ""),
-            "collectionHandle": collection->store.slug.current,
+            "collectionHandle": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),
             url
           }
         }
@@ -1154,6 +1155,29 @@ export const FOOTER_QUERY = defineQuery(`
     }
   }
 `);
+
+export const PROMOTION_BANNER_QUERY = defineQuery(
+  `*[_type == "promotionBanner" && enabled == true][0]{
+    _id,
+    enabled,
+    image,
+    "imageAlt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru),
+    "title": coalesce(title[$language], title.uk, title.ru),
+    "description": coalesce(description[$language], description.uk, description.ru),
+    discountCode,
+    actionButton {
+      "label": coalesce(label[$language], label.uk, label.ru),
+      url
+    },
+    behavior {
+      trigger,
+      delaySeconds,
+      scrollPercent,
+      cooldownHours,
+      showOnce
+    }
+  }`
+);
 
 export const COLLECTION_IS_BRAND_QUERY = defineQuery(
   `*[_type == "collection" && (store.slug.current == $handle || handles.uk == $handle || handles.ru == $handle)][0]{ 

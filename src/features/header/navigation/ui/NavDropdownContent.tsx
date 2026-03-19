@@ -16,12 +16,6 @@ type DefaultImage = {
   imageButtonUrl?: string | null;
 };
 
-const NAV_COLOR_MAP: Record<string, string> = {
-  red: 'text-red-500',
-  orange: 'text-orange-500',
-  green: 'text-green-600',
-  blue: 'text-blue-600',
-};
 
 type ChildItem = {
   title: string;

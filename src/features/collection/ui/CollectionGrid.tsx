@@ -31,7 +31,19 @@ import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
 import { prisma } from '@shared/lib/prisma';
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@shared/ui/empty';
 import { PackageSearch } from 'lucide-react';
+import { toFilterSlug } from '@shared/lib/filterSlug';
+import { filterProducts } from '@features/collection/lib/filterProducts';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
+
+function getEffectivePrice(product: { priceRange?: { maxVariantPrice?: { amount: any } }; metafield?: { key?: string; value?: string } | null }): number {
+  const base = parseFloat(product.priceRange?.maxVariantPrice?.amount ?? '0');
+  const discount =
+    product.metafield?.key === DISCOUNT_METAFIELD_KEY && product.metafield?.value
+      ? parseFloat(product.metafield.value)
+      : 0;
+  return base * (1 - discount / 100);
+}
 
 export const CollectionGrid = async ({
   params,
@@ -48,6 +60,8 @@ export const CollectionGrid = async ({
   ]);
   const { locale, slug, gender } = awaitedParams;
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
+  
+  const limit = parseInt((awaitedSearchParams.limit as string) || '20', 10);
 
   const allSlugs = await getCollectionSlugs();
   const resolvedHandle = resolveCollectionHandle(slug, gender, new Set(allSlugs));
@@ -60,7 +74,7 @@ export const CollectionGrid = async ({
     }),
     getCollection({
       handle: resolvedHandle,
-      first: 20,
+      first: limit,
       locale: locale,
       searchParams: awaitedSearchParams,
       gender,
@@ -79,13 +93,7 @@ export const CollectionGrid = async ({
   const { collection, alternateHandle } = currentData;
   const canonicalHandle = collection.collection?.handle;
 
-  // 1. If the handle in the URL is actually for the other locale (Shopify confirmed)
-  if (canonicalHandle && resolvedHandle === alternateHandle && resolvedHandle !== canonicalHandle) {
-    const targetLocale = locale === 'ru' ? 'uk' : 'ru';
-    redirect(`/${targetLocale}/${gender}/${resolvedHandle}`);
-  }
-
-  // 2. SEO REDIRECT: If the requested handle is not canonical for current locale (e.g. old handle)
+  // SEO REDIRECT: If the requested handle is not canonical for current locale (e.g. old handle or other-locale handle)
   if (canonicalHandle && resolvedHandle !== canonicalHandle) {
     redirect(`/${locale}/${gender}/${canonicalHandle}`);
   }
@@ -104,15 +112,50 @@ export const CollectionGrid = async ({
     '',
   );
 
-  const rawProducts =
-    collection.collection?.products.edges
-      .map((edge) => edge.node)
-      .filter(
-        (edge) =>
-          ((edge.priceRange?.minVariantPrice?.amount && Number(edge.priceRange.minVariantPrice.amount) > 0) ||
-            (edge.priceRange?.maxVariantPrice?.amount && Number(edge.priceRange.maxVariantPrice.amount) > 0)) &&
-          (edge.totalInventory === null || edge.totalInventory === undefined || edge.totalInventory > 0),
-      ) || [];
+  // Build selectedSizeSlugs from URL params (direct, independent of filterDefs)
+  const selectedSizeSlugs = new Set<string>();
+  if (hasFilters && awaitedSearchParams.rozmir) {
+    const vals = Array.isArray(awaitedSearchParams.rozmir)
+      ? awaitedSearchParams.rozmir
+      : (awaitedSearchParams.rozmir as string).split(';');
+    vals.forEach((v) => selectedSizeSlugs.add(v));
+  }
+
+  // Build optionGroups for variantOption filters (color, etc.) via filterDefs
+  const optionGroups = new Map<string, { name: string; values: Set<string> }>();
+  if (hasFilters) {
+    const filterDefs = collection.collection?.products.filters ?? [];
+    for (const [key, value] of Object.entries(awaitedSearchParams)) {
+      if (key === 'minPrice' || key === 'maxPrice' || key === 'sort' || key === 'rozmir') continue;
+      const definition = filterDefs.find((f) => f.id.endsWith(`.${key}`));
+      if (!definition) continue;
+      const values = Array.isArray(value) ? value : (value as string).split(';');
+      values.forEach((v) => {
+        const filterValue = definition.values.find((def) => toFilterSlug(def.label) === v);
+        if (filterValue) {
+          try {
+            const parsed = JSON.parse(filterValue.input);
+            if (parsed.variantOption) {
+              if (!optionGroups.has(key)) optionGroups.set(key, { name: parsed.variantOption.name, values: new Set() });
+              optionGroups.get(key)!.values.add(parsed.variantOption.value);
+            }
+          } catch {}
+        }
+      });
+    }
+  }
+
+  const allEdgeProducts = collection.collection?.products.edges.map((e) => e.node) ?? [];
+  const rawProducts = filterProducts(allEdgeProducts, selectedSizeSlugs, optionGroups);
+
+  // Fetch unfiltered filter definitions for sidebar (separate from filtered collection response)
+  let initialFilters = collection.collection?.products.filters;
+  if (hasFilters) {
+    initialFilters = await getCollectionFilters({
+      handle: resolvedHandle,
+      locale: locale,
+    });
+  }
 
   // Batch check favorites
   let favoriteProductIds = new Set<string>();
@@ -127,19 +170,18 @@ export const CollectionGrid = async ({
     favoriteProductIds = new Set(favorites.map((f) => f.productId));
   }
 
+  const sortParam = awaitedSearchParams.sort as string | undefined;
+  if (sortParam === 'price-asc' || sortParam === 'price-desc') {
+    rawProducts.sort((a, b) => {
+      const diff = getEffectivePrice(a) - getEffectivePrice(b);
+      return sortParam === 'price-asc' ? diff : -diff;
+    });
+  }
+
   const productsWithFav = rawProducts.map((product) => ({
     ...product,
     isFav: favoriteProductIds.has(product.id),
   }));
-
-  // Only fetch initialData if we actually have filters to avoid extra request
-  let initialFilters = collection.collection?.products.filters;
-  if (hasFilters) {
-    initialFilters = await getCollectionFilters({
-      handle: resolvedHandle,
-      locale: locale,
-    });
-  }
 
   const targetLocale = locale === 'ru' ? 'uk' : 'ru';
   const paths = {
@@ -147,6 +189,17 @@ export const CollectionGrid = async ({
     [targetLocale]: `/${gender}/${alternateHandle}`,
   };
   const pageInfo = collection.collection?.products.pageInfo;
+
+  const serializableOptionGroups: Record<
+    string,
+    { name: string; values: string[] }
+  > = {};
+  optionGroups.forEach((group, key) => {
+    serializableOptionGroups[key] = {
+      name: group.name,
+      values: Array.from(group.values),
+    };
+  });
 
   return (
     <>
@@ -188,11 +241,6 @@ export const CollectionGrid = async ({
         <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row justify-between lg:items-end gap-6">
           <div className="flex flex-col gap-3.5 w-full">
             {displayTitle && <h1 className="text-2xl font-bold">{displayTitle}</h1>}
-            {collection.collection?.description && (
-              <h2 className="text-sm text-muted-foreground font-normal">
-                {collection.collection.description}
-              </h2>
-            )}
             {collection.collection?.products.filters && (
               <Suspense fallback={null}>
                 <ActiveFiltersCarousel
@@ -239,11 +287,14 @@ export const CollectionGrid = async ({
             </div>
           ) : (
             <ClientGridWrapper
-              key={`${resolvedHandle}-${JSON.stringify(awaitedSearchParams)}`}
               initialPageInfo={pageInfo as PageInfo}
               // @ts-ignore
               initialProducts={productsWithFav as Product[]}
               handle={resolvedHandle}
+              gender={gender}
+              sort={sortParam}
+              selectedSizeSlugs={Array.from(selectedSizeSlugs)}
+              optionGroups={serializableOptionGroups}
             />
           )}
         </div>

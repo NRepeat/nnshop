@@ -7,6 +7,7 @@ import {
   PredictiveSearchLimitScope,
   SearchableField,
 } from '@shared/lib/shopify/types/storefront.types';
+import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -99,7 +100,7 @@ const PREDICTIVE_SEARCH_QUERY = `#graphql
 `;
 
 export async function POST(req: NextRequest) {
-  const { query } = await req.json();
+  const { query, locale } = await req.json();
 
   if (!query) {
     return NextResponse.json({ error: 'Query is required' }, { status: 400 });
@@ -111,6 +112,7 @@ export async function POST(req: NextRequest) {
       PredictiveSearchQueryVariables
     >({
       query: PREDICTIVE_SEARCH_QUERY,
+      language: (locale?.toUpperCase() as StorefrontLanguageCode) || 'UK',
       variables: {
         limit: 10,
         limitScope: 'EACH' as PredictiveSearchLimitScope,

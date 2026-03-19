@@ -21,7 +21,7 @@ export default async function Image() {
   try {
     const logoData = await sanityFetch({
       query: SITE_LOGO_QUERY,
-      revalidate: 3600,
+      tags: ['siteSettings'],
     });
     logoUrl = logoData?.logo?.url ? urlFor(logoData.logo.url).width(120).height(120).url() : null;
   } catch {

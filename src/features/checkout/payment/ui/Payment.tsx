@@ -7,6 +7,7 @@ import { redirect, unstable_rethrow } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
+import { DISCOUNT_METAFIELD_KEY, DEFAULT_CURRENCY_CODE } from '@shared/config/shop';
 
 export default async function Payment({
   locale,
@@ -25,7 +26,7 @@ export default async function Payment({
   }
 
   let cartAmount = 0;
-  let currency = 'UAH';
+  let currency = DEFAULT_CURRENCY_CODE;
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
@@ -44,20 +45,27 @@ export default async function Payment({
       const lines = cartResult.cart.lines.edges;
       // Calculate znizka-discounted subtotal
       let localTotal = 0;
+      let shopifySubtotal = 0;
       for (const edge of lines) {
         const line = edge.node;
         const price = Number(line.cost.amountPerQuantity.amount);
         const sale = Number(
-          line.merchandise.product.metafields?.find((m: any) => m?.key === 'znizka')?.value || '0'
+          line.merchandise.product.metafields?.find((m: any) => m?.key === DISCOUNT_METAFIELD_KEY)?.value || '0'
         ) || 0;
         const discountedPrice = sale > 0 ? price * (1 - sale / 100) : price;
         localTotal += discountedPrice * line.quantity;
+        shopifySubtotal += price * line.quantity;
       }
       const hasApplicableDiscount = cartResult.cart.discountCodes?.some((d) => d.applicable);
-      // Use the minimum of the two to ensure the customer always pays the lower amount
-      const shopifyTotal = Number(cartResult.cart.cost.totalAmount.amount);
-      const goodsTotal = hasApplicableDiscount ? Math.min(localTotal, shopifyTotal) : localTotal;
-      cartAmount = goodsTotal;
+      // cart.cost.totalAmount does not reflect discount codes — use discountAllocations instead
+      const cartDiscountTotal = (cartResult.cart.discountAllocations || []).reduce(
+        (sum: number, d: any) => sum + Number(d.discountedAmount.amount),
+        0,
+      );
+      // Shopify calculates the discount on original prices; derive rate and apply to sale subtotal
+      const discountRate = hasApplicableDiscount && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
+      const discountAmount = localTotal * discountRate;
+      cartAmount = Math.max(0, localTotal - discountAmount);
     }
     if (cartAmount <= 0) {
       redirect('/cart');

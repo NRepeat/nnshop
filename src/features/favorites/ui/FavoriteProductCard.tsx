@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { cn } from '@shared/lib/utils';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 
 type FavoriteProductCardProps = {
   product: Product;
@@ -27,7 +28,7 @@ export const FavoriteProductCard = ({ product }: FavoriteProductCardProps) => {
 
   const hasDiscount =
     product.metafield &&
-    product.metafield.key === 'znizka' &&
+    product.metafield.key === DISCOUNT_METAFIELD_KEY &&
     product.metafield.value &&
     Number(product.metafield.value) > 0;
 

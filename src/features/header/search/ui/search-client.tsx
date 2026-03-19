@@ -9,6 +9,7 @@ import { useDebounce } from 'use-debounce';
 import { PredictiveSearchQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { usePostHog } from 'posthog-js/react';
 import { Link, useRouter } from '@shared/i18n/navigation';
+import { useLocale } from 'next-intl';
 import {
   Empty,
   EmptyDescription,
@@ -26,6 +27,7 @@ type PredictiveSearchResult = NonNullable<
 
 export const SearchClient = ({ className }: { className?: string }) => {
   const t = useTranslations('Search');
+  const locale = useLocale();
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -42,7 +44,10 @@ export const SearchClient = ({ className }: { className?: string }) => {
 
   const handleSearch = () => {
     if (query) {
-      posthog?.capture('search_submitted', { query });
+      posthog?.capture('search_submitted', {
+        query,
+        results_count: results?.products?.length ?? null,
+      });
       router.push(`/search?q=${query}`);
       setIsOpen(false);
     }
@@ -73,12 +78,18 @@ export const SearchClient = ({ className }: { className?: string }) => {
   }, [isOpen]);
 
   useEffect(() => {
+    if (!loading && results && debouncedQuery && results.products?.length === 0) {
+      posthog?.capture('search_no_results', { query: debouncedQuery });
+    }
+  }, [loading, results, debouncedQuery, posthog]);
+
+  useEffect(() => {
     if (debouncedQuery.length >= 1) {
       setLoading(true);
       const controller = new AbortController();
       fetch('/api/predictive-search', {
         method: 'POST',
-        body: JSON.stringify({ query: debouncedQuery }),
+        body: JSON.stringify({ query: debouncedQuery, locale }),
         headers: {
           'Content-Type': 'application/json',
         },

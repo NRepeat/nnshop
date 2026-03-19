@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useTransition, useEffect, useRef } from 'react';
+import { usePostHog } from 'posthog-js/react';
+import { DEFAULT_CURRENCY_CODE } from '@shared/config/shop';
 import { toast } from 'sonner';
 import { Button } from '@shared/ui/button';
 import addToCart from '../api/add-to-cart';
@@ -61,22 +63,25 @@ export function AddToCartButton({
   disabled?: boolean;
   onSuccess?: () => void;
 }) {
+  const posthog = usePostHog();
   const [isPending, setIsPending] = useState(false);
   const [isRefreshing, startRefresh] = useTransition();
-  const [shouldOpenCart, setShouldOpenCart] = useState(false);
+  const [pendingActions, setPendingActions] = useState(false);
   const scrollYRef = useRef(0);
+  const onSuccessRef = useRef(onSuccess);
+  onSuccessRef.current = onSuccess;
   const router = useRouter();
   const t = useTranslations('ProductPage');
   const { openCart } = useCartUIStore();
 
-  // Open cart only after refresh completes, then restore scroll position
   useEffect(() => {
-    if (!isRefreshing && shouldOpenCart) {
+    if (!isRefreshing && pendingActions) {
       window.scrollTo({ top: scrollYRef.current, behavior: 'instant' });
       openCart();
-      setShouldOpenCart(false);
+      onSuccessRef.current?.();
+      setPendingActions(false);
     }
-  }, [isRefreshing, shouldOpenCart, openCart]);
+  }, [isRefreshing, pendingActions, openCart]);
 
   const isProductAvailable = selectedVariant
     ? selectedVariant?.quantityAvailable !== 0
@@ -118,26 +123,40 @@ export function AddToCartButton({
       formData.append('productTitle', product?.title ?? '');
       formData.append('productHandle', product?.handle ?? '');
       formData.append('price', selectedVariant?.price?.amount ?? product?.priceRange?.maxVariantPrice?.amount ?? '');
-      formData.append('currency', selectedVariant?.price?.currencyCode ?? product?.priceRange?.maxVariantPrice?.currencyCode ?? 'UAH');
+      formData.append('currency', selectedVariant?.price?.currencyCode ?? product?.priceRange?.maxVariantPrice?.currencyCode ?? DEFAULT_CURRENCY_CODE);
       formData.append('size', selectedVariant?.selectedOptions?.find(o => ['розмір','размер','size'].includes(o.name.toLowerCase()))?.value ?? '');
       formData.append('$current_url', window.location.href);
 
       const result = await addToCart(null, formData);
 
       if (result.success) {
+        posthog?.capture('add_to_cart', {
+          product_handle: product?.handle,
+          product_title: product?.title,
+          product_id: product?.id,
+          variant_id: selectedVariant?.id,
+          size: selectedVariant?.selectedOptions?.find(o => ['розмір', 'размер', 'size'].includes(o.name.toLowerCase()))?.value ?? null,
+          price: selectedVariant?.price?.amount ?? product?.priceRange?.maxVariantPrice?.amount,
+          currency: selectedVariant?.price?.currencyCode ?? product?.priceRange?.maxVariantPrice?.currencyCode,
+          $current_url: window.location.href,
+        });
         toast.success(t('addedToCart'));
         scrollYRef.current = window.scrollY;
-        setShouldOpenCart(true);
+        setPendingActions(true);
         startRefresh(() => {
           router.refresh();
         });
-        onSuccess?.();
       } else {
         const errorMessage =
           result.message === 'No products available'
             ? t('productNotAvailable')
             : result.message || t('failedToAdd');
         toast.error(errorMessage);
+        posthog?.capture('add_to_cart_failed', {
+          product_handle: product?.handle,
+          variant_id: selectedVariant?.id,
+          reason: result.message,
+        });
       }
     } catch (error) {
       console.error('Error adding to cart:', error);

@@ -17,12 +17,14 @@ import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import Image from 'next/image';
 
 export const Thank = async ({
-  orderId,
-  locale,
+  params,
 }: {
-  orderId: string;
-  locale: string;
+  params: Promise<{
+    orderId: string;
+    locale: string;
+  }>;
 }) => {
+  const { locale, orderId } = await params;
   const t = await getTranslations({ locale, namespace: 'ThankYouPage' });
 
   const session = await auth.api.getSession({ headers: await headers() });

@@ -1,6 +1,5 @@
 import { getTranslations } from 'next-intl/server';
 import { AuthViewRenderer } from '@/features/auth/ui/auth-view-renderer';
-import { Suspense } from 'react';
 
 const AuthSession = async ({
   params,
@@ -23,9 +22,5 @@ export default async function AuthPage({
 }: {
   params: Promise<{ authView: string; locale: string }>;
 }) {
-  return (
-    <Suspense>
-      <AuthSession params={params} />
-    </Suspense>
-  );
+  return <AuthSession params={params} />;
 }

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { isValidPhone, formatPhoneE164 } from '@shared/lib/validation/phone';
+import { DEFAULT_COUNTRY_CODE } from '@shared/config/shop';
 
 const CYRILLIC_NAME_REGEX = /^[а-яА-ЯёЁіІїЇєЄґҐ'\-\s]+$/;
 
@@ -59,7 +60,7 @@ export const contactInfoSchema = z.object({
     .string()
     .min(2, 'Country code is required')
     .max(2, 'Country code must be 2 characters')
-    .default('UA'),
+    .default(DEFAULT_COUNTRY_CODE),
   preferViber: z.boolean().default(false),
 });
 

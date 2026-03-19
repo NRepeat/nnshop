@@ -8,6 +8,7 @@ import { Button } from '@shared/ui/button';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 
 const CartSheet = async ({ locale }: { locale: string }) => {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -26,7 +27,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
 
     // Get sale percentage from metafield
     const sale = Number(
-      product.metafields.find((m) => m?.key === 'znizka')?.value || '0',
+      product.metafields.find((m) => m?.key === DISCOUNT_METAFIELD_KEY)?.value || '0',
     ) || 0;
 
     // Get original price from cart
@@ -78,14 +79,17 @@ const CartSheet = async ({ locale }: { locale: string }) => {
   const discountCodes = (cart?.cart?.discountCodes || []).filter((d) => d.applicable);
   const hasApplicableDiscount = discountCodes.length > 0;
 
-  // subtotalAmount = locally calculated total with znizka applied
   const subtotalAmount = estimateTotal || 0;
-  // Use Shopify's authoritative total (based on full prices minus code discount)
-  const shopifyTotal = Number(cart?.cart?.cost.totalAmount.amount ?? subtotalAmount);
-  // Total shown: Shopify total when code applied, znizka subtotal otherwise
-  const totalAmount = hasApplicableDiscount ? shopifyTotal : subtotalAmount;
-  // Effective discount = what user saves on top of znizka prices
-  const discountAmount = hasApplicableDiscount ? Math.max(0, subtotalAmount - shopifyTotal) : 0;
+  // cart.cost.totalAmount does not reflect discount codes — use discountAllocations instead
+  const cartDiscountTotal = (cart?.cart?.discountAllocations || []).reduce(
+    (sum, d) => sum + Number(d.discountedAmount.amount),
+    0,
+  );
+  // Shopify calculates the discount on original prices; derive rate and apply to sale subtotal
+  const shopifySubtotal = mockProducts?.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0) || 0;
+  const discountRate = hasApplicableDiscount && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
+  const discountAmount = subtotalAmount * discountRate;
+  const totalAmount = Math.max(0, subtotalAmount - discountAmount);
 
   return (
     <>

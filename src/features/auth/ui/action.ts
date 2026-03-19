@@ -116,6 +116,7 @@ export const onShopifySignIn = async () => {
 export const createSignInHandler = (
   tErrors: (key: string) => string,
   tSuccess: (key: string) => string,
+  callbackUrl?: string,
 ) => {
   return async (data: SignInFormData) => {
     try {
@@ -129,11 +130,11 @@ export const createSignInHandler = (
         return;
       }
 
-      posthog.identify(data.email, { email: data.email });
       posthog.capture('user_signed_in', { method: 'email' });
       toast.success(tSuccess('welcomeBack'));
-      window.location.href = '/';
+      window.location.href = callbackUrl || '/';
     } catch (error) {
+      if (!(error instanceof Error)) return;
       posthog.captureException(error);
       console.error('Sign in error:', error);
       toast.error(tErrors('unexpectedError'));
@@ -144,6 +145,7 @@ export const createSignInHandler = (
 export const createSignUpHandler = (
   tErrors: (key: string) => string,
   tSuccess: (key: string) => string,
+  callbackUrl?: string,
 ) => {
   return async (data: SignUpFormData) => {
     try {
@@ -163,11 +165,11 @@ export const createSignUpHandler = (
         return;
       }
 
-      posthog.identify(data.email, { email: data.email });
       posthog.capture('user_signed_up', { method: 'email' });
       toast.success(tSuccess('accountCreated'));
-      window.location.href = '/';
+      window.location.href = callbackUrl || '/';
     } catch (error) {
+      if (!(error instanceof Error)) return;
       posthog.captureException(error);
       console.error('Sign up error:', error);
       toast.error(tErrors('unexpectedError'));
@@ -175,14 +177,19 @@ export const createSignUpHandler = (
   };
 };
 
-export const createGoogleSignInHandler = (tErrors: (key: string) => string) => {
+export const createGoogleSignInHandler = (
+  tErrors: (key: string) => string,
+  callbackUrl?: string,
+) => {
   return async () => {
     try {
       await client.signIn.social({
         provider: 'google',
-        callbackURL: '/',
+        callbackURL: callbackUrl || '/uk/woman',
       });
     } catch (error) {
+      // DOM Events thrown when page navigation interrupts JS are not real errors
+      if (!(error instanceof Error)) return;
       posthog.captureException(error);
       console.error('Google sign in error:', error);
       toast.error(tErrors('googleSignInFailed'));
@@ -199,6 +206,7 @@ export const createShopifySignInHandler = (
         provider: 'shopify',
       });
     } catch (error) {
+      if (!(error instanceof Error)) return;
       posthog.captureException(error);
       console.error('Shopify sign in error:', error);
       toast.error(tErrors('shopifySignInFailed'));

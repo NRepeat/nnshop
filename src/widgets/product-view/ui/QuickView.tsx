@@ -22,6 +22,8 @@ export const QuickView = ({
     <Dialog open={open} onOpenChange={handleOpen}>
       <DialogTitle>{/*<div>{product.title}</div>*/}</DialogTitle>
       <DialogContent
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        aria-describedby={undefined}
         className={cn(
           'max-w-3xl lg:max-w-5xl  max-h-[90vh] overflow-y-auto rounded  w-[90%]',
           className,

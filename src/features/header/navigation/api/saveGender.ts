@@ -3,6 +3,7 @@
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { headers } from 'next/headers';
+import { DEFAULT_GENDER } from '@shared/config/shop';
 
 export async function saveGenderPreference(gender: string) {
   try {
@@ -36,7 +37,7 @@ export async function getGenderPreference(): Promise<string> {
 
     // Если пользователь не авторизован, вернём дефолтное значение
     if (!session?.user) {
-      return 'woman';
+      return DEFAULT_GENDER;
     }
 
     const user = await prisma.user.findUnique({
@@ -44,9 +45,9 @@ export async function getGenderPreference(): Promise<string> {
       select: { preferredGender: true },
     });
 
-    return user?.preferredGender || 'woman';
+    return user?.preferredGender || DEFAULT_GENDER;
   } catch (error) {
     console.error('Failed to get gender preference:', error);
-    return 'woman';
+    return DEFAULT_GENDER;
   }
 }

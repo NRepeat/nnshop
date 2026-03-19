@@ -17,7 +17,7 @@ export const RecentlyViewedSection = () => {
   useEffect(() => {
     startTransition(async () => {
       try {
-        const res = await fetch(`/api/recently-viewed?locale=${locale}`);
+        const res = await fetch(`/api/recently-viewed?locale=${locale}`, { cache: 'no-store' });
         const data: Product[] = await res.json();
         if (Array.isArray(data) && data.length > 0) setProducts(data);
       } catch {}
@@ -50,6 +50,7 @@ export const RecentlyViewedSection = () => {
       withCarousel={false}
       withQuick={false}
       className="hover:shadow rounded-b rounded-t pt-0 px-0"
+      source="recently_viewed"
     />
   ));
 

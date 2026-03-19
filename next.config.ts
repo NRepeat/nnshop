@@ -1,19 +1,15 @@
 import { fetchRedirects } from '@/shared/sanity/lib/fetchRedirects';
 import { withPostHogConfig } from '@posthog/nextjs-config';
-import bundleAnalyzer from '@next/bundle-analyzer';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
-
-const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
-  analyzerMode: 'static',
-  openAnalyzer: false,
-});
 
 const nextConfig: NextConfig = {
   experimental: {
     viewTransition: true,
+    cssChunking: true,
   },
+  output: 'standalone',
+  // productionBrowserSourceMaps: true,
   typescript: {
     ignoreBuildErrors: false,
   },
@@ -24,21 +20,19 @@ const nextConfig: NextConfig = {
   },
   cacheComponents: true,
   allowedDevOrigins: [
-    'development.nninc.uk',
     'http://localhost:3000',
     'http://localhost:4000',
     'http://localhost:3333',
     'prod.nninc.uk',
     'miomio.com.ua',
     'www.miomio.com.ua',
-    'nmactunel.nninc.uk',
-    'https://www.miomio.com.ua',
   ],
   images: {
-    formats: ['image/avif', 'image/webp'],
+    loader: 'custom',
+    loaderFile: './lib/imageLoader.ts',
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 31536000, // 1 year
+    minimumCacheTTL: 31536000,
     remotePatterns: [
       { protocol: 'https', hostname: 'cdn.shopify.com' },
       { protocol: 'https', hostname: 'cdn.sanity.io' },
@@ -61,6 +55,18 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
+      {
+        source: '/assets/pulse/:path*',
+        destination: 'https://cdn.pulse.is/:path*',
+      },
+      {
+        source: '/assets/shopify-cdn/:path*',
+        destination: 'https://cdn.shopify.com/:path*',
+      },
+      {
+        source: '/assets/sanity-cdn/:path*',
+        destination: 'https://cdn.sanity.io/:path*',
+      },
       {
         source: '/ingest/static/:path*',
         destination: 'https://us-assets.i.posthog.com/static/:path*',
@@ -89,17 +95,26 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        source: '/assets/pulse/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
     ];
   },
 };
 const withNextIntl = createNextIntlPlugin('./src/shared/i18n/request.ts');
 
-export default withBundleAnalyzer(withPostHogConfig(withNextIntl(nextConfig), {
+export default withPostHogConfig(withNextIntl(nextConfig), {
   personalApiKey: process.env.POSTHOG_PERSONAL_API_KEY!,
   projectId: process.env.POSTHOG_PROJECT_ID!,
   host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
   sourcemaps: {
     enabled: process.env.NODE_ENV === 'production',
-    deleteAfterUpload: true,
+    deleteAfterUpload: false,
   },
-}));
+});

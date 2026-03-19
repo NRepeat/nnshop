@@ -2,10 +2,7 @@
 
 import { cn } from '@/shared/lib/utils';
 import { SignUpFormData, createSignUpSchema } from './schema';
-import {
-  createGoogleSignInHandler,
-  createSignUpHandler,
-} from './action';
+import { createGoogleSignInHandler, createSignUpHandler } from './action';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Image from 'next/image';
@@ -23,11 +20,7 @@ import {
   FormItem,
   FormMessage,
 } from '@/shared/ui/form';
-import {
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from '@/shared/ui/field';
+import { FieldDescription, FieldGroup, FieldLabel } from '@/shared/ui/field';
 
 export function SignupForm({
   className,
@@ -55,11 +48,11 @@ export function SignupForm({
 
   return (
     <div
-      className={cn('flex flex-col gap-6 w-full max-w-3xl', className)}
+      className={cn('flex flex-col gap-6 w-full max-w-3xl ', className)}
       {...props}
     >
-      <Card className="overflow-hidden p-0 rounded shadow border-none">
-        <CardContent className="grid  md:grid-cols-2 px-0">
+      <Card className="overflow-hidden p-0 rounded shadow border-none ">
+        <CardContent className="grid  md:grid-cols-2 px-0 ">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(async (data) => {
@@ -73,7 +66,7 @@ export function SignupForm({
               className="pr-0 md:pr-8 pl-1"
             >
               <FieldGroup className="gap-6">
-                <div className="flex flex-col items-center gap-2 text-center mb-4">
+                <div className="flex flex-col items-center gap-2 text-center mb-4 pt-2">
                   <h1 className="text-2xl font-bold">{t('title')}</h1>
                   <p className="text-muted-foreground text-sm">
                     {t('description')}
@@ -173,23 +166,6 @@ export function SignupForm({
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">
-                  {/* <Button
-                    variant="outline"
-                    type="button"
-                    className="rounded h-11"
-                    disabled={isLoading}
-                    onClick={async () => {
-                      setIsLoading(true);
-                      try {
-                        await handleShopifySignIn();
-                      } finally {
-                        setIsLoading(false);
-                      }
-                    }}
-                  >
-                    <ShopifyIcon />
-                    <span className="ml-2 text-xs font-medium uppercase tracking-tighter">Shopify</span>
-                  </Button> */}
                   <Button
                     variant="outline"
                     type="button"
@@ -211,7 +187,7 @@ export function SignupForm({
                   </Button>
                 </div>
 
-                <p className="text-center text-sm text-muted-foreground mt-2">
+                <p className="text-center text-sm text-muted-foreground mt-2 pb-2">
                   {t('alreadyHaveAccount')}{' '}
                   <Link
                     href="/auth/sign-in"
@@ -238,10 +214,10 @@ export function SignupForm({
         </CardContent>
       </Card>
 
-      <p className="px-6 text-center text-[11px] text-muted-foreground leading-relaxed uppercase tracking-wide">
+      <p className="px-6 text-center text-[11px] text-muted-foreground leading-relaxed uppercase tracking-wide ">
         {tCommon('byClickingContinue')}{' '}
         <Link
-          href="/terms-of-service"
+          href="/info/public-offer-agreement"
           className="underline underline-offset-2"
           scroll={false}
         >
@@ -249,7 +225,7 @@ export function SignupForm({
         </Link>{' '}
         {tCommon('and')}{' '}
         <Link
-          href="/privacy-policy"
+          href="/info/privacy-policy"
           className="underline underline-offset-2"
           scroll={false}
         >

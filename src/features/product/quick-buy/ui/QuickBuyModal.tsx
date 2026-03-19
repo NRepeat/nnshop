@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { DISCOUNT_METAFIELD_KEY, DEFAULT_CURRENCY_CODE } from '@shared/config/shop';
 import {
   Dialog,
   DialogContent,
@@ -150,7 +151,7 @@ export const QuickBuyModal = ({
     // Get discount percentage
     const discountPercentage =
       Number(
-        product.metafields.find((m) => m?.key === 'znizka')?.value || '0',
+        product.metafields.find((m) => m?.key === DISCOUNT_METAFIELD_KEY)?.value || '0',
       ) || 0;
 
     // Get the variant to extract price
@@ -167,7 +168,7 @@ export const QuickBuyModal = ({
         : product.variants.edges[0]?.node;
 
     const variantPrice = selectedVariant?.price?.amount || '0';
-    const variantCurrency = selectedVariant?.price?.currencyCode || 'UAH';
+    const variantCurrency = selectedVariant?.price?.currencyCode || DEFAULT_CURRENCY_CODE;
 
     startTransition(async () => {
       const result = await createQuickOrder({
@@ -176,6 +177,7 @@ export const QuickBuyModal = ({
         name: values.name,
         phone: values.phone,
         productTitle: product.title,
+        selectedSize: selectedSize ?? undefined,
         discountPercentage:
           discountPercentage > 0 ? discountPercentage : undefined,
         price: variantPrice,

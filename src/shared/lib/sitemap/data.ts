@@ -3,6 +3,7 @@ import { storefrontClient } from '@shared/lib/shopify/client';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 import { client as sanityClient } from '@/shared/sanity/lib/client';
+import { DEFAULT_GENDER } from '@shared/config/shop';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -64,6 +65,7 @@ export interface SitemapPost {
   slug: string;
   language: string;
   updatedAt: string;
+  translations?: Array<{ slug: string; language: string }>;
 }
 
 // ---------------------------------------------------------------------------
@@ -79,7 +81,7 @@ function getGenderFromHandle(handle: string): string {
   for (const [gender, patterns] of Object.entries(GENDER_SLUG_PATTERNS)) {
     if (patterns.some((p) => handle.includes(p))) return gender;
   }
-  return 'woman';
+  return DEFAULT_GENDER;
 }
 
 // ---------------------------------------------------------------------------
@@ -252,7 +254,11 @@ const POSTS_FOR_SITEMAP_QUERY = `
   *[_type == "post" && defined(slug.current) && !(_id in path("drafts.**"))] {
     "slug": slug.current,
     language,
-    "updatedAt": _updatedAt
+    "updatedAt": _updatedAt,
+    "translations": *[_type == "translation.metadata" && references(^._id)][0].translations[].value->{
+      "slug": slug.current,
+      language
+    }
   }
 `;
 

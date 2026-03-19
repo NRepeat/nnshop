@@ -1,6 +1,7 @@
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 
 export const GET_PRODUCTS_BY_IDS = `#graphql
   query getProductsByIds($query: String!, $first: Int!, $after: String) {
@@ -17,7 +18,7 @@ export const GET_PRODUCTS_BY_IDS = `#graphql
             vendor
             totalInventory
             tags
-            metafield(namespace:"custom",key:"znizka"){
+            metafield(namespace:"custom",key:"${DISCOUNT_METAFIELD_KEY}"){
                        value
                        namespace
                        key

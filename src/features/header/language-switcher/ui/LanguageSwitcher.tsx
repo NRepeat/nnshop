@@ -10,6 +10,7 @@ import {
 import { useTranslations } from 'use-intl';
 import { usePathname, useRouter } from '@shared/i18n/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
+import { usePostHog } from 'posthog-js/react';
 import { cn } from '@shared/lib/utils';
 import { usePathStore } from '@/shared/store/use-path-store';
 import { cleanSlug } from '@shared/lib/utils/cleanSlug';
@@ -37,9 +38,14 @@ export function LanguageSwitcher({
   const localeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const alternatePaths = usePathStore((state) => state.alternatePaths);
   const router = useRouter();
-  const [, startTransition] = useTransition();
+  const posthog = usePostHog();
+  const [isPending, startTransition] = useTransition();
   const changeLocale = (newLocale: string) => {
     setSelectedLocale(newLocale);
+    posthog?.capture('locale_switched', {
+      locale: newLocale,
+      previous_locale: selectedLocale,
+    });
     const targetPath = (alternatePaths?.[newLocale] || pathname) as string;
     const sanitizedPath = cleanSlug(targetPath);
     startTransition(() => {
@@ -60,9 +66,13 @@ export function LanguageSwitcher({
       <DropdownMenuTrigger asChild className={className}>
         <Button
           variant="default"
-          className="h-full"
+          className={cn('h-full transition-opacity duration-200', {
+            'opacity-50': isPending,
+          })}
         >
-          {parseLocale[selectedLocale as keyof typeof parseLocale]}
+          <span className={cn('transition-all duration-200', { 'blur-[2px]': isPending })}>
+            {parseLocale[selectedLocale as keyof typeof parseLocale]}
+          </span>
           <span className="sr-only">Switch language</span>
         </Button>
       </DropdownMenuTrigger>

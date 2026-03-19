@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
 import { getCart } from '@entities/cart/api/get';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
@@ -133,7 +134,7 @@ export async function OrderSummary({
     const product = line.merchandise.product;
     const sale =
       Number(
-        product.metafields?.find((m) => m?.key === 'znizka')?.value || '0',
+        product.metafields?.find((m) => m?.key === DISCOUNT_METAFIELD_KEY)?.value || '0',
       ) || 0;
     const price = Number(line.cost.amountPerQuantity.amount);
     const compareAtAmount = (line.cost as any).compareAtAmountPerQuantity?.amount;
@@ -174,19 +175,22 @@ export async function OrderSummary({
 
   // Calculate totals with discounts
   const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
+  const shopifySubtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   // Get discount codes from cart
   const discountCodes = cart.discountCodes || [];
   const hasApplicableDiscount = discountCodes.some((d) => d.applicable);
 
-  // Use Shopify's authoritative total (based on full prices minus code discounts)
-  const shopifyTotal = Number(cart.cost.totalAmount.amount);
-  // Total shown to user: min(znizka subtotal, shopify code total) — same logic as Payment.tsx
-  const totalAmount = hasApplicableDiscount ? Math.min(subtotal, shopifyTotal) : subtotal;
-  // Effective discount = difference between what user sees (znizka prices) and what they pay
-  const discountAmount = hasApplicableDiscount ? Math.max(0, subtotal - shopifyTotal) : 0;
+  // cart.cost.totalAmount does not reflect discount codes — use discountAllocations instead
+  const cartDiscountTotal = (cart.discountAllocations || []).reduce(
+    (sum, d) => sum + Number(d.discountedAmount.amount),
+    0,
+  );
+  // Shopify calculates the discount on original prices; derive rate and apply to sale subtotal
+  const discountRate = hasApplicableDiscount && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
+  const discountAmount = subtotal * discountRate;
+  const totalAmount = Math.max(0, subtotal - discountAmount);
   const grandTotal = totalAmount;
-
   const content = (
     <>
       {/* Items List */}

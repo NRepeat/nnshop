@@ -13,6 +13,7 @@ import {
 } from '@shared/ui/carousel';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
+import { usePostHog } from 'posthog-js/react';
 import { cn } from '@shared/lib/utils';
 import clsx from 'clsx';
 
@@ -29,6 +30,7 @@ const Gallery = ({
   children?: React.ReactNode;
   quiqView?: boolean;
 }) => {
+  const posthog = usePostHog();
   const [mainApi, setMainApi] = useState<CarouselApi>();
   const [secApi, setSecApi] = useState<CarouselApi>();
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -42,8 +44,9 @@ const Gallery = ({
   const onThumbClick = useCallback(
     (index: number) => {
       mainApi?.scrollTo(index);
+      posthog?.capture('product_gallery_navigated', { image_index: index, method: 'thumbnail' });
     },
-    [mainApi],
+    [mainApi, posthog],
   );
   const onDotClick = useCallback(
     (index: number) => {
@@ -113,7 +116,11 @@ const Gallery = ({
                             alt={image.altText || ''}
                             fill
                             className="object-contain rounded max-h-[60vh]"
-                            onClick={open}
+                            onClick={(e) => {
+                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                              open(e as any);
+                              posthog?.capture('product_gallery_zoomed', { image_index: selectedIndex });
+                            }}
                             priority={index === 0}
                             fetchPriority={index === 0 ? 'high' : 'auto'}
                             loading={index === 0 ? 'eager' : 'lazy'}
@@ -173,7 +180,7 @@ const Gallery = ({
                         fill
                         className="object-cover"
                         loading="lazy"
-                        sizes="(max-width: 768px) 33vw, (max-width: 1024px) 33vw, 20vw"
+                        sizes="(max-width: 768px) 20vw, (max-width: 1024px) 12vw, 10vw"
                         placeholder="blur"
                         blurDataURL={BLUR_DATA_URL}
                       />

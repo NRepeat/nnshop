@@ -10,7 +10,29 @@ export interface SitemapEntry {
 }
 
 export function formatDate(date: string | Date): string {
-  return new Date(date).toISOString().split('T')[0];
+  try {
+    return new Date(date).toISOString().split('T')[0];
+  } catch (e) {
+    return new Date().toISOString().split('T')[0];
+  }
+}
+
+function escapeXml(unsafe: string): string {
+  return unsafe.replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case '<':
+        return '&lt;';
+      case '>':
+        return '&gt;';
+      case '&':
+        return '&amp;';
+      case '\'':
+        return '&apos;';
+      case '"':
+        return '&quot;';
+    }
+    return c;
+  });
 }
 
 export function generateSitemapIndexXml(
@@ -19,7 +41,7 @@ export function generateSitemapIndexXml(
   const items = entries
     .map(
       (e) =>
-        `  <sitemap>\n    <loc>${e.url}</loc>${
+        `  <sitemap>\n    <loc>${escapeXml(e.url)}</loc>${
           e.lastModified ? `\n    <lastmod>${e.lastModified}</lastmod>` : ''
         }\n  </sitemap>`,
     )
@@ -34,12 +56,14 @@ export function generateUrlsetXml(entries: SitemapEntry[]): string {
         ? Object.entries(e.alternates)
             .map(
               ([lang, href]) =>
-                `    <xhtml:link rel="alternate" hreflang="${lang}" href="${href}"/>`,
+                `    <xhtml:link rel="alternate" hreflang="${escapeXml(
+                  lang,
+                )}" href="${escapeXml(href)}"/>`,
             )
             .join('\n')
         : '';
       return (
-        `  <url>\n    <loc>${e.url}</loc>` +
+        `  <url>\n    <loc>${escapeXml(e.url)}</loc>` +
         (e.lastModified ? `\n    <lastmod>${e.lastModified}</lastmod>` : '') +
         (e.changeFrequency
           ? `\n    <changefreq>${e.changeFrequency}</changefreq>`

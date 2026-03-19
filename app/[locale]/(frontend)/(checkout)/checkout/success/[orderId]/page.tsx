@@ -20,11 +20,9 @@ function SuccessSkeleton() {
 }
 
 export default async function SuccessPage(props: Props) {
-  const { locale, orderId } = await props.params;
-
   return (
     <Suspense fallback={<SuccessSkeleton />}>
-      <Thank orderId={orderId} locale={locale} />
+      <Thank params={props.params} />
     </Suspense>
   );
 }

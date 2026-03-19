@@ -5,6 +5,7 @@ import { Label } from '@shared/ui/label';
 import clsx from 'clsx';
 import { Link, usePathname } from '@shared/i18n/navigation';
 import { ProductVariant } from '@shared/lib/shopify/types/storefront.types';
+import { usePostHog } from 'posthog-js/react';
 
 const CLOTHING_ORDER = ['xxs','xs','s','m','l','xl','xxl','xxxl','3xl','4xl','one size'];
 
@@ -27,6 +28,7 @@ const Option = ({
   selectedVariant: ProductVariant;
 }) => {
   const pathname = usePathname();
+  const posthog = usePostHog();
 
   if (!product) return null;
 
@@ -92,6 +94,12 @@ const Option = ({
                         !isSelected && !isAvailable,
                       'border border-gray-300':
                         !isSelected && isAvailable,
+                    })}
+                    onClick={() => posthog?.capture('product_size_selected', {
+                      product_handle: product?.handle,
+                      option_name: option.name,
+                      option_value: value,
+                      is_available: isAvailable,
                     })}
                   >
                     {value}

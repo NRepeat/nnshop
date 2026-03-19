@@ -21,14 +21,12 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   shopifyProductId: string;
-  shopifyVariantId?: string;
 };
 
 export function PriceSubscribeModal({
   open,
   onOpenChange,
   shopifyProductId,
-  shopifyVariantId,
 }: Props) {
   const t = useTranslations('ProductPage');
   const [email, setEmail] = useState('');
@@ -37,10 +35,13 @@ export function PriceSubscribeModal({
   const posthog = usePostHog();
 
   useEffect(() => {
-    if (session?.user?.email && !session.user.isAnonymous) {
-      setEmail(session.user.email);
+    const user = session?.user as (NonNullable<typeof session>['user'] & { isAnonymous?: boolean }) | undefined;
+    if (user?.email && !user.isAnonymous) {
+      setEmail(user.email);
+    } else {
+      setEmail('');
     }
-  }, [session?.user?.email, session?.user?.isAnonymous]);
+  }, [session?.user]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,12 +49,10 @@ export function PriceSubscribeModal({
       const result = await subscribeToPriceChanges({
         email,
         shopifyProductId,
-        shopifyVariantId,
       });
       if (result.success) {
         posthog?.capture('price_alert_subscribed', {
           product_id: shopifyProductId,
-          variant_id: shopifyVariantId,
         });
         toast.success(t('priceSubscribeSuccess'));
         onOpenChange(false);

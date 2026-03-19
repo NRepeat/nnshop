@@ -24,13 +24,13 @@ export type HeaderBarProps = Extract<
 > & { locale: string };
 
 export const Header = async ({ locale }: { locale: string }) => {
+  setRequestLocale(locale);
+
   const headerData = await sanityFetch({
     query: HEADER_QUERY,
-    revalidate: 10,
     params: { locale },
     tags: ['siteSettings'],
   });
-  setRequestLocale(locale);
   return (
     <>
       <Suspense
@@ -56,7 +56,11 @@ export const Header = async ({ locale }: { locale: string }) => {
           <div className="w-full font-sans text-foreground grid grid-cols-3 text-base py-3">
             <Suspense fallback={<HeaderContentSkeleton />}>
               {headerData?.header && (
-                <HeaderContent locale={locale} {...headerData?.header} navDropdowns={headerData?.navDropdowns} />
+                <HeaderContent
+                  locale={locale}
+                  {...headerData?.header}
+                  navDropdowns={headerData?.navDropdowns}
+                />
               )}
             </Suspense>
             <div className="flex items-center justify-center">
@@ -99,7 +103,6 @@ export const Header = async ({ locale }: { locale: string }) => {
             <CurrentNavigationSession
               locale={locale}
               navImages={headerData?.navImages}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               navDropdowns={headerData?.navDropdowns as any}
             />
           </Suspense>

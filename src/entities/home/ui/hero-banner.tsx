@@ -22,6 +22,7 @@ type HeroSliderBase = Extract<
 type HeroSliderProps = HeroSliderBase & {
   gender?: string;
   videoFile?: string | null;
+  videoFileWebm?: string | null;
   videoPoster?: string | null;
   videoUrl?: string | null;
   videoTitle?: string | null;
@@ -129,47 +130,84 @@ function buildOverlayBg(
 
 // Video Hero
 
+const getProxiedVideoUrl = (originalUrl: string | null | undefined) => {
+  if (!originalUrl) return '';
+  return originalUrl
+};
 type VideoHeroProps = {
   src: string;
+  srcWebm?: string | null;
   poster?: string | null;
   textPosition: string;
   titleColor?: string | null;
   descriptionColor?: string | null;
   title?: string | null;
   description?: string | null;
-  overlay?: { color?: { hex?: string | null } | null; opacity?: number | null } | null;
+  overlay?: {
+    color?: { hex?: string | null } | null;
+    opacity?: number | null;
+  } | null;
   href?: string | null;
   compact?: boolean;
   isFirst?: boolean;
 };
 
-function VideoHero({ src, poster, textPosition, titleColor, descriptionColor, title, description, overlay, href, compact, isFirst }: VideoHeroProps) {
+function VideoHero({
+  src,
+  srcWebm,
+  poster,
+  textPosition,
+  titleColor,
+  descriptionColor,
+  title,
+  description,
+  overlay,
+  href,
+  compact,
+  isFirst,
+}: VideoHeroProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  const proxiedSrc = getProxiedVideoUrl(src);
+  const proxiedSrcWebm = getProxiedVideoUrl(srcWebm);
 
   useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
     el.muted = true;
     el.play().catch(() => {});
-  }, [src]);
+  }, []);
 
   const pos = textPosition;
   const overlayBg = buildOverlayBg(overlay?.color, overlay?.opacity);
   const Tag = isFirst ? 'h1' : 'h2';
   const inner = (
     <>
+      {poster && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={poster}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 w-full h-full object-cover max-h-[75vh]"
+        />
+      )}
       <video
         ref={videoRef}
-        src={src}
         poster={poster ?? undefined}
         autoPlay
         muted
         loop
         playsInline
+        //@ts-ignore
+        fetchpriority="high"
         preload="auto"
         disablePictureInPicture
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+        className="absolute inset-0 w-full h-full object-cover max-h-[75vh]"
+      >
+        {proxiedSrcWebm && <source src={proxiedSrcWebm} type="video/webm" />}
+        <source src={proxiedSrc} type="video/mp4" />
+      </video>
       <div
         className="absolute inset-0"
         style={{ backgroundColor: overlayBg }}
@@ -222,7 +260,17 @@ function VideoHero({ src, poster, textPosition, titleColor, descriptionColor, ti
 
 // Image Slider
 
-function ImageSlider({ slides, gender, compact, isFirst }: { slides: Slide[]; gender?: string; compact?: boolean; isFirst?: boolean }) {
+function ImageSlider({
+  slides,
+  gender,
+  compact,
+  isFirst,
+}: {
+  slides: Slide[];
+  gender?: string;
+  compact?: boolean;
+  isFirst?: boolean;
+}) {
   const resolveHref = (
     url?: string | null,
     collection?: { handle?: string | null } | null,
@@ -230,9 +278,7 @@ function ImageSlider({ slides, gender, compact, isFirst }: { slides: Slide[]; ge
     if (url) return sanitizeString(url);
     if (collection?.handle) {
       const cleanHandle = sanitizeString(collection.handle);
-      return gender
-        ? `/${gender}/${cleanHandle}`
-        : `/${cleanHandle}`;
+      return gender ? `/${gender}/${cleanHandle}` : `/${cleanHandle}`;
     }
     return null;
   };
@@ -241,7 +287,7 @@ function ImageSlider({ slides, gender, compact, isFirst }: { slides: Slide[]; ge
     resolveHref(slide.link?.url, slide.collection) ?? '/';
 
   const renderOverlayTitle = (slide: Slide, index: number) => {
-    const Tag = (isFirst && index === 0) ? 'h1' : 'h2';
+    const Tag = isFirst && index === 0 ? 'h1' : 'h2';
     return (
       <Tag
         className="text-3xl md:text-5xl lg:text-8xl font-bold tracking-tight drop-shadow-lg"
@@ -257,7 +303,11 @@ function ImageSlider({ slides, gender, compact, isFirst }: { slides: Slide[]; ge
       {slide.mobileImage?.asset && (
         <div
           className="relative w-full block md:hidden"
-          style={{ height: compact ? '40svh' : 'calc(80svh - var(--header-height, 0px))' }}
+          style={{
+            height: compact
+              ? '40svh'
+              : 'calc(80svh - var(--header-height, 0px))',
+          }}
         >
           <Image
             src={urlFor(slide.mobileImage.asset)
@@ -274,7 +324,11 @@ function ImageSlider({ slides, gender, compact, isFirst }: { slides: Slide[]; ge
       {slide.image?.asset && (
         <div
           className={`relative w-full aspect-video ${slide.mobileImage?.asset ? 'hidden md:block' : 'block'}`}
-          style={{ maxHeight: compact ? '40svh' : 'calc(90svh - var(--header-height, 0px))' }}
+          style={{
+            maxHeight: compact
+              ? '40svh'
+              : 'calc(90svh - var(--header-height, 0px))',
+          }}
         >
           <Image
             src={urlFor(slide.image.asset).auto('format').quality(80).url()}
@@ -283,7 +337,7 @@ function ImageSlider({ slides, gender, compact, isFirst }: { slides: Slide[]; ge
             width={compact ? 1920 : undefined}
             height={compact ? 540 : undefined}
             priority={index === 0}
-            className={compact ? "w-full h-full object-cover" : "object-cover"}
+            className={compact ? 'w-full h-full object-cover' : 'object-cover'}
           />
         </div>
       )}
@@ -307,7 +361,7 @@ function ImageSlider({ slides, gender, compact, isFirst }: { slides: Slide[]; ge
         : tb?.padding === 'lg'
           ? '1.5rem'
           : '1rem';
-    
+
     return (
       <>
         <div
@@ -334,7 +388,9 @@ function ImageSlider({ slides, gender, compact, isFirst }: { slides: Slide[]; ge
             {slide.description && (
               <p
                 className="text-2xl md:text-3xl lg:text-5xl drop-shadow leading-snug"
-                style={{ color: slide.descriptionColor ?? 'rgba(255,255,255,0.9)' }}
+                style={{
+                  color: slide.descriptionColor ?? 'rgba(255,255,255,0.9)',
+                }}
               >
                 {slide.description}
               </p>
@@ -433,16 +489,26 @@ function ImageSlider({ slides, gender, compact, isFirst }: { slides: Slide[]; ge
 // HeroBanner
 
 export const HeroBanner = (props: HeroSliderProps) => {
-  const { slides, gender, videoFile, videoPoster, videoUrl, compact, isFirst } = props;
+  const {
+    slides,
+    gender,
+    videoFile,
+    videoFileWebm,
+    videoPoster,
+    videoUrl,
+    compact,
+    isFirst,
+  } = props;
   const hasVideo = !!(videoFile || videoUrl);
 
   if (!hasVideo && (!slides || slides.length === 0)) return null;
 
   return (
-    <div className="hero-banner relative w-full overflow-hidden  mx-auto">
+    <div className="hero-banner relative w-full overflow-hidden">
       {hasVideo ? (
         <VideoHero
           src={props.videoFile || props.videoUrl || ''}
+          srcWebm={videoFileWebm}
           poster={videoPoster}
           textPosition={props.videoTextPosition ?? 'bottom-left'}
           titleColor={props.videoTitleColor}
@@ -453,15 +519,23 @@ export const HeroBanner = (props: HeroSliderProps) => {
           compact={compact}
           isFirst={isFirst}
           href={
-            props.videoLinkUrl 
+            props.videoLinkUrl
               ? sanitizeString(props.videoLinkUrl)
-              : (props.videoCollection?.handle
-                ? `/${gender ?? ''}/${sanitizeString(props.videoCollection.handle)}`.replace('//', '/')
-                : null)
+              : props.videoCollection?.handle
+                ? `/${gender ?? ''}/${sanitizeString(props.videoCollection.handle)}`.replace(
+                    '//',
+                    '/',
+                  )
+                : null
           }
         />
       ) : (
-        <ImageSlider slides={slides as Slide[]} gender={gender} compact={compact} isFirst={isFirst} />
+        <ImageSlider
+          slides={slides as Slide[]}
+          gender={gender}
+          compact={compact}
+          isFirst={isFirst}
+        />
       )}
     </div>
   );

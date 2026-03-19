@@ -1,7 +1,12 @@
 import { getCollection } from '@entities/collection/api/getCollection';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@shared/ui/empty';
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from '@shared/ui/empty';
 import { PackageSearch } from 'lucide-react';
 import { ClientGridWrapper } from '@features/collection/ui/ClientGridWrapper';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
@@ -23,6 +28,8 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
+import { toFilterSlug } from '@shared/lib/filterSlug';
+import { filterProducts } from '@features/collection/lib/filterProducts';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -33,13 +40,14 @@ export const BrandGrid = async ({
   params: Promise<{ locale: string; slug: string }>;
   searchParams: Promise<SearchParams>;
 }) => {
-  const [awaitedParams, awaitedSearchParams, t, tBrands, tCollection] = await Promise.all([
-    params,
-    searchParams,
-    getTranslations('Header'),
-    getTranslations('BrandsPage'),
-    getTranslations('CollectionPage'),
-  ]);
+  const [awaitedParams, awaitedSearchParams, t, tBrands, tCollection] =
+    await Promise.all([
+      params,
+      searchParams,
+      getTranslations('Header'),
+      getTranslations('BrandsPage'),
+      getTranslations('CollectionPage'),
+    ]);
 
   const { locale, slug } = awaitedParams;
   const decodedSlug = decodeURIComponent(slug);
@@ -47,9 +55,14 @@ export const BrandGrid = async ({
 
   const cookieStore = await headers();
   const cookieHeader = cookieStore.get('cookie') || '';
-  const genderFromCookie = cookieHeader.includes('gender=man') ? 'man' : cookieHeader.includes('gender=woman') ? 'woman' : undefined;
+  const genderFromCookie = cookieHeader.includes('gender=man')
+    ? 'man'
+    : cookieHeader.includes('gender=woman')
+      ? 'woman'
+      : undefined;
 
-  const gender = (awaitedSearchParams._gender as string | undefined) || genderFromCookie;
+  const gender =
+    (awaitedSearchParams._gender as string | undefined) || genderFromCookie;
   const searchParamsWithoutGender = Object.fromEntries(
     Object.entries(awaitedSearchParams).filter(([k]) => k !== '_gender'),
   );
@@ -68,7 +81,13 @@ export const BrandGrid = async ({
 
   if (hasFilters) {
     collectionPromises.push(
-      getCollection({ handle: decodedSlug, first: 20, locale: locale, gender, genderTag: gender }),
+      getCollection({
+        handle: decodedSlug,
+        first: 20,
+        locale: locale,
+        gender,
+        genderTag: gender,
+      }),
     );
   }
 
@@ -79,15 +98,61 @@ export const BrandGrid = async ({
   }
 
   const { collection } = currentData;
-  const rawProducts =
-    collection.collection?.products.edges
-      .map((edge) => edge.node)
-      .filter(
-        (edge) =>
-          (Number(edge.priceRange.minVariantPrice.amount) > 0 ||
-            Number(edge.priceRange.maxVariantPrice.amount) > 0) &&
-          (edge.totalInventory === null || edge.totalInventory === undefined || edge.totalInventory > 0),
-      ) || [];
+
+  // Build selectedSizeSlugs from URL params (direct, independent of filterDefs)
+  const selectedSizeSlugs = new Set<string>();
+  if (hasFilters && searchParamsWithoutGender.rozmir) {
+    const vals = Array.isArray(searchParamsWithoutGender.rozmir)
+      ? searchParamsWithoutGender.rozmir
+      : (searchParamsWithoutGender.rozmir as string).split(';');
+    vals.forEach((v) => selectedSizeSlugs.add(v));
+  }
+
+  // Build optionGroups for variantOption filters (color, etc.) via filterDefs
+  const optionGroups = new Map<string, { name: string; values: Set<string> }>();
+  if (hasFilters) {
+    const filterDefs = collection.collection?.products.filters ?? [];
+    for (const [key, value] of Object.entries(searchParamsWithoutGender)) {
+      if (
+        key === 'minPrice' ||
+        key === 'maxPrice' ||
+        key === 'sort' ||
+        key === 'rozmir'
+      )
+        continue;
+      const definition = filterDefs.find((f) => f.id.endsWith(`.${key}`));
+      if (!definition) continue;
+      const values = Array.isArray(value)
+        ? value
+        : (value as string).split(';');
+      values.forEach((v) => {
+        const filterValue = definition.values.find(
+          (def) => toFilterSlug(def.label) === v,
+        );
+        if (filterValue) {
+          try {
+            const parsed = JSON.parse(filterValue.input);
+            if (parsed.variantOption) {
+              if (!optionGroups.has(key))
+                optionGroups.set(key, {
+                  name: parsed.variantOption.name,
+                  values: new Set(),
+                });
+              optionGroups.get(key)!.values.add(parsed.variantOption.value);
+            }
+          } catch {}
+        }
+      });
+    }
+  }
+
+  const allEdgeProducts =
+    collection.collection?.products.edges.map((e) => e.node) ?? [];
+  const rawProducts = filterProducts(
+    allEdgeProducts,
+    selectedSizeSlugs,
+    optionGroups,
+  );
 
   const session = await auth.api.getSession({ headers: await headers() });
   let favoriteProductIds = new Set<string>();
@@ -112,6 +177,17 @@ export const BrandGrid = async ({
 
   const pageInfo = collection.collection?.products.pageInfo;
 
+  const serializableOptionGroups: Record<
+    string,
+    { name: string; values: string[] }
+  > = {};
+  optionGroups.forEach((group, key) => {
+    serializableOptionGroups[key] = {
+      name: group.name,
+      values: Array.from(group.values),
+    };
+  });
+
   return (
     <>
       <div className=" flex flex-col mt-8">
@@ -123,16 +199,7 @@ export const BrandGrid = async ({
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
-            {gender ? (
-              <>
-                <BreadcrumbItem>
-                  <BreadcrumbLink href={`/${locale}/${gender}`}>
-                    {gender === 'man' ? t('nav.man') : t('nav.woman')}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-              </>
-            ) : (
+            {
               <>
                 <BreadcrumbItem>
                   <BreadcrumbLink href={`/${locale}/brands`}>
@@ -141,7 +208,7 @@ export const BrandGrid = async ({
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
               </>
-            )}
+            }
             <BreadcrumbItem>
               <BreadcrumbPage>
                 {decodeHtmlEntities(collection.collection?.title ?? '')}
@@ -153,7 +220,7 @@ export const BrandGrid = async ({
         <EnableScrollHide />
 
         <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row justify-between lg:items-end gap-6">
-          <div className="flex flex-col gap-3.5 w-full">
+          <div className="flex flex-col gap-3.5 w-full min-w-0">
             <h1 className="text-2xl font-bold">
               {decodeHtmlEntities(collection.collection?.title ?? '')}
             </h1>
@@ -170,7 +237,7 @@ export const BrandGrid = async ({
               </Suspense>
             )}
           </div>
-          <div className="flex h-full  items-center flex-row gap-2 justify-between md:justify-end">
+          <div className="flex h-full items-center flex-row gap-2 justify-between md:justify-end flex-shrink-0">
             <Suspense fallback={null}>
               <SortSelect />
             </Suspense>
@@ -200,7 +267,9 @@ export const BrandGrid = async ({
                   <PackageSearch className="w-12 h-12 text-muted-foreground" />
                   <EmptyTitle>{tCollection('noProducts')}</EmptyTitle>
                   {hasFilters && (
-                    <EmptyDescription>{tCollection('explore')}</EmptyDescription>
+                    <EmptyDescription>
+                      {tCollection('explore')}
+                    </EmptyDescription>
                   )}
                 </EmptyHeader>
               </Empty>
@@ -212,6 +281,8 @@ export const BrandGrid = async ({
               initialProducts={productsWithFav as Product[]}
               handle={decodedSlug}
               gender={gender}
+              selectedSizeSlugs={Array.from(selectedSizeSlugs)}
+              optionGroups={serializableOptionGroups}
             />
           )}
         </div>

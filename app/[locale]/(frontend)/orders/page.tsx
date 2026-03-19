@@ -2,6 +2,7 @@ import { getCustomerOrders } from '@entities/order/api/getCustomerOrders';
 import { auth } from '@features/auth/lib/auth';
 import { OrderEmptyState } from '@features/order/ui/EmptyState';
 import { OrderList } from '@features/order/ui/OrderList';
+import { prisma } from '@shared/lib/prisma';
 import { Breadcrumbs, BreadcrumbsSkeleton } from '@shared/ui/breadcrumbs';
 import { Card, CardContent, CardHeader } from '@shared/ui/card';
 import { Skeleton } from '@shared/ui/skeleton';
@@ -67,7 +68,26 @@ export async function OrdersPageSession({ params, searchParams }: Props) {
     return <OrderEmptyState type="notLoggedIn" locale={locale} />;
   }
 
-  const orders = await getCustomerOrders(user.email, locale.toUpperCase());
+  const contactInfo = await prisma.contactInformation.findUnique({
+    where: { userId: user.id },
+    select: { email: true },
+  });
+
+  const localeUpper = locale.toUpperCase();
+  const emails = Array.from(
+    new Set([user.email, contactInfo?.email].filter(Boolean) as string[]),
+  );
+
+  const orderArrays = await Promise.all(
+    emails.map((email) => getCustomerOrders(email, localeUpper)),
+  );
+
+  const seenIds = new Set<string>();
+  const orders = orderArrays.flat().filter((o) => {
+    if (seenIds.has(o.id)) return false;
+    seenIds.add(o.id);
+    return true;
+  });
 
   if (orders.length === 0) {
     return <OrderEmptyState type="emptyState" locale={locale} />;

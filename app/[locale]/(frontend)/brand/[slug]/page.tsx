@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         image: collection.collection.image ?? null,
       },
       locale,
-      decodedSlug
+      decodedSlug,
     );
   } catch {
     return { title: 'Brand Not Found' };

@@ -121,6 +121,19 @@ export async function applyDiscountCode(code: string): Promise<{
       return { success: false, error: 'Code already applied' };
     }
 
+    // Enforce "limit to one use per customer" — Shopify Admin API doesn't increment usage counters
+    const previousUse = await prisma.order.findFirst({
+      where: {
+        userId: session.user.id,
+        draft: false,
+        usedDiscountCodes: { has: code.toUpperCase() },
+      },
+      select: { id: true },
+    });
+    if (previousUse) {
+      return { success: false, error: 'Discount code already used' };
+    }
+
     // Filter out any stale/non-applicable instances of this code before re-adding
     const cleanedCodes = existingCodes.filter(
       (c) => c.toUpperCase() !== code.toUpperCase(),

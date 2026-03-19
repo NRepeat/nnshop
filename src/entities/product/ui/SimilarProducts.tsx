@@ -54,7 +54,7 @@ const SimilarProducts = async ({ collection }: { collection: Collection }) => {
             >
               <div className="h-full">
                 {/* @ts-ignore */}
-                <ProductCard product={product as Product} addToCard={false} />
+                <ProductCard product={product as Product} addToCard={false} source="similar_products" />
               </div>
             </CarouselItem>
           ))}

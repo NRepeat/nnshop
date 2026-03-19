@@ -2,6 +2,7 @@ import { storefrontClient } from '@shared/lib/shopify/client';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { getLocale } from 'next-intl/server';
 import { GetProductsQuery } from '@shared/lib/shopify/types/storefront.generated';
+import { cacheLife, unstable_cacheTag as cacheTag } from 'next/cache';
 
 const query = `#graphql
   query getProducts($first: Int!) {
@@ -80,6 +81,9 @@ const query = `#graphql
 `;
 
 export const getProducts = async ({ first }: { first: number }) => {
+  'use cache';
+  cacheLife('max');
+  cacheTag('products');
   const locale = await getLocale();
   const products = await storefrontClient.request<
     GetProductsQuery,

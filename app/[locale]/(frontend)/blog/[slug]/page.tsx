@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await sanityFetch({
     query: POST_BY_LANGUAGE_QUERY,
     params: { slug, language: sanityLocale },
-    revalidate: 3600,
+    tags: [`post:${slug}`],
   });
 
   if (!post) {
@@ -72,8 +72,7 @@ export default async function BlogPostPage({ params }: Props) {
   const post = await sanityFetch({
     query: POST_BY_LANGUAGE_QUERY,
     params: { slug, language: sanityLocale },
-    revalidate: 3600,
-    tags: ['post'],
+    tags: [`post:${slug}`],
   });
 
   if (!post) notFound();

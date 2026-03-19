@@ -6,10 +6,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useGridStore } from '@shared/store/use-grid-store';
 import { cn } from '@shared/lib/utils';
 
+const container = {
+  show: { transition: { staggerChildren: 0.04 } },
+};
+
 const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -20 },
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: 0.25 } },
+  exit: { opacity: 0, transition: { duration: 0.15 } },
 };
 
 export const ClientGrid = ({
@@ -20,7 +24,10 @@ export const ClientGrid = ({
   const cols = useGridStore((s) => s.cols);
 
   return (
-    <div
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
       className={cn(
         'grid gap-1 md:gap-4 mt-2',
         cols === '3'
@@ -31,12 +38,9 @@ export const ClientGrid = ({
       <AnimatePresence>
         {products.map((product) => (
           <motion.div
-            layout
             key={product.id}
             className="col-span-1"
             variants={item}
-            initial="hidden"
-            animate="show"
             exit="exit"
           >
             <ProductCard
@@ -50,6 +54,6 @@ export const ClientGrid = ({
           </motion.div>
         ))}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 };

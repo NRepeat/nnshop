@@ -11,8 +11,10 @@ import {
 } from '@/shared/ui/select';
 import { useQueryState, parseAsString } from 'nuqs';
 import { useTranslations } from 'next-intl';
+import { usePostHog } from 'posthog-js/react';
 
 export function SortSelect() {
+  const posthog = usePostHog();
   const t = useTranslations('CollectionPage.sort');
 
   const [sort, setSort] = useQueryState(
@@ -27,11 +29,13 @@ export function SortSelect() {
 
   const handleSortChange = (value: string) => {
     setSort(value === 'trending' ? null : value);
+    posthog?.capture('collection_sort_changed', { sort_type: value });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
     <Select value={sort} onValueChange={handleSortChange}>
-      <SelectTrigger aria-label={t('sortBy')} className="w-[160px] md:w-[160px] min-w-fit rounded border-primary bg-white text-black ">
+      <SelectTrigger aria-label={t('sortBy')} className="w-[150px] sm:w-auto sm:min-w-[200px] rounded border-primary bg-white text-black [&>span]:truncate">
         <SelectValue placeholder={t('sortBy')} />
       </SelectTrigger>
       <SelectContent className="rounded">

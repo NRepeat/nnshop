@@ -2,6 +2,7 @@
 
 import { useQueryState, parseAsArrayOf, parseAsString } from 'nuqs';
 import { useState, useTransition, useEffect } from 'react';
+import { usePostHog } from 'posthog-js/react';
 import {
   Filter,
   FilterValue,
@@ -19,6 +20,7 @@ type Props = {
 
 
 export function NuqsColorFilter({ filter, initialFilter }: Props) {
+  const posthog = usePostHog();
   const filterKey = filter.id.split('.').pop() || filter.id;
   const [isPending, startTransition] = useTransition();
   const [changingFilter, setChangingFilter] = useState<string | null>(null);
@@ -36,9 +38,16 @@ export function NuqsColorFilter({ filter, initialFilter }: Props) {
 
   const handleFilterChange = (value: FilterValue) => {
     const slug = toFilterSlug(value.label);
+    const isSelected = selectedValues.includes(slug);
+    posthog?.capture('collection_filter_applied', {
+      filter_type: 'color',
+      filter_name: filterKey,
+      filter_value: slug,
+      action: isSelected ? 'removed' : 'added',
+    });
     setChangingFilter(slug);
     startTransition(() => {
-      const newSelection = selectedValues.includes(slug)
+      const newSelection = isSelected
         ? selectedValues.filter((item) => item !== slug)
         : [...selectedValues, slug];
       setSelectedValues(newSelection.length > 0 ? newSelection : null);
@@ -50,7 +59,11 @@ export function NuqsColorFilter({ filter, initialFilter }: Props) {
     return live ?? { ...v, count: 0 };
   });
 
+  const shouldScroll = displayValues.length > 8;
+
   return (
+    <div className={cn({ 'relative': shouldScroll })}>
+    <div className={cn('pr-1', { 'max-h-56 overflow-y-scroll custom-scroll': shouldScroll })}>
     <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 p-1">
       {[...displayValues]
         .sort((a, b) => a.label.localeCompare(b.label))
@@ -88,6 +101,11 @@ export function NuqsColorFilter({ filter, initialFilter }: Props) {
             </label>
           );
         })}
+    </div>
+    </div>
+    {shouldScroll && (
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent" />
+    )}
     </div>
   );
 }

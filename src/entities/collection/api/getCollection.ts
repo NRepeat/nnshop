@@ -2,7 +2,7 @@
 import { toFilterSlug } from '@shared/lib/filterSlug';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import { storefrontClient } from '@shared/lib/shopify/client';
-import { getProductsByIds } from '@entities/product/api/getProductsByIds';
+import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 import {
   GetCollectionQuery,
   GetCollectionFiltersQuery,
@@ -13,47 +13,6 @@ import {
 import { ProductFilter } from '@shared/lib/shopify/types/storefront.types';
 import { cacheLife, cacheTag } from 'next/cache';
 
-
-const GetCollectionLightweight = `#graphql
-  query GetCollectionLight(
-    $handle: String!
-    $filters: [ProductFilter!]
-    $first: Int
-    $after: String
-  ) {
-    collection(handle: $handle) {
-      id
-      title
-      handle
-      products(first: $first filters: $filters after: $after) {
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-        edges {
-          node {
-            id
-            createdAt
-            sortOrder: metafield(namespace:"custom", key:"sort_order") {
-              value
-            }
-          }
-        }
-        filters {
-          id
-          label
-          type
-          values {
-            id
-            label
-            count
-            input
-          }
-        }
-      }
-    }
-  }
-`;
 
 const GetCollectionWithProducts = `#graphql
   query GetCollection(
@@ -108,13 +67,10 @@ const GetCollectionWithProducts = `#graphql
             totalInventory
             tags
             createdAt
-            metafield(namespace:"custom",key:"znizka"){
+            metafield(namespace:"custom",key:"${DISCOUNT_METAFIELD_KEY}"){
                        value
                        namespace
                        key
-            }
-            sortOrder: metafield(namespace:"custom",key:"sort_order"){
-                       value
             }
             variants(first: 250) {
               edges {
@@ -236,7 +192,10 @@ export const getCollectionSlugs = async () => {
   try {
     const [ruCollection, ukCollection] = await Promise.all(
       locales.map((language) =>
-        storefrontClient.request<GetCollectionsHandlesQuery, GetCollectionsHandlesQueryVariables>({
+        storefrontClient.request<
+          GetCollectionsHandlesQuery,
+          GetCollectionsHandlesQueryVariables
+        >({
           query: GET_COLLECTION_SLUGS,
           language,
         }),
@@ -247,8 +206,12 @@ export const getCollectionSlugs = async () => {
       throw new Error('No collections found');
     }
 
-    ruCollection.collections.edges.forEach((edge) => handlesSet.add(edge.node.handle));
-    ukCollection.collections.edges.forEach((edge) => handlesSet.add(edge.node.handle));
+    ruCollection.collections.edges.forEach((edge) =>
+      handlesSet.add(edge.node.handle),
+    );
+    ukCollection.collections.edges.forEach((edge) =>
+      handlesSet.add(edge.node.handle),
+    );
 
     return Array.from(handlesSet);
   } catch (error) {
@@ -282,49 +245,6 @@ export const getCollectionFilters = async ({
 };
 
 
-async function fetchAllCollectionEdges({
-  handle,
-  locale,
-  filters,
-}: {
-  handle: string;
-  locale: string;
-  filters: ProductFilter[];
-}): Promise<{ edges: any[]; filters: any[]; collectionId: string; collectionTitle: string }> {
-  const allEdges: any[] = [];
-  let cursor: string | null = null;
-  let hasNextPage = true;
-  let collectionFilters: any[] = [];
-  let collectionId = '';
-  let collectionTitle = '';
-
-  while (hasNextPage) {
-    const batch: any = await storefrontClient.request<any, any>({
-      query: GetCollectionLightweight,
-      variables: { handle, filters, first: 250, after: cursor ?? undefined },
-      language: locale.toUpperCase() as StorefrontLanguageCode,
-    });
-
-    const col = batch.collection;
-    if (!col) break;
-
-    if (allEdges.length === 0) {
-      collectionId = col.id ?? '';
-      collectionTitle = col.title ?? '';
-      collectionFilters = col.products?.filters ?? [];
-    }
-
-    const products = col.products;
-    if (!products) break;
-
-    allEdges.push(...products.edges);
-    hasNextPage = products.pageInfo.hasNextPage;
-    cursor = products.pageInfo.endCursor ?? null;
-  }
-
-  return { edges: allEdges, filters: collectionFilters, collectionId, collectionTitle };
-}
-
 export const getCollection = async ({
   handle,
   searchParams,
@@ -353,34 +273,25 @@ export const getCollection = async ({
   cacheTag(`collection:${handle}`);
   cacheTag(handle);
 
-  const t0 = Date.now();
-  const log = (label: string) =>
-    console.log(`[getCollection][${handle}] ${label} +${Date.now() - t0}ms`);
 
   if (!locale) throw new Error('getCollection: locale is required');
   if (!handle) throw new Error('getCollection: handle is required');
 
   const filters: ProductFilter[] = [{ available: true }];
-
-  if (genderTag) {
-    const genderMetafieldValue = genderTag === 'man' ? 'choloviche' : genderTag === 'woman' ? 'zhinoche' : null;
-    if (genderMetafieldValue) {
-      filters.push({ productMetafield: { namespace: 'custom', key: 'gender', value: genderMetafieldValue } });
-    }
-  }
-
   if (searchParams) {
-    log('fetching filter definitions...');
     const filterDefinitions = await getCollectionFilters({ handle, locale });
-    log('filter definitions ready');
-
     if (filterDefinitions) {
       for (const [key, value] of Object.entries(searchParams)) {
-        if (key === 'minPrice' || key === 'maxPrice' || key === 'sort') continue;
+        if (key === 'minPrice' || key === 'maxPrice' || key === 'sort')
+          continue;
 
-        const definition = filterDefinitions.find((f) => f.id.endsWith(`.${key}`));
+        const definition = filterDefinitions.find((f) =>
+          f.id.endsWith(`.${key}`),
+        );
         if (definition) {
-          const values = Array.isArray(value) ? value : (value as string).split(';');
+          const values = Array.isArray(value)
+            ? value
+            : (value as string).split(';');
           values.forEach((v) => {
             const filterValue = definition.values.find(
               (def) => toFilterSlug(def.label) === v,
@@ -402,109 +313,58 @@ export const getCollection = async ({
   }
 
   const sort = searchParams?.sort as string | undefined;
-  const isDefaultSort = !sort || sort === 'trending';
 
-  let collection: GetCollectionQuery;
-
-  if (isDefaultSort) {
-    // Fetch all product IDs (lightweight) to apply custom sort_order metafield sorting,
-    // then fetch full data only for the current page.
-    log('fetchAllCollectionEdges (defaultSort)...');
-    const { edges: allEdges, filters: shopifyFilters, collectionId: colId, collectionTitle: colTitle } = await fetchAllCollectionEdges({
-      handle,
-      locale,
-      filters,
-    });
-    log(`fetchAllCollectionEdges done — ${allEdges.length} products`);
-
-    allEdges.sort((a: any, b: any) => {
-      const aVal = a.node.sortOrder?.value != null ? parseFloat(a.node.sortOrder.value) : Infinity;
-      const bVal = b.node.sortOrder?.value != null ? parseFloat(b.node.sortOrder.value) : Infinity;
-      if (aVal !== bVal) return aVal - bVal;
-      const aDate = a.node.createdAt ? new Date(a.node.createdAt).getTime() : 0;
-      const bDate = b.node.createdAt ? new Date(b.node.createdAt).getTime() : 0;
-      return bDate - aDate;
-    });
-
-    const pageSize = first || last || 20;
-    const startIndex = after
-      ? parseInt(after, 10)
-      : before
-        ? Math.max(0, parseInt(before, 10) - pageSize)
-        : 0;
-
-    const slicedEdges = allEdges.slice(startIndex, startIndex + pageSize);
-    const productIds = slicedEdges.map((e: any) => e.node.id);
-
-    log(`getProductsByIds (${productIds.length} ids)...`);
-    const fullProducts = await getProductsByIds(productIds, locale);
-    log('getProductsByIds done');
-
-    const fullProductsMap = new Map(fullProducts.map((p) => [p.id, p]));
-
-    // Build a minimal GetCollectionQuery-shaped response
-    collection = {
-      collection: {
-        id: colId,
-        title: colTitle,
-        handle,
-        description: '',
-        seo: { description: null },
-        image: null,
-        products: {
-          pageInfo: {
-            hasNextPage: startIndex + pageSize < allEdges.length,
-            hasPreviousPage: startIndex > 0,
-            endCursor: startIndex + pageSize < allEdges.length ? String(startIndex + pageSize) : null,
-            startCursor: String(startIndex),
-          },
-          edges: slicedEdges.map((e: any) => ({
-            ...e,
-            node: { ...e.node, ...(fullProductsMap.get(e.node.id) ?? {}) },
-          })),
-          filters: shopifyFilters,
-        },
-      },
-    } as any;
-  } else {
-    let sortKey = 'RELEVANCE';
-    let reverse = false;
-    switch (sort) {
-      case 'price-asc':    sortKey = 'PRICE';   reverse = false; break;
-      case 'price-desc':   sortKey = 'PRICE';   reverse = true;  break;
-      case 'created-desc': sortKey = 'CREATED'; reverse = true;  break;
-    }
-
-    log('storefrontClient.request...');
-    collection = await storefrontClient.request<
-      GetCollectionQuery,
-      {
-        handle: string;
-        filters?: ProductFilter[];
-        first?: number;
-        after?: string;
-        last?: number;
-        before?: string;
-        sortKey?: string;
-        reverse?: boolean;
-      }
-    >({
-      query: GetCollectionWithProducts,
-      variables: { handle, filters, first, after, last, before, sortKey, reverse },
-      language: locale.toUpperCase() as StorefrontLanguageCode,
-    });
-    log('storefrontClient.request done');
+  let sortKey = 'MANUAL';
+  let reverse = false;
+  switch (sort) {
+    case 'price-asc':
+      sortKey = 'PRICE';
+      reverse = false;
+      break;
+    case 'price-desc':
+      sortKey = 'PRICE';
+      reverse = true;
+      break;
+    case 'created-desc':
+      sortKey = 'CREATED';
+      reverse = true;
+      break;
   }
+
+  const collection = await storefrontClient.request<
+    GetCollectionQuery,
+    {
+      handle: string;
+      filters?: ProductFilter[];
+      first?: number;
+      after?: string;
+      last?: number;
+      before?: string;
+      sortKey?: string;
+      reverse?: boolean;
+    }
+  >({
+    query: GetCollectionWithProducts,
+    variables: {
+      handle,
+      filters,
+      first,
+      after,
+      last,
+      before,
+      sortKey,
+      reverse,
+    },
+    language: locale.toUpperCase() as StorefrontLanguageCode,
+  });
 
   const collectionId = collection.collection?.id;
   if (!collectionId) {
-    log('no collectionId — returning early');
     return { collection, alternateHandle: '' };
   }
 
   const targetLocale = locale === 'ru' ? 'UK' : 'RU';
 
-  log('fetching alternateHandle...');
   const alternateRequest = await storefrontClient.request<
     { collection: { handle: string } },
     { id: string }
@@ -518,7 +378,6 @@ export const getCollection = async ({
     variables: { id: collectionId },
     language: targetLocale as StorefrontLanguageCode,
   });
-  log(`done — total ${Date.now() - t0}ms`);
 
   return {
     collection,

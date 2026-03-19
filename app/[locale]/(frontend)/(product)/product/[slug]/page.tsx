@@ -47,9 +47,14 @@ export default async function ProductPage({ params, searchParams }: Props) {
   const handle = decodeURIComponent(slug);
   setRequestLocale(locale);
 
+
   return (
     <Suspense fallback={<ProductViewSkeleton handle={handle} />}>
-      <ProductContent handle={handle} locale={locale} searchParams={searchParams} />
+      <ProductContent
+        handle={handle}
+        locale={locale}
+        searchParams={searchParams}
+      />
     </Suspense>
   );
 }
@@ -72,7 +77,11 @@ const ProductContent = async ({
   return (
     <>
       <JsonLd data={generateProductJsonLd(product, locale)} />
-      <ProductSessionView handle={handle} locale={locale} searchParams={searchParams}>
+      <ProductSessionView
+        handle={handle}
+        locale={locale}
+        searchParams={searchParams}
+      >
         <Suspense
           fallback={
             <Button

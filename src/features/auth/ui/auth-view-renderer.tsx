@@ -5,7 +5,6 @@ import { ResetPasswordForm } from '@/features/auth/ui/reset-password-form';
 import { localization } from '@/shared/i18n/localization/authView';
 import { AuthView } from '@daveyplate/better-auth-ui';
 import { notFound } from 'next/navigation';
-import { SignOut } from './sign-out';
 
 interface AuthViewRendererProps {
   authView: string;
@@ -35,7 +34,6 @@ export const AuthViewRenderer = ({
       return (
       <AuthView path={authView} localization={localization(tBetterAuth)} />
     );
-      return (<SignOut/>)
     default:
       notFound();
   }

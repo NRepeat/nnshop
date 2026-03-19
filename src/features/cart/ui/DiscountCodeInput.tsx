@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { usePostHog } from 'posthog-js/react';
 import { Input } from '@shared/ui/input';
 import { Button } from '@shared/ui/button';
 import { X, Tag, Loader2, Check } from 'lucide-react';
@@ -26,6 +27,7 @@ export const DiscountCodeInput = ({
   discountCodes = [],
   className,
 }: DiscountCodeInputProps) => {
+  const posthog = usePostHog();
   const t = useTranslations('CartPage');
   const router = useRouter();
   const [code, setCode] = useState('');
@@ -39,19 +41,24 @@ export const DiscountCodeInput = ({
     startTransition(async () => {
       const result = await applyDiscountCode(code.trim());
       if (result.success) {
-        setCode('');
         if (result.applicable === false) {
           setError(t('invalid_code'));
+          posthog?.capture('coupon_failed', { coupon_code: code.trim(), reason: 'not_applicable' });
+        } else {
+          posthog?.capture('coupon_applied', { coupon_code: code.trim() });
         }
+        setCode('');
         router.refresh();
       } else {
         setError(result.error || t('invalid_code'));
+        posthog?.capture('coupon_failed', { coupon_code: code.trim(), reason: result.error ?? 'not_applicable' });
       }
     });
   };
 
   const handleRemove = (codeToRemove: string) => {
     startTransition(async () => {
+      posthog?.capture('coupon_removed', { coupon_code: codeToRemove });
       await removeDiscountCode(codeToRemove);
       router.refresh();
     });
@@ -113,9 +120,9 @@ export const DiscountCodeInput = ({
             >
               <div className="flex items-center gap-2">
                 {discount.applicable ? (
-                  <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                  <Check className="h-4 w-4 text-green-600 " />
                 ) : (
-                  <Tag className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                  <Tag className="h-4 w-4 text-yellow-600 " />
                 )}
                 <span className="font-medium">{discount.code}</span>
                 {!discount.applicable && (
