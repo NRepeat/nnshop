@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     viewTransition: true,
     cssChunking: true,
   },
+  output: 'standalone',
   // productionBrowserSourceMaps: true,
   typescript: {
     ignoreBuildErrors: false,
