@@ -35,6 +35,7 @@ type ProductCardProps = {
   withInnerShadow?: boolean;
   withSizes?: boolean;
   source?: string;
+  priority?: boolean;
 };
 
 export const ProductCard = ({
@@ -47,6 +48,7 @@ export const ProductCard = ({
   withSizes = true,
   addToCard,
   source = 'collection',
+  priority = false,
 }: ProductCardProps) => {
   const t = useTranslations('ProductCard');
   const tPage = useTranslations('ProductPage');
@@ -104,10 +106,8 @@ export const ProductCard = ({
       const raw = variant.node.previewImage?.url || '';
       const sep = raw.includes('?') ? '&' : '?';
       return {
-        url: raw ? `${raw}${sep}width=400&height=400&pad_color=ffffff` : '',
+        url: raw ? `${raw}${sep}pad_color=ffffff` : '',
         altText: variant.node.previewImage?.altText || '',
-        width: 400,
-        height: 400,
       };
     }) ?? []),
   ]
@@ -236,7 +236,8 @@ export const ProductCard = ({
                           className="object-cover w-full h-full"
                           src={image.url}
                           alt={image.altText || ''}
-                          loading={index === 0 ? 'eager' : 'lazy'}
+                          priority={priority && index === 0}
+                          loading={priority && index === 0 ? 'eager' : 'lazy'}
                           sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                           fill
                         />
@@ -318,7 +319,8 @@ export const ProductCard = ({
                     ''
                   }
                   fill
-                  loading="lazy"
+                  priority={priority}
+                  loading={priority ? 'eager' : 'lazy'}
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 />
               </div>

@@ -91,6 +91,8 @@ export default async function RootLayout(props: RootProps) {
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://cdn.shopify.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
         <Script
           id="google-tag-manager"
           async

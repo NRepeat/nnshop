@@ -61,14 +61,6 @@ const nextConfig: NextConfig = {
         destination: 'https://cdn.pulse.is/:path*',
       },
       {
-        source: '/assets/shopify-cdn/:path*',
-        destination: 'https://cdn.shopify.com/:path*',
-      },
-      {
-        source: '/assets/sanity-cdn/:path*',
-        destination: 'https://cdn.sanity.io/:path*',
-      },
-      {
         source: '/ingest/static/:path*',
         destination: 'https://us-assets.i.posthog.com/static/:path*',
       },

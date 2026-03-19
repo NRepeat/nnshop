@@ -36,7 +36,7 @@ export const ClientGrid = ({
       )}
     >
       <AnimatePresence>
-        {products.map((product) => (
+        {products.map((product, index) => (
           <motion.div
             key={product.id}
             className="col-span-1"
@@ -50,6 +50,7 @@ export const ClientGrid = ({
               className="hover:shadow pt-0 px-0 rounded"
               withCarousel
               isFav={product.isFav}
+              priority={index < 4}
             />
           </motion.div>
         ))}
