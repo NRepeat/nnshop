@@ -26,7 +26,7 @@ export const ClientGrid = ({
   return (
     <motion.div
       variants={container}
-      initial="hidden"
+      initial={false}
       animate="show"
       className={cn(
         'grid gap-1 md:gap-4 mt-2',

@@ -123,7 +123,7 @@ const Gallery = ({
                             }}
                             priority={index === 0}
                             fetchPriority={index === 0 ? 'high' : 'auto'}
-                            loading={index === 0 ? 'eager' : 'lazy'}
+                            loading={index < 3 ? 'eager' : 'lazy'}
                             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 40vw"
                             placeholder={index === 0 ? 'empty' : 'blur'}
                             blurDataURL={index === 0 ? undefined : BLUR_DATA_URL}

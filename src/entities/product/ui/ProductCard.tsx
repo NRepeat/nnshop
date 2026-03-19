@@ -181,12 +181,23 @@ export const ProductCard = ({
     if (api2) api2.scrollTo(0, true);
   }, [api2]);
 
+  const handleMouseEnter = useCallback(() => {
+    if (productImages.length <= 1) return;
+    productImages.slice(1).forEach(({ url }) => {
+      if (!url) return;
+      const img = new window.Image();
+      img.src = url;
+    });
+  }, [productImages]);
+
   return (
     <Card
       className={clsx(
         'h-full shadow-none  transition-shadow p-0   backdrop-blur-sm bg-transparent border border-none cursor-pointer group relative',
         className,
       )}
+      onMouseEnter={handleMouseEnter}
+      onTouchStart={handleMouseEnter}
     >
       <Link
         href={`/product/${product.handle}`}
