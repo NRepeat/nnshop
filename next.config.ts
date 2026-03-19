@@ -110,12 +110,4 @@ const nextConfig: NextConfig = {
 };
 const withNextIntl = createNextIntlPlugin('./src/shared/i18n/request.ts');
 
-export default withPostHogConfig(withNextIntl(nextConfig), {
-  personalApiKey: process.env.POSTHOG_PERSONAL_API_KEY!,
-  projectId: process.env.POSTHOG_PROJECT_ID!,
-  host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-  sourcemaps: {
-    enabled: process.env.NODE_ENV === 'production',
-    deleteAfterUpload: false,
-  },
-});
+export default withNextIntl(nextConfig);

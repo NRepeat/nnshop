@@ -52,8 +52,6 @@ export const NavButton = ({
     }
     const currentHandle = segments[1];
     if (!currentHandle) return `/${slug}`;
-    console.log(isBrandPage, segments, currentHandle, slug,detectGenderFromHandle(currentHandle) === slug);
-
     if (detectGenderFromHandle(currentHandle) === slug && !segments.includes("product") ) {
       return `/${slug}/${currentHandle}`;
     }

@@ -61,9 +61,6 @@ export function NuqsButtonFilter({
 
   const displayValues = (initialFilter ?? filter).values.map((v) => {
     const live = filter.values.find((fv) => fv.label === v.label);
-    if (v.label === 'L/XL') {
-      console.log(`[CLIENT DEBUG L/XL] label: ${v.label}, facetedCount: ${live?.count}, baseCount: ${v.count}`);
-    }
     return live ?? { ...v, count: 0 };
   });
 

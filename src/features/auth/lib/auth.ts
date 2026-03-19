@@ -66,7 +66,11 @@ export const auth = betterAuth({
       trustedProviders: ['shopify', 'google'],
     },
   },
-  trustedOrigins: [betterAuthUrl],
+  trustedOrigins: [
+    betterAuthUrl,
+    'https://www.miomio.com.ua',
+    'https://miomio.com.ua',
+  ],
 
   plugins: [
     oauthShopifyClient,
