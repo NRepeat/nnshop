@@ -25,7 +25,7 @@ COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 # OpenSSL для Prisma
 RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
-
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 # ── Build Args ────────────────────────────────────────────
 # NEXT_PUBLIC_* инлайнятся в клиентский JS при `next build`.
 # DATABASE_URL нужен для `prisma generate` (не подключается к БД).
