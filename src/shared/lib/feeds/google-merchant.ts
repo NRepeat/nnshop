@@ -139,7 +139,7 @@ export async function generateGoogleMerchantXml(
   while (hasNextPage) {
     const response: any = await storefrontClient.request({
       query: GET_PRODUCTS_FOR_GOOGLE_FEED,
-      variables: { first: 50, after: cursor },
+      variables: { first: 150, after: cursor },
       language: locale.toUpperCase() as StorefrontLanguageCode,
     });
 
@@ -238,8 +238,8 @@ export async function generateGoogleMerchantXml(
       }
     }
 
-    // hasNextPage = response.products.pageInfo.hasNextPage;
-    hasNextPage = false
+    hasNextPage = response.products.pageInfo.hasNextPage;
+    // hasNextPage = false
     cursor = response.products.pageInfo.endCursor;
   }
 

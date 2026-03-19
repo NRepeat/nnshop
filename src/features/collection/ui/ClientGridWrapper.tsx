@@ -1,28 +1,17 @@
 'use client';
 import * as React from 'react';
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { ClientGrid } from './ClientGrid';
 import LoadMore from './LoadMore';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
-import { useLocale } from 'next-intl';
 import { ArrowUp } from 'lucide-react';
 import { Button } from '@shared/ui/button';
-import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 import { filterProducts } from '../lib/filterProducts';
-
-function getEffectivePrice(product: Product): number {
-  const base = parseFloat((product as any).priceRange?.maxVariantPrice?.amount ?? '0');
-  const meta = (product as any).metafield;
-  const discount = meta?.key === DISCOUNT_METAFIELD_KEY && meta?.value ? parseFloat(meta.value) : 0;
-  return base * (1 - discount / 100);
-}
 
 export const ClientGridWrapper = ({
   initialPageInfo,
   initialProducts,
   handle,
-  gender,
-  sort,
   selectedSizeSlugs = [],
   optionGroups = {},
 }: {
@@ -34,11 +23,6 @@ export const ClientGridWrapper = ({
   selectedSizeSlugs?: string[];
   optionGroups?: Record<string, { name: string; values: string[] }>;
 }) => {
-  const locale = useLocale();
-  const [extraProducts, setExtraProducts] = useState<
-    (Product & { isFav: boolean })[]
-  >([]);
-
   // Convert serializable props back to Set/Map for filterProducts
   const sizeSet = React.useMemo(
     () => new Set(selectedSizeSlugs),
@@ -52,28 +36,6 @@ export const ClientGridWrapper = ({
     return map;
   }, [optionGroups]);
 
-  // key prop on this component handles reset when handle/filters change — no useEffect needed
-
-  const handleDataLoaded = useCallback(
-    (newProducts: Product[], _newPageInfo: any) => {
-      setExtraProducts((prev) => {
-        const map = new Map();
-        prev.forEach((p) => map.set(p.id, p));
-        newProducts.forEach((p) => map.set(p.id, p));
-        return Array.from(map.values());
-      });
-    },
-    [],
-  );
-
-  const combined = [...initialProducts, ...extraProducts];
-  const products =
-    sort === 'price-asc' || sort === 'price-desc'
-      ? [...combined].sort((a, b) => {
-          const diff = getEffectivePrice(a) - getEffectivePrice(b);
-          return sort === 'price-asc' ? diff : -diff;
-        })
-      : combined;
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
@@ -91,7 +53,7 @@ export const ClientGridWrapper = ({
           <ClientGrid
             products={
               filterProducts(
-                products,
+                initialProducts,
                 sizeSet,
                 groupMap,
               ) as (Product & { isFav: boolean })[]
@@ -101,10 +63,7 @@ export const ClientGridWrapper = ({
             <Suspense fallback={null}>
               <LoadMore
                 initialPageInfo={initialPageInfo}
-                onDataLoadedAction={handleDataLoaded}
-                locale={locale}
                 handle={handle}
-                gender={gender}
               />
             </Suspense>
           </div>

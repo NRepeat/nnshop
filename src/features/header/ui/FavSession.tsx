@@ -32,7 +32,9 @@ export const FavSession = memo(({
 
     const user = session.data?.user as (NonNullable<typeof session.data>['user'] & { isAnonymous?: boolean }) | undefined;
     if (!user || user.isAnonymous) {
-      router.push(`/${locale}/auth/sign-in`);
+      // Preserve current search params to keep the background state stable
+      const currentQuery = window.location.search;
+      router.push(`/${locale}/auth/sign-in${currentQuery}`, { scroll: false });
       return;
     }
 
@@ -53,7 +55,8 @@ export const FavSession = memo(({
       if (!result.success) {
         setIsFav(previousValue);
         if (result.error === 'AUTH_REQUIRED') {
-          router.push(`/${locale}/auth/sign-in`);
+          const currentQuery = window.location.search;
+          router.push(`/${locale}/auth/sign-in${currentQuery}`, { scroll: false });
         } else {
           toast("Couldn't save favorite. Try again.");
         }

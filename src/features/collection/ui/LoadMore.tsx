@@ -1,81 +1,60 @@
 'use client';
 
-import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
+import { PageInfo } from '@shared/lib/shopify/types/storefront.types';
 import { Button } from '@shared/ui/button';
 import { Loader2 } from 'lucide-react';
-import { useCallback, useEffect, useState, useTransition } from 'react';
-import { useInView } from 'react-intersection-observer';
-import { getCollectionProducts } from '../api/getCollectionProducts';
-import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { usePostHog } from 'posthog-js/react';
+import { useQueryState, parseAsInteger } from 'nuqs';
+import { useEffect, useTransition } from 'react';
+import { useInView } from 'react-intersection-observer';
 
 export default function LoadMore({
   handle,
-  locale,
-  onDataLoadedAction,
   initialPageInfo,
-  gender,
 }: {
-  locale: string;
   handle: string;
   initialPageInfo: PageInfo;
-  onDataLoadedAction: (products: Product[], pageInfo: PageInfo) => void;
+  // unused in new logic, kept for type compatibility during refactor
+  locale?: string;
+  onDataLoadedAction?: any;
   gender?: string;
 }) {
   const t = useTranslations('LoadMore');
   const posthog = usePostHog();
-  const [pageInfo, setPageInfo] = useState<PageInfo>(initialPageInfo);
   const [isPending, startTransition] = useTransition();
-  const { inView } = useInView();
-  const searchParams = useSearchParams();
+  const { ref, inView } = useInView();
 
-  useEffect(() => {
-    setPageInfo(initialPageInfo);
-  }, [initialPageInfo]);
+  const [limit, setLimit] = useQueryState(
+    'limit',
+    parseAsInteger.withDefault(20).withOptions({
+      shallow: false,
+      history: 'replace',
+      scroll: false,
+    }),
+  );
 
-  const handleLoadMore = useCallback(() => {
-    if (!pageInfo.hasNextPage || isPending) return;
-
+  const handleLoadMore = () => {
+    if (isPending || !initialPageInfo?.hasNextPage) return;
+    
     startTransition(async () => {
-      const params: { [key: string]: string } = {};
-      searchParams.forEach((value, key) => {
-        params[key] = value;
+      const newLimit = limit + 20;
+      posthog?.capture('collection_load_more', {
+        method: 'action',
+        collection_handle: handle,
+        new_limit: newLimit,
       });
-      const result = await getCollectionProducts({
-        info: pageInfo,
-        locale,
-        slug: handle,
-        searchParams: params,
-        gender,
-      });
-
-      if (result) {
-        setPageInfo(result.pageInfo as PageInfo);
-        onDataLoadedAction(
-          result.products as Product[],
-          result.pageInfo as PageInfo,
-        );
-      }
+      await setLimit(newLimit);
     });
-  }, [
-    pageInfo,
-    isPending,
-    searchParams,
-    locale,
-    handle,
-    gender,
-    onDataLoadedAction,
-  ]);
+  };
 
-  useEffect(() => {
-    if (inView && !isPending && pageInfo?.hasNextPage) {
-      posthog?.capture('collection_load_more', { method: 'auto', collection_handle: handle });
-      handleLoadMore();
-    }
-  }, [inView, isPending, pageInfo, handleLoadMore]);
+  // useEffect(() => {
+  //   if (inView && !isPending && initialPageInfo?.hasNextPage) {
+  //     handleLoadMore();
+  //   }
+  // }, [inView, isPending, initialPageInfo?.hasNextPage]);
 
-  if (!pageInfo?.hasNextPage) return null;
+  if (!initialPageInfo?.hasNextPage) return null;
 
   return (
     <div className="mt-10 flex flex-col items-center gap-6 p-4 min-h-[100px]">
@@ -87,10 +66,7 @@ export default function LoadMore({
 
       <Button
         variant="default"
-        onClick={() => {
-          posthog?.capture('collection_load_more', { method: 'manual', collection_handle: handle });
-          handleLoadMore();
-        }}
+        onClick={handleLoadMore}
         disabled={isPending}
         className="px-8 rounded"
       >

@@ -288,7 +288,8 @@ export const ProductCard = ({
                           product_handle: product.handle,
                           source,
                         });
-                        nav.push(`/quick/${product.handle}`, { scroll: false });
+                        const currentQuery = window.location.search;
+                        nav.push(`/quick/${product.handle}${currentQuery}`, { scroll: false });
                       }}
                       className='cursor-pointer'
                     >
@@ -332,7 +333,8 @@ export const ProductCard = ({
                         product_handle: product.handle,
                         source,
                       });
-                      nav.push(`/quick/${product.handle}`, { scroll: false });
+                      const currentQuery = window.location.search;
+                      nav.push(`/quick/${product.handle}${currentQuery}`, { scroll: false });
                     }}
                   >
                     {t('quickView')}

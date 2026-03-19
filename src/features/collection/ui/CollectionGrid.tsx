@@ -60,6 +60,8 @@ export const CollectionGrid = async ({
   ]);
   const { locale, slug, gender } = awaitedParams;
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
+  
+  const limit = parseInt((awaitedSearchParams.limit as string) || '20', 10);
 
   const allSlugs = await getCollectionSlugs();
   const resolvedHandle = resolveCollectionHandle(slug, gender, new Set(allSlugs));
@@ -72,7 +74,7 @@ export const CollectionGrid = async ({
     }),
     getCollection({
       handle: resolvedHandle,
-      first: 20,
+      first: limit,
       locale: locale,
       searchParams: awaitedSearchParams,
       gender,
@@ -285,11 +287,11 @@ export const CollectionGrid = async ({
             </div>
           ) : (
             <ClientGridWrapper
-              key={`${resolvedHandle}-${JSON.stringify(awaitedSearchParams)}`}
               initialPageInfo={pageInfo as PageInfo}
               // @ts-ignore
               initialProducts={productsWithFav as Product[]}
               handle={resolvedHandle}
+              gender={gender}
               sort={sortParam}
               selectedSizeSlugs={Array.from(selectedSizeSlugs)}
               optionGroups={serializableOptionGroups}
