@@ -15,8 +15,6 @@ import { JsonLd } from '@shared/ui/JsonLd';
 import { ScrollDirectionProvider } from '@shared/ui/ScrollDirectionProvider';
 import { SessionBanner } from '@features/session-banner';
 import { generateOrganizationJsonLd } from '@shared/lib/seo/jsonld';
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import Script from 'next/script';
 
 const jostSans = Onest({
@@ -140,8 +138,6 @@ export default async function RootLayout(props: RootProps) {
       <Suspense>
         <DraftModeTools />
       </Suspense>
-      <Analytics />
-      <SpeedInsights />
     </html>
   );
 }

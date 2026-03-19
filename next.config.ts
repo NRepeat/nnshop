@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
     'http://localhost:3000',
     'http://localhost:4000',
     'http://localhost:3333',
+    'staging.miomio.com.ua',
     'prod.nninc.uk',
     'miomio.com.ua',
     'www.miomio.com.ua',
