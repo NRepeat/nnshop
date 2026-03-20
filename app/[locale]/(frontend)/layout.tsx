@@ -6,6 +6,7 @@ import { Header } from '@widgets/header/ui/Header';
 import { Footer } from '@widgets/footer/ui/Footer';
 import { locales } from '@shared/i18n/routing';
 import { setRequestLocale } from 'next-intl/server';
+import { notFound } from 'next/navigation';
 import { DisableDraftMode } from '@shared/sanity/components/live/DisableDraftMode';
 import { SanityLive } from '@shared/sanity/lib/live';
 import { VisualEditing } from 'next-sanity/visual-editing';
@@ -85,6 +86,10 @@ interface RootProps {
 export default async function RootLayout(props: RootProps) {
   const { children, params, auth, modal } = props;
   const { locale } = await params;
+
+  if (!locales.includes(locale as (typeof locales)[number])) {
+    notFound();
+  }
 
   setRequestLocale(locale);
 
