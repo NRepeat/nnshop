@@ -101,6 +101,12 @@ export function generateProductJsonLd(product: ShopifyProduct, locale: string) {
   const salePrice = hasDiscount ? originalPrice * (1 - discountValue / 100) : originalPrice;
 
   const currentPrice = salePrice.toFixed(2);
+
+  const minPriceSource = product.priceRange.minVariantPrice;
+  const minOriginalPrice = parseFloat(minPriceSource.amount);
+  const minSalePrice = hasDiscount ? minOriginalPrice * (1 - discountValue / 100) : minOriginalPrice;
+  const minPrice = minSalePrice.toFixed(2);
+
   const priceValidUntil = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)
     .toISOString()
     .split('T')[0];
@@ -128,7 +134,6 @@ export function generateProductJsonLd(product: ShopifyProduct, locale: string) {
       : 'https://schema.org/OutOfStock',
     itemCondition: 'https://schema.org/NewCondition',
     url: productUrl,
-    priceValidUntil,
     hasMerchantReturnPolicy: RETURN_POLICY,
     shippingDetails: SHIPPING_DETAILS,
     ...(priceSpecification ? { priceSpecification } : {}),
@@ -138,15 +143,24 @@ export function generateProductJsonLd(product: ShopifyProduct, locale: string) {
     variants.length > 1
       ? {
           '@type': 'AggregateOffer',
-          lowPrice: currentPrice,
+          lowPrice: minPrice,
+          highPrice: currentPrice,
           priceCurrency: currency,
           offerCount: variants.length,
+          offers: {
+            '@type': 'Offer',
+            price: minPrice,
+            priceCurrency: currency,
+            priceValidUntil,
+            ...baseOffer,
+          },
           ...baseOffer,
         }
       : {
           '@type': 'Offer',
           price: currentPrice,
           priceCurrency: currency,
+          priceValidUntil,
           sku: variants[0]?.sku || undefined,
           ...baseOffer,
         };
