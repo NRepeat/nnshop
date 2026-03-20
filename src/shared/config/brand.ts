@@ -1,6 +1,16 @@
 // Base site URL (set NEXT_PUBLIC_SITE_URL in env for production)
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://miomio.com.ua';
 
+export const TRUSTED_ORIGINS: string[] = [
+  SITE_URL,
+  'https://miomio.com.ua',
+  'https://www.miomio.com.ua',
+  'https://app.miomio.com.ua',
+  'https://staging.miomio.com.ua',
+  'https://nmactunel.nninc.uk',
+  'https://prod.nninc.uk',
+];
+
 // Brand display name
 export const BRAND_NAME = 'Mio Mio';
 

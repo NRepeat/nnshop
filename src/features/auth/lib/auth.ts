@@ -1,4 +1,5 @@
 import { betterAuth } from 'better-auth';
+import { TRUSTED_ORIGINS } from '@shared/config/brand';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { oauthShopifyClient } from './shopify/client';
 import { nextCookies } from 'better-auth/next-js';
@@ -66,13 +67,7 @@ export const auth = betterAuth({
       trustedProviders: ['shopify', 'google'],
     },
   },
-  trustedOrigins: [
-    betterAuthUrl,
-    'https://miomio.com.ua',
-    'https://www.miomio.com.ua',
-    'https://nmactunel.nninc.uk',
-    'https://staging.miomio.com.ua',
-  ],
+  trustedOrigins: TRUSTED_ORIGINS,
 
   plugins: [
     oauthShopifyClient,
