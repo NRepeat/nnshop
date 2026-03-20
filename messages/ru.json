@@ -522,7 +522,7 @@
     "orderIdIsRequired": "Требуется ID заказа",
     "choosePaymentMethod": "Выберите способ оплаты",
     "selectPaymentMethodDescription": "Выберите, когда вы хотите оплатить заказ.",
-    "payNowDescription": "Оплата на банковские реквизиты",
+    "payNowDescription": "Оплата картой или через LiqPay",
     "afterDeliveredDescription": "Оплатить после получения заказа",
     "afterDeliveredNote": "Комиссия Новой почты за услугу наложенного платежа 20грн +2% от стоимости товара",
     "payLaterDescription": "Оплатить в течение 30 дней",
@@ -536,7 +536,9 @@
     "bankTransferDescription": "Перевод на банковский счет",
     "creditCardDescription": "Кредитная или дебетовая карта",
     "paypalDescription": "Оплатить через PayPal",
-    "stripeDescription": "Обработка платежей Stripe"
+    "stripeDescription": "Обработка платежей Stripe",
+    "liqpay": "LiqPay",
+    "liqpayDescription": "Онлайн оплата картой через LiqPay"
   },
   "ReceiptPage": {
     "title": "Итог заказа",
@@ -563,12 +565,27 @@
     "quantity_label": "Количество"
   },
   "ThankYouPage": {
-    "title": "Спасибо за ваш заказ!",
-    "order_id": "Ваш номер заказа:",
-    "order_confirmation": "Подтверждение заказа",
-    "order_confirmation_text": "Вы скоро получите электронное письмо с деталями вашего заказа.",
+    "title": "Спасибо за заказ!",
+    "order_id": "Заказ",
+    "email_sent_to": "Подтверждение отправлено на",
+    "what_next_title": "Что дальше?",
+    "what_next_text": "Менеджер свяжется с вами для подтверждения заказа в течение 30 минут в рабочее время (пн–пт 10:00–18:00, сб–вс 11:00–17:00).",
+    "step_confirmed": "Заказ принят",
+    "step_dispatch_np": "Отправка Нова Пошта",
+    "step_delivery_np": "Доставка 1–3 дня",
+    "step_dispatch_up": "Отправка Укрпошта",
+    "step_delivery_up": "Доставка 3–7 дней",
+    "step_preparing": "Подготовка заказа",
+    "step_ready_pickup": "Готово к самовывозу",
+    "your_order": "Ваш заказ",
+    "quantity": "Количество",
+    "subtotal": "Сумма товаров",
+    "shipping": "Доставка",
+    "free": "Бесплатно",
+    "total": "Итого",
+    "delivery_address": "Адрес доставки",
     "continue_shopping": "Продолжить покупки",
-    "total": "Итого"
+    "my_orders": "Мои заказы"
   },
   "CheckoutSteps": {
     "info": "Контактная информация",
@@ -771,5 +788,10 @@
     "sending": "Отправляется...",
     "successMessage": "Спасибо! Ваше сообщение отправлено.",
     "errorMessage": "Что-то пошло не так. Попробуйте ещё раз."
+  },
+  "ConsentBanner": {
+    "text": "Мы используем файлы cookie для аналитики и персонализации рекламы. Вы можете принять или отказаться.",
+    "accept": "Принять",
+    "decline": "Отказаться"
   }
 }

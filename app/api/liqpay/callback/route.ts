@@ -3,8 +3,19 @@ import resetCartSession from '@features/cart/api/resetCartSession';
 import { savePaymentInfo } from '@features/checkout/payment/api/savePaymentInfo';
 import { PaymentInfo } from '@features/checkout/payment/schema/paymentSchema';
 import { prisma } from '@shared/lib/prisma';
+import { adminClient } from '@shared/lib/shopify/admin-client';
 import { captureServerEvent, captureServerError } from '@shared/lib/posthog/posthog-server';
+import { PRICE_APP_URL, INTERNAL_API_SECRET } from '@shared/config/shop';
 import { NextRequest, NextResponse } from 'next/server';
+
+const ORDER_MARK_AS_PAID_MUTATION = `
+  mutation orderMarkAsPaid($input: OrderMarkAsPaidInput!) {
+    orderMarkAsPaid(input: $input) {
+      order { id }
+      userErrors { field message }
+    }
+  }
+`;
 
 if (!process.env.LIQPAY_PUBLIC_KEY || !process.env.LIQPAY_PRIVATE_KEY) {
   throw new Error('LIQPAY_PUBLIC_KEY and LIQPAY_PRIVATE_KEY must be set');
@@ -29,8 +40,8 @@ export async function POST(request: NextRequest) {
     }
     const paymentData = liqpay.decodeData(data);
     if (paymentData.status === 'success' || paymentData.status === 'sandbox') {
-      const shopifyOrderId = paymentData.order_id;
-      if (!shopifyOrderId) {
+      const rawOrderId = paymentData.order_id;
+      if (!rawOrderId) {
         await captureServerError(new Error('LiqPay callback missing order_id'), {
           service: 'api',
           action: 'liqpay_callback_no_order_id',
@@ -41,6 +52,11 @@ export async function POST(request: NextRequest) {
           { status: 400 },
         );
       }
+
+      // order_id may be numeric (e.g. "7949482229922") or full GID
+      const shopifyOrderId = rawOrderId.includes('gid://')
+        ? rawOrderId
+        : `gid://shopify/Order/${rawOrderId}`;
 
       // Find the order in prisma by shopifyOrderId
       const order = await prisma.order.findUnique({
@@ -64,7 +80,51 @@ export async function POST(request: NextRequest) {
         orderId: order.id,
       };
       await savePaymentInfo(paymentInfo, order.id);
-      await resetCartSession(order.id);
+      try {
+        await resetCartSession(order.id);
+      } catch {
+        // Cart may already be cleared from PaymentForm — non-blocking
+      }
+
+      // Mark order as paid in Shopify so orders/paid webhook fires
+      try {
+        const result = await adminClient.client.request<
+          { orderMarkAsPaid: { order: { id: string } | null; userErrors: Array<{ field: string; message: string }> } },
+          { input: { id: string } }
+        >({
+          query: ORDER_MARK_AS_PAID_MUTATION,
+          variables: { input: { id: shopifyOrderId } },
+        });
+        const userErrors = result?.orderMarkAsPaid?.userErrors || [];
+        if (userErrors.length > 0) {
+          console.error('[LiqPay callback] orderMarkAsPaid errors:', userErrors);
+        } else {
+          console.log('[LiqPay callback] order marked as paid in Shopify:', shopifyOrderId);
+        }
+      } catch (markError) {
+        console.error('[LiqPay callback] Failed to mark order as paid in Shopify:', markError);
+      }
+
+      // Confirm payment in keyCRM + send eSputnik CONFIRMED (fire-and-forget)
+      try {
+        const internalHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (INTERNAL_API_SECRET) internalHeaders['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
+        fetch(`${PRICE_APP_URL}/api/internal/confirm-payment`, {
+          method: 'POST',
+          headers: internalHeaders,
+          body: JSON.stringify({
+            orderName: order.orderName,
+            amount: paymentData.amount,
+            currency: paymentData.currency,
+            paymentMethod: 'liqpay',
+          }),
+        }).catch((err) => {
+          console.error('[LiqPay callback] confirm-payment call failed:', err);
+        });
+      } catch (err) {
+        console.error('[LiqPay callback] failed to call confirm-payment:', err);
+      }
+
       await captureServerEvent(order.userId, 'payment_completed', {
         order_id: order.id,
         shopify_order_id: shopifyOrderId,

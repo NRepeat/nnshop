@@ -22,6 +22,7 @@ const Content = async ({
   discountCodes,
   totalAmount,
   discountAmount,
+  discountRate,
 }: {
   mockProducts: {
     id: string;
@@ -44,6 +45,7 @@ const Content = async ({
   subtotalAmount: number;
   totalAmount: number;
   discountAmount: number;
+  discountRate: number;
 }) => {
   const t = await getTranslations({
     locale,
@@ -98,7 +100,12 @@ const Content = async ({
         <div className="w-full flex flex-col gap-2 px-4 py-4">
           {discountAmount > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t('discount')}</span>
+              <span className="text-muted-foreground">
+                {t('discount')}{' '}
+                <span className="text-green-600 ml-2.5">
+                  -{Math.round(discountRate * 100)}%
+                </span>
+              </span>
               <span className="text-green-600">
                 -
                 {Math.round(discountAmount)

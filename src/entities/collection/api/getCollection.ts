@@ -285,9 +285,10 @@ export const getCollection = async ({
         if (key === 'minPrice' || key === 'maxPrice' || key === 'sort')
           continue;
 
-        const definition = filterDefinitions.find((f) =>
-          f.id.endsWith(`.${key}`),
-        );
+        const definition = filterDefinitions.find((f) => {
+          const segment = f.id.split('.').pop() || '';
+          return toFilterSlug(segment) === key || f.id.endsWith(`.${key}`);
+        });
         if (definition) {
           const values = Array.isArray(value)
             ? value

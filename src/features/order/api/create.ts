@@ -8,7 +8,7 @@
 // it does NOT affect Server Action CSRF protection.
 'use server';
 import { getCart } from '@entities/cart/api/get';
-import { DISCOUNT_METAFIELD_KEY, DEFAULT_CURRENCY_CODE, DEFAULT_COUNTRY_CODE } from '@shared/config/shop';
+import { DISCOUNT_METAFIELD_KEY, DEFAULT_CURRENCY_CODE, DEFAULT_COUNTRY_CODE, PRICE_APP_URL, SHOPIFY_STORE_DOMAIN, INTERNAL_API_SECRET } from '@shared/config/shop';
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
@@ -149,7 +149,7 @@ export async function createOrder(
       0,
     );
     // Shopify calculates the discount on original prices; derive rate and apply to sale subtotal
-    const discountRate = hasApplicableDiscount && shopifySubtotal > 0
+    const discountRate = cartDiscountTotal > 0 && shopifySubtotal > 0
       ? cartDiscountTotal / shopifySubtotal
       : 0;
     const goodsTotal = localTotal * (1 - discountRate);
@@ -383,6 +383,72 @@ export async function createOrder(
         extra: { orderId: createdOrder.id },
       });
       // Do NOT re-throw — Shopify order exists; user must see success state
+    }
+
+    // Trigger KeyCRM + eSputnik immediately (bypasses slow Shopify webhook)
+    // Fire-and-forget — order already exists in Shopify, don't block the user
+    try {
+      const numericOrderId = createdOrder.id.replace('gid://shopify/Order/', '');
+      const webhookPayload = {
+        id: Number(numericOrderId),
+        name: createdOrder.name,
+        email: order.email || '',
+        phone: order.phone || '',
+        created_at: new Date().toISOString(),
+        currency: currencyCode,
+        financial_status: 'pending',
+        note: order.note || '',
+        note_attributes: [],
+        payment_gateway_names: [paymentMethod === 'pay-now' ? 'liqpay' : 'manual'],
+        customer: {
+          first_name: completeCheckoutData.contactInfo.name || '',
+          last_name: completeCheckoutData.contactInfo.lastName || '',
+          email: completeCheckoutData.contactInfo.email || '',
+          phone: order.phone || '',
+        },
+        shipping_address: order.shippingAddress
+          ? {
+              first_name: order.shippingAddress.firstName || '',
+              last_name: order.shippingAddress.lastName || '',
+              address1: order.shippingAddress.address1 || '',
+              address2: order.shippingAddress.address2 || null,
+              city: order.shippingAddress.city || '',
+              country: order.shippingAddress.country || '',
+              zip: order.shippingAddress.zip || '',
+              phone: order.shippingAddress.phone || '',
+            }
+          : null,
+        line_items: cart.lines.edges
+          .filter((edge: any) => edge.node.quantity > 0)
+          .map((edge: any) => {
+            const line = edge.node;
+            const variant = line.merchandise;
+            const product = variant.product;
+            return {
+              title: product.title || '',
+              variant_title: variant.title !== 'Default Title' ? variant.title : '',
+              quantity: line.quantity,
+              price: line.cost.amountPerQuantity.amount,
+              product_id: Number(product.id?.replace('gid://shopify/Product/', '') || 0),
+              variant_id: Number(variant.id?.replace('gid://shopify/ProductVariant/', '') || 0),
+              sku: '',
+            };
+          }),
+        shipping_lines: [],
+      };
+
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (INTERNAL_API_SECRET) headers['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
+
+      fetch(`${PRICE_APP_URL}/api/internal/process-order`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ payload: webhookPayload, shop: SHOPIFY_STORE_DOMAIN }),
+      }).catch((err) => {
+        console.error('[createOrder] internal process-order call failed:', err);
+      });
+    } catch (internalErr) {
+      console.error('[createOrder] failed to build internal process-order payload:', internalErr);
     }
 
     return {

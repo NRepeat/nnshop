@@ -56,14 +56,14 @@ export default async function Payment({
         localTotal += discountedPrice * line.quantity;
         shopifySubtotal += price * line.quantity;
       }
-      const hasApplicableDiscount = cartResult.cart.discountCodes?.some((d) => d.applicable);
       // cart.cost.totalAmount does not reflect discount codes — use discountAllocations instead
       const cartDiscountTotal = (cartResult.cart.discountAllocations || []).reduce(
         (sum: number, d: any) => sum + Number(d.discountedAmount.amount),
         0,
       );
       // Shopify calculates the discount on original prices; derive rate and apply to sale subtotal
-      const discountRate = hasApplicableDiscount && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
+      // cartDiscountTotal > 0 covers both code-based and automatic discounts
+      const discountRate = cartDiscountTotal > 0 && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
       const discountAmount = localTotal * discountRate;
       cartAmount = Math.max(0, localTotal - discountAmount);
     }

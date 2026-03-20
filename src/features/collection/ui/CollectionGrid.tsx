@@ -61,7 +61,7 @@ export const CollectionGrid = async ({
   const { locale, slug, gender } = awaitedParams;
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
   
-  const limit = parseInt((awaitedSearchParams.limit as string) || '20', 10);
+  const limit = Math.min(parseInt((awaitedSearchParams.limit as string) || '20', 10), 250);
 
   const allSlugs = await getCollectionSlugs();
   const resolvedHandle = resolveCollectionHandle(slug, gender, new Set(allSlugs));

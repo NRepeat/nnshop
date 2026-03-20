@@ -17,6 +17,7 @@ import { ScrollDirectionProvider } from '@shared/ui/ScrollDirectionProvider';
 import { SessionBanner } from '@features/session-banner';
 import { generateOrganizationJsonLd } from '@shared/lib/seo/jsonld';
 import Script from 'next/script';
+import { ConsentBanner } from '@features/consent/ui/ConsentBanner';
 
 const jostSans = Onest({
   variable: '--font-jost-sans',
@@ -108,8 +109,14 @@ export default async function RootLayout(props: RootProps) {
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
+            gtag('consent', 'default', {
+              'ad_storage': 'denied',
+              'ad_user_data': 'denied',
+              'ad_personalization': 'denied',
+              'analytics_storage': 'denied',
+              'wait_for_update': 500
+            });
             gtag('js', new Date());
-
             gtag('config', 'G-05RL9JZJKK');
           `}
         </Script>
@@ -139,6 +146,7 @@ export default async function RootLayout(props: RootProps) {
             <Suspense>
               <Footer locale={locale} />
             </Suspense>
+            <ConsentBanner />
           </ScrollDirectionProvider>
         </Providers>
       </body>

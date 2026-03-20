@@ -7,6 +7,7 @@ export const getPaymentSchema = (t: (key: string) => string) =>
     paymentMethod: z.enum(['pay-now', 'after-delivered', 'pay-later']),
     paymentProvider: z.enum([
       'bank-transfer',
+      'liqpay',
       'after-delivered',
     ]),
     amount: z.number().min(0.01, t('amountMustBeGreaterThanZero')),

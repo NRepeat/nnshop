@@ -27,6 +27,7 @@ const nextConfig: NextConfig = {
     'prod.nninc.uk',
     'miomio.com.ua',
     'www.miomio.com.ua',
+    'nmactunel.nninc.uk',
   ],
   images: {
     loader: 'custom',

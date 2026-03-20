@@ -1,4 +1,4 @@
-import { CreditCard, PackageCheck, Building2 } from 'lucide-react';
+import { PackageCheck, Building2, CreditCard } from 'lucide-react';
 import { PaymentInfo } from '../schema/paymentSchema';
 
 export const paymentMethods: {
@@ -16,15 +16,9 @@ export const paymentMethods: {
   {
     id: 'pay-now',
     name: 'Pay Now',
-    availableMethods: ['bank-transfer'],
+    availableMethods: ['bank-transfer', 'liqpay'],
     icon: <CreditCard />,
   },
-  // {
-  //   id: 'pay-later',
-  //   name: 'Pay Later',
-  //   availableMethods: [],
-  //   icon: <DollarSign />,
-  // },
 ] as const;
 
 export const paymentProviders: {
@@ -34,7 +28,19 @@ export const paymentProviders: {
 }[] = [
   {
     id: 'bank-transfer',
-    name: 'Bank Transfer',
+    name: 'За реквізитами',
     icon: <Building2 />,
   },
+  // {
+  //   id: 'liqpay',
+  //   name: 'LiqPay',
+  //   icon: (
+  //     <img
+  //       src="https://static.liqpay.ua/buttons/logo-white.svg"
+  //       alt="LiqPay"
+  //       className="w-5 h-5 object-contain"
+  //       onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+  //     />
+  //   ),
+  // },
 ] as const;

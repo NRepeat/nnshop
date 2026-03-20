@@ -522,7 +522,7 @@
     "orderIdIsRequired": "Потрібен ID замовлення",
     "choosePaymentMethod": "Виберіть спосіб оплати",
     "selectPaymentMethodDescription": "Виберіть, коли ви бажаєте оплатити замовлення.",
-    "payNowDescription": "Оплата на банківські реквізити",
+    "payNowDescription": "Оплата карткою або через LiqPay",
     "afterDeliveredDescription": "Оплатити після отримання замовлення",
     "afterDeliveredNote": "Комісія Нової пошти за послугу накладеного платежу 20грн +2% від вартості товару",
     "payLaterDescription": "Оплатити протягом 30 днів",
@@ -536,7 +536,9 @@
     "bankTransferDescription": "Переказ на банківський рахунок",
     "creditCardDescription": "Кредитна або дебетова картка",
     "paypalDescription": "Оплатити через PayPal",
-    "stripeDescription": "Обробка платежів Stripe"
+    "stripeDescription": "Обробка платежів Stripe",
+    "liqpay": "LiqPay",
+    "liqpayDescription": "Онлайн оплата карткою через LiqPay"
   },
   "ReceiptPage": {
     "title": "Підсумок замовлення",
@@ -563,12 +565,27 @@
     "quantity_label": "Кількість"
   },
   "ThankYouPage": {
-    "title": "Дякуємо за ваше замовлення!",
-    "order_id": "Ваш номер замовлення:",
-    "order_confirmation": "Підтвердження замовлення",
-    "order_confirmation_text": "Ви незабаром отримаєте електронний лист з деталями вашого замовлення.",
+    "title": "Дякуємо за замовлення!",
+    "order_id": "Замовлення",
+    "email_sent_to": "Підтвердження надіслано на",
+    "what_next_title": "Що далі?",
+    "what_next_text": "Менеджер зв'яжеться з вами для підтвердження замовлення протягом 30 хвилин у робочий час (пн–пт 10:00–18:00, сб–нд 11:00–17:00).",
+    "step_confirmed": "Замовлення прийнято",
+    "step_dispatch_np": "Відправка Нова Пошта",
+    "step_delivery_np": "Доставка 1–3 дні",
+    "step_dispatch_up": "Відправка Укрпошта",
+    "step_delivery_up": "Доставка 3–7 днів",
+    "step_preparing": "Підготовка замовлення",
+    "step_ready_pickup": "Готове до самовивозу",
+    "your_order": "Ваше замовлення",
+    "quantity": "Кількість",
+    "subtotal": "Сума товарів",
+    "shipping": "Доставка",
+    "free": "Безкоштовно",
+    "total": "Разом",
+    "delivery_address": "Адреса доставки",
     "continue_shopping": "Продовжити покупки",
-    "total": "Всього"
+    "my_orders": "Мої замовлення"
   },
   "CheckoutSteps": {
     "info": "Контактна інформація",
@@ -771,5 +788,10 @@
     "sending": "Надсилається...",
     "successMessage": "Дякуємо! Ваше повідомлення надіслано.",
     "errorMessage": "Щось пішло не так. Спробуйте ще раз."
+  },
+  "ConsentBanner": {
+    "text": "Ми використовуємо файли cookie для аналітики та персоналізації реклами. Ви можете прийняти або відмовитись.",
+    "accept": "Прийняти",
+    "decline": "Відмовитись"
   }
 }

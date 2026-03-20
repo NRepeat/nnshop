@@ -77,7 +77,6 @@ const CartSheet = async ({ locale }: { locale: string }) => {
     0,
   );
   const discountCodes = (cart?.cart?.discountCodes || []).filter((d) => d.applicable);
-  const hasApplicableDiscount = discountCodes.length > 0;
 
   const subtotalAmount = estimateTotal || 0;
   // cart.cost.totalAmount does not reflect discount codes — use discountAllocations instead
@@ -86,8 +85,9 @@ const CartSheet = async ({ locale }: { locale: string }) => {
     0,
   );
   // Shopify calculates the discount on original prices; derive rate and apply to sale subtotal
+  // cartDiscountTotal > 0 covers both code-based and automatic discounts
   const shopifySubtotal = mockProducts?.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0) || 0;
-  const discountRate = hasApplicableDiscount && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
+  const discountRate = cartDiscountTotal > 0 && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
   const discountAmount = subtotalAmount * discountRate;
   const totalAmount = Math.max(0, subtotalAmount - discountAmount);
 
@@ -116,6 +116,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
         subtotalAmount={subtotalAmount}
         totalAmount={totalAmount}
         discountAmount={discountAmount}
+        discountRate={discountRate}
       />
     </>
   );
@@ -133,6 +134,7 @@ const CartWithEmptyState = ({
   subtotalAmount,
   totalAmount,
   discountAmount,
+  discountRate,
 }: {
   products: any;
   currencySymbol: string;
@@ -143,6 +145,7 @@ const CartWithEmptyState = ({
   subtotalAmount: number;
   totalAmount: number;
   discountAmount: number;
+  discountRate: number;
 }) => {
   if (!cartId || !products || products.length === 0) {
     return <EmptyState locale={locale} />;
@@ -158,6 +161,7 @@ const CartWithEmptyState = ({
         subtotalAmount={subtotalAmount}
         totalAmount={totalAmount}
         discountAmount={discountAmount}
+        discountRate={discountRate}
       />
     );
   }

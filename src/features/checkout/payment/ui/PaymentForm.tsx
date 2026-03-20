@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { useRouter } from '@shared/i18n/navigation';
 import { PaymentInfo, getPaymentSchema } from '../schema/paymentSchema';
 import { savePaymentInfo } from '../api/savePaymentInfo';
+import { getLiqpayFormParams } from '../api/getLiqpayFormParams';
 import { Button } from '@shared/ui/button';
 import { Form } from '@shared/ui/form';
 import PaymentMethodSelection from './PaymentMethodSelection';
@@ -61,6 +62,8 @@ export default function PaymentForm({
   const posthog = usePostHog();
   const [isMerging, setIsMerging] = useState(false);
   const prevUserIdRef = useRef<string | null>(null);
+  const [liqpayParams, setLiqpayParams] = useState<{ data: string; signature: string; checkoutUrl: string } | null>(null);
+  const liqpayFormRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     const userId = session?.user?.id ?? null;
@@ -73,6 +76,13 @@ export default function PaymentForm({
     }
     prevUserIdRef.current = userId;
   }, [session?.user?.id]);
+
+  // Auto-submit LiqPay form once params are ready
+  useEffect(() => {
+    if (liqpayParams && liqpayFormRef.current) {
+      liqpayFormRef.current.submit();
+    }
+  }, [liqpayParams]);
 
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
     setIsLoading(true);
@@ -123,14 +133,20 @@ export default function PaymentForm({
         console.error('[PaymentForm] resetCartSession failed (non-blocking):', resetError);
       }
 
-      // 4a. LiqPay disabled temporarily — skip and redirect to success page directly
-      // if (data.paymentMethod === 'pay-now' && data.paymentProvider === 'bank-transfer') {
-      //   setLiqpayOrderId(createdOrder.id);
-      //   setIsLoading(false);
-      //   return;
-      // }
+      // 4a. LiqPay: redirect to LiqPay checkout when liqpay provider selected
+      if (data.paymentMethod === 'pay-now' && data.paymentProvider === 'liqpay') {
+        const params = await getLiqpayFormParams({
+          shopifyOrderId: createdOrder.id,
+          amount,
+          currency,
+          checkoutData: completeCheckoutData,
+        });
+        setLiqpayParams(params);
+        // form auto-submits via useEffect — keep loading spinner
+        return;
+      }
 
-      // 4b. All methods: redirect to success page immediately
+      // 4b. All other methods: redirect to success page immediately
       toast.success(t('paymentInformationSaved'));
       router.push(`/checkout/success/${encodeURIComponent(orderName)}`);
     } catch (error) {
@@ -140,6 +156,28 @@ export default function PaymentForm({
       setIsLoading(false);
     }
   };
+
+  // Hidden LiqPay redirect form — auto-submitted once params are set
+  if (liqpayParams) {
+    return (
+      <div className="w-full max-w-4xl mx-auto flex items-center justify-center py-12">
+        <div className="flex items-center gap-3 text-gray-600">
+          <div className="w-6 h-6 border-2 border-gray-300 border-t-green-800 rounded-full animate-spin" />
+          <span>{t('processingPayment')}</span>
+        </div>
+        <form
+          ref={liqpayFormRef}
+          method="POST"
+          action={liqpayParams.checkoutUrl}
+          acceptCharset="utf-8"
+          className="hidden"
+        >
+          <input type="hidden" name="data" value={liqpayParams.data} />
+          <input type="hidden" name="signature" value={liqpayParams.signature} />
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
