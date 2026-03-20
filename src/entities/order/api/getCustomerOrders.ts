@@ -39,14 +39,17 @@ export async function getCustomerOrders(
   email: string,
   locale = 'UK',
 ): Promise<CustomerOrder[]> {
-  const res = await fetch(
-    `${PRICE_APP_URL}/api/customer?email=${encodeURIComponent(email)}`,
-    { cache: 'no-store' },
-  );
+  const url = `${PRICE_APP_URL}/api/customer?email=${encodeURIComponent(email)}`;
+  console.log(`getCustomerOrders: GET ${url}`);
+
+  const res = await fetch(url, { cache: 'no-store' });
+
+  console.log(`getCustomerOrders: response ${res.status} for ${email}`);
 
   if (res.status === 404) return [];
   if (!res.ok) {
-    console.error(`getCustomerOrders: ${res.status} for ${email}`);
+    const body = await res.text().catch(() => '');
+    console.error(`getCustomerOrders: ${res.status} for ${email} — body: ${body}`);
     return [];
   }
 

@@ -16,10 +16,12 @@ export async function sendEvent({
   eventTypeKey,
   keyValue,
   params,
+  forceUpdate = false,
 }: {
   eventTypeKey: string;
   keyValue: string;
   params: Record<string, string>;
+  forceUpdate?: boolean;
 }) {
   const response = await fetch(`${ESPUTNIK_CONFIG.baseUrl}/event`, {
     method: 'POST',
@@ -30,6 +32,7 @@ export async function sendEvent({
     body: JSON.stringify({
       eventTypeKey,
       keyValue,
+      forceUpdate,
       params: Object.entries(params).map(([name, value]) => ({
         name,
         value,

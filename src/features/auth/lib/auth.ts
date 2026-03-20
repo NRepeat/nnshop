@@ -41,6 +41,7 @@ export const auth = betterAuth({
       await sendEvent({
         eventTypeKey: 'password_reset',
         keyValue: user.email,
+        forceUpdate: true,
         params: {
           EmailAddress: user.email,
           resetLink: url,
