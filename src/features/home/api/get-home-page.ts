@@ -1,5 +1,5 @@
 import { normalizeLocaleForSanity } from '@/shared/lib/locale';
-import { sanityFetch } from '@/shared/sanity/lib/client';
+import { sanityFetch } from '@/shared/sanity/lib/sanityFetch';
 import { HOME_PAGE } from '@/shared/sanity/lib/query';
 import { Locale } from '@/shared/i18n/routing';
 

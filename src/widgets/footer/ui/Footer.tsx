@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { Link } from '@shared/i18n/navigation';
 import Logo from '@shared/assets/Logo';
 import { getTranslations } from 'next-intl/server';
-import { sanityFetch } from '@shared/sanity/lib/client';
+import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
 import { FOOTER_QUERY } from '@shared/sanity/lib/query';
 import { Phone, Mail } from 'lucide-react';
 import { FooterNewsletterForm } from './FooterNewsletterForm';

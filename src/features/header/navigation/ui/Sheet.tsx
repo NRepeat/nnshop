@@ -3,7 +3,7 @@ import NavigationSheet from './NavigationSheet';
 import { cookies } from 'next/headers';
 import { DEFAULT_GENDER } from '@shared/config/shop';
 import { cleanSlug } from '@shared/lib/utils/cleanSlug';
-import { sanityFetch } from '@shared/sanity/lib/client';
+import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
 import { FOOTER_QUERY } from '@shared/sanity/lib/query';
 import { HEADER_QUERYResult } from '@shared/sanity/types';
 import { getMainMenu } from '../api/getMainMenu';

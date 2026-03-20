@@ -1,4 +1,4 @@
-import { sanityFetch } from '@shared/sanity/lib/client';
+import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
 import { PAGE_QUERY } from '@shared/sanity/lib/query';
 
 export const getProductPage = async () => {

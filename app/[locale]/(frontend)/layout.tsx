@@ -57,7 +57,15 @@ export const viewport: Viewport = {
   themeColor: '#ffffff',
 };
 async function DraftModeTools() {
-  const { isEnabled } = await draftMode();
+  let isEnabled = false;
+  if (process.env.NEXT_PHASE !== 'phase-production-build') {
+    try {
+      const dm = await draftMode();
+      isEnabled = dm.isEnabled;
+    } catch {
+      // ignore
+    }
+  }
   if (!isEnabled) return null;
   return (
     <>
@@ -86,13 +94,17 @@ interface RootProps {
 
 export default async function RootLayout(props: RootProps) {
   const { children, params, auth, modal } = props;
-  const { locale } = await params;
+  const { locale = 'uk' } = (await params) || {};
 
   if (!locales.includes(locale as (typeof locales)[number])) {
     notFound();
   }
 
-  setRequestLocale(locale);
+  try {
+    setRequestLocale(locale);
+  } catch {
+    // ignore
+  }
 
   return (
     <html lang={locale} suppressHydrationWarning>

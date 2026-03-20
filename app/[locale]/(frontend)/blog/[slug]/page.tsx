@@ -1,4 +1,5 @@
-import { sanityFetch, client } from '@/shared/sanity/lib/client';
+import { client } from '@/shared/sanity/lib/client';
+import { sanityFetch } from '@/shared/sanity/lib/sanityFetch';
 import { urlFor } from '@/shared/sanity/lib/image';
 import { normalizeLocaleForSanity } from '@shared/lib/locale';
 import {

@@ -8,7 +8,7 @@ import { HeaderContentSkeleton } from '@features/header/ui/HeaderContentSkeleton
 import { HeaderOptions } from '@features/header/ui/HeaderOptions';
 import { LogoLink } from '@features/header/ui/LogoLink';
 import { PersistLinkNavigation } from '@features/header/navigation/ui/PersistLinkNavigation';
-import { sanityFetch } from '@shared/sanity/lib/client';
+import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
 import { urlFor } from '@shared/sanity/lib/image';
 import { HEADER_QUERY } from '@shared/sanity/lib/query';
 import { HEADER_QUERYResult } from '@shared/sanity/types';

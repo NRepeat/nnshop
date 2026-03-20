@@ -1,4 +1,4 @@
-import { sanityFetch } from '@/shared/sanity/lib/client';
+import { sanityFetch } from '@/shared/sanity/lib/sanityFetch';
 import { normalizeLocaleForSanity } from '@shared/lib/locale';
 import { PAGE_QUERY } from '@/shared/sanity/lib/query';
 import { setRequestLocale } from 'next-intl/server';

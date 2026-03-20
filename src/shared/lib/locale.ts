@@ -1,4 +1,4 @@
-import { sanityFetch } from '@/shared/sanity/lib/client';
+import { sanityFetch } from '@/shared/sanity/lib/sanityFetch';
 import { LOCALES_QUERY, DEFAULT_LOCALE_QUERY } from '@/shared/sanity/lib/query';
 
 export interface SanityLocale {

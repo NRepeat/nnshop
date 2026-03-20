@@ -2,8 +2,17 @@ import { Button } from '@shared/ui/button';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@shared/i18n/navigation';
 export default async function NotFoundPage() {
-  const locale = await getLocale();
-  const t = await getTranslations({ locale, namespace: 'NotFound' });
+  let locale = 'uk';
+  try {
+    locale = await getLocale();
+  } catch {
+    // ignore
+  }
+
+  const t = await getTranslations({
+    locale,
+    namespace: 'NotFound',
+  });
 
   return (
     <div className="container mx-auto flex h-[calc(100vh-200px)] items-center justify-center text-center">

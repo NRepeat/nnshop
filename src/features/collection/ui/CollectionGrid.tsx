@@ -1,7 +1,7 @@
 import { getCollection, getCollectionFilters, getCollectionSlugs } from '@entities/collection/api/getCollection';
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
-import { sanityFetch } from '@shared/sanity/lib/client';
+import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
 import { COLLECTION_IS_BRAND_QUERY } from '@shared/sanity/lib/query';
 import { ClientGridWrapper } from './ClientGridWrapper';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';

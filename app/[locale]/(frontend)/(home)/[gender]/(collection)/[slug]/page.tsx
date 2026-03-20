@@ -10,7 +10,7 @@ import {
 import { resolveCollectionHandle, detectGenderFromHandle } from '@entities/collection/lib/resolve-handle';
 import { generateCollectionMetadata } from '@shared/lib/seo/generateMetadata';
 import { setRequestLocale } from 'next-intl/server';
-import { sanityFetch } from '@shared/sanity/lib/client';
+import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
 import { COLLECTION_IS_BRAND_QUERY } from '@shared/sanity/lib/query';
 import { redirect } from 'next/navigation';
 

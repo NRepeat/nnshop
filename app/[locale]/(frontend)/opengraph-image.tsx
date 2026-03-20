@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { sanityFetch } from '@/shared/sanity/lib/client';
+import { sanityFetch } from '@/shared/sanity/lib/sanityFetch';
 import { SITE_LOGO_QUERY } from '@/shared/sanity/lib/query';
 import { urlFor } from '@/shared/sanity/lib/image';
 
