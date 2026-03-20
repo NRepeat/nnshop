@@ -34,7 +34,7 @@ export async function getLiqpayFormParams(input: LiqpayFormParamsInput): Promise
   const liqpay = new LiqPay(publicKey, privateKey);
   const { data, signature } = liqpay.cnbObject({
     version: 3,
-    action: 'pay',
+    action: 'hold',
     amount: roundedAmount,
     currency,
     description,

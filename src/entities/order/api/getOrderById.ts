@@ -14,7 +14,7 @@ export async function getOrderById(
   const res = await fetch(`${PRICE_APP_URL}/api/order/${numeric}`, {
     cache: 'no-store',
   });
-
+  
   if (res.status === 404) return null;
   if (!res.ok) {
     console.error(`getOrderById: ${res.status} for ${orderId}`);

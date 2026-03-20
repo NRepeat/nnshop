@@ -77,7 +77,7 @@ export default function PaymentForm({
     prevUserIdRef.current = userId;
   }, [session?.user?.id]);
 
-  // Auto-submit LiqPay form once params are ready
+  // Initialize LiqPay widget once params are ready
   useEffect(() => {
     if (liqpayParams && liqpayFormRef.current) {
       liqpayFormRef.current.submit();
@@ -157,7 +157,7 @@ export default function PaymentForm({
     }
   };
 
-  // Hidden LiqPay redirect form — auto-submitted once params are set
+  // LiqPay widget container — popup opens automatically via useEffect
   if (liqpayParams) {
     return (
       <div className="w-full max-w-4xl mx-auto flex items-center justify-center py-12">

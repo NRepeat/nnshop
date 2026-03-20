@@ -3,6 +3,7 @@ import { CheckoutStepper } from '@entities/checkout/ui/CheckoutStepper';
 import { getCompletedSteps } from '@features/checkout/api/getCompletedSteps';
 import { Skeleton } from '@shared/ui/skeleton';
 import { connection } from 'next/server';
+import { ScrollToTop } from '@shared/ui/ScrollToTop';
 
 function CheckoutLayoutSkeleton() {
   return (
@@ -69,9 +70,7 @@ async function CheckoutLayoutContent({
       <div className="flex flex-col mt-8 space-y-8">
         <CheckoutStepper completedSteps={completedSteps} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
-          <ViewTransition name="checkout-step">
-            {children}
-          </ViewTransition>
+          <ViewTransition name="checkout-step">{children}</ViewTransition>
           <Suspense fallback={<ReceiptSkeleton />}>{receipt}</Suspense>
         </div>
       </div>
@@ -87,10 +86,13 @@ export default async function Layout({
   receipt: React.ReactNode;
 }) {
   return (
-    <Suspense fallback={<CheckoutLayoutSkeleton />}>
-      <CheckoutLayoutContent receipt={receipt}>
-        {children}
-      </CheckoutLayoutContent>
-    </Suspense>
+    <>
+      <Suspense fallback={<CheckoutLayoutSkeleton />}>
+        <CheckoutLayoutContent receipt={receipt}>
+          {children}
+        </CheckoutLayoutContent>
+      </Suspense>
+      <ScrollToTop />
+    </>
   );
 }

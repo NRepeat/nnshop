@@ -39,6 +39,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
     const paymentData = liqpay.decodeData(data);
+    console.log(paymentData,'paymentData')
+
+    // hold_wait — funds blocked, order not yet paid
+    if (paymentData.status === 'hold_wait' || paymentData.status === 'sandbox_hold_wait') {
+      const rawOrderId = paymentData.order_id;
+      if (rawOrderId) {
+        const shopifyOrderId = rawOrderId.includes('gid://') ? rawOrderId : `gid://shopify/Order/${rawOrderId}`;
+        const order = await prisma.order.findUnique({ where: { shopifyOrderId } });
+        if (order) {
+          const paymentInfo: PaymentInfo = {
+            amount: paymentData.amount,
+            currency: paymentData.currency,
+            paymentMethod: 'pay-now',
+            paymentProvider: 'bank-transfer',
+            description: `LiqPay hold: status=${paymentData.status}, liqpayOrderId=${paymentData.payment_id || ''}`,
+            orderId: order.id,
+          };
+          await savePaymentInfo(paymentInfo, shopifyOrderId);
+        }
+      }
+      return NextResponse.json({ message: 'Hold received' });
+    }
+
     if (paymentData.status === 'success' || paymentData.status === 'sandbox') {
       const rawOrderId = paymentData.order_id;
       if (!rawOrderId) {
@@ -79,7 +102,7 @@ export async function POST(request: NextRequest) {
         description: `LiqPay payment: status=${paymentData.status}, liqpayOrderId=${paymentData.payment_id || ''}`,
         orderId: order.id,
       };
-      await savePaymentInfo(paymentInfo, order.id);
+      await savePaymentInfo(paymentInfo, shopifyOrderId);
       try {
         await resetCartSession(order.id);
       } catch {

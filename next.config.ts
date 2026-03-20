@@ -61,10 +61,10 @@ const nextConfig: NextConfig = {
         source: '/assets/pulse/:path*',
         destination: 'https://cdn.pulse.is/:path*',
       },
-      {
-        source: '/ingest/static/:path*',
-        destination: 'https://us-assets.i.posthog.com/static/:path*',
-      },
+      // {
+      //   source: '/ingest/static/:path*',
+      //   destination: 'https://us-assets.i.posthog.com/static/:path*',
+      // },
       {
         source: '/ingest/:path*',
         destination: 'https://us.i.posthog.com/:path*',

@@ -1157,7 +1157,7 @@ export const FOOTER_QUERY = defineQuery(`
 `);
 
 export const PROMOTION_BANNER_QUERY = defineQuery(
-  `*[_type == "promotionBanner" && enabled == true][0]{
+  `*[_type == "promotionBanner" && (enabled == true || _id in path("drafts.**"))][0]{
     _id,
     enabled,
     image,
@@ -1167,14 +1167,29 @@ export const PROMOTION_BANNER_QUERY = defineQuery(
     discountCode,
     actionButton {
       "label": coalesce(label[$language], label.uk, label.ru),
-      url
+      url,
+      womanUrl,
+      manUrl,
+      "womanCollection": womanCollection->{
+        title,
+        "handle": store.slug.current,
+        handles,
+        titles
+      },
+      "manCollection": manCollection->{
+        title,
+        "handle": store.slug.current,
+        handles,
+        titles
+      }
     },
     behavior {
       trigger,
       delaySeconds,
       scrollPercent,
       cooldownHours,
-      showOnce
+      showOnce,
+      resetToken
     }
   }`
 );

@@ -1,5 +1,6 @@
 import { PackageCheck, Building2, CreditCard } from 'lucide-react';
 import { PaymentInfo } from '../schema/paymentSchema';
+import Image from 'next/image';
 
 export const paymentMethods: {
   id: PaymentInfo['paymentMethod'];
@@ -35,7 +36,9 @@ export const paymentProviders: {
   //   id: 'liqpay',
   //   name: 'LiqPay',
   //   icon: (
-  //     <img
+  //     <Image
+  //       width={40}
+  //       height={40}
   //       src="https://static.liqpay.ua/buttons/logo-white.svg"
   //       alt="LiqPay"
   //       className="w-5 h-5 object-contain"

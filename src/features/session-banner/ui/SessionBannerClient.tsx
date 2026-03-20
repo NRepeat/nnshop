@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { stegaClean } from '@sanity/client/stega';
 import Image from 'next/image';
 import { CheckIcon, CopyIcon, TagIcon } from 'lucide-react';
 import {
@@ -11,8 +10,11 @@ import {
   DialogDescription,
 } from '@shared/ui/dialog';
 import { cn } from '@shared/lib/utils';
+import { Link } from '@shared/i18n/navigation';
+import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link';
+import { stegaClean } from '@sanity/client/stega';
 
-const STORAGE_KEY = 'session_banner_dismissed';
+const STORAGE_KEY = 'session_banner_dismissed_map';
 
 type BannerData = {
   _id: string;
@@ -21,78 +23,129 @@ type BannerData = {
   title?: string | null;
   description?: string | null;
   discountCode?: string | null;
-  actionButton?: { label?: string | null; url?: string | null } | null;
+  actionButton?: {
+    label?: string | null;
+    url?: string | null;
+    womanUrl?: string | null;
+    manUrl?: string | null;
+    womanCollection?: any;
+    manCollection?: any;
+  } | null;
   behavior?: {
     trigger?: string | null;
     delaySeconds?: number | null;
     scrollPercent?: number | null;
     cooldownHours?: number | null;
     showOnce?: boolean | null;
+    resetToken?: string | null;
   } | null;
 };
 
-function shouldShow(behavior: BannerData['behavior']): boolean {
+type DismissalRecord = {
+  dismissedAt: number;
+  resetToken?: string | null;
+};
+
+type DismissalMap = Record<string, DismissalRecord>;
+
+function getDismissalMap(): DismissalMap {
+  if (typeof window === 'undefined') return {};
   const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return true;
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+}
+
+function shouldShow(id: string, behavior: BannerData['behavior']): boolean {
+  const map = getDismissalMap();
+  const stored = map[id];
+
+  if (!stored) return true;
+
+  const cleanResetToken = stegaClean(behavior?.resetToken);
+  const cleanShowOnce = stegaClean(behavior?.showOnce);
 
   try {
-    const { dismissedAt, id } = JSON.parse(raw) as {
-      dismissedAt: number;
-      id: string;
-    };
+    // If reset token changed in CMS, we show it again for this user
+    if (cleanResetToken && stored.resetToken !== cleanResetToken) return true;
 
-    if (behavior?.showOnce) return false;
+    // If "Show once" is active and we have a record (which we do if we are here), don't show
+    if (cleanShowOnce) return false;
 
-    const cooldown = (behavior?.cooldownHours ?? 24) * 60 * 60 * 1000;
+    const cooldown = (stegaClean(behavior?.cooldownHours) ?? 24) * 60 * 60 * 1000;
     if (cooldown === 0) return true;
 
-    return Date.now() - dismissedAt > cooldown;
+    return Date.now() - stored.dismissedAt > cooldown;
   } catch {
     return true;
   }
 }
 
-function saveDismissed(id: string) {
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify({ dismissedAt: Date.now(), id }),
-  );
+function saveDismissed(id: string, resetToken?: string | null) {
+  const map = getDismissalMap();
+  map[id] = {
+    dismissedAt: Date.now(),
+    resetToken: stegaClean(resetToken) ?? null,
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
 }
 
 type BannerStatus = 'idle' | 'waiting' | 'visible' | 'dismissed' | 'skipped';
 
-export function SessionBannerClient({ data }: { data: BannerData }) {
+export function SessionBannerClient({
+  data,
+  locale,
+  gender,
+}: {
+  data: BannerData;
+  locale: string;
+  gender: string;
+}) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [status, setStatus] = useState<BannerStatus>('idle');
+  const [refreshKey, setRefreshKey] = useState(0);
   const scrollHandlerRef = useRef<(() => void) | null>(null);
   const exitHandlerRef = useRef<((e: MouseEvent) => void) | null>(null);
 
   const behavior = data.behavior;
-  const trigger = behavior?.trigger ?? 'delay';
+  const trigger = stegaClean(behavior?.trigger) ?? 'delay';
+  const bannerId = data._id;
 
   useEffect(() => {
-    if (!shouldShow(behavior)) {
+    if (!shouldShow(bannerId, behavior)) {
       setStatus('skipped');
       return;
     }
 
     setStatus('waiting');
+    console.log('SessionBanner: Status set to waiting. Trigger:', trigger);
 
     if (trigger === 'delay') {
-      const delaySec = behavior?.delaySeconds ?? 5;
+      const delaySec = stegaClean(behavior?.delaySeconds) ?? 5;
       const delay = delaySec * 1000;
+      console.log(
+        'SessionBanner: Delay trigger detected. Delay seconds:',
+        delaySec,
+      );
 
       const timer = setTimeout(() => {
+        console.log('SessionBanner: Delay reached. Showing banner.');
         setOpen(true);
         setStatus('visible');
       }, delay);
 
-      return () => clearTimeout(timer);
+      return () => {
+        console.log('SessionBanner: Cleaning up delay timer.');
+        clearTimeout(timer);
+      };
     }
 
     if (trigger === 'scroll') {
-      const threshold = (behavior?.scrollPercent ?? 40) / 100;
+      const threshold = (stegaClean(behavior?.scrollPercent) ?? 40) / 100;
       const handler = () => {
         const scrolled =
           window.scrollY / (document.body.scrollHeight - window.innerHeight);
@@ -119,11 +172,11 @@ export function SessionBannerClient({ data }: { data: BannerData }) {
       document.addEventListener('mouseleave', handler);
       return () => document.removeEventListener('mouseleave', handler);
     }
-  }, [behavior, trigger]);
+  }, [refreshKey, bannerId, trigger, behavior?.resetToken, behavior?.delaySeconds, behavior?.scrollPercent, behavior?.showOnce, behavior?.cooldownHours]);
 
   function handleOpenChange(value: boolean) {
     if (!value) {
-      saveDismissed(data._id);
+      saveDismissed(bannerId, behavior?.resetToken);
       setStatus('dismissed');
     }
     setOpen(value);
@@ -144,33 +197,69 @@ export function SessionBannerClient({ data }: { data: BannerData }) {
     skipped: 'bg-gray-500',
   };
 
+  const actionButton = data.actionButton;
+  let resolvedUrl = actionButton?.url || '';
+
+  if (gender === 'woman') {
+    if (actionButton?.womanCollection) {
+      resolvedUrl =
+        resolveCollectionLink(actionButton.womanCollection, locale, gender)
+          .handle || resolvedUrl;
+    } else if (actionButton?.womanUrl) {
+      resolvedUrl = actionButton.womanUrl;
+    }
+  } else if (gender === 'man') {
+    if (actionButton?.manCollection) {
+      resolvedUrl =
+        resolveCollectionLink(actionButton.manCollection, locale, gender)
+          .handle || resolvedUrl;
+    } else if (actionButton?.manUrl) {
+      resolvedUrl = actionButton.manUrl;
+    }
+  }
+
+  function handleReset() {
+    localStorage.removeItem(STORAGE_KEY);
+    setOpen(false);
+    setStatus('waiting');
+    setRefreshKey((prev) => prev + 1);
+  }
+
   return (
     <>
       {process.env.NODE_ENV === 'development' && (
-        <div className="fixed bottom-4 left-4 z-[9999] flex items-center gap-2 rounded-full bg-black/80 px-3 py-1.5 text-xs text-white font-mono shadow-lg">
-          <span className={`size-2 rounded-full ${statusColor[status]}`} />
-          banner: {status}
-          {status === 'waiting' && trigger === 'delay' && (
-            <span className="text-yellow-300">
-              ({behavior?.delaySeconds ?? 5}s)
-            </span>
-          )}
+        <div className="fixed bottom-4 left-4 z-[9999] flex items-center gap-3 rounded-full bg-black/80 px-4 py-2 text-xs text-white font-mono shadow-lg border border-white/10">
+          <div className="flex items-center gap-2">
+            <span className={`size-2 rounded-full ${statusColor[status]}`} />
+            banner: {status}
+            {status === 'waiting' && trigger === 'delay' && (
+              <span className="text-yellow-300">
+                ({stegaClean(behavior?.delaySeconds) ?? 5}s)
+              </span>
+            )}
+          </div>
+          <button
+            onClick={handleReset}
+            className="ml-2 px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 transition-colors border border-white/20 text-[10px] uppercase tracking-wider"
+          >
+            Reset
+          </button>
         </div>
       )}
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent
           showCloseButton
-          className="p-0 gap-0 w-[90%] md:w-full max-w-[720px] overflow-hidden rounded-xl border-0"
+          className="p-0 gap-0 w-[350px]  sm:w-full   sm:max-w-[650px] overflow-hidden rounded border-0"
         >
           <div className="flex flex-col sm:flex-row   sm:min-h-[420px] ">
             {/* Image panel */}
             {data.imageUrl && (
-              <div className="relative sm:w-[45%] h-[400px] sm:h-auto shrink-0 overflow-hidden">
+              <div className="relative sm:w-[55%] bg-gradient-to-b from-[#E9EBF3] via-[#F0F2F9] to-[#F7FAFE]  h-[380px] sm:h-[500px]  shrink-0 overflow-hidden">
                 <Image
                   src={data.imageUrl}
                   alt={data.imageAlt ?? ''}
                   fill
-                  className="object-cover object-[25%_60%] sm:object-[100%] sm:object-cover"
+                  className="object-contain w-full sm:object-cover"
                   sizes="(max-width: 640px) 100vw, 320px"
                 />
               </div>
@@ -186,7 +275,7 @@ export function SessionBannerClient({ data }: { data: BannerData }) {
                   </DialogTitle>
                 )}
                 {data.description && (
-                  <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
+                  <DialogDescription className="text-md text-muted-foreground leading-relaxed">
                     {data.description}
                   </DialogDescription>
                 )}
@@ -221,14 +310,18 @@ export function SessionBannerClient({ data }: { data: BannerData }) {
               )}
 
               {/* Action button */}
-              {data.actionButton?.label && data.actionButton?.url && (
-                <a
-                  href={data.actionButton.url}
-                  onClick={() => saveDismissed(data._id)}
-                  className="inline-flex items-center justify-center bg-black text-white text-sm font-medium px-6 py-3 rounded-md hover:bg-neutral-800 transition-colors w-full sm:w-auto"
+              {data.actionButton?.label && resolvedUrl && (
+                <Link
+                  href={resolvedUrl}
+                  onClick={() => {
+                    saveDismissed(bannerId, behavior?.resetToken);
+                    setOpen(false);
+                    setStatus('dismissed');
+                  }}
+                  className="inline-flex items-center justify-center bg-primary text-white text-sm font-medium px-6 py-3 rounded-md hover:bg-neutral-800 transition-colors w-full sm:w-auto"
                 >
-                  {data.actionButton.label}
-                </a>
+                  {data.actionButton?.label}
+                </Link>
               )}
             </div>
           </div>
