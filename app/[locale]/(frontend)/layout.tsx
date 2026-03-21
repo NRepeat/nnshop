@@ -161,10 +161,10 @@ export default async function RootLayout(props: RootProps) {
             <ConsentBanner />
           </ScrollDirectionProvider>
         </Providers>
+        <Suspense>
+          <DraftModeTools />
+        </Suspense>
       </body>
-      <Suspense>
-        <DraftModeTools />
-      </Suspense>
     </html>
   );
 }
