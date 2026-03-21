@@ -38,9 +38,9 @@ created: 2026-03-21
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 13-01-01 | 01 | 0 | Infrastructure | unit | `ls tests/unit/proxy.test.ts` | ❌ W0 | ⬜ pending |
+| 13-01-01 | 01 | 1 | Infrastructure | unit | `ls src/shared/lib/tests/proxy.test.ts` | ⬜ pending | ⬜ pending |
 | 13-01-02 | 01 | 1 | Language Routing | unit | `npm test proxy.test.ts` | ⬜ pending | ⬜ pending |
-| 13-02-01 | 02 | 1 | Redirect Chains | unit | `npm test proxy.test.ts` | ⬜ pending | ⬜ pending |
+| 13-02-01 | 02 | 2 | Redirect Chains | unit | `npm test proxy.test.ts` | ⬜ pending | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -48,8 +48,8 @@ created: 2026-03-21
 
 ## Wave 0 Requirements
 
-- [ ] `tests/unit/proxy.test.ts` — stubs for testing `proxy.ts` redirect logic.
-- [ ] Mock for `NextRequest` and `NextResponse` to simulate various domain/protocol/path combinations.
+- [ ] `src/shared/lib/tests/proxy.test.ts` — stubs for testing `proxy.ts` redirect logic. (Created in 13-01-01)
+- [ ] Mock for `NextRequest` and `NextResponse` to simulate various domain/protocol/path combinations. (Created in 13-01-01)
 
 ---
 

@@ -51,3 +51,4 @@ next-env.d.ts
 .env.local
 .planning/seo audit
 .planning/seo audit/*
+.gemini

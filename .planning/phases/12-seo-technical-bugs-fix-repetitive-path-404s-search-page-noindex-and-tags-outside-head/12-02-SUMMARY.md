@@ -100,3 +100,12 @@ None - no external service configuration required.
 ---
 *Phase: 12-seo-technical-bugs-fix-repetitive-path-404s-search-page-noindex-and-tags-outside-head*
 *Completed: 2026-03-21*
+
+## Self-Check: PASSED
+
+- FOUND: next.config.ts (contains `htmlLimitedBots: /.*/`)
+- FOUND: app/[locale]/(frontend)/layout.tsx (DraftModeTools inside body)
+- FOUND: 12-02-SUMMARY.md
+- FOUND: commit a8298bf (Task 1 — htmlLimitedBots)
+- FOUND: commit 7d5b0bd (Task 2 — DraftModeTools layout fix)
+- FOUND: commit 63a2347 (docs — plan metadata)
