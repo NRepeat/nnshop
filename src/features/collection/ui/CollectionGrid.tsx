@@ -27,7 +27,10 @@ import { getTranslations } from 'next-intl/server';
 import { PathSync } from '@entities/path-sync/ui/path-sync';
 import { auth } from '@features/auth/lib/auth';
 import { JsonLd } from '@shared/ui/JsonLd';
-import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
+import {
+  generateBreadcrumbJsonLd,
+  generateItemListJsonLd,
+} from '@shared/lib/seo/jsonld';
 import { prisma } from '@shared/lib/prisma';
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@shared/ui/empty';
 import { PackageSearch } from 'lucide-react';
@@ -217,6 +220,7 @@ export const CollectionGrid = async ({
           },
         ])}
       />
+      <JsonLd data={generateItemListJsonLd(rawProducts, locale)} />
       <div className=" flex flex-col  mt-8">
         <Breadcrumb className="mb-4 md:mb-8">
           <BreadcrumbList>

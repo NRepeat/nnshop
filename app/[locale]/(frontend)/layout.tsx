@@ -15,7 +15,7 @@ import { Suspense } from 'react';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { ScrollDirectionProvider } from '@shared/ui/ScrollDirectionProvider';
 import { SessionBanner } from '@features/session-banner';
-import { generateOrganizationJsonLd } from '@shared/lib/seo/jsonld';
+import { generateOrganizationJsonLd, generateWebSiteJsonLd } from '@shared/lib/seo/jsonld';
 import Script from 'next/script';
 import { ConsentBanner } from '@features/consent/ui/ConsentBanner';
 
@@ -142,6 +142,7 @@ export default async function RootLayout(props: RootProps) {
           strategy="lazyOnload"
         />
         <JsonLd data={generateOrganizationJsonLd()} />
+        <JsonLd data={generateWebSiteJsonLd(locale)} />
         <meta
           name="google-site-verification"
           content="qD1Qgm9RZihEYdNNxa5cH_88cZEGi-B8-mQcGwJLrAo"

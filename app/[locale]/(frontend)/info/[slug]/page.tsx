@@ -9,6 +9,9 @@ import { PortableText, type PortableTextBlock } from 'next-sanity';
 import { components } from '@/shared/sanity/components/portableText';
 import { ContactForm } from '@features/contact/ui/ContactForm';
 import { notFound } from 'next/navigation';
+import { JsonLd } from '@shared/ui/JsonLd';
+import { generateWebPageJsonLd } from '@shared/lib/seo/jsonld';
+import { SITE_URL } from '@shared/config/brand';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -111,9 +114,15 @@ export default async function InfoPage({ params }: Props) {
   setRequestLocale(locale);
   const sanityLocale = await normalizeLocaleForSanity(locale);
   const pageTitle = pageTitles[locale]?.[slug] ?? slug;
+
+  const seoTitle = seoTitles[locale]?.[slug] || pageTitle;
+  const description = pageDescriptions[locale]?.[slug] || '';
+  const url = `${SITE_URL}/${locale}/info/${slug}`;
+
   if (slug === 'contacts') {
     return (
       <div className="container my-10 min-h-screen">
+        <JsonLd data={generateWebPageJsonLd(seoTitle, description, url)} />
         <h1 className="text-2xl font-bold mb-6">{pageTitle}</h1>
         <div className='w-full justify-center'>
         <ContactForm />
@@ -132,6 +141,7 @@ export default async function InfoPage({ params }: Props) {
 
   return (
     <div className="container flex">
+      <JsonLd data={generateWebPageJsonLd(seoTitle, description, url)} />
       <article className=" prose-sm md:prose-lg lg:prose-lg my-8 h-fit  md:min-w-6xl min-h-screen ">
         <h1>{pageTitle}</h1>
         {/* @ts-ignore */}

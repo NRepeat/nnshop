@@ -18,6 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 4: Code Quality** - Remove unsafe type casts and fix memory leaks
 - [ ] **Phase 5: Observability & Scaling** - Add production error tracking and remove hardcoded limits
 - [ ] **Phase 7: Lighthouse Audit Fixes** - Resolve SEO, accessibility, and quality issues surfaced by Lighthouse audit
+- [x] **Phase 15: SEO Schema Markup** - add OnlineStore WebSite SearchAction ItemList shipping and return policy schemas (completed 2026-03-21)
 
 ## Phase Details
 
@@ -154,6 +155,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 12. SEO Technical Bugs | 2/2 | Complete   | 2026-03-21 |
 | 13. SEO Redirect Architecture | 2/2 | Complete   | 2026-03-21 |
 | 14. SEO Metadata Templates | 1/1 | Complete   | 2026-03-21 |
+| 15. SEO Schema Markup | 1/1 | Complete   | 2026-03-21 |
 
 ### Phase 8: Recently Viewed Products section and Newsletter subscription section
 
@@ -255,13 +257,13 @@ Plans:
 
 ### Phase 15: SEO Schema Markup: add OnlineStore WebSite SearchAction ItemList shipping and return policy schemas
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Implement advanced SEO schema markups including Organization, WebSite (with SearchAction), ItemList (for category listing awareness), and WebPage (for static pages) to improve rich result eligibility.
+**Requirements**: SEO-15-01, SEO-15-02, SEO-15-03, SEO-15-04
 **Depends on:** Phase 14
-**Plans:** 0 plans
+**Plans:** 1 plan
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 15 to break down)
+- [x] 15-01-PLAN.md — Expand SEO structured data with Organization, WebSite, ItemList, and WebPage schemas (SEO-15-01, SEO-15-02, SEO-15-03, SEO-15-04) (completed 2026-03-21)
 
 ### Phase 16: SEO Image Alt Text: add descriptive alt text to all product and content images
 
