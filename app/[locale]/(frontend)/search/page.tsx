@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
@@ -21,6 +22,13 @@ import {
 } from '@shared/ui/empty';
 import { SearchIcon } from 'lucide-react';
 import { Skeleton } from '@shared/ui/skeleton';
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: true,
+  },
+};
 
 const PREDICTIVE_SEARCH_QUERY = `#graphql
   query predictiveSearchQuery(
