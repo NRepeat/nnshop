@@ -174,6 +174,16 @@ export function SessionBannerClient({
     }
   }, [refreshKey, bannerId, trigger, behavior?.resetToken, behavior?.delaySeconds, behavior?.scrollPercent, behavior?.showOnce, behavior?.cooldownHours]);
 
+  useEffect(() => {
+    const handleOpenBanner = () => {
+      setOpen(true);
+      setStatus('visible');
+    };
+
+    window.addEventListener('open-session-banner', handleOpenBanner);
+    return () => window.removeEventListener('open-session-banner', handleOpenBanner);
+  }, []);
+
   function handleOpenChange(value: boolean) {
     if (!value) {
       saveDismissed(bannerId, behavior?.resetToken);

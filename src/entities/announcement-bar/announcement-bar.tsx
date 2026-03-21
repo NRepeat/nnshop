@@ -2,15 +2,12 @@ import { LanguageSwitcherSession } from '@features/header/language-switcher/ui/L
 import { Button } from '@shared/ui/button';
 import { Send } from 'lucide-react';
 import { HEADER_QUERYResult } from '@/shared/sanity/types';
-import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link';
 import { HeaderBarProps } from '@widgets/header/ui/Header';
 import { Suspense } from 'react';
-import Link from 'next/link';
-import { cookies } from 'next/headers';
 import { parseLocale } from '@features/header/language-switcher/ui/LanguageSwitcher';
-import { DEFAULT_GENDER } from '@shared/config/shop';
-import { TELEGRAM_URL, TELEGRAM_CHANNEL_URL } from '@shared/config/brand';
+import { TELEGRAM_CHANNEL_URL } from '@shared/config/brand';
 import { ViberIcon } from '@widgets/footer/ui/Footer';
+import { AnnouncementTicker } from './AnnouncementTicker';
 
 type AnnouncementBarProps = Extract<
   NonNullable<HEADER_QUERYResult>['infoBar'],
@@ -22,22 +19,12 @@ type AnnouncementBarProps = Extract<
 };
 
 export const AnnouncementBar = async (props: AnnouncementBarProps) => {
-  const { telephone, link, locale, text, viberPhone } = props;
+  const { telephone, text, viberPhone, locale } = props;
   const resolvedViberPhone =
     viberPhone || process.env.VIBER_PHONE_NUMBER || null;
   const viberUrl = resolvedViberPhone
     ? `viber://chat?number=%2B${resolvedViberPhone}`
     : null;
-  const cookieStore = await cookies();
-  const gender = cookieStore.get('gender')?.value || DEFAULT_GENDER;
-  const collectionData = link?.collectionData;
-  let resolvedLink = '';
-  if (collectionData?.id) {
-    const resolved = resolveCollectionLink(collectionData, locale, gender);
-    resolvedLink = resolved?.handle || '';
-  } else {
-    resolvedLink = link?.collectionData?.pageHandle || '';
-  }
   const displayText = typeof text === 'string' ? text : '';
   return (
     <>
@@ -80,18 +67,10 @@ export const AnnouncementBar = async (props: AnnouncementBarProps) => {
           </div>
           <Suspense>
             {displayText && (
-              <Link
-                href={resolvedLink}
-                className="hidden sm:block"
-                aria-label={displayText}
-              >
-                <p className=" w-full items-center justify-center py-3 font-400 hidden md:flex  ">
-                  {displayText}
-                </p>
-                <p className=" w-full items-center justify-center py-3  font-400 flex md:hidden">
-                  {displayText}
-                </p>
-              </Link>
+              <AnnouncementTicker
+                text={displayText}
+                className="hidden sm:block overflow-hidden py-3"
+              />
             )}
           </Suspense>
 

@@ -26,6 +26,9 @@ import { Locale } from '@/shared/i18n/routing';
 import { Fragment, Suspense } from 'react';
 import { HeroSwiper } from '@entities/slider/ui/Slider';
 import type { PAGE_QUERYResult, SliderBlock } from '@shared/sanity/types';
+import { AnnouncementTicker } from '@entities/announcement-bar/AnnouncementTicker';
+import { HEADER_QUERY } from '@shared/sanity/lib/query';
+import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
 
 type PageContent = NonNullable<
   NonNullable<PAGE_QUERYResult>['content']
@@ -50,12 +53,19 @@ const renderBlock = (
   locale: Locale,
   gender: string,
   isFirst: boolean = false,
+  tickerText?: string,
 ): React.ReactNode => {
   switch (block._type) {
     case 'heroSlider': {
       const hero = block as any;
       return (
         <Fragment key={block._key}>
+          {tickerText && (
+            <AnnouncementTicker
+              text={tickerText}
+              className="md:hidden bg-foreground text-background py-3 overflow-hidden border-y border-white/10"
+            />
+          )}
           <HeroBanner {...hero} gender={gender} isFirst={isFirst} />
         </Fragment>
       );
@@ -111,7 +121,17 @@ const renderBlock = (
       );
 
     case 'hero':
-      return <Hero key={block._key} {...(block as any)} isFirst={isFirst} />;
+      return (
+        <Fragment key={block._key}>
+          {tickerText && (
+            <AnnouncementTicker
+              text={tickerText}
+              className="md:hidden bg-foreground text-background py-3 overflow-hidden border-y border-white/10"
+            />
+          )}
+          <Hero {...(block as any)} isFirst={isFirst} />
+        </Fragment>
+      );
 
     case 'faqs':
       return <FAQs key={block._key} locale={locale} {...(block as any)} />;
@@ -185,7 +205,7 @@ const renderBlock = (
       if (!Array.isArray(sharedContent)) return null;
       return (
         <Fragment key={(block as unknown as SharedSectionRefBlock)._key}>
-          {sharedContent.map((innerBlock, index) => renderBlock(innerBlock, locale, gender, isFirst && index === 0))}
+          {sharedContent.map((innerBlock, index) => renderBlock(innerBlock, locale, gender, isFirst && index === 0, tickerText))}
         </Fragment>
       );
     }
@@ -199,17 +219,31 @@ const renderBlock = (
 };
 
 export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
-  const page = await getHomePage({ locale, gender });
+  const [page, headerData] = await Promise.all([
+    getHomePage({ locale, gender }),
+    sanityFetch({
+      query: HEADER_QUERY,
+      params: { locale },
+      tags: ['siteSettings'],
+    }),
+  ]);
+
   if (!page) {
     return notFound();
   }
+
   const { content } = page;
   if (!Array.isArray(content)) {
     return null;
   }
+
+  const tickerText = headerData?.infoBar?.text;
+
   return (
     <div className="flex flex-col">
-      {(content as PageContent[]).map((block, index) => renderBlock(block, locale, gender, index === 0))}
+      {(content as PageContent[]).map((block, index) =>
+        renderBlock(block, locale, gender, index === 0, tickerText),
+      )}
     </div>
   );
 };
