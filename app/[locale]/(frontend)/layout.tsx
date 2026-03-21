@@ -130,7 +130,7 @@ export default async function RootLayout(props: RootProps) {
             });
             gtag('js', new Date());
             gtag('config', 'G-05RL9JZJKK', {
-              'transport_url': 'https://www.miomio.com.ua/ga'
+              'transport_url': window.location.origin + '/ga'
             });
           `}
         </Script>
