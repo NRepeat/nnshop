@@ -12,7 +12,7 @@ import { generateCollectionMetadata } from '@shared/lib/seo/generateMetadata';
 import { setRequestLocale } from 'next-intl/server';
 import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
 import { COLLECTION_IS_BRAND_QUERY } from '@shared/sanity/lib/query';
-import { redirect } from 'next/navigation';
+import { redirect, notFound } from 'next/navigation';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -87,6 +87,10 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   const { locale, slug, gender } = await params;
   setRequestLocale(locale);
 
+  const allowedGenders = ['man', 'woman'];
+  if (allowedGenders.includes(slug) && slug === gender) {
+    notFound();
+  }
 
   const decodedSlug = decodeURIComponent(slug);
   const allSlugs = await getCollectionSlugs();

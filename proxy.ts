@@ -19,13 +19,6 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 0.1 Handle repeated segments (e.g., /uk/woman/woman/woman -> /uk/woman)
-  if (segments.length >= 3 && segments[1] === segments[2] && allowedGenders.includes(segments[1])) {
-    const url = request.nextUrl.clone();
-    url.pathname = `/${segments[0]}/${segments[1]}`;
-    return NextResponse.redirect(url, { status: 301 });
-  }
-
   // 0.2 Fast redirect for Ukrainian gendered handles on Russian locale
   if (segments.length >= 3 && segments[0] === 'ru' && allowedGenders.includes(segments[1])) {
     const slug = segments[2];
