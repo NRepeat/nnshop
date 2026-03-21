@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 12-02-PLAN.md — htmlLimitedBots and DraftModeTools Suspense fix
-last_updated: "2026-03-21T13:35:06.685Z"
+stopped_at: Completed 12-01-PLAN.md — repetitive path 404 fix and search page noindex
+last_updated: "2026-03-21T13:35:15.369Z"
 last_activity: 2026-03-21
 progress:
   total_phases: 17
@@ -166,6 +166,9 @@ Recent decisions affecting current work:
 - [Phase 11]: .env.example force-committed past .gitignore (.env*) — documentation not secrets
 - [Phase 12-02]: htmlLimitedBots: /.*/ regex literal (not string) forces metadata resolution for all user agents including Screaming Frog, fixing Next.js 15.2+ streaming metadata placing tags outside head
 - [Phase 12-02]: DraftModeTools Suspense moved from after </body> to inside <body> as last child — fixes invalid HTML without breaking Sanity draft mode
+- [Phase 12-01]: Remove proxy redirect for repetitive paths — let page-level notFound() guard guarantee true HTTP 404 status
+- [Phase 12-01]: Static metadata export (not generateMetadata) for search noindex — synchronous head output, never streamed
+- [Phase 12-01]: Add /*?q= to robots.ts disallow alongside noindex meta — belt-and-suspenders: some bots read robots.txt only
 
 ### Roadmap Evolution
 
@@ -191,6 +194,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T13:35:01.213Z
-Stopped at: Completed 12-02-PLAN.md — htmlLimitedBots and DraftModeTools Suspense fix
+Last session: 2026-03-21T13:35:15.367Z
+Stopped at: Completed 12-01-PLAN.md — repetitive path 404 fix and search page noindex
 Resume file: None
