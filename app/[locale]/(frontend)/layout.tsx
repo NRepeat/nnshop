@@ -129,9 +129,7 @@ export default async function RootLayout(props: RootProps) {
               'wait_for_update': 500
             });
             gtag('js', new Date());
-            gtag('config', 'G-05RL9JZJKK', {
-              'transport_url': window.location.origin + '/ga'
-            });
+            gtag('config', 'G-05RL9JZJKK');
           `}
         </Script>
         <Script

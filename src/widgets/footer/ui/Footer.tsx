@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { Link } from '@shared/i18n/navigation';
 import Logo from '@shared/assets/Logo';
 import { getTranslations } from 'next-intl/server';

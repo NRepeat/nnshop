@@ -12,7 +12,7 @@ export interface SitemapEntry {
 export function formatDate(date: string | Date): string {
   try {
     return new Date(date).toISOString().split('T')[0];
-  } catch (e) {
+  } catch {
     return new Date().toISOString().split('T')[0];
   }
 }
