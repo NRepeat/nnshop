@@ -1,4 +1,5 @@
 import { Skeleton } from '@/shared/ui/skeleton';
+import { ProductCardSkeleton } from '@entities/product/ui/ProductCardSkeleton';
 
 export const CollectionGridSkeleton = () => {
   return (
@@ -31,13 +32,7 @@ export const CollectionGridSkeleton = () => {
       {/* Product grid skeleton */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="flex flex-col space-y-3">
-            <Skeleton className="h-[250px] w-full rounded-xl" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-            </div>
-          </div>
+          <ProductCardSkeleton key={i} />
         ))}
       </div>
     </div>

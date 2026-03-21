@@ -28,8 +28,11 @@ export function ConsentBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem(CONSENT_KEY)) {
+    const stored = localStorage.getItem(CONSENT_KEY);
+    if (!stored) {
       setVisible(true);
+    } else {
+      updateGtagConsent(stored === 'granted');
     }
   }, []);
 

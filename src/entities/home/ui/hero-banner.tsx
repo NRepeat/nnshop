@@ -189,6 +189,7 @@ function VideoHero({
           src={poster}
           alt=""
           aria-hidden
+          fetchPriority="high"
           className="absolute inset-0 w-full h-full object-cover max-h-[75vh]"
         />
       )}
@@ -199,8 +200,6 @@ function VideoHero({
         muted
         loop
         playsInline
-        //@ts-ignore
-        fetchpriority="high"
         preload="auto"
         disablePictureInPicture
         className="absolute inset-0 w-full h-full object-cover max-h-[75vh]"
@@ -240,7 +239,7 @@ function VideoHero({
 
   const heightStyle = compact
     ? `.video-hero{height:40svh}`
-    : `.video-hero{height:calc(70svh - var(--header-height,0px))}@media(min-width:768px){.video-hero{height:calc(85svh - var(--header-height,0px))}}`;
+    : `.video-hero{height:calc(70svh - var(--header-height,70px))}@media(min-width:768px){.video-hero{height:calc(85svh - var(--header-height,70px))}}`;
 
   return (
     <>
@@ -306,7 +305,7 @@ function ImageSlider({
           style={{
             height: compact
               ? '40svh'
-              : 'calc(80svh - var(--header-height, 0px))',
+              : 'calc(80svh - var(--header-height, 70px))',
           }}
         >
           <Image
@@ -327,7 +326,7 @@ function ImageSlider({
           style={{
             maxHeight: compact
               ? '40svh'
-              : 'calc(90svh - var(--header-height, 0px))',
+              : 'calc(90svh - var(--header-height, 70px))',
           }}
         >
           <Image
