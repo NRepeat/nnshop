@@ -1,14 +1,11 @@
 import { fetchRedirects } from '@/shared/sanity/lib/fetchRedirects';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
-
 const nextConfig: NextConfig = {
   experimental: {
     viewTransition: true,
   },
   trailingSlash: false,
-  htmlLimitedBots:
-    /Googlebot|bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|facebot|ia_archiver/,
   output: 'standalone',
   productionBrowserSourceMaps: false,
   serverExternalPackages: [],
