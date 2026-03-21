@@ -105,6 +105,7 @@ const ProductSessionView = async ({ params }: Props) => {
               images={images as any}
               productId={product.id}
               quiqView={true}
+              product={product as any}
             >
               <Suspense
                 fallback={

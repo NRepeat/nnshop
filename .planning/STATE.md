@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-21T13:45:00.000Z"
+last_updated: "2026-03-21T23:15:00.000Z"
 progress:
-  total_phases: 16
-  completed_phases: 9
-  total_plans: 39
-  completed_plans: 36
+  total_phases: 17
+  completed_phases: 10
+  total_plans: 40
+  completed_plans: 37
 ---
 
 # Project State
@@ -18,35 +18,36 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-23)
 
 **Core value:** The checkout-to-order flow works reliably and securely for every user — anonymous or authenticated — without data leaks, silent failures, or broken UI.
-**Current focus:** Phase 15 — SEO Schema Markup
+**Current focus:** Phase 16 — SEO Image Alt Text
 
 ## Current Position
 
-Phase: 15 (SEO Schema Markup)
+Phase: 16 (SEO Image Alt Text)
 Plan: 1 of 1 in current phase completed
 Status: Complete
 Last activity: 2026-03-21
 
-Progress: [█████████░] 90%
+Progress: [██████████] 100% (of current SEO wave)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 36
-- Average duration: 2.7 min
-- Total execution time: 1.75 hours
+- Total plans completed: 37
+- Average duration: 2.8 min
+- Total execution time: 1.8 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 15-seo-schema-markup | 1 | 5 min | 5 min |
+| 16-seo-image-alt-text | 1 | 15 min | 15 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 12-01 (3 min), 12-02 (4 min), 13-01 (5 min), 14-01 (3 min), 15-01 (5 min)
-- Trend: Consistent (5 plans)
+- Last 5 plans: 13-01 (5 min), 14-01 (3 min), 15-01 (5 min), 16-01 (15 min)
+- Trend: Consistent (4 plans in this session)
 
 *Updated after each plan completion*
 
@@ -63,13 +64,13 @@ Progress: [█████████░] 90%
 
 ### Decisions
 
-- [Phase 15]: Centralized social links in `@shared/config/brand` to ensure consistency across Organization schema and Footer.
-- [Phase 15]: ItemList schema URLs are canonical and include the locale prefix for accurate search engine indexing.
-- [Phase 15]: Product return/shipping policies use hardcoded UA-specific values (14 days, free shipping) to match business rules.
-- [Phase 15]: Added `SearchAction` to WebSite schema to enable Google Sitelinks Searchbox.
+- [Phase 16]: Standardized product alt text format as `{Product Title} {Variant Info}` to balance SEO and readability.
+- [Phase 16]: Added `localizedString` to all Sanity image fields to allow unique alt text per language (UK/RU).
+- [Phase 16]: Implemented a non-destructive fallback pattern: `image.altText || getProductAlt(product, variant)` to respect manual Shopify edits.
+- [Phase 16]: Decoded HTML entities in generated alt text to ensure human-readable strings in `alt` attributes.
 
 ## Session Continuity
 
-Last session: 2026-03-21T13:45:00.000Z
-Stopped at: Completed 15-01-PLAN.md — SEO Schema Markup expansion
+Last session: 2026-03-21T23:15:00.000Z
+Stopped at: Completed 16-01-PLAN.md — SEO Image Alt Text implementation
 Resume file: None

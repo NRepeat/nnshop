@@ -17,6 +17,14 @@ export const heroType = defineType({
     defineField({
       name: 'image',
       type: 'image',
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          type: 'localizedString',
+          title: 'Alt Text',
+        }),
+      ],
     }),
     defineField({
       name: 'buttonText',

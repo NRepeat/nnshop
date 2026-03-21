@@ -14,6 +14,7 @@ import {
 import { useRouter } from '@shared/i18n/navigation';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@shared/ui/button';
+import { getProductAlt } from '@shared/lib/seo';
 import { useTranslations } from 'next-intl';
 import { Link } from '@shared/i18n/navigation';
 import { FavSession } from '@features/header/ui/FavSession';
@@ -238,7 +239,7 @@ export const ProductCard = ({
                           key={index}
                           className="object-cover w-full h-full"
                           src={image.url}
-                          alt={image.altText || ''}
+                          alt={image.altText || getProductAlt(product)}
                           priority={priority && index === 0}
                           loading={priority && index === 0 ? 'eager' : 'lazy'}
                           sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
@@ -315,7 +316,7 @@ export const ProductCard = ({
                   alt={
                     productImages[0]?.altText ||
                     product.featuredImage?.altText ||
-                    ''
+                    getProductAlt(product)
                   }
                   fill
                   priority={priority}

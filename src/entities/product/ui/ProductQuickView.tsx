@@ -15,6 +15,7 @@ import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 import { AddToCartButton } from './AddToCartButton';
 import { useCartUIStore } from '@shared/store/use-cart-ui-store';
 import { useRouter } from 'next/navigation';
+import { getProductAlt } from '@shared/lib/seo';
 
 type ProductQuickViewProps = {
   product: Product;
@@ -45,7 +46,7 @@ export const ProductQuickView = ({ product }: ProductQuickViewProps) => {
               <CarouselItem key={index}>
                 <Image
                   src={image?.url}
-                  alt={image?.altText || product.title}
+                  alt={image?.altText || getProductAlt(product, selectedVariant ?? undefined)}
                   width={image?.width || 400}
                   height={image?.height || 400}
                   className="object-contain w-full h-full"

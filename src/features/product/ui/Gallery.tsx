@@ -12,6 +12,7 @@ import {
   CarouselPrevious,
 } from '@shared/ui/carousel';
 import Image from 'next/image';
+import { getProductAlt } from '@shared/lib/seo';
 import { useCallback, useEffect, useState } from 'react';
 import { cn } from '@shared/lib/utils';
 import clsx from 'clsx';
@@ -23,11 +24,13 @@ const Gallery = ({
   images,
   children,
   quiqView,
+  product,
 }: {
   images: ShoipifyImage[];
   productId: string;
   children?: React.ReactNode;
   quiqView?: boolean;
+  product?: { title: string };
 }) => {
   const [mainApi, setMainApi] = useState<CarouselApi>();
   const [secApi, setSecApi] = useState<CarouselApi>();
@@ -110,7 +113,7 @@ const Gallery = ({
                         >
                           <Image
                             src={image.url}
-                            alt={image.altText || ''}
+                            alt={image.altText || getProductAlt(product || { title: '' })}
                             fill
                             className="object-contain rounded max-h-[60vh]"
                             onClick={(e) => {
@@ -172,7 +175,7 @@ const Gallery = ({
                     >
                       <Image
                         src={image.url}
-                        alt={image.altText || ''}
+                        alt={image.altText || getProductAlt(product || { title: '' })}
                         fill
                         className="object-cover"
                         loading="lazy"

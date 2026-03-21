@@ -7,6 +7,7 @@ import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
+import { getProductAlt } from '@shared/lib/seo';
 import {
   Accordion,
   AccordionContent,
@@ -59,7 +60,10 @@ function OrderItemCard({
         {item.image ? (
           <Image
             src={item.image}
-            alt={item.title}
+            alt={getProductAlt(
+              { title: item.title },
+              { title: [item.color, item.size].filter(Boolean).join(' / ') },
+            )}
             fill
             className="object-contain"
             sizes="80px"

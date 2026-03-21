@@ -6,6 +6,7 @@ import { Link } from '@shared/i18n/navigation';
 import { Card, CardContent, CardHeader } from '@shared/ui/card';
 import { OrderStatusBadge } from './OrderStatusBadge';
 import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
+import { getProductAlt } from '@shared/lib/seo';
 
 type LineItem = {
   title: string;
@@ -122,7 +123,7 @@ export const OrderCard = ({ order }: OrderCardProps) => {
                   {item.image?.url ? (
                     <Image
                       src={item.image.url}
-                      alt={item.title}
+                      alt={getProductAlt({ title: item.title })}
                       fill
                       className="object-cover"
                       sizes="56px"
