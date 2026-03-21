@@ -13,6 +13,7 @@ import { CreateOrderButton } from './CreateOrderButton';
 import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { DiscountCodeInput } from '@features/cart/ui/DiscountCodeInput';
 import { ShoppingCart } from 'lucide-react';
+import { AnnouncementTicker } from '@entities/announcement-bar/AnnouncementTicker';
 
 const Content = async ({
   mockProducts,
@@ -23,6 +24,7 @@ const Content = async ({
   totalAmount,
   discountAmount,
   discountRate,
+  tickerText,
 }: {
   mockProducts: {
     id: string;
@@ -46,6 +48,7 @@ const Content = async ({
   totalAmount: number;
   discountAmount: number;
   discountRate: number;
+  tickerText?: string;
 }) => {
   const t = await getTranslations({
     locale,
@@ -60,6 +63,12 @@ const Content = async ({
             {t('title')}
           </SheetTitle>
         </SheetHeader>
+        {tickerText && (
+          <AnnouncementTicker
+            text={tickerText}
+            className="bg-foreground text-background py-2 overflow-hidden border-b border-white/10"
+          />
+        )}
         <div className="overflow-auto flex-1">
           <div className="flex flex-col space-y-2 px-4">
             {mockProducts.map((product) => (

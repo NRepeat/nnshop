@@ -9,9 +9,18 @@ import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
 import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
+import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
+import { HEADER_QUERY } from '@shared/sanity/lib/query';
 
 const CartSheet = async ({ locale }: { locale: string }) => {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const [session, headerData] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+    sanityFetch({
+      query: HEADER_QUERY,
+      params: { locale },
+      tags: ['siteSettings'],
+    }),
+  ]);
 
   const cart = session?.user?.id
     ? ((await getCart({
@@ -90,6 +99,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
   const discountRate = cartDiscountTotal > 0 && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
   const discountAmount = subtotalAmount * discountRate;
   const totalAmount = Math.max(0, subtotalAmount - discountAmount);
+  const tickerText = headerData?.infoBar?.text;
 
   return (
     <>
@@ -117,6 +127,7 @@ const CartSheet = async ({ locale }: { locale: string }) => {
         totalAmount={totalAmount}
         discountAmount={discountAmount}
         discountRate={discountRate}
+        tickerText={tickerText}
       />
     </>
   );
@@ -135,6 +146,7 @@ const CartWithEmptyState = ({
   totalAmount,
   discountAmount,
   discountRate,
+  tickerText,
 }: {
   products: any;
   currencySymbol: string;
@@ -146,6 +158,7 @@ const CartWithEmptyState = ({
   totalAmount: number;
   discountAmount: number;
   discountRate: number;
+  tickerText?: string;
 }) => {
   if (!cartId || !products || products.length === 0) {
     return <EmptyState locale={locale} />;
@@ -162,6 +175,7 @@ const CartWithEmptyState = ({
         totalAmount={totalAmount}
         discountAmount={discountAmount}
         discountRate={discountRate}
+        tickerText={tickerText}
       />
     );
   }
