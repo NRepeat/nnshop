@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   trailingSlash: false,
   htmlLimitedBots: /.*/,
   output: 'standalone',
-  productionBrowserSourceMaps: true,
+  productionBrowserSourceMaps: false,
   serverExternalPackages: [],
   typescript: {
     ignoreBuildErrors: false,
