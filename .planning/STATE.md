@@ -2,13 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: "2026-03-08T07:49:31.625Z"
+status: executing
+stopped_at: Completed 12-02-PLAN.md — htmlLimitedBots and DraftModeTools Suspense fix
+last_updated: "2026-03-21T13:35:06.685Z"
+last_activity: 2026-03-21
 progress:
-  total_phases: 10
-  completed_phases: 7
-  total_plans: 36
-  completed_plans: 33
+  total_phases: 17
+  completed_phases: 8
+  total_plans: 38
+  completed_plans: 35
+  percent: 50
 ---
 
 # Project State
@@ -23,15 +26,16 @@ See: .planning/PROJECT.md (updated 2026-02-23)
 ## Current Position
 
 Phase: 10 (SEO fixes — commercial meta templates)
-Plan: 1 of 2 in current phase completed
+Plan: 2 of 2 in current phase completed
 Status: In progress
-Last activity: 2026-03-05 - Completed 10-01-PLAN.md — commercial SEO templates for product, collection, and brand pages
+Last activity: 2026-03-21
 
 Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed: 3
 - Average duration: 2.7 min
 - Total execution time: 0.13 hours
@@ -44,6 +48,7 @@ Progress: [█████░░░░░] 50%
 | 02-core-flow-reliability | 1 | 1 min | 1 min |
 
 **Recent Trend:**
+
 - Last 5 plans: 01-01 (3 min), 01-02 (4 min), 02-03 (1 min)
 - Trend: Consistent (3 plans)
 
@@ -74,6 +79,8 @@ Progress: [█████░░░░░] 50%
 | Phase 11 P03 | 5 | 2 tasks | 6 files |
 | Phase 11 P04 | 2 | 2 tasks | 5 files |
 | Phase 11-analyze-project-and-prepare-for-production-integrate-posthog-monitoring P05 | 6 | 1 tasks | 2 files |
+| Phase 12-seo-technical-bugs P02 | 8 | 2 tasks | 2 files |
+| Phase 12-seo-technical-bugs-fix-repetitive-path-404s-search-page-noindex-and-tags-outside-head P01 | 3 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -157,6 +164,8 @@ Recent decisions affecting current work:
 - [Phase 11]: X-Frame-Options SAMEORIGIN (not DENY) — preserves LiqPay payment iframe compatibility
 - [Phase 11]: Permissions-Policy geolocation=(self) — required for Nova Poshta widget navigator.geolocation
 - [Phase 11]: .env.example force-committed past .gitignore (.env*) — documentation not secrets
+- [Phase 12-02]: htmlLimitedBots: /.*/ regex literal (not string) forces metadata resolution for all user agents including Screaming Frog, fixing Next.js 15.2+ streaming metadata placing tags outside head
+- [Phase 12-02]: DraftModeTools Suspense moved from after </body> to inside <body> as last child — fixes invalid HTML without breaking Sanity draft mode
 
 ### Roadmap Evolution
 
@@ -182,6 +191,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-04
-Stopped at: Completed 09-04-PLAN.md — getProductsBySku API and SKU filler integration in ProductSessionView
+Last session: 2026-03-21T13:35:01.213Z
+Stopped at: Completed 12-02-PLAN.md — htmlLimitedBots and DraftModeTools Suspense fix
 Resume file: None
