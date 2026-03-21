@@ -179,15 +179,16 @@ export async function OrderSummary({
 
   // Get discount codes from cart
   const discountCodes = cart.discountCodes || [];
-  const hasApplicableDiscount = discountCodes.some((d) => d.applicable);
 
-  // cart.cost.totalAmount does not reflect discount codes — use discountAllocations instead
-  const cartDiscountTotal = (cart.discountAllocations || []).reduce(
-    (sum, d) => sum + Number(d.discountedAmount.amount),
-    0,
-  );
-  // Shopify calculates the discount on original prices; derive rate and apply to sale subtotal
-  const discountRate = hasApplicableDiscount && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
+  // Sum cart-level + line-level discountAllocations to capture both order-level and
+  // product-level automatic discounts (automatic line discounts only appear at line level)
+  const cartDiscountTotal = [
+    ...(cart.discountAllocations || []),
+    ...cart.lines.edges.flatMap((e) => (e.node.discountAllocations as any[]) || []),
+  ].reduce((sum, d) => sum + Number(d.discountedAmount.amount), 0);
+
+  // discountRate > 0 covers both code-based and automatic discounts
+  const discountRate = cartDiscountTotal > 0 && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
   const discountAmount = subtotal * discountRate;
   const totalAmount = Math.max(0, subtotal - discountAmount);
   const grandTotal = totalAmount;
@@ -207,7 +208,7 @@ export async function OrderSummary({
 
       {/* Totals */}
       <div className="border-t border-gray-200 mt-2 pt-3 px-4 pb-4 space-y-2">
-        {hasApplicableDiscount && (
+        {cartDiscountTotal > 0 && (
           <>
             <div className="flex justify-between text-sm ">
               <div className="flex flex-col gap-1">

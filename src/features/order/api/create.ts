@@ -143,19 +143,19 @@ export async function createOrder(
       (d) => d.applicable,
     );
     const hasApplicableDiscount = applicableDiscounts.length > 0;
-    // cart.cost.totalAmount does not reflect discount codes — use discountAllocations instead
-    const cartDiscountTotal = ((cart as any).discountAllocations || []).reduce(
-      (sum: number, d: any) => sum + Number(d.discountedAmount.amount),
-      0,
-    );
+    // Sum cart-level + line-level discountAllocations to capture both order-level and
+    // product-level automatic discounts (automatic line discounts only appear at line level)
+    const cartDiscountTotal = [
+      ...((cart as any).discountAllocations || []),
+      ...cart.lines.edges.flatMap((e: any) => (e.node.discountAllocations as any[]) || []),
+    ].reduce((sum: number, d: any) => sum + Number(d.discountedAmount.amount), 0);
     // Shopify calculates the discount on original prices; derive rate and apply to sale subtotal
     const discountRate = cartDiscountTotal > 0 && shopifySubtotal > 0
       ? cartDiscountTotal / shopifySubtotal
       : 0;
     const goodsTotal = localTotal * (1 - discountRate);
-
-    // Scale line item prices so order total matches what the customer pays
-    const discountRatio = localTotal > 0 ? goodsTotal / localTotal : 1;
+    // Discount amount = difference between znizka subtotal and final amount after cart discount
+    const orderDiscountAmount = localTotal - goodsTotal;
 
     const lineItems = cart.lines.edges
       .map((edge: any) => {
@@ -181,11 +181,12 @@ export async function createOrder(
           quantity: lineItem.quantity,
         };
 
+        // Line item price = znizka only; cart discount applied at order level via discountCode
         const basePrice =
           sale > 0 ? amountPerQuantity * (1 - sale / 100) : amountPerQuantity;
         item.priceSet = {
           shopMoney: {
-            amount: (basePrice * discountRatio).toFixed(2),
+            amount: basePrice.toFixed(2),
             currencyCode,
           },
         };
@@ -199,6 +200,24 @@ export async function createOrder(
       currency: currencyCode,
       financialStatus: 'PENDING',
     };
+
+    // Apply cart/automatic discount at order level via discountCode (orderCreate supports one discount)
+    if (orderDiscountAmount > 0) {
+      const discountCode = applicableDiscounts.length > 0
+        ? applicableDiscounts[0].code
+        : 'AUTOMATIC';
+      order.discountCode = {
+        itemFixedDiscountCode: {
+          code: discountCode,
+          amountSet: {
+            shopMoney: {
+              amount: orderDiscountAmount.toFixed(2),
+              currencyCode,
+            },
+          },
+        },
+      };
+    }
 
     if (!completeCheckoutData) {
       throw new Error('Checkout data is missing');
@@ -281,6 +300,8 @@ export async function createOrder(
       noteLines.push(
         `Промокод: ${applicableDiscounts.map((d) => d.code).join(', ')}`,
       );
+    } else if (cartDiscountTotal > 0) {
+      noteLines.push(`Автоматична знижка: -${Math.round(cartDiscountTotal)} ${currencyCode}`);
     }
 
     if (deliveryMethod === 'selfPickup') {
@@ -435,6 +456,14 @@ export async function createOrder(
             };
           }),
         shipping_lines: [],
+        // Pre-calculated discount — itali-shop-app uses this instead of parsing note + Shopify API
+        applied_discount: orderDiscountAmount > 0 ? {
+          type: applicableDiscounts.length > 0 ? 'discount_code' : 'automatic',
+          title: applicableDiscounts.length > 0
+            ? applicableDiscounts.map((d) => d.code).join(', ')
+            : 'Автоматична знижка',
+          amount: orderDiscountAmount.toFixed(2),
+        } : null,
       };
 
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };

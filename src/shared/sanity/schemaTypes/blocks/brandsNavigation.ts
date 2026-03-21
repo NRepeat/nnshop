@@ -8,9 +8,23 @@ export const brandsNavigation = defineType({
   icon: TagIcon,
   fields: [
     defineField({
-      name: 'topBrands',
-      title: 'Top Brands',
-      description: 'Brand names to display in the "Brands" dropdown (max 20). Enter exact brand names as they appear in Shopify.',
+      name: 'tabTitle',
+      title: 'Tab Title',
+      type: 'localizedString',
+      description: 'Назва табу "Бренди" в шапці сайту (uk/ru)',
+    }),
+    defineField({
+      name: 'topBrandsWoman',
+      title: 'Top Brands — Woman',
+      description: 'Бренди для жіночої навігації (max 20). Точні назви як в Shopify.',
+      type: 'array',
+      of: [{ type: 'string' }],
+      validation: (Rule) => Rule.max(20),
+    }),
+    defineField({
+      name: 'topBrandsMan',
+      title: 'Top Brands — Man',
+      description: 'Бренди для чоловічої навігації (max 20). Точні назви як в Shopify.',
       type: 'array',
       of: [{ type: 'string' }],
       validation: (Rule) => Rule.max(20),

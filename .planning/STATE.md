@@ -77,6 +77,15 @@ Progress: [█████░░░░░] 50%
 
 ## Accumulated Context
 
+### Roadmap Evolution
+
+- Phase 12 added: SEO Technical Bugs — fix repetitive path 404s, search page noindex, tags outside head
+- Phase 13 added: SEO Redirect Architecture — simplify redirect chains to single 301, fix language routing
+- Phase 14 added: SEO Meta Data Templates — fix short/long/duplicate titles and missing meta descriptions
+- Phase 15 added: SEO Schema Markup — add OnlineStore, WebSite, SearchAction, ItemList, shipping/return schemas
+- Phase 16 added: SEO Image Alt Text — add descriptive alt text to all product and content images
+- Phase 17 added: Gender Navigation Architecture — derive gender from URL instead of cookie to fix back navigation state bug
+
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.

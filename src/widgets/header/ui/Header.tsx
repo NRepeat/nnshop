@@ -60,6 +60,7 @@ export const Header = async ({ locale }: { locale: string }) => {
                   locale={locale}
                   {...headerData?.header}
                   navDropdowns={headerData?.navDropdowns}
+                  brandsNavigation={headerData?.brandsNavigation as any}
                 />
               )}
             </Suspense>
@@ -102,7 +103,6 @@ export const Header = async ({ locale }: { locale: string }) => {
           <Suspense fallback={<CurrentNavigationSessionSkeleton />}>
             <CurrentNavigationSession
               locale={locale}
-              navImages={headerData?.navImages}
               navDropdowns={headerData?.navDropdowns as any}
             />
           </Suspense>

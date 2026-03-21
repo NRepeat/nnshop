@@ -16,22 +16,10 @@ export const siteSettingsType = defineType({
       type: 'header',
     }),
     defineField({
-      name: 'brandsNavigation',
-      title: 'Brands Navigation',
-      description: 'Configure the brands dropdown in the navigation bar.',
-      type: 'brandsNavigation',
-    }),
-    defineField({
-      name: 'navImages',
-      title: 'Navigation Dropdown Images',
-      description: 'Images per gender shown in navigation dropdowns, matched by index to sub-menu items.',
-      type: 'navDropdownImages',
-    }),
-    defineField({
       name: 'navDropdowns',
       title: 'Navigation Dropdown Columns',
       description:
-        'Custom columns for navigation dropdowns per gender. If set, overrides Shopify menu structure.',
+        'Menu tabs + dropdown columns per gender. Each entry = one nav tab (Взуття, Одяг…).',
       type: 'object',
       fields: (['woman', 'man'] as const).map((gender) =>
         defineField({
@@ -41,14 +29,47 @@ export const siteSettingsType = defineType({
           of: [
             defineArrayMember({
               type: 'object',
-              title: 'Dropdown',
+              title: 'Nav Tab',
               fields: [
                 defineField({
-                  name: 'menuIndex',
-                  title: 'Menu Index',
-                  type: 'number',
-                  description: '0 = first dropdown (e.g. Взуття), 1 = second, etc.',
-                  validation: (Rule) => Rule.required().min(0),
+                  name: 'tabTitle',
+                  title: 'Tab Title',
+                  type: 'localizedString',
+                  description: 'Назва табу в шапці сайту (uk/ru)',
+                }),
+                defineField({
+                  name: 'tabCollection',
+                  title: 'Tab Collection',
+                  type: 'reference',
+                  to: [{ type: 'collection' }],
+                  description: 'Колекція, на яку веде клік по табу (не потрібно для бренд-табу)',
+                }),
+                defineField({
+                  name: 'tabUrl',
+                  title: 'Tab URL (override)',
+                  type: 'string',
+                  description: 'Прямий URL якщо немає колекції. Наприклад /brands для бренд-табу.',
+                }),
+                defineField({
+                  name: 'isBrandsTab',
+                  title: 'Brands Tab',
+                  type: 'boolean',
+                  description: 'Увімкни якщо цей таб — "Бренди". Замість колонок рендериться алфавітний дропдаун.',
+                  initialValue: false,
+                }),
+                defineField({
+                  name: 'topBrands',
+                  title: 'Top Brands',
+                  type: 'array',
+                  of: [{ type: 'reference', to: [{ type: 'collection' }] }],
+                  description: 'Посилання на колекції брендів (тільки для Brands Tab).',
+                  hidden: ({ parent }: any) => !parent?.isBrandsTab,
+                }),
+                defineField({
+                  name: 'tabImage',
+                  title: 'Dropdown Image',
+                  type: 'navImageItem',
+                  description: 'Зображення що відображається праворуч у дропдауні цього табу',
                 }),
                 defineField({
                   name: 'columns',
@@ -148,9 +169,9 @@ export const siteSettingsType = defineType({
                 }),
               ],
               preview: {
-                select: { index: 'menuIndex' },
-                prepare({ index }: any) {
-                  return { title: `Dropdown #${index}` };
+                select: { uk: 'tabTitle.uk', ru: 'tabTitle.ru' },
+                prepare({ uk, ru }: any) {
+                  return { title: uk || ru || 'Tab' };
                 },
               },
             }),
@@ -162,16 +183,6 @@ export const siteSettingsType = defineType({
       name: 'footerSettings',
       type: 'footerSettings',
     }),
-    // defineField({
-    //   name: 'homePageWoman',
-    //   type: 'reference',
-    //   to: [{ type: 'page' }],
-    // }),
-    // defineField({
-    //   name: 'homePageMan',
-    //   type: 'reference',
-    //   to: [{ type: 'page' }],
-    // }),
   ],
   preview: {
     prepare() {

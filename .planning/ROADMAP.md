@@ -208,3 +208,63 @@ Plans:
 - [ ] 11-03-PLAN.md — Install posthog-js, create PostHogProvider + PostHogPageView + usePostHogIdentify, wire into app
 - [ ] 11-04-PLAN.md — Add checkout funnel events (product_viewed, add_to_cart, remove_from_cart, checkout_started, payment_initiated, order_placed)
 - [ ] 11-05-PLAN.md — Add security headers to next.config.ts + create .env.example + build verification checkpoint
+
+### Phase 12: SEO Technical Bugs: fix repetitive path 404s, search page noindex, and tags outside head
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 11
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 12 to break down)
+
+### Phase 13: SEO Redirect Architecture: simplify redirect chains to single 301 and fix language routing
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 12
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 13 to break down)
+
+### Phase 14: SEO Meta Data Templates: fix short long duplicate titles and missing meta descriptions
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 13
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 14 to break down)
+
+### Phase 15: SEO Schema Markup: add OnlineStore WebSite SearchAction ItemList shipping and return policy schemas
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 14
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 15 to break down)
+
+### Phase 16: SEO Image Alt Text: add descriptive alt text to all product and content images
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 15
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 16 to break down)
+
+### Phase 17: Gender navigation architecture: derive gender from URL instead of cookie to fix back navigation state bug
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 16
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 17 to break down)

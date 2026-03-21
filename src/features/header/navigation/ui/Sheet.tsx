@@ -6,8 +6,6 @@ import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
 import { FOOTER_QUERY } from '@shared/sanity/lib/query';
 import { HEADER_QUERYResult } from '@shared/sanity/types';
-import { getMainMenu } from '../api/getMainMenu';
-import { Maybe } from '@shared/lib/shopify/types/storefront.types';
 
 type MainCategory = NonNullable<
   Extract<NonNullable<HEADER_QUERYResult>['header'], { _type: 'header' }>['mainCategory']
@@ -16,7 +14,8 @@ type MainCategory = NonNullable<
 export type NavDropdowns = {
   woman?: Array<{
     _key: string;
-    menuIndex: number | null;
+    tabTitle?: string | null;
+    tabUrl?: string | null;
     columns?: Array<{
       _key: string;
       title: string | '';
@@ -27,7 +26,8 @@ export type NavDropdowns = {
   }> | null;
   man?: Array<{
     _key: string;
-    menuIndex: number | null;
+    tabTitle?: string | null;
+    tabUrl?: string | null;
     columns?: Array<{
       _key: string;
       title: string | '';
@@ -37,26 +37,6 @@ export type NavDropdowns = {
     }> | null;
   }> | null;
 } | null;
-
-const genderSlugMap: Record<string, string[]> = {
-  woman: ['woman', 'women', 'female', 'жен', 'женщин', 'жінк', 'zhinok', 'zhinoch', 'zhinochi'],
-  man: ['man', 'men', 'male', 'муж', 'мужчин', 'чолов', 'cholovik', 'cholovichi'],
-};
-
-const brandSlugs = ['brand', 'бренд', 'брендi', 'бренди'];
-
-function matchesGender(item: { url: string; title: string }, gender: string): boolean {
-  const slug = item.url.split('/').pop()?.toLowerCase() || '';
-  const title = item.title.toLowerCase();
-  const slugs = genderSlugMap[gender] || [];
-  return slugs.some((s) => slug.includes(s) || title.includes(s));
-}
-
-function isBrandsItem(item: { url: string; title: string }): boolean {
-  const slug = item.url.split('/').pop()?.toLowerCase() || '';
-  const title = item.title.toLowerCase();
-  return brandSlugs.some((s) => slug.includes(s) || title.includes(s));
-}
 
 function getCategorySlug(category: MainCategory[number]): string {
   const data = category.collectionData;
@@ -84,14 +64,10 @@ const MenuSheet = async ({
   const cookie = await cookies();
   const gender = cookie.get('gender')?.value || DEFAULT_GENDER;
 
-  const [t, allItems, footerData] = await Promise.all([
+  const [t, footerData] = await Promise.all([
     getTranslations({ locale, namespace: 'Header.nav.drawer' }),
-    getMainMenu({ locale }),
     sanityFetch({ query: FOOTER_QUERY, tags: ['siteSettings', 'footer'] }),
   ]);
-
-  const mainMenuRaw = allItems.filter((item) => matchesGender(item, gender));
-  const items = mainMenuRaw.length > 0 ? mainMenuRaw : null;
 
   const withGender = (url: string) => {
     const stripped = cleanSlug(url);
@@ -100,16 +76,16 @@ const MenuSheet = async ({
   };
 
   type SubItem = {
-    id: Maybe<string> | undefined;
+    id: string | null | undefined;
     title: string;
     url: string;
-    items: { id: Maybe<string> | undefined; title: string; url: string }[];
+    items: { id: string | null | undefined; title: string; url: string }[];
   };
 
   type MenuEntry = {
     label: string;
     menu: {
-      id: Maybe<string> | undefined;
+      id: string | null | undefined;
       title: string;
       url: string;
       items: SubItem[];
@@ -120,101 +96,58 @@ const MenuSheet = async ({
   const menuItems: MenuEntry[] = [];
   const directLinks: { title: string; href: string }[] = [];
 
-  const genderDropdowns = navDropdowns?.[gender as 'woman' | 'man'] ?? [];
-
   // Always show mainCategory items that have no navDropdowns (e.g. outlet) as direct red links
   if (mainCategory) {
     for (const cat of mainCategory) {
-      const slug = (() => {
-        const data = cat.collectionData;
-        if (!data) return '';
-        if ('pageHandle' in data && data.pageHandle) return data.pageHandle;
-        if ('slug' in data && data.slug) return data.slug;
-        return '';
-      })();
-      const title = typeof cat.title === 'string' ? cat.title : '';
-      // Skip the current gender (it's shown as the main accordion menu)
+      const slug = getCategorySlug(cat);
+      const title = getCategoryTitle(cat);
       // Skip woman/man since they have their own full menu
       if (!slug || slug === gender || navDropdowns?.[slug as 'woman' | 'man']?.length) continue;
       directLinks.push({ title, href: `/${slug}` });
     }
   }
 
-  if (items) {
-    items.flatMap((item) =>
-      item.items
-        .filter((subItem) => !isBrandsItem(subItem))
-        .forEach((subItem, subIndex) => {
-          // Find the matching Sanity navDropdown for this menu index
-          const sanityDropdown = genderDropdowns.find((d) => d.menuIndex === subIndex);
+  // Tabs come from Sanity navDropdowns, sorted by menuIndex
+  const tabs = navDropdowns?.[gender as 'woman' | 'man'] ?? [];
 
-          let menuSubItems: SubItem[];
+  for (const tab of tabs) {
+    const tabLabel = tab.tabTitle ?? '';
+    const tabUrl = tab.tabUrl
+      ? tab.tabUrl.startsWith('/')
+        ? tab.tabUrl
+        : withGender(`/${tab.tabUrl}`)
+      : `/${gender}`;
 
-          if (sanityDropdown?.columns?.length) {
-            // Use Sanity column items (flattened across columns)
-            menuSubItems = sanityDropdown.columns.flatMap((col) =>
-              (col.items ?? [])
-                .filter((i) => i.handle)
-                .map((i) => ({
-                  id: i._id,
-                  title: typeof i.title === 'string' ? i.title : '',
-                  url: withGender(`/${i.handle!}`),
-                  items: [],
-                })),
-            );
-          } else {
-            // Fallback to Shopify sub-items
-            menuSubItems = subItem.items.map((child) => ({
-              id: child.id,
-              title: child.title,
-              url: withGender(child.url),
-              items: [],
-            }));
-          }
-
-          // Pick first outletLink from Sanity columns
-          const rawOutlet = sanityDropdown?.columns
-            ?.map((col) => col.outletLink)
-            .find((ol) => ol && ol.label);
-          const outletLink = rawOutlet
-            ? {
-                label: typeof rawOutlet.label === 'string' ? rawOutlet.label : '',
-                url: rawOutlet.collectionHandle
-                  ? withGender(`/${rawOutlet.collectionHandle}`)
-                  : (rawOutlet.url ?? `/${gender}`),
-              }
-            : null;
-
-          menuItems.push({
-            label: subItem.title,
-            menu: [
-              {
-                ...subItem,
-                url: withGender(subItem.url),
-                items: menuSubItems,
-                outletLink,
-              },
-            ],
-          });
-        }),
+    // Category tab — column-based
+    const menuSubItems: SubItem[] = (tab.columns ?? []).flatMap((col) =>
+      (col.items ?? [])
+        .filter((i) => i.handle)
+        .map((i) => ({
+          id: i._id,
+          title: typeof i.title === 'string' ? i.title : '',
+          url: withGender(`/${i.handle!}`),
+          items: [],
+        })),
     );
 
-    const brandsMenuItem = items
-      .flatMap((item) => item.items)
-      .find((subItem) => isBrandsItem(subItem));
+    const rawOutlet = tab.columns
+      ?.map((col) => col.outletLink)
+      .find((ol) => ol && ol.label);
+    const outletLink = rawOutlet
+      ? {
+          label: typeof rawOutlet.label === 'string' ? rawOutlet.label : '',
+          url: rawOutlet.collectionHandle
+            ? withGender(`/${rawOutlet.collectionHandle}`)
+            : (rawOutlet.url ?? `/${gender}`),
+        }
+      : null;
 
-    if (brandsMenuItem) {
-      menuItems.push({
-        label: brandsMenuItem.title,
-        menu: [{ ...brandsMenuItem, url: '/brands', items: [] }],
-      });
-    }
-  } else {
-    // No Shopify match (e.g. outlet gender) — show as a direct red link
-    const sanityCategory = mainCategory?.find((cat) => getCategorySlug(cat) === gender);
-    const title = sanityCategory ? getCategoryTitle(sanityCategory) : gender;
-    directLinks.push({ title, href: `/${gender}` });
+    menuItems.push({
+      label: tabLabel,
+      menu: [{ id: tab._key, title: tabLabel, url: tabUrl, items: menuSubItems, outletLink }],
+    });
   }
+
 
   const socialLinks = footerData?.footerSettings?.socialLinks ?? [];
 

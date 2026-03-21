@@ -1,6 +1,12 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { NavigationMenu, NavigationMenuList } from '@shared/ui/navigation-menu';
 import { cn } from '@shared/lib/utils';
 import { usePathname } from 'next/navigation';
@@ -31,17 +37,19 @@ export const NavigationClient = ({
         onValueChange={setValue}
         skipDelayDuration={100}
         delayDuration={0}
-        className="w-full navigation-menu-wrapper"
+        className="w-full navigation-menu-wrapper "
         viewport={true}
       >
-        <NavigationMenuList
-          className={cn(
-            className,
-            'flex items-center justify-center w-full pt-0 py-2',
-          )}
-        >
-          {children}
-        </NavigationMenuList>
+        <div className="container pr-4">
+          <NavigationMenuList
+            className={cn(
+              className,
+              'flex items-center justify-start w-full pt-0 py-2 ',
+            )}
+          >
+            {children}
+          </NavigationMenuList>
+        </div>
       </NavigationMenu>
     </NavigationCloseContext.Provider>
   );
