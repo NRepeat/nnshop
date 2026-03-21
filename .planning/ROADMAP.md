@@ -222,13 +222,19 @@ Plans:
 
 ### Phase 13: SEO Redirect Architecture: simplify redirect chains to single 301 and fix language routing
 
-**Goal:** [To be planned]
-**Requirements**: TBD
-**Depends on:** Phase 12
-**Plans:** 0 plans
+**Goal**: Domain variants resolve to canonical HTTPS/WWW and locale roots resolve correctly in a single 301 hop.
+**Depends on**: Phase 12
+**Requirements**: SEO-13-01, SEO-13-02, SEO-13-03
+**Success Criteria** (what must be TRUE):
+  1. `http://miomio.com.ua` redirects directly to `https://www.miomio.com.ua/uk/woman` (single 301)
+  2. `/ru` and `/ru/` redirect to `/ru/woman` (not `/uk/woman`)
+  3. No 307 (temporary) redirects exist in the structural routing logic
+  4. Unit test suite verifies all 40+ URL variants from the audit in < 5 seconds
+**Plans**: 2 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 13 to break down)
+- [ ] 13-01-PLAN.md — Core Single-Hop Infrastructure: Build test suite and refactor proxy.ts to Goal State pattern (SEO-13-01, SEO-13-02, SEO-13-03)
+- [ ] 13-02-PLAN.md — Redirect Consistency & Final Audit: Ensure next.config.ts consistency and verify production headers (SEO-13-01)
 
 ### Phase 14: SEO Meta Data Templates: fix short long duplicate titles and missing meta descriptions
 
