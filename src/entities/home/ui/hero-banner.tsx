@@ -203,6 +203,8 @@ function VideoHero({
         preload="auto"
         disablePictureInPicture
         suppressHydrationWarning
+        // @ts-expect-error fetchpriority is valid on video in Chrome
+        fetchpriority={isFirst ? 'high' : 'auto'}
         className="absolute inset-0 w-full h-full object-cover max-h-[75vh]"
       >
         {proxiedSrcWebm && <source src={proxiedSrcWebm} type="video/webm" />}
@@ -245,7 +247,7 @@ function VideoHero({
   return (
     <>
       <style>{heightStyle}</style>
-      <div className="video-hero relative w-full overflow-hidden">
+      <div className="video-hero relative w-full overflow-hidden max-h-[75vh]">
         {href ? (
           <Link href={href} className="absolute inset-0 z-10" prefetch>
             {inner}

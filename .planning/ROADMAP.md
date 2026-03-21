@@ -153,6 +153,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 11. PostHog & Prod Prep | 5/5 | Complete   | 2026-03-21 |
 | 12. SEO Technical Bugs | 2/2 | Complete   | 2026-03-21 |
 | 13. SEO Redirect Architecture | 2/2 | Complete   | 2026-03-21 |
+| 14. SEO Metadata Templates | 1/1 | Complete   | 2026-03-21 |
 
 ### Phase 8: Recently Viewed Products section and Newsletter subscription section
 
@@ -244,13 +245,13 @@ Plans:
 
 ### Phase 14: SEO Meta Data Templates: fix short long duplicate titles and missing meta descriptions
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Standardize SEO metadata (titles 30-60 chars, descriptions >= 70 chars) across Product, Collection, Brand, and Info pages, ensuring unique localization for UK/RU and distinct titles from H1.
+**Requirements**: SEO-14-01, SEO-14-02
 **Depends on:** Phase 13
-**Plans:** 0 plans
+**Plans:** 1 plan
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 14 to break down)
+- [x] 14-01-PLAN.md — Standardize SEO metadata templates and fix info page meta (SEO-14-01, SEO-14-02) (completed 2026-03-21)
 
 ### Phase 15: SEO Schema Markup: add OnlineStore WebSite SearchAction ItemList shipping and return policy schemas
 
