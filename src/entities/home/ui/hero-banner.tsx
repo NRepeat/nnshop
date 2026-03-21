@@ -202,6 +202,7 @@ function VideoHero({
         playsInline
         preload="auto"
         disablePictureInPicture
+        suppressHydrationWarning
         className="absolute inset-0 w-full h-full object-cover max-h-[75vh]"
       >
         {proxiedSrcWebm && <source src={proxiedSrcWebm} type="video/webm" />}

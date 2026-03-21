@@ -43,6 +43,7 @@ export function BrandGrid({ barnds, locale, gender }: BrandGridProps) {
                     src={urlFor(brand).width(160).height(100).url()}
                     alt={brand.collectionData?.handle || 'brand logo'}
                     fill
+                    sizes="160px"
                     className={cn('object-contain', {
                       'scale-150':
                         brand.collectionData?.handle === 'ghoud' ||
@@ -72,6 +73,7 @@ export function BrandGrid({ barnds, locale, gender }: BrandGridProps) {
                               src={urlFor(brand).width(160).height(100).url()}
                               alt={brand.collectionData?.handle || 'brand logo'}
                               fill
+                              sizes="160px"
                               className={cn('object-contain', {
                                 'scale-150':
                                   brand.collectionData?.handle === 'ghoud' ||

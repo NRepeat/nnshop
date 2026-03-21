@@ -23,7 +23,6 @@ import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { ZoomIn } from 'lucide-react';
 import { AddToCartModal } from '@features/product/ui/AddToCartModal';
-import { usePostHog } from 'posthog-js/react';
 
 type ProductCardProps = {
   product: Product;
@@ -115,7 +114,6 @@ export const ProductCard = ({
     .splice(0, 5);
 
   const nav = useRouter();
-  const posthog = usePostHog();
   const isNew = product.tags.includes('новий') || product.tags.includes('new');
   const [api2, setApi2] = useState<CarouselApi>();
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -204,12 +202,6 @@ export const ProductCard = ({
         prefetch
         className="absolute inset-0 z-10"
         aria-label={product.title}
-        onClick={() => posthog?.capture('product_card_clicked', {
-          product_handle: product.handle,
-          product_title: product.title,
-          price: product.priceRange?.minVariantPrice?.amount,
-          source,
-        })}
       />
       <CardContent className="flex flex-col p-1 py-3 md:p-2 md:py-2.5  border-0 shadow-none h-full gap-4 bg-transparent">
         {withInnerShadow && (
@@ -296,10 +288,6 @@ export const ProductCard = ({
                       onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
-                        posthog?.capture('product_quick_view_opened', {
-                          product_handle: product.handle,
-                          source,
-                        });
                         const currentQuery = window.location.search;
                         nav.push(`/quick/${product.handle}${currentQuery}`, { scroll: false });
                       }}
@@ -342,10 +330,6 @@ export const ProductCard = ({
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      posthog?.capture('product_quick_view_opened', {
-                        product_handle: product.handle,
-                        source,
-                      });
                       const currentQuery = window.location.search;
                       nav.push(`/quick/${product.handle}${currentQuery}`, { scroll: false });
                     }}

@@ -12,7 +12,6 @@ import { Button } from '@shared/ui/button';
 import { CollectionFilters } from './CollectionFilters';
 import { useTranslations } from 'next-intl';
 import { Filter } from '@shared/lib/shopify/types/storefront.types';
-import { usePostHog } from 'posthog-js/react';
 
 type Props = {
   filters: Filter[] | undefined;
@@ -22,14 +21,12 @@ type Props = {
 
 export function FilterSheet({ filters, initialFilters, hideVendor }: Props) {
   const t = useTranslations('CollectionPage');
-  const posthog = usePostHog();
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button
           variant="default"
           className="   rounded flex flex-row items-center justify-center "
-          onClick={() => posthog?.capture('collection_filter_sheet_opened')}
         >
           <p>
             <span className="whitespace-nowrap transform mb-2">

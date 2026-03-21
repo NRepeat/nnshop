@@ -4,14 +4,11 @@ import { Button } from '@shared/ui/button';
 import { SheetClose } from '@shared/ui/sheet';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@shared/i18n/navigation';
-import { usePostHog } from 'posthog-js/react';
 
 export const CreateOrderButton = () => {
   const t = useTranslations('Header.cart.drawer');
   const nav = useRouter();
-  const posthog = usePostHog();
   const handleCreateOrder = () => {
-    posthog?.capture('checkout_started');
     nav.push('/checkout/info');
   };
 

@@ -6,7 +6,6 @@ import { useTranslations } from 'next-intl';
 import clsx from 'clsx';
 import { PaymentInfo } from '../schema/paymentSchema';
 import { Button } from '@shared/ui/button';
-import { usePostHog } from 'posthog-js/react';
 
 interface PaymentProviderButtonProps {
   provider: {
@@ -24,7 +23,6 @@ export default function PaymentProviderButton({
   const { watch, setValue } = useFormContext();
   const t = useTranslations('PaymentForm');
   const selectedProvider = watch('paymentProvider');
-  const posthog = usePostHog();
 
   return (
     <Button
@@ -34,9 +32,6 @@ export default function PaymentProviderButton({
       onClick={() => {
         setValue('paymentProvider', provider.id);
         onSelectPaymentProvider(provider.id);
-        posthog?.capture('payment_provider_selected', {
-          provider: provider.id,
-        });
       }}
       className={clsx(
         'group relative p-6 rounded border border-transparent h-fit w-full transition-all hover:shadow-md',

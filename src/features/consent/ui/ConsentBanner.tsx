@@ -13,14 +13,16 @@ declare global {
 }
 
 function updateGtagConsent(granted: boolean) {
-  if (typeof window === 'undefined' || !window.gtag) return;
+  if (typeof window === 'undefined') return;
   const state = granted ? 'granted' : 'denied';
-  window.gtag('consent', 'update', {
-    ad_storage: state,
-    ad_user_data: state,
-    ad_personalization: state,
-    analytics_storage: state,
-  });
+  setTimeout(() => {
+    window.gtag?.('consent', 'update', {
+      ad_storage: state,
+      ad_user_data: state,
+      ad_personalization: state,
+      analytics_storage: state,
+    });
+  }, 0);
 }
 
 export function ConsentBanner() {

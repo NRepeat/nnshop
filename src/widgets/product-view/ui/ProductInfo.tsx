@@ -36,7 +36,6 @@ import DOMPurifyLib from 'dompurify';
 import { VariantInventory } from '@entities/product/api/getInventoryLevels';
 import { Popover, PopoverContent, PopoverTrigger } from '@shared/ui/popover';
 import { ButtonGroup, ButtonGroupSeparator } from '@shared/ui/button-group';
-import { usePostHog } from 'posthog-js/react';
 import { stripInvisible } from '@shared/lib/seo/generateMetadata';
 
 const DetailsContent = ({
@@ -100,7 +99,6 @@ export const ProductInfo = ({
 }) => {
   const t = useTranslations('ProductPage');
   const locale = useLocale();
-  const posthog = usePostHog();
   const [isQuickBuyOpen, setQuickBuyOpen] = useState(false);
   const [isPriceSubscribeOpen, setPriceSubscribeOpen] = useState(false);
   const [isDescExpanded, setDescExpanded] = useState(false);
@@ -216,13 +214,7 @@ export const ProductInfo = ({
                     },
                   )}
                   onClick={() => {
-                    if (isUnavailable) {
-                      posthog?.capture('out_of_stock_size_selected', {
-                        product_handle: product.handle,
-                        product_type: product.productType,
-                        size: s,
-                      });
-                    } else {
+                    if (!isUnavailable) {
                       startSizeTransition(() => setSize(s.toLowerCase()));
                     }
                   }}
@@ -277,11 +269,6 @@ export const ProductInfo = ({
                   className={cn('group', {
                     'pointer-events-none opacity-50': !availableForSale,
                   })}
-                  onClick={() => posthog?.capture('product_color_variant_selected', {
-                    product_handle: product.handle,
-                    selected_color: c.name,
-                    target_product: c.product,
-                  })}
                 >
                   <div
                     className={cn(
@@ -319,10 +306,6 @@ export const ProductInfo = ({
             <button
               type="button"
               onClick={() => {
-                posthog?.capture('product_description_expanded', {
-                  product_handle: product.handle,
-                  action: isDescExpanded ? 'collapsed' : 'expanded',
-                });
                 setDescExpanded((v) => !v);
               }}
               className="mt-1 text-sm text-gray-500 hover:text-gray-800 underline underline-offset-2 transition-colors"
@@ -351,11 +334,6 @@ export const ProductInfo = ({
             variant="outline"
             className=" h-10 md:h-12 text-sm rounded flex items-center gap-2 w-1/2"
             onClick={() => {
-              posthog?.capture('quick_order_opened', {
-                product_handle: product.handle,
-                product_title: product.title,
-                size,
-              });
               setQuickBuyOpen(true);
             }}
             disabled={
@@ -399,19 +377,6 @@ export const ProductInfo = ({
         type="single"
         collapsible
         className="w-full border-t mt-4"
-        onValueChange={(value) => {
-          if (value === 'details') {
-            posthog?.capture('product_accordion_opened', {
-              product_handle: product.handle,
-              section: 'details',
-            });
-          } else if (value === 'shipping') {
-            posthog?.capture('product_accordion_opened', {
-              product_handle: product.handle,
-              section: 'shipping',
-            });
-          }
-        }}
       >
         <AccordionItem value="details">
           <AccordionTrigger className="text-sm uppercase">

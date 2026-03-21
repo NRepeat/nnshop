@@ -17,12 +17,10 @@ import {
 import { Input } from '@shared/ui/input';
 import { Textarea } from '@shared/ui/textarea';
 import { Button } from '@shared/ui/button';
-import { usePostHog } from 'posthog-js/react';
 
 export function ContactForm() {
   const t = useTranslations('ContactForm');
   const schema = getContactSchema(t);
-  const posthog = usePostHog();
 
   const form = useForm<ContactFormData>({
     resolver: zodResolver(schema) as any,
@@ -34,7 +32,6 @@ export function ContactForm() {
   async function onSubmit(data: ContactFormData) {
     try {
       await sendContactForm(data);
-      posthog?.capture('contact_form_submitted');
       toast.success(t('successMessage'));
       form.reset();
     } catch {

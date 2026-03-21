@@ -19,7 +19,6 @@ import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import resetCartSession from '@features/cart/api/resetCartSession';
 import { createOrder } from '@features/order/api/create';
 import { useSession } from '@features/auth/lib/client';
-import { usePostHog } from 'posthog-js/react';
 
 interface PaymentFormProps {
   defaultValues?: PaymentInfo | null;
@@ -59,7 +58,6 @@ export default function PaymentForm({
   const selectedPaymentMethodValue = form.watch('paymentMethod');
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
-  const posthog = usePostHog();
   const [isMerging, setIsMerging] = useState(false);
   const prevUserIdRef = useRef<string | null>(null);
   const [liqpayParams, setLiqpayParams] = useState<{ data: string; signature: string; checkoutUrl: string } | null>(null);
@@ -87,15 +85,7 @@ export default function PaymentForm({
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
     setIsLoading(true);
     try {
-      // 1. Fire payment_initiated before creating the order
-      posthog?.capture('payment_initiated', {
-        payment_method: data.paymentMethod,
-        amount: amount,
-        $current_url: window.location.href,
-        currency: currency,
-      });
-
-      // 2. Create the Shopify order
+      // 1. Create the Shopify order
       const orderResult = await createOrder(
         completeCheckoutData,
         locale,
@@ -112,17 +102,7 @@ export default function PaymentForm({
       const createdOrder = orderResult.order;
       const orderName = (createdOrder.name || createdOrder.id.split('/').pop() || '').replace('#', '');
 
-      // Fire order_placed after confirmed order success
-      posthog?.capture('order_placed', {
-        order_id: createdOrder.id,
-        order_name: orderName,
-        amount: amount,
-        currency: currency,
-        payment_method: data.paymentMethod,
-        $current_url: window.location.href,
-      });
-
-      // 3. Save payment info (need to find the DB order by shopifyOrderId)
+      // 2. Save payment info (need to find the DB order by shopifyOrderId)
       // The createOrder function already saved it to DB, find it
       await savePaymentInfo(data, createdOrder.id);
 
@@ -150,7 +130,6 @@ export default function PaymentForm({
       toast.success(t('paymentInformationSaved'));
       router.push(`/checkout/success/${encodeURIComponent(orderName)}`);
     } catch (error) {
-      posthog?.captureException(error);
       console.error('Error completing order:', error);
       toast.error(t('errorSavingPaymentInformation'));
       setIsLoading(false);

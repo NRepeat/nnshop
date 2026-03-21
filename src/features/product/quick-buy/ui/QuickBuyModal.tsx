@@ -35,7 +35,6 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { createQuickOrder } from '../api/create-quick-order';
 import { Loader2, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { usePostHog } from 'posthog-js/react';
 export const isValidPhone = (phone: string) => {
   try {
     const phoneNumber = parsePhoneNumberFromString(phone);
@@ -72,7 +71,6 @@ export const QuickBuyModal = ({
 }: QuickBuyModalProps) => {
   const t = useTranslations('ProductPage');
   const formSchema = createFormSchema(t);
-  const posthog = usePostHog();
 
   const hasSizes = sizeOptions && sizeOptions.length > 0;
 
@@ -185,13 +183,6 @@ export const QuickBuyModal = ({
       });
 
       if (result.success) {
-        posthog?.capture('quick_order_placed', {
-          product_title: product.title,
-          product_id: product.id,
-          order_id: result.orderId,
-          order_name: result.orderName,
-          size: selectedSize,
-        });
         setIsSuccess(true);
         toast.success(t('orderSuccess', { orderName: result.orderName || '' }));
         closeTimerRef.current = setTimeout(() => {

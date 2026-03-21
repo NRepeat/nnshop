@@ -111,13 +111,7 @@ export default async function RootLayout(props: RootProps) {
       <head>
         <link rel="preconnect" href="https://cdn.shopify.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
-        <Script
-          id="google-tag-manager"
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-05RL9JZJKK"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive" async>
+        <Script id="google-consent-init" strategy="beforeInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
@@ -128,6 +122,15 @@ export default async function RootLayout(props: RootProps) {
               'analytics_storage': 'denied',
               'wait_for_update': 500
             });
+          `}
+        </Script>
+        <Script
+          id="google-tag-manager"
+          src="https://www.googletagmanager.com/gtag/js?id=G-05RL9JZJKK"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
             gtag('js', new Date());
             gtag('config', 'G-05RL9JZJKK');
           `}
@@ -136,8 +139,8 @@ export default async function RootLayout(props: RootProps) {
           id="pulse-live-chat"
           src="/assets/pulse/livechat/loader.js"
           data-live-chat-id="6683a3f051e3db46980f8c09"
-          async
-        ></Script>
+          strategy="lazyOnload"
+        />
         <JsonLd data={generateOrganizationJsonLd()} />
         <meta
           name="google-site-verification"

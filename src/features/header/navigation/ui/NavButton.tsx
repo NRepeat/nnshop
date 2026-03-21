@@ -5,7 +5,6 @@ import { genders } from '@shared/i18n/routing';
 import { useTransition, useState, useMemo, useEffect } from 'react';
 import { detectGenderFromHandle } from '@entities/collection/lib/resolve-handle';
 import { DEFAULT_GENDER } from '@shared/config/shop';
-import { usePostHog } from 'posthog-js/react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 export const NavButton = ({
@@ -24,7 +23,6 @@ export const NavButton = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const posthog = usePostHog();
   const [isPending, startTransition] = useTransition();
   const [optimisticSlug, setOptimisticSlug] = useState<string | null>(null);
 
@@ -66,10 +64,6 @@ export const NavButton = ({
     e.preventDefault();
     setOptimisticSlug(slug);
     document.cookie = `gender=${slug};path=/;max-age=${60 * 60 * 24 * 365}`;
-    posthog?.capture('gender_switched', {
-      gender: slug,
-      previous_gender: genderInUrl ?? gender ?? DEFAULT_GENDER,
-    });
     startTransition(() => {
       router.push(toPath);
       router.refresh();

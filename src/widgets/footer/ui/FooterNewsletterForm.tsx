@@ -1,7 +1,6 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { usePostHog } from 'posthog-js/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -18,7 +17,6 @@ type NewsletterFieldValues = z.input<typeof newsletterSchema>;
 export const FooterNewsletterForm = () => {
   const t = useTranslations('Footer');
   const tN = useTranslations('Newsletter');
-  const posthog = usePostHog();
   const [submitted, setSubmitted] = useState(false);
 
   const form = useForm<NewsletterFieldValues, unknown, NewsletterFormData>({
@@ -28,7 +26,6 @@ export const FooterNewsletterForm = () => {
 
   async function onSubmit(data: NewsletterFormData) {
     await subscribeToNewsletter(data);
-    posthog?.capture('newsletter_subscribed', { location: 'footer', gender: data.gender });
     setSubmitted(true);
   }
 

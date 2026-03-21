@@ -11,7 +11,6 @@ import { Button } from '@shared/ui/button';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import type { Product } from '@shared/lib/shopify/types/storefront.types';
-import { usePostHog } from 'posthog-js/react';
 
 /**
  * Size chart categories based on Shopify Standard Product Taxonomy
@@ -188,17 +187,9 @@ export const SizeChartDialog = ({
   const tProduct = useTranslations('ProductPage');
   const category = getSizeChartCategory(productType);
   const ChartComponent = SIZE_CHART_COMPONENTS[category];
-  const posthog = usePostHog();
 
   return (
-    <Dialog
-      onOpenChange={(open) => {
-        if (open) posthog?.capture('size_chart_opened', {
-          product_type: productType,
-          chart_type: category,
-        });
-      }}
-    >
+    <Dialog>
       <DialogTrigger asChild>
         <Button
           variant="link"

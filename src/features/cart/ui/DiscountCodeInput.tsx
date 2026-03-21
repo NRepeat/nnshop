@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { usePostHog } from 'posthog-js/react';
 import { Input } from '@shared/ui/input';
 import { Button } from '@shared/ui/button';
 import { X, Tag, Loader2, Check } from 'lucide-react';
@@ -27,7 +26,6 @@ export const DiscountCodeInput = ({
   discountCodes = [],
   className,
 }: DiscountCodeInputProps) => {
-  const posthog = usePostHog();
   const t = useTranslations('CartPage');
   const router = useRouter();
   const [code, setCode] = useState('');
@@ -43,22 +41,17 @@ export const DiscountCodeInput = ({
       if (result.success) {
         if (result.applicable === false) {
           setError(t('invalid_code'));
-          posthog?.capture('coupon_failed', { coupon_code: code.trim(), reason: 'not_applicable' });
-        } else {
-          posthog?.capture('coupon_applied', { coupon_code: code.trim() });
         }
         setCode('');
         router.refresh();
       } else {
         setError(result.error || t('invalid_code'));
-        posthog?.capture('coupon_failed', { coupon_code: code.trim(), reason: result.error ?? 'not_applicable' });
       }
     });
   };
 
   const handleRemove = (codeToRemove: string) => {
     startTransition(async () => {
-      posthog?.capture('coupon_removed', { coupon_code: codeToRemove });
       await removeDiscountCode(codeToRemove);
       router.refresh();
     });

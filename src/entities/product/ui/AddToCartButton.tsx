@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useTransition, useEffect, useRef } from 'react';
-import { usePostHog } from 'posthog-js/react';
 import { DEFAULT_CURRENCY_CODE } from '@shared/config/shop';
 import { toast } from 'sonner';
 import { Button } from '@shared/ui/button';
@@ -63,7 +62,6 @@ export function AddToCartButton({
   disabled?: boolean;
   onSuccess?: () => void;
 }) {
-  const posthog = usePostHog();
   const [isPending, setIsPending] = useState(false);
   const [isRefreshing, startRefresh] = useTransition();
   const [pendingActions, setPendingActions] = useState(false);
@@ -130,16 +128,6 @@ export function AddToCartButton({
       const result = await addToCart(null, formData);
 
       if (result.success) {
-        posthog?.capture('add_to_cart', {
-          product_handle: product?.handle,
-          product_title: product?.title,
-          product_id: product?.id,
-          variant_id: selectedVariant?.id,
-          size: selectedVariant?.selectedOptions?.find(o => ['розмір', 'размер', 'size'].includes(o.name.toLowerCase()))?.value ?? null,
-          price: selectedVariant?.price?.amount ?? product?.priceRange?.maxVariantPrice?.amount,
-          currency: selectedVariant?.price?.currencyCode ?? product?.priceRange?.maxVariantPrice?.currencyCode,
-          $current_url: window.location.href,
-        });
         toast.success(t('addedToCart'));
         scrollYRef.current = window.scrollY;
         setPendingActions(true);
@@ -152,11 +140,6 @@ export function AddToCartButton({
             ? t('productNotAvailable')
             : result.message || t('failedToAdd');
         toast.error(errorMessage);
-        posthog?.capture('add_to_cart_failed', {
-          product_handle: product?.handle,
-          variant_id: selectedVariant?.id,
-          reason: result.message,
-        });
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
