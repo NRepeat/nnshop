@@ -2,7 +2,6 @@
 
 import { useQueryState, parseAsInteger } from 'nuqs';
 import { useTransition, useState, useEffect, useRef } from 'react';
-import { usePostHog } from 'posthog-js/react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@shared/ui/button';
 import { Spinner } from '@/shared/ui/Spinner';
@@ -15,7 +14,6 @@ type Props = {
 };
 
 export function NuqsPriceRangeFilter({ initialFilterPrice }: Props) {
-  const posthog = usePostHog();
   const t = useTranslations('CollectionPage.filters');
   const [isPending] = useTransition();
   const [minPrice, setMinPrice] = useQueryState(
@@ -51,11 +49,6 @@ export function NuqsPriceRangeFilter({ initialFilterPrice }: Props) {
     debounceRef.current = setTimeout(() => {
       setMinPrice(value[0]);
       setMaxPrice(value[1]);
-      posthog?.capture('collection_filter_applied', {
-        filter_type: 'price_range',
-        min_price: value[0],
-        max_price: value[1],
-      });
     }, 600);
   };
 

@@ -5,7 +5,6 @@ import { useTransition } from 'react';
 import { Button } from '@shared/ui/button';
 import { X } from 'lucide-react';
 import { Filter } from '@shared/lib/shopify/types/storefront.types';
-import { usePostHog } from 'posthog-js/react';
 
 type Props = {
   filterKey: string;
@@ -21,7 +20,6 @@ export function ActiveFilterChip({
   filter,
 }: Props) {
   const [isPending, startTransition] = useTransition();
-  const posthog = usePostHog();
 
   const [selectedValues, setSelectedValues] = useQueryState(
     filterKey,
@@ -45,9 +43,6 @@ export function ActiveFilterChip({
         variant={'link'}
         size={'icon'}
         onClick={() => {
-          posthog?.capture('collection_filter_removed', {
-            filter_label: label,
-          });
           removeFilter();
         }}
         disabled={isPending}

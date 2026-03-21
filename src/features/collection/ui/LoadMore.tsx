@@ -4,7 +4,6 @@ import { PageInfo } from '@shared/lib/shopify/types/storefront.types';
 import { Button } from '@shared/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { usePostHog } from 'posthog-js/react';
 import { useQueryState, parseAsInteger } from 'nuqs';
 import { useEffect, useTransition } from 'react';
 import { useInView } from 'react-intersection-observer';
@@ -21,7 +20,6 @@ export default function LoadMore({
   gender?: string;
 }) {
   const t = useTranslations('LoadMore');
-  const posthog = usePostHog();
   const [isPending, startTransition] = useTransition();
   const { ref, inView } = useInView();
 
@@ -39,11 +37,6 @@ export default function LoadMore({
     
     startTransition(async () => {
       const newLimit = limit + 20;
-      posthog?.capture('collection_load_more', {
-        method: 'action',
-        collection_handle: handle,
-        new_limit: newLimit,
-      });
       await setLimit(newLimit);
     });
   };

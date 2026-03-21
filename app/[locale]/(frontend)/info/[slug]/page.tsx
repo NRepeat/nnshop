@@ -4,7 +4,7 @@ import { PAGE_QUERY } from '@/shared/sanity/lib/query';
 import { setRequestLocale } from 'next-intl/server';
 import { locales } from '@shared/i18n/routing';
 import { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/lib/seo/generateMetadata';
+import { formatTitle, generatePageMetadata } from '@shared/lib/seo/generateMetadata';
 import { PortableText, type PortableTextBlock } from 'next-sanity';
 import { components } from '@/shared/sanity/components/portableText';
 import { ContactForm } from '@features/contact/ui/ContactForm';
@@ -33,32 +33,51 @@ const pageTitles: Record<string, Record<string, string>> = {
   },
 };
 
-const pageDescriptions: Record<string, Record<string, string>> = {
+const seoTitles: Record<string, Record<string, string>> = {
   uk: {
-    contacts: 'Як з нами зв\'язатися: месенджери, пошта, графік роботи та підтримка щодо замовлень ✔️',
-    delivery: 'Умови доставки по Україні: терміни, вартість, служби доставки та отримання замовлення.',
-    'payment-returns': 'Способи оплати 💳 Правила повернення ✔️ Строки та умови ⏳ Як оформити запит 🧾 Пояснюємо просто ⭐',
-    'public-offer-agreement': 'Умови продажу та використання сайту MioMio: оформлення замовлення, оплата, доставка, повернення, права та обов\'язки сторін.',
-    'privacy-policy': 'Умови збору та обробки персональних даних у MioMio.',
+    contacts: 'Контакти інтернет-магазину взуття та аксесуарів | MioMio',
+    delivery: 'Доставка взуття та аксесуарів по Україні | MioMio',
+    sustainability: 'Сталий розвиток та етична мода | MioMio',
+    'payment-returns': 'Оплата і повернення товару — умови та строки | MioMio',
+    'public-offer-agreement': 'Публічна оферта — договір купівлі-продажу | MioMio',
+    'privacy-policy': 'Політика конфіденційності та захист даних | MioMio',
   },
   ru: {
-    contacts: 'Как с нами связаться: мессенджеры, почта, график работы и поддержка по заказам ✔️',
-    delivery: 'Условия доставки по Украине: сроки, стоимость, службы доставки и получение заказа.',
-    'payment-returns': 'Способы оплаты 💳 Правила возврата ✔️ Сроки и условия ⏳ Как оформить запрос 🧾 Объясняем просто ⭐',
+    contacts: 'Контакты интернет-магазина обуви и аксессуаров | MioMio',
+    delivery: 'Доставка обуви и аксессуаров по Украине | MioMio',
+    sustainability: 'Устойчивое развитие и этичная мода | MioMio',
+    'payment-returns': 'Оплата и возврат товара — условия и сроки | MioMio',
+    'public-offer-agreement': 'Публичная оферта — договор купли-продажи | MioMio',
+    'privacy-policy': 'Политика конфиденциальности и защита данных | MioMio',
+  },
+};
+
+const pageDescriptions: Record<string, Record<string, string>> = {
+  uk: {
+    contacts: 'Як з нами зв\'язатися: месенджери, пошта, графік роботи та підтримка щодо замовлень. Відповідаємо швидко ✔️',
+    delivery: 'Умови доставки взуття та аксесуарів по Україні: терміни, вартість, служби доставки та отримання замовлення ✔️',
+    'payment-returns': 'Способи оплати 💳 Правила повернення ✔️ Строки та умови ⏳ Як оформити запит 🧾 Пояснюємо просто ⭐',
+    'public-offer-agreement': 'Умови продажу та використання сайту MioMio: оформлення замовлення, оплата, доставка, повернення, права та обов\'язки сторін.',
+    'privacy-policy': 'Політика конфіденційності MioMio: як ми збираємо, використовуємо та захищаємо ваші персональні дані при покупці взуття онлайн.',
+  },
+  ru: {
+    contacts: 'Как с нами связаться: мессенджеры, почта, график работы и поддержка по заказам. Отвечаем быстро ✔️',
+    delivery: 'Условия доставки обуви и аксессуаров по Украине: сроки, стоимость, службы доставки и получение заказа ✔️',
+    'payment-returns': 'Способы оплати 💳 Правила возврата ✔️ Сроки и условия ⏳ Как оформить запрос 🧾 Объясняем просто ⭐',
     'public-offer-agreement': 'Условия продажи и использования сайта MioMio: оформление заказа, оплата, доставка, возврат, права и обязанности сторон.',
-    'privacy-policy': 'Условия сбора и обработки персональных данных в MioMio.',
+    'privacy-policy': 'Политика конфиденциальности MioMio: как мы собираем, используем и защищаем ваши персональные данные при покупке обуви онлайн.',
   },
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
 
-  const title = pageTitles[locale]?.[slug] || slug;
+  const title = seoTitles[locale]?.[slug] || pageTitles[locale]?.[slug] || slug;
   const description = pageDescriptions[locale]?.[slug];
 
   return generatePageMetadata(
     {
-      title: `${title} | MioMio`,
+      title: formatTitle(title),
       description,
     },
     locale,

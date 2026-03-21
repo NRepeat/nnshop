@@ -13,7 +13,6 @@ import {
 } from '@shared/ui/carousel';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
-import { usePostHog } from 'posthog-js/react';
 import { cn } from '@shared/lib/utils';
 import clsx from 'clsx';
 
@@ -30,7 +29,6 @@ const Gallery = ({
   children?: React.ReactNode;
   quiqView?: boolean;
 }) => {
-  const posthog = usePostHog();
   const [mainApi, setMainApi] = useState<CarouselApi>();
   const [secApi, setSecApi] = useState<CarouselApi>();
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -44,9 +42,8 @@ const Gallery = ({
   const onThumbClick = useCallback(
     (index: number) => {
       mainApi?.scrollTo(index);
-      posthog?.capture('product_gallery_navigated', { image_index: index, method: 'thumbnail' });
     },
-    [mainApi, posthog],
+    [mainApi],
   );
   const onDotClick = useCallback(
     (index: number) => {
@@ -119,7 +116,6 @@ const Gallery = ({
                             onClick={(e) => {
                               // eslint-disable-next-line @typescript-eslint/no-explicit-any
                               open(e as any);
-                              posthog?.capture('product_gallery_zoomed', { image_index: selectedIndex });
                             }}
                             priority={index === 0}
                             fetchPriority={index === 0 ? 'high' : 'auto'}

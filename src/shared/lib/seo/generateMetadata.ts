@@ -5,6 +5,15 @@ export function stripInvisible(str: string): string {
   return str.replace(/[\u200b\u200c\u200d\ufeff\u00ad\u034f\u115f\u1160\u17b4\u17b5\u180b-\u180e\u2060-\u206f\ufe00-\ufe0f]/g, '').trim();
 }
 
+/** Formats title to be between 30 and 60 characters, truncating if necessary */
+export function formatTitle(title: string): string {
+  const clean = stripInvisible(title);
+  if (clean.length > 60) {
+    return clean.substring(0, 57) + '...';
+  }
+  return clean;
+}
+
 interface SEOData {
   title?: string;
   description?: string;
@@ -90,10 +99,14 @@ export function generateProductMetadata(
     baseTitle = `${baseTitle} арт. ${sku}`;
   }
 
-  const title = `${baseTitle} | MioMio`;
+  const rawTitle = isUk 
+    ? `Купити ${baseTitle} в інтернет-магазині | MioMio` 
+    : `Купить ${baseTitle} в интернет-магазине | MioMio`;
+  const title = formatTitle(rawTitle);
+
   const description = isUk
-    ? 'Фото, характеристики та доступні розміри в наявності. Зручне оформлення замовлення онлайн і доставка по Україні ✔️'
-    : 'Фото, характеристики и доступные размеры в наличии. Удобное оформление заказа онлайн и доставка по Украине ✔️';
+    ? `Купити ${baseTitle} в інтернет-магазині MioMio. Фото, характеристики, доступні розміри та актуальна наявність. Доставка по Україні ✔️`
+    : `Купить ${baseTitle} в интернет-магазине MioMio. Фото, характеристики, доступные размеры и актуальное наличие. Доставка по Украине ✔️`;
 
   return generatePageMetadata(
     { title, description, image: product.featuredImage?.url },
@@ -121,12 +134,15 @@ export function generateCollectionMetadata(
     ? { woman: ' для жінок', man: ' для чоловіків' }
     : { woman: ' для женщин', man: ' для мужчин' };
   const genderSuffix = gender ? (genderPhrase[gender as 'woman' | 'man'] ?? '') : '';
-  const title = isUk
-    ? `Купити ${cleanTitle}${genderSuffix} | MioMio`
-    : `Купить ${cleanTitle}${genderSuffix} | MioMio`;
+  const rawTitle = isUk
+    ? `Купити ${cleanTitle}${genderSuffix} в інтернет-магазині | MioMio`
+    : `Купить ${cleanTitle}${genderSuffix} в интернет-магазине | MioMio`;
+  const title = formatTitle(rawTitle);
+
   const templateDescription = isUk
-    ? `Добірка ${cleanTitle}${genderSuffix} в MioMio. Перевіряйте наявність, обирайте розмір і оформлюйте замовлення онлайн.`
-    : `Подборка ${cleanTitle}${genderSuffix} в MioMio. Проверяйте наличие, выбирайте размер и оформляйте заказ онлайн.`;
+    ? `Купити ${cleanTitle}${genderSuffix} в інтернет-магазині MioMio. Добірка найкращих моделей, перевіряйте наявність та обирайте свій розмір. Доставка по Україні ✔️`
+    : `Купить ${cleanTitle}${genderSuffix} в интернет-магазине MioMio. Подборка лучших моделей, проверяйте наличие и выбирайте свой размер. Доставка по Украине ✔️`;
+
   const description = templateDescription || collection.seo?.description?.trim();
 
   // Build locale-specific alternate URLs using the correct handle per locale
@@ -177,12 +193,15 @@ export function generateBrandMetadata(
 ): Metadata {
   const isUk = locale === 'uk';
   const cleanTitle = stripInvisible(brand.title);
-  const title = isUk
-    ? `${cleanTitle} — купити онлайн | MioMio`
-    : `${cleanTitle} — купить онлайн | MioMio`;
+  const rawTitle = isUk
+    ? `${cleanTitle} — купити в інтернет-магазині | MioMio`
+    : `${cleanTitle} — купить в интернет-магазине | MioMio`;
+  const title = formatTitle(rawTitle);
+
   const description = isUk
-    ? 'Моделі бренду в MioMio: фото, доступні розміри та актуальна наявність. Доставка по Україні ✔️'
-    : 'Модели бренда в MioMio: фото, доступные размеры и актуальное наличие. Доставка по Украине ✔️';
+    ? `${cleanTitle} в MioMio: моделі бренду, фото, доступні розміри та актуальна наявність. Зручне замовлення онлайн та доставка по Україні ✔️`
+    : `${cleanTitle} в MioMio: модели бренда, фото, доступные размеры и актуальное наличие. Удобный заказ онлайн и доставка по Украине ✔️`;
+
   return generatePageMetadata(
     { title, description, image: brand.image?.url },
     locale,

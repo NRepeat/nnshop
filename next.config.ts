@@ -1,16 +1,16 @@
 import { fetchRedirects } from '@/shared/sanity/lib/fetchRedirects';
-import { withPostHogConfig } from '@posthog/nextjs-config';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 const nextConfig: NextConfig = {
   experimental: {
     viewTransition: true,
-    cssChunking: true,
   },
+  trailingSlash: false,
   htmlLimitedBots: /.*/,
   output: 'standalone',
-  // productionBrowserSourceMaps: true,
+  productionBrowserSourceMaps: false,
+  serverExternalPackages: [],
   typescript: {
     ignoreBuildErrors: false,
   },
@@ -50,25 +50,48 @@ const nextConfig: NextConfig = {
           redirect.destination &&
           redirect.permanent !== null,
       )
-      .map((redirect) => ({
-        source: redirect.source!,
-        destination: redirect.destination!,
-        permanent: redirect.permanent!,
-      }));
+      .map((redirect) => {
+        let destination = redirect.destination!;
+
+        // 1. Internal destination normalization (starts with /, not //)
+        if (destination.startsWith('/') && !destination.startsWith('//')) {
+          if (destination.length > 1 && destination.endsWith('/')) {
+            destination = destination.slice(0, -1);
+          }
+        }
+
+        // 2. Absolute URL normalization for our domain
+        if (destination.includes('miomio.com.ua')) {
+          try {
+            const url = new URL(destination);
+            if (
+              url.hostname === 'miomio.com.ua' ||
+              url.hostname === 'www.miomio.com.ua'
+            ) {
+              url.protocol = 'https:';
+              url.hostname = 'www.miomio.com.ua';
+              if (url.pathname.length > 1 && url.pathname.endsWith('/')) {
+                url.pathname = url.pathname.slice(0, -1);
+              }
+              destination = url.toString();
+            }
+          } catch  {
+            // Fallback to original if URL is malformed
+          }
+        }
+
+        return {
+          source: redirect.source!,
+          destination: destination,
+          permanent: redirect.permanent!,
+        };
+      });
   },
   async rewrites() {
     return [
       {
         source: '/assets/pulse/:path*',
         destination: 'https://cdn.pulse.is/:path*',
-      },
-      // {
-      //   source: '/ingest/static/:path*',
-      //   destination: 'https://us-assets.i.posthog.com/static/:path*',
-      // },
-      {
-        source: '/ingest/:path*',
-        destination: 'https://us.i.posthog.com/:path*',
       },
     ];
   },

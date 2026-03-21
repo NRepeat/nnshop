@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { useDebounce } from 'use-debounce';
 import { PredictiveSearchQuery } from '@shared/lib/shopify/types/storefront.generated';
-import { usePostHog } from 'posthog-js/react';
 import { Link, useRouter } from '@shared/i18n/navigation';
 import { useLocale } from 'next-intl';
 import {
@@ -40,14 +39,9 @@ export const SearchClient = ({ className }: { className?: string }) => {
   }, []);
   const router = useRouter();
   const searchContainerRef = useRef<HTMLDivElement>(null);
-  const posthog = usePostHog();
 
   const handleSearch = () => {
     if (query) {
-      posthog?.capture('search_submitted', {
-        query,
-        results_count: results?.products?.length ?? null,
-      });
       router.push(`/search?q=${query}`);
       setIsOpen(false);
     }
@@ -76,12 +70,6 @@ export const SearchClient = ({ className }: { className?: string }) => {
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
-
-  useEffect(() => {
-    if (!loading && results && debouncedQuery && results.products?.length === 0) {
-      posthog?.capture('search_no_results', { query: debouncedQuery });
-    }
-  }, [loading, results, debouncedQuery, posthog]);
 
   useEffect(() => {
     if (debouncedQuery.length >= 1) {

@@ -28,7 +28,6 @@ import {
 } from '@features/auth/ui/action';
 import { client } from '@features/auth/lib/client';
 import { toast } from 'sonner';
-import posthog from 'posthog-js';
 
 type Mode = 'signIn' | 'signUp';
 

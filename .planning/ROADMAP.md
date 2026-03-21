@@ -147,6 +147,13 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 5. Observability & Scaling | 0/TBD | Not started | - |
 | 6. Pre-Launch UI Polish | 3/3 | Complete   | 2026-02-26 |
 | 7. Lighthouse Audit Fixes | 3/3 | Complete   | 2026-02-26 |
+| 8. Recently Viewed & Newsletter | 3/4 | In Progress | |
+| 9. Frontend Polish | 5/6 | In Progress | |
+| 10. SEO Metadata Templates | 2/2 | Complete   | 2026-03-21 |
+| 11. PostHog & Prod Prep | 5/5 | Complete   | 2026-03-21 |
+| 12. SEO Technical Bugs | 2/2 | Complete   | 2026-03-21 |
+| 13. SEO Redirect Architecture | 2/2 | Complete   | 2026-03-21 |
+| 14. SEO Metadata Templates | 1/1 | Complete   | 2026-03-21 |
 
 ### Phase 8: Recently Viewed Products section and Newsletter subscription section
 
@@ -220,7 +227,7 @@ Plans:
 - [x] 12-01-PLAN.md — Remove repetitive path redirect from proxy, add notFound() guard in CollectionPage, add noindex to search page, fix robots.ts
 - [x] 12-02-PLAN.md — Add htmlLimitedBots to next.config.ts, move DraftModeTools Suspense inside body in layout.tsx
 
-### Phase 13: SEO Redirect Architecture: simplify redirect chains to single 301 and fix language routing
+### Phase 13: SEO Redirect Architecture: simplify redirect chains to single 301 and fix language routing (completed 2026-03-21)
 
 **Goal**: Domain variants resolve to canonical HTTPS/WWW and locale roots resolve correctly in a single 301 hop.
 **Depends on**: Phase 12
@@ -233,18 +240,18 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 13-01-PLAN.md — Core Single-Hop Infrastructure: Build test suite and refactor proxy.ts to Goal State pattern (SEO-13-01, SEO-13-02, SEO-13-03)
-- [ ] 13-02-PLAN.md — Redirect Consistency & Final Audit: Ensure next.config.ts consistency and verify production headers (SEO-13-01)
+- [x] 13-01-PLAN.md — Core Single-Hop Infrastructure: Build test suite and refactor proxy.ts to Goal State pattern (SEO-13-01, SEO-13-02, SEO-13-03) (completed 2026-03-21)
+- [x] 13-02-PLAN.md — Redirect Consistency & Final Audit: Ensure next.config.ts consistency and verify production headers (SEO-13-01) (completed 2026-03-21)
 
 ### Phase 14: SEO Meta Data Templates: fix short long duplicate titles and missing meta descriptions
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Standardize SEO metadata (titles 30-60 chars, descriptions >= 70 chars) across Product, Collection, Brand, and Info pages, ensuring unique localization for UK/RU and distinct titles from H1.
+**Requirements**: SEO-14-01, SEO-14-02
 **Depends on:** Phase 13
-**Plans:** 0 plans
+**Plans:** 1 plan
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 14 to break down)
+- [x] 14-01-PLAN.md — Standardize SEO metadata templates and fix info page meta (SEO-14-01, SEO-14-02) (completed 2026-03-21)
 
 ### Phase 15: SEO Schema Markup: add OnlineStore WebSite SearchAction ItemList shipping and return policy schemas
 

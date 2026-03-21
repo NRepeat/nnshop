@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { DEFAULT_COUNTRY_CODE } from '@shared/config/shop';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -26,7 +26,6 @@ import clsx from 'clsx';
 import { ContactInformation } from '~/generated/prisma/client';
 import { User } from 'better-auth';
 import { Checkbox } from '@shared/ui/checkbox';
-import { usePostHog } from 'posthog-js/react';
 
 export default function ContactInfoForm({
   contactInfo,
@@ -37,13 +36,6 @@ export default function ContactInfoForm({
 }) {
   const router = useRouter();
   const t = useTranslations('ContactInfoForm');
-  const posthog = usePostHog();
-
-  useEffect(() => {
-    posthog?.capture('checkout_started', {
-      $current_url: window.location.href,
-    });
-  }, [posthog]);
 
   const contactInfoSchema = getContactInfoSchema(t);
 
@@ -67,20 +59,12 @@ export default function ContactInfoForm({
     try {
       const result = await saveContactInfo(data);
       if (result) {
-        posthog?.setPersonProperties({
-          email: data.email,
-          name: [data.name, data.lastName].filter(Boolean).join(' ') || undefined,
-        });
-        posthog?.capture('checkout_contact_info_saved', {
-          $current_url: window.location.href,
-        });
         toast.success(t('contactInformationSaved'));
         router.push(`/checkout/delivery`);
       } else {
         toast.error(t('errorSavingContactInformation'));
       }
     } catch (error) {
-      posthog?.captureException(error);
       console.error('Error saving contact info:', error);
       toast.error(t('errorSavingContactInformation'));
     }
