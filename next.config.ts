@@ -7,7 +7,8 @@ const nextConfig: NextConfig = {
     viewTransition: true,
   },
   trailingSlash: false,
-  htmlLimitedBots: /.*/,
+  htmlLimitedBots:
+    /Googlebot|bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|facebot|ia_archiver/,
   output: 'standalone',
   productionBrowserSourceMaps: false,
   serverExternalPackages: [],
