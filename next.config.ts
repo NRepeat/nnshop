@@ -75,7 +75,7 @@ const nextConfig: NextConfig = {
               }
               destination = url.toString();
             }
-          } catch (e) {
+          } catch  {
             // Fallback to original if URL is malformed
           }
         }
