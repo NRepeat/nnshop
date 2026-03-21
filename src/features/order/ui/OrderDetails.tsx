@@ -11,6 +11,7 @@ import { getTranslations } from 'next-intl/server';
 import { OrderStatusBadge } from './OrderStatusBadge';
 import { OrderTimeline } from './OrderTimeline';
 import { User, MapPin, CreditCard, Package } from 'lucide-react';
+import { getProductAlt } from '@shared/lib/seo';
 
 const getDeliveryMethodKey = (method: string): string => {
   switch (method) {
@@ -261,7 +262,10 @@ export const OrderDetails = async ({
                       {item.image?.url ? (
                         <Image
                           src={item.image.url}
-                          alt={item.title}
+                          alt={getProductAlt(
+                            { title: item.title },
+                            { title: item.variant.title },
+                          )}
                           fill
                           className="object-cover"
                           sizes="64px"

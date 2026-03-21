@@ -21,10 +21,14 @@ export const brandGridBlock = defineType({
           name: 'logo',
           fields: [
             defineField({
+              name: 'alt',
+              type: 'localizedString',
+              title: 'Alt Text',
+            }),
+            defineField({
               type: 'slug',
               name: 'handle',
-            }),
-            {
+            }),            {
               name: 'collection',
               title: 'Collection',
               type: 'reference',

@@ -38,7 +38,7 @@ export const MainCollectionGrid = (props: MainCollectionGridProps) => {
                   {col.image && col.image.url && (
                     <Image
                       src={col.image.url}
-                      alt={col.title ?? ''}
+                      alt={col.image.alt || col.title || ''}
                       className="rounded object-cover w-full transition-transform duration-700 ease-in-out  group-hover:scale-105 group-hover:shadow transition-shadow"
                       fill
                       sizes="(max-width: 640px) 370px, (max-width: 1024px) 50vw, 33vw"

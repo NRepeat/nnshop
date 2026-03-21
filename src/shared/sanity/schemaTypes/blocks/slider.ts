@@ -24,6 +24,13 @@ export const sliderBlock = defineField({
               options: {
                 hotspot: true,
               },
+              fields: [
+                defineField({
+                  name: 'alt',
+                  type: 'localizedString',
+                  title: 'Alt Text',
+                }),
+              ],
             }),
 
             defineField({

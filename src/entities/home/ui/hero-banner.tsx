@@ -316,7 +316,7 @@ function ImageSlider({
               .auto('format')
               .quality(80)
               .url()}
-            alt={slide.title || slide.description || 'Banner mobile'}
+            alt={slide.mobileImageAlt || slide.title || slide.description || 'Banner mobile'}
             fill
             priority={index === 0}
             className="object-cover"
@@ -334,7 +334,7 @@ function ImageSlider({
         >
           <Image
             src={urlFor(slide.image.asset).auto('format').quality(80).url()}
-            alt={slide.title || slide.description || 'Banner desktop'}
+            alt={slide.imageAlt || slide.title || slide.description || 'Banner desktop'}
             fill={!compact}
             width={compact ? 1920 : undefined}
             height={compact ? 540 : undefined}

@@ -98,7 +98,7 @@ export function SplitImage(props: SplitGridProps) {
         className="transition-transform object-cover duration-700 ease-in-out group-hover:scale-105"
         src={urlFor(image).auto('format').quality(80).url()}
         fill
-        alt={localizedTitle || ''}
+        alt={(props as any).imageAlt || localizedTitle || ''}
         priority
       />
       <div className="pointer-events-none absolute inset-0 rounded inset-shadow-sm " />

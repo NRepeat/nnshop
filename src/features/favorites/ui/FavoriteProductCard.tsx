@@ -9,6 +9,7 @@ import { cn } from '@shared/lib/utils';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
+import { getProductAlt } from '@shared/lib/seo';
 
 type FavoriteProductCardProps = {
   product: Product;
@@ -56,7 +57,7 @@ export const FavoriteProductCard = ({ product }: FavoriteProductCardProps) => {
                 currentImageIndex === index ? 'opacity-100' : 'opacity-0',
               )}
               src={image.url}
-              alt={image.altText || product.title}
+              alt={image.altText || getProductAlt(product)}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />

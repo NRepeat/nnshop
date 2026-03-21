@@ -1,3 +1,5 @@
+import { defineField } from 'sanity';
+
 export const heroSlideButton = {
   title: 'Hero Slide Button',
   name: 'heroSlideButton',
@@ -173,6 +175,13 @@ export const heroSlide = {
       type: 'image',
       group: 'media',
       options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          type: 'localizedString',
+          title: 'Alt Text',
+        }),
+      ],
     },
     {
       title: 'Image (Mobile)',
@@ -181,6 +190,13 @@ export const heroSlide = {
       description: 'Optional. If set, shown on mobile instead of the desktop image.',
       group: 'media',
       options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          type: 'localizedString',
+          title: 'Alt Text',
+        }),
+      ],
     },
     {
       title: 'Buttons',
@@ -274,6 +290,13 @@ export const heroSlider = {
       group: 'video',
       description: 'Image shown while the video is loading.',
       options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          type: 'localizedString',
+          title: 'Alt Text',
+        }),
+      ],
     },
     {
       title: 'Video URL',

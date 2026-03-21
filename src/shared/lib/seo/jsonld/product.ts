@@ -1,6 +1,5 @@
+import { SITE_URL } from '@shared/config/brand';
 import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
-
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
 
 interface ProductImage {
   url: string;
@@ -69,14 +68,15 @@ const SHIPPING_DETAILS = {
   },
 };
 
-const RETURN_POLICY = {
+const getReturnPolicy = (locale: string) => ({
   '@type': 'MerchantReturnPolicy',
   applicableCountry: 'UA',
   returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
   merchantReturnDays: 14,
   returnMethod: 'https://schema.org/ReturnByMail',
   returnFees: 'https://schema.org/FreeReturn',
-};
+  url: `${SITE_URL}/${locale}/info/payment-returns`,
+});
 
 export function generateProductJsonLd(product: ShopifyProduct, locale: string) {
   const images = product.images?.edges.map((edge) => edge.node.url) || [];
@@ -86,7 +86,7 @@ export function generateProductJsonLd(product: ShopifyProduct, locale: string) {
 
   const variants = product.variants?.edges.map((e) => e.node) ?? [];
   const isAvailable = product.availableForSale ?? variants.some((v) => v.availableForSale);
-  const productUrl = `${BASE_URL}/${locale}/product/${product.handle}`;
+  const productUrl = `${SITE_URL}/${locale}/product/${product.handle}`;
   // Use maxVariantPrice to match the price displayed on the product card
   const priceSource = product.priceRange.maxVariantPrice ?? product.priceRange.minVariantPrice;
   const currency = priceSource.currencyCode;
@@ -129,12 +129,10 @@ export function generateProductJsonLd(product: ShopifyProduct, locale: string) {
     : undefined;
 
   const baseOffer = {
-    availability: isAvailable
-      ? 'https://schema.org/InStock'
-      : 'https://schema.org/OutOfStock',
+    availability: isAvailable ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
     itemCondition: 'https://schema.org/NewCondition',
     url: productUrl,
-    hasMerchantReturnPolicy: RETURN_POLICY,
+    hasMerchantReturnPolicy: getReturnPolicy(locale),
     shippingDetails: SHIPPING_DETAILS,
     ...(priceSpecification ? { priceSpecification } : {}),
   };

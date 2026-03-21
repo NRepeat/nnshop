@@ -7,6 +7,7 @@ import { RemoveItemButton } from '@features/header/cart/ui/RemoveItemButton';
 import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { cn } from '@shared/lib/utils';
 import { useTranslations } from 'next-intl';
+import { getProductAlt } from '@shared/lib/seo';
 
 type CartItemProps = {
   product: {
@@ -53,7 +54,10 @@ export const CartItem = ({
             {product.image && (
               <Image
                 src={product.image}
-                alt={product.title}
+                alt={getProductAlt(
+                  { title: product.title },
+                  { title: [product.color, product.size].filter(Boolean).join(' / ') },
+                )}
                 fill
                 className="object-cover rounded"
               />

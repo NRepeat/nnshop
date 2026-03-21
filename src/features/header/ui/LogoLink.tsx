@@ -21,9 +21,14 @@ export const LogoLink = async ({
     <Link
       href={'/' + locale + '/' + gender}
       className="flex items-center justify-center"
+      title={alt}
     >
       <div className="flex justify-center w-full items-center">
-        <MainLogo className="h-12 w-auto" style={{ imageRendering: '-webkit-optimize-contrast' }}/>
+        <MainLogo 
+          className="h-12 w-auto" 
+          style={{ imageRendering: '-webkit-optimize-contrast' }}
+          aria-label={alt}
+        />
       </div>
     </Link>
   );
