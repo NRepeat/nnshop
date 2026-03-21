@@ -70,6 +70,10 @@ const nextConfig: NextConfig = {
         source: '/ingest/:path*',
         destination: 'https://us.i.posthog.com/:path*',
       },
+      {
+        source: '/ga/:path*',
+        destination: 'https://www.google-analytics.com/:path*',
+      },
     ];
   },
   async headers() {

@@ -129,7 +129,9 @@ export default async function RootLayout(props: RootProps) {
               'wait_for_update': 500
             });
             gtag('js', new Date());
-            gtag('config', 'G-05RL9JZJKK');
+            gtag('config', 'G-05RL9JZJKK', {
+              'transport_url': 'https://www.miomio.com.ua/ga'
+            });
           `}
         </Script>
         <Script
