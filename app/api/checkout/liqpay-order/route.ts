@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
     // 2. Fetch cart for rro_info price data (before order creation, cart still exists)
     const cartData = await getCart({ userId: session.user.id, locale });
-    const cartLineItems = cartData?.cart?.lines?.edges?.map((e: any) => {
+    const cartLineItems = (cartData && 'cart' in cartData ? cartData.cart : null)?.lines?.edges?.map((e: any) => {
       const variantGid: string = e.node.merchandise.id;
       const numericId = parseInt(variantGid.split('/').pop() || '0', 10);
       return {
