@@ -105,10 +105,11 @@ export const ProductInfo = ({
   const [isDescOverflowing, setDescOverflowing] = useState(false);
   const [, startSizeTransition] = useTransition();
   const descRef = useRef<HTMLDivElement>(null);
-  const cleanHtml = useMemo(() => {
-    if (typeof window === 'undefined') return product.descriptionHtml;
+  const [cleanHtml, setCleanHtml] = useState(product.descriptionHtml);
+
+  useEffect(() => {
     const purify = typeof DOMPurifyLib === 'function' ? DOMPurifyLib(window) : DOMPurifyLib;
-    return purify.sanitize(product.descriptionHtml);
+    setCleanHtml(purify.sanitize(product.descriptionHtml));
   }, [product.descriptionHtml]);
 
   useEffect(() => {
