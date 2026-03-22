@@ -80,7 +80,6 @@ export const CollectionGrid = async ({
       first: limit,
       locale: locale,
       searchParams: awaitedSearchParams,
-      gender,
     }),
     auth.api.getSession({ headers: await headers() }),
   ]);

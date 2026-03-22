@@ -30,7 +30,7 @@ export function Hero({ title, text, image, isFirst }: HeroProps) {
           src={urlFor(image).width(1600).height(800).url()}
           width={1600}
           height={800}
-          alt={(props as any).imageAlt || title || ''}
+          alt={title || ''}
           priority
         />
       ) : null}

@@ -237,7 +237,8 @@ export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
     return null;
   }
 
-  const tickerText = headerData?.infoBar?.text;
+  const rawTickerText = headerData?.infoBar?.text;
+  const tickerText = typeof rawTickerText === 'string' ? rawTickerText : undefined;
 
   return (
     <div className="flex flex-col">

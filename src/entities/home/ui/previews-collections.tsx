@@ -38,7 +38,7 @@ export const PreviewsCollections = async (props: PreviewsCollectionsProps) => {
   return (
     <SyncedCarousels
       collectionsData={collectionsData}
-      previews={previews}
+      previews={previews as any}
       title={localizedTitle}
       customTitles={customTitles}
       gender={gender}

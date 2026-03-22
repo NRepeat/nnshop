@@ -17,7 +17,7 @@ export async function SessionBanner({ locale }: { locale: string }) {
 
   return (
     <SessionBannerClient
-      data={{ ...data, imageUrl }}
+      data={{ ...(data as any), imageUrl }}
       locale={locale}
       gender={gender}
     />

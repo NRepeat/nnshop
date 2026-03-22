@@ -59,8 +59,7 @@ export const Header = async ({ locale }: { locale: string }) => {
                 <HeaderContent
                   locale={locale}
                   {...headerData?.header}
-                  navDropdowns={headerData?.navDropdowns}
-                  brandsNavigation={headerData?.brandsNavigation as any}
+                  navDropdowns={headerData?.navDropdowns as any}
                 />
               )}
             </Suspense>

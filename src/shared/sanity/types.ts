@@ -13,6 +13,79 @@
  */
 
 // Source: schema.json
+export type PromotionBanner = {
+  _id: string;
+  _type: 'promotionBanner';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  enabled?: boolean;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: LocalizedString;
+    _type: 'image';
+  };
+  title?: LocalizedString;
+  description?: LocalizedString;
+  discountCode?: string;
+  actionButton?: {
+    label?: LocalizedString;
+    url?: string;
+    womanUrl?: string;
+    manUrl?: string;
+    womanCollection?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'collection';
+    };
+    manCollection?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'collection';
+    };
+  };
+  behavior?: {
+    trigger?: 'delay' | 'scroll' | 'exit_intent';
+    delaySeconds?: number;
+    scrollPercent?: number;
+    cooldownHours?: number;
+    showOnce?: boolean;
+    resetToken?: string;
+  };
+};
+
+export type LocalizedString = {
+  _type: 'localizedString';
+  ru?: string;
+  uk?: string;
+};
+
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop';
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot';
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
+};
+
 export type PopularPosts = {
   _type: 'popularPosts';
   title?: LocalizedString;
@@ -57,6 +130,16 @@ export type HeroSlider = {
     media?: unknown;
     _type: 'file';
   };
+  videoFileWebm?: {
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.fileAsset';
+    };
+    media?: unknown;
+    _type: 'file';
+  };
   videoPoster?: {
     asset?: {
       _ref: string;
@@ -67,6 +150,7 @@ export type HeroSlider = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    alt?: LocalizedString;
     _type: 'image';
   };
   videoUrl?: string;
@@ -133,6 +217,7 @@ export type HeroSlide = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    alt?: LocalizedString;
     _type: 'image';
   };
   mobileImage?: {
@@ -145,6 +230,7 @@ export type HeroSlide = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    alt?: LocalizedString;
     _type: 'image';
   };
   buttons?: Array<
@@ -239,6 +325,7 @@ export type SplitImage = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    alt?: LocalizedString;
     _type: 'image';
   };
   textPosition?:
@@ -296,6 +383,7 @@ export type Hero = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    alt?: LocalizedString;
     _type: 'image';
   };
   buttonText?: string;
@@ -328,6 +416,7 @@ export type Faqs = {
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
+      alt?: LocalizedString;
       _type: 'image';
     };
     label?: LocalizedString;
@@ -480,11 +569,25 @@ export type SiteSettings = {
   _rev: string;
   infoBar?: InfoBar;
   header?: Header;
-  brandsNavigation?: BrandsNavigation;
-  navImages?: NavDropdownImages;
   navDropdowns?: {
     woman?: Array<{
-      menuIndex?: number;
+      tabTitle?: LocalizedString;
+      tabCollection?: {
+        _ref: string;
+        _type: 'reference';
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: 'collection';
+      };
+      tabUrl?: string;
+      isBrandsTab?: boolean;
+      topBrands?: Array<{
+        _ref: string;
+        _type: 'reference';
+        _weak?: boolean;
+        _key: string;
+        [internalGroqTypeReferenceTo]?: 'collection';
+      }>;
+      tabImage?: NavImageItem;
       columns?: Array<{
         collection?: {
           _ref: string;
@@ -525,7 +628,23 @@ export type SiteSettings = {
       _key: string;
     }>;
     man?: Array<{
-      menuIndex?: number;
+      tabTitle?: LocalizedString;
+      tabCollection?: {
+        _ref: string;
+        _type: 'reference';
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: 'collection';
+      };
+      tabUrl?: string;
+      isBrandsTab?: boolean;
+      topBrands?: Array<{
+        _ref: string;
+        _type: 'reference';
+        _weak?: boolean;
+        _key: string;
+        [internalGroqTypeReferenceTo]?: 'collection';
+      }>;
+      tabImage?: NavImageItem;
       columns?: Array<{
         collection?: {
           _ref: string;
@@ -593,34 +712,39 @@ export type FooterSettings = {
   paymentMethods?: Array<string>;
 };
 
-export type LocalizedString = {
-  _type: 'localizedString';
-  ru?: string;
-  uk?: string;
-};
-
-export type NavDropdownImages = {
-  _type: 'navDropdownImages';
-  woman?: Array<
-    {
-      _key: string;
-    } & NavImageItem
-  >;
-  man?: Array<
-    {
-      _key: string;
-    } & NavImageItem
-  >;
-};
-
-export type BrandsNavigation = {
-  _type: 'brandsNavigation';
-  topBrands?: Array<string>;
-  collections?: Array<
-    {
-      _key: string;
-    } & LinkInternal
-  >;
+export type NavImageItem = {
+  _type: 'navImageItem';
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: LocalizedString;
+    _type: 'image';
+  };
+  menuIndex?: number;
+  collection?: {
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: 'collection';
+  };
+  brandSlug?: string;
+  url?: string;
+  imageTitle?: string;
+  imageButtonLabel?: string;
+  imageButtonCollection?: {
+    _ref: string;
+    _type: 'reference';
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: 'collection';
+  };
+  imageButtonUrl?: string;
 };
 
 export type Header = {
@@ -645,6 +769,7 @@ export type Header = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    alt?: LocalizedString;
     _type: 'image';
   };
 };
@@ -768,6 +893,7 @@ export type SliderBlock = {
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
+      alt?: LocalizedString;
       _type: 'image';
     };
     link?: Array<
@@ -877,6 +1003,7 @@ export type ModuleImage = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    alt?: LocalizedString;
     _type: 'image';
   };
   variant?: string | 'caption' | 'callToAction';
@@ -933,22 +1060,6 @@ export type LinkInternal = {
       };
 };
 
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop';
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-};
-
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot';
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
-};
-
 export type BrandGridBlock = {
   _type: 'brandGridBlock';
   title?: LocalizedString;
@@ -962,6 +1073,7 @@ export type BrandGridBlock = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    alt?: LocalizedString;
     handle?: Slug;
     collection?: {
       _ref: string;
@@ -975,38 +1087,30 @@ export type BrandGridBlock = {
   }>;
 };
 
-export type NavImageItem = {
-  _type: 'navImageItem';
-  image?: {
-    asset?: {
-      _ref: string;
-      _type: 'reference';
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: 'image';
-  };
-  menuIndex?: number;
-  collection?: {
-    _ref: string;
-    _type: 'reference';
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: 'collection';
-  };
-  brandSlug?: string;
-  url?: string;
-  imageTitle?: string;
-  imageButtonLabel?: string;
-  imageButtonCollection?: {
-    _ref: string;
-    _type: 'reference';
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: 'collection';
-  };
-  imageButtonUrl?: string;
+export type NavDropdownImages = {
+  _type: 'navDropdownImages';
+  woman?: Array<
+    {
+      _key: string;
+    } & NavImageItem
+  >;
+  man?: Array<
+    {
+      _key: string;
+    } & NavImageItem
+  >;
+};
+
+export type BrandsNavigation = {
+  _type: 'brandsNavigation';
+  tabTitle?: LocalizedString;
+  topBrandsWoman?: Array<string>;
+  topBrandsMan?: Array<string>;
+  collections?: Array<
+    {
+      _key: string;
+    } & LinkInternal
+  >;
 };
 
 export type CollectionsWithPreviews = {
@@ -1023,6 +1127,7 @@ export type CollectionsWithPreviews = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    alt?: LocalizedString;
     handle?: Slug;
     _type: 'preview';
     _key: string;
@@ -1533,6 +1638,7 @@ export type Author = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
+    alt?: LocalizedString;
     _type: 'image';
   };
   bio?: InternationalizedArraySimpleBlockContent;
@@ -1658,6 +1764,10 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
+  | PromotionBanner
+  | LocalizedString
+  | SanityImageCrop
+  | SanityImageHotspot
   | PopularPosts
   | MainCollectionGrid
   | HeroSlider
@@ -1679,9 +1789,7 @@ export type AllSanitySchemaTypes =
   | Seo
   | SiteSettings
   | FooterSettings
-  | LocalizedString
-  | NavDropdownImages
-  | BrandsNavigation
+  | NavImageItem
   | Header
   | InfoBar
   | Category
@@ -1707,10 +1815,9 @@ export type AllSanitySchemaTypes =
   | HeroCollection
   | LinkExternal
   | LinkInternal
-  | SanityImageCrop
-  | SanityImageHotspot
   | BrandGridBlock
-  | NavImageItem
+  | NavDropdownImages
+  | BrandsNavigation
   | CollectionsWithPreviews
   | BlockCatalog
   | ContentBlocks
@@ -1768,23 +1875,24 @@ export type LOCALES_QUERYResult = Array<{
 // Query: *[_type == "locale" && default == true][0].tag
 export type DEFAULT_LOCALE_QUERYResult = string | null;
 // Variable: POSTS_WITH_FALLBACK_QUERY
-// Query: *[_type == "post" && defined(slug.current) && (language == $language || language == "en" || !defined(language))] | order(publishedAt desc)[0...12]{  _id,  title,  slug,  body,  mainImage,  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  }}
+// Query: *[_type == "post" && defined(slug.current) && (language == $language || language == "en" || !defined(language))] | order(publishedAt desc)[0...12]{  _id,  title,  slug,  body,  mainImage {    ...,    asset-> { _id, url, metadata { dimensions } },    alt  },  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  }}
 export type POSTS_WITH_FALLBACK_QUERYResult = Array<{
   _id: string;
   title: string | null;
   slug: Slug | null;
   body: BlockContent | null;
   mainImage: {
-    asset?: {
-      _ref: string;
-      _type: 'reference';
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-    };
+    asset: {
+      _id: string;
+      url: string | null;
+      metadata: {
+        dimensions: SanityImageDimensions | null;
+      } | null;
+    } | null;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
+    alt: string | null;
     _type: 'image';
   } | null;
   publishedAt: string | null;
@@ -1808,28 +1916,30 @@ export type POSTS_WITH_FALLBACK_QUERYResult = Array<{
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
+      alt?: LocalizedString;
       _type: 'image';
     } | null;
   } | null;
 }>;
 // Variable: POSTS_QUERY
-// Query: *[_type == "post" && defined(slug.current)]|order(publishedAt desc)[0...12]{  _id,  title,  slug,  body,  mainImage,  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  }}
+// Query: *[_type == "post" && defined(slug.current)]|order(publishedAt desc)[0...12]{  _id,  title,  slug,  body,  mainImage {    ...,    asset-> { _id, url, metadata { dimensions } },    alt  },  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  }}
 export type POSTS_QUERYResult = Array<{
   _id: string;
   title: string | null;
   slug: Slug | null;
   body: BlockContent | null;
   mainImage: {
-    asset?: {
-      _ref: string;
-      _type: 'reference';
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-    };
+    asset: {
+      _id: string;
+      url: string | null;
+      metadata: {
+        dimensions: SanityImageDimensions | null;
+      } | null;
+    } | null;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
+    alt: string | null;
     _type: 'image';
   } | null;
   publishedAt: string | null;
@@ -1853,28 +1963,30 @@ export type POSTS_QUERYResult = Array<{
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
+      alt?: LocalizedString;
       _type: 'image';
     } | null;
   } | null;
 }>;
 // Variable: POSTS_BY_LANGUAGE_QUERY
-// Query: *[_type == "post" && defined(slug.current) && (language == $language || !defined(language))] | order(publishedAt desc)[0...12]{  _id,  title,  slug,  body,  mainImage,  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  }}
+// Query: *[_type == "post" && defined(slug.current) && (language == $language || !defined(language))] | order(publishedAt desc)[0...12]{  _id,  title,  slug,  body,  mainImage {    ...,    asset-> { _id, url, metadata { dimensions } },    alt  },  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  }}
 export type POSTS_BY_LANGUAGE_QUERYResult = Array<{
   _id: string;
   title: string | null;
   slug: Slug | null;
   body: BlockContent | null;
   mainImage: {
-    asset?: {
-      _ref: string;
-      _type: 'reference';
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-    };
+    asset: {
+      _id: string;
+      url: string | null;
+      metadata: {
+        dimensions: SanityImageDimensions | null;
+      } | null;
+    } | null;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
+    alt: string | null;
     _type: 'image';
   } | null;
   publishedAt: string | null;
@@ -1898,28 +2010,30 @@ export type POSTS_BY_LANGUAGE_QUERYResult = Array<{
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
+      alt?: LocalizedString;
       _type: 'image';
     } | null;
   } | null;
 }>;
 // Variable: POSTS_UA_DEBUG_QUERY
-// Query: *[_type == "post" && defined(slug.current) && language == "uk"] | order(publishedAt desc)[0...12]{  _id,  title,  slug,  body,  mainImage,  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  }}
+// Query: *[_type == "post" && defined(slug.current) && language == "uk"] | order(publishedAt desc)[0...12]{  _id,  title,  slug,  body,  mainImage {    ...,    asset-> { _id, url, metadata { dimensions } },    alt  },  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  }}
 export type POSTS_UA_DEBUG_QUERYResult = Array<{
   _id: string;
   title: string | null;
   slug: Slug | null;
   body: BlockContent | null;
   mainImage: {
-    asset?: {
-      _ref: string;
-      _type: 'reference';
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-    };
+    asset: {
+      _id: string;
+      url: string | null;
+      metadata: {
+        dimensions: SanityImageDimensions | null;
+      } | null;
+    } | null;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
+    alt: string | null;
     _type: 'image';
   } | null;
   publishedAt: string | null;
@@ -1943,6 +2057,7 @@ export type POSTS_UA_DEBUG_QUERYResult = Array<{
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
+      alt?: LocalizedString;
       _type: 'image';
     } | null;
   } | null;
@@ -1972,22 +2087,23 @@ export type POSTS_SLUGS_BY_LANGUAGE_QUERYResult = Array<{
 // Query: *[_type == "page" && defined(slug.current)]{  "slug": slug.current,  language}
 export type PAGE_SLUGS_QUERYResult = Array<never>;
 // Variable: POST_QUERY
-// Query: *[_type == "post" && slug.current == $slug][0]{  _id,  title,  body,  mainImage,  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  },  relatedPosts[]{    _key,    ...@->{_id, title, slug, language, mainImage, publishedAt}  },  "seo": {  "title": coalesce(seo.title, title, ""),    "description": coalesce(seo.description,  ""),    "image": seo.image,    "noIndex": seo.noIndex == true   },}
+// Query: *[_type == "post" && slug.current == $slug][0]{  _id,  title,  body,  mainImage {    ...,    asset-> { _id, url, metadata { dimensions } },    alt  },  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  },  relatedPosts[]{    _key,    ...@->{_id, title, slug, language, mainImage { ..., asset-> { _id, url, metadata { dimensions } }, alt }, publishedAt}  },  "seo": {  "title": coalesce(seo.title, title, ""),    "description": coalesce(seo.description,  ""),    "image": seo.image,    "noIndex": seo.noIndex == true   },}
 export type POST_QUERYResult = {
   _id: string;
   title: string | null;
   body: BlockContent | null;
   mainImage: {
-    asset?: {
-      _ref: string;
-      _type: 'reference';
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-    };
+    asset: {
+      _id: string;
+      url: string | null;
+      metadata: {
+        dimensions: SanityImageDimensions | null;
+      } | null;
+    } | null;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
+    alt: string | null;
     _type: 'image';
   } | null;
   publishedAt: string | null;
@@ -2011,6 +2127,7 @@ export type POST_QUERYResult = {
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
+      alt?: LocalizedString;
       _type: 'image';
     } | null;
   } | null;
@@ -2021,16 +2138,17 @@ export type POST_QUERYResult = {
     slug: Slug | null;
     language: string | null;
     mainImage: {
-      asset?: {
-        _ref: string;
-        _type: 'reference';
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-      };
+      asset: {
+        _id: string;
+        url: string | null;
+        metadata: {
+          dimensions: SanityImageDimensions | null;
+        } | null;
+      } | null;
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
-      alt?: string;
+      alt: string | null;
       _type: 'image';
     } | null;
     publishedAt: string | null;
@@ -2054,22 +2172,23 @@ export type POST_QUERYResult = {
   };
 } | null;
 // Variable: POST_BY_LANGUAGE_QUERY
-// Query: *[_type == "post" && slug.current == $slug && (language == $language || !defined(language))][0]{  _id,  title,  body,  mainImage,  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  },  relatedPosts[]{    _key,    ...@->{_id, title, slug, language, mainImage, publishedAt}  },  "seo": {  "title": coalesce(seo.title, title, ""),    "description": coalesce(seo.description,  ""),    "image": seo.image,    "noIndex": seo.noIndex == true   },}
+// Query: *[_type == "post" && slug.current == $slug && (language == $language || !defined(language))][0]{  _id,  title,  body,  mainImage {    ...,    asset-> { _id, url, metadata { dimensions } },    alt  },  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  },  relatedPosts[]{    _key,    ...@->{_id, title, slug, language, mainImage { ..., asset-> { _id, url, metadata { dimensions } }, alt }, publishedAt}  },  "seo": {  "title": coalesce(seo.title, title, ""),    "description": coalesce(seo.description,  ""),    "image": seo.image,    "noIndex": seo.noIndex == true   },}
 export type POST_BY_LANGUAGE_QUERYResult = {
   _id: string;
   title: string | null;
   body: BlockContent | null;
   mainImage: {
-    asset?: {
-      _ref: string;
-      _type: 'reference';
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-    };
+    asset: {
+      _id: string;
+      url: string | null;
+      metadata: {
+        dimensions: SanityImageDimensions | null;
+      } | null;
+    } | null;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
+    alt: string | null;
     _type: 'image';
   } | null;
   publishedAt: string | null;
@@ -2093,6 +2212,7 @@ export type POST_BY_LANGUAGE_QUERYResult = {
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
+      alt?: LocalizedString;
       _type: 'image';
     } | null;
   } | null;
@@ -2103,16 +2223,17 @@ export type POST_BY_LANGUAGE_QUERYResult = {
     slug: Slug | null;
     language: string | null;
     mainImage: {
-      asset?: {
-        _ref: string;
-        _type: 'reference';
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-      };
+      asset: {
+        _id: string;
+        url: string | null;
+        metadata: {
+          dimensions: SanityImageDimensions | null;
+        } | null;
+      } | null;
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
-      alt?: string;
+      alt: string | null;
       _type: 'image';
     } | null;
     publishedAt: string | null;
@@ -2136,23 +2257,24 @@ export type POST_BY_LANGUAGE_QUERYResult = {
   };
 } | null;
 // Variable: POSTS_EN_FALLBACK_QUERY
-// Query: *[_type == "post" && defined(slug.current) && (language == "en" || !defined(language))] | order(publishedAt desc)[0...12]{  _id,  title,  slug,  body,  mainImage,  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  }}
+// Query: *[_type == "post" && defined(slug.current) && (language == "en" || !defined(language))] | order(publishedAt desc)[0...12]{  _id,  title,  slug,  body,  mainImage {    ...,    asset-> { _id, url, metadata { dimensions } },    alt  },  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  }}
 export type POSTS_EN_FALLBACK_QUERYResult = Array<{
   _id: string;
   title: string | null;
   slug: Slug | null;
   body: BlockContent | null;
   mainImage: {
-    asset?: {
-      _ref: string;
-      _type: 'reference';
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-    };
+    asset: {
+      _id: string;
+      url: string | null;
+      metadata: {
+        dimensions: SanityImageDimensions | null;
+      } | null;
+    } | null;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
+    alt: string | null;
     _type: 'image';
   } | null;
   publishedAt: string | null;
@@ -2176,27 +2298,29 @@ export type POSTS_EN_FALLBACK_QUERYResult = Array<{
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
+      alt?: LocalizedString;
       _type: 'image';
     } | null;
   } | null;
 }>;
 // Variable: POST_WITH_FALLBACK_QUERY
-// Query: *[_type == "post" && slug.current == $slug && (language == "en" || !defined(language))][0]{  _id,  title,  body,  mainImage,  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  },  relatedPosts[]{    _key,    ...@->{_id, title, slug, language, mainImage, publishedAt}  },  "seo": {  "title": coalesce(seo.title, title, ""),    "description": coalesce(seo.description,  ""),    "image": seo.image,    "noIndex": seo.noIndex == true   },}
+// Query: *[_type == "post" && slug.current == $slug && (language == "en" || !defined(language))][0]{  _id,  title,  body,  mainImage {    ...,    asset-> { _id, url, metadata { dimensions } },    alt  },  publishedAt,  language,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  },  relatedPosts[]{    _key,    ...@->{_id, title, slug, language, mainImage { ..., asset-> { _id, url, metadata { dimensions } }, alt }, publishedAt}  },  "seo": {  "title": coalesce(seo.title, title, ""),    "description": coalesce(seo.description,  ""),    "image": seo.image,    "noIndex": seo.noIndex == true   },}
 export type POST_WITH_FALLBACK_QUERYResult = {
   _id: string;
   title: string | null;
   body: BlockContent | null;
   mainImage: {
-    asset?: {
-      _ref: string;
-      _type: 'reference';
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-    };
+    asset: {
+      _id: string;
+      url: string | null;
+      metadata: {
+        dimensions: SanityImageDimensions | null;
+      } | null;
+    } | null;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
+    alt: string | null;
     _type: 'image';
   } | null;
   publishedAt: string | null;
@@ -2220,6 +2344,7 @@ export type POST_WITH_FALLBACK_QUERYResult = {
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
+      alt?: LocalizedString;
       _type: 'image';
     } | null;
   } | null;
@@ -2230,16 +2355,17 @@ export type POST_WITH_FALLBACK_QUERYResult = {
     slug: Slug | null;
     language: string | null;
     mainImage: {
-      asset?: {
-        _ref: string;
-        _type: 'reference';
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-      };
+      asset: {
+        _id: string;
+        url: string | null;
+        metadata: {
+          dimensions: SanityImageDimensions | null;
+        } | null;
+      } | null;
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
-      alt?: string;
+      alt: string | null;
       _type: 'image';
     } | null;
     publishedAt: string | null;
@@ -2263,7 +2389,7 @@ export type POST_WITH_FALLBACK_QUERYResult = {
   };
 } | null;
 // Variable: PAGE_QUERY
-// Query: *[_type == "page" && slug == $slug][0]{  ...,  "seo": {  "title": coalesce(seo.title, title, ""),    "description": coalesce(seo.description,  ""),    "image": seo.image,    "noIndex": seo.noIndex == true   },  content[]{    ...,    _type == "contentPageBlock" => {      body[]{        ...,        markDefs[]{          ...,          _type == "link" => {            ...,            "href": string(@.href)          }        }      }    },    _type == "similarProducts" => {      collection -> {        _id,        title,        store{         imageUrl,         isDeleted,         slug{         current         },         title        }      }    },    _type == "sliderBlock" => {      slides[]{         ...,        _key,        link[]{         ...,         reference->{           _id,           _type,           title,           "slug": select(             _type == "product" => store.slug.current,             _type == "collection" => store.slug.current,             _type == "page" => slug.current           )         }       },        backgroundImage{          asset->{            _id,            url,            metadata{dimensions}          }        }      }    },    _type == "productCarousel" => {      products[]->{        _id,        store{          title,          isDeleted,          previewImageUrl,          priceRange{          maxVariantPrice,          minVariantPrice          },          productType        }      },      collection -> {        _id,        title,        store{         imageUrl,         isDeleted,         slug{         current         },         title        }      }    },    _type == "collectionsCarousel" => {      collections[]->{        _id,        title,        store{         imageUrl,         isDeleted,         slug{         current         },         title        }      }    },    _type == "splitImage" => {      ...,      link[]{        ...,        reference->{          _id,          _type,          title,          "slug": select(            _type == "product" => store.slug.current,            _type == "collection" => store.slug.current,            _type == "page" => slug.current          )        }      }    },    _type == "faqs" => {      ...,      items[]{ _key, icon, label }    }  }}
+// Query: *[_type == "page" && slug == $slug && language == $language][0]{  ...,  "seo": {  "title": coalesce(seo.title, title, ""),    "description": coalesce(seo.description,  ""),    "image": seo.image,    "noIndex": seo.noIndex == true   },  content[]{    ...,    _type == "contentPageBlock" => {      body[]{        ...,        markDefs[]{          ...,          _type == "link" => {            ...,            "href": string(@.href)          }        }      }    },    _type == "similarProducts" => {      collection -> {        _id,        title,        store{         imageUrl,         isDeleted,         slug{         current         },         title        }      }    },    _type == "sliderBlock" => {      slides[]{         ...,        _key,        link[]{         ...,         reference->{           _id,           _type,           title,           "slug": select(             _type == "product" => store.slug.current,             _type == "collection" => store.slug.current,             _type == "page" => slug.current           )         }       },        backgroundImage{          asset->{            _id,            url,            metadata{dimensions}          },          "alt": coalesce(alt[$language], alt.uk, alt.ru)        }      }    },    _type == "productCarousel" => {      products[]->{        _id,        store{          title,          isDeleted,          previewImageUrl,          priceRange{          maxVariantPrice,          minVariantPrice          },          productType        }      },      collection -> {        _id,        title,        store{         imageUrl,         isDeleted,         slug{         current         },         title        }      }    },    _type == "collectionsCarousel" => {      collections[]->{        _id,        title,        store{         imageUrl,         isDeleted,         slug{         current         },         title        },        "image": {           "url": coalesce(image.asset->url, store.imageUrl),          "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)        }      }    },    _type == "splitImage" => {      ...,      image{        asset->{          _id,          url,          metadata{dimensions}        },        "alt": coalesce(alt[$language], alt.uk, alt.ru)      },      link[]{        ...,        reference->{          _id,          _type,          title,          "slug": select(            _type == "product" => store.slug.current,            _type == "collection" => store.slug.current,            _type == "page" => slug.current          )        }      }    },    _type == "faqs" => {      ...,      items[]{ _key, icon, label }    }  }}
 export type PAGE_QUERYResult = {
   _id: string;
   _type: 'page';
@@ -2288,6 +2414,7 @@ export type PAGE_QUERYResult = {
           media?: unknown;
           hotspot?: SanityImageHotspot;
           crop?: SanityImageCrop;
+          alt?: LocalizedString;
           handle?: Slug;
           collection?: {
             _ref: string;
@@ -2315,6 +2442,10 @@ export type PAGE_QUERYResult = {
             } | null;
             title: string | null;
           } | null;
+          image: {
+            url: string | null;
+            alt: null;
+          };
         }> | null;
         enable_action?: boolean;
         action_text?: LocalizedString;
@@ -2335,6 +2466,7 @@ export type PAGE_QUERYResult = {
           media?: unknown;
           hotspot?: SanityImageHotspot;
           crop?: SanityImageCrop;
+          alt?: LocalizedString;
           handle?: Slug;
           _type: 'preview';
           _key: string;
@@ -2429,6 +2561,7 @@ export type PAGE_QUERYResult = {
                 media?: unknown;
                 hotspot?: SanityImageHotspot;
                 crop?: SanityImageCrop;
+                alt?: LocalizedString;
                 _type: 'image';
               };
               buttonText?: string;
@@ -2506,6 +2639,7 @@ export type PAGE_QUERYResult = {
             media?: unknown;
             hotspot?: SanityImageHotspot;
             crop?: SanityImageCrop;
+            alt?: LocalizedString;
             _type: 'image';
           } | null;
           label: LocalizedString | null;
@@ -2562,6 +2696,7 @@ export type PAGE_QUERYResult = {
           media?: unknown;
           hotspot?: SanityImageHotspot;
           crop?: SanityImageCrop;
+          alt?: LocalizedString;
           _type: 'image';
         };
         buttonText?: string;
@@ -2588,6 +2723,16 @@ export type PAGE_QUERYResult = {
           media?: unknown;
           _type: 'file';
         };
+        videoFileWebm?: {
+          asset?: {
+            _ref: string;
+            _type: 'reference';
+            _weak?: boolean;
+            [internalGroqTypeReferenceTo]?: 'sanity.fileAsset';
+          };
+          media?: unknown;
+          _type: 'file';
+        };
         videoPoster?: {
           asset?: {
             _ref: string;
@@ -2598,6 +2743,7 @@ export type PAGE_QUERYResult = {
           media?: unknown;
           hotspot?: SanityImageHotspot;
           crop?: SanityImageCrop;
+          alt?: LocalizedString;
           _type: 'image';
         };
         videoUrl?: string;
@@ -2726,6 +2872,14 @@ export type PAGE_QUERYResult = {
                 dimensions: SanityImageDimensions | null;
               } | null;
             } | null;
+            alt:
+              | Array<{
+                  _type: 'localizedString';
+                  ru?: string;
+                  uk?: string;
+                }>
+              | string
+              | null;
           } | null;
           link: Array<
             | {
@@ -2772,18 +2926,23 @@ export type PAGE_QUERYResult = {
           [internalGroqTypeReferenceTo]?: 'collection';
         };
         description?: LocalizedString;
-        image?: {
-          asset?: {
-            _ref: string;
-            _type: 'reference';
-            _weak?: boolean;
-            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-          };
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: 'image';
-        };
+        image: {
+          asset: {
+            _id: string;
+            url: string | null;
+            metadata: {
+              dimensions: SanityImageDimensions | null;
+            } | null;
+          } | null;
+          alt:
+            | Array<{
+                _type: 'localizedString';
+                ru?: string;
+                uk?: string;
+              }>
+            | string
+            | null;
+        } | null;
         textPosition?:
           | 'bottom-center'
           | 'bottom-left'
@@ -2828,7 +2987,7 @@ export type PAGE_QUERYResult = {
   };
 } | null;
 // Variable: HOME_PAGE
-// Query: *[_type == "page" && slug == $slug  && language == $language][0]{    ...,    "_translations": *[_type == "translation.metadata" && references(^._id)].translations[].value->{      title,      slug,      language    },    "seo": {    "title": coalesce(seo.title, title, ""),      "description": coalesce(seo.description,  ""),      "image": seo.image,      "noIndex": seo.noIndex == true     },    content[]{      ...,      _type == "mainCollectionGrid" => {           ...,           "title": coalesce(title[$language], title.uk, title.ru),           "collections": collections[]->{             title,             "handle": store.slug.current,             "id": store.id,             handles,             titles,             "image": { "url": coalesce(image.asset->url, store.imageUrl) }           }        },        _type == "productCarousel" => {             ...,             "title": coalesce(title[$language], title.uk, title.ru),             "collection": collection->{               title,               "handle": store.slug.current,               "id": store.id,               handles,               titles             }          },          _type == "popularPosts" => {            ...,            "title": coalesce(title[$language], title.uk, title.ru),            "posts": posts[]->{              _id,              title,              slug,              mainImage,              publishedAt,              language,              "categories": coalesce(categories[]->{_id, slug, title}, []),              author->{ name, image },              "localizedVersion": *[_type == "translation.metadata" && references(^._id)][0].translations[_key == $language][0].value->{                _id,                title,                slug,                mainImage,                publishedAt,                language              }            }          },          _type == "splitImage" => {               ...,               "title": coalesce(title[$language], title.uk, title.ru),               "collection": collection->{                 title,                 "handle": store.slug.current,                 "id": store.id,                 handles,                 titles               }            },            _type == "features" => {              _key,              _type,              "features": features[] {                _key,                _type,                "title": coalesce(title[$language], title.uk, title.ru),                "text": coalesce(text[$language], text.uk, text.ru),              }            },            _type == "collectionsWithPreviews" => {              _key,              _type,              "title": coalesce(title[$language], title.uk, title.ru),              previews,              "collections": collections[]{                _key,                customTitle,                "collection": collection->{                  _id,                  store{ slug{ current }, title },                  handles,                  titles                }              }            },        _type == "brandGridBlock" => {  ...,  "title": coalesce(title[$language], title.uk, title.ru),  "barnds": barnds[]{      ...,    "collectionData": collection-> {       title,                "handle": store.slug.current,                "id": store.id,                handles,                titles,                "image": { "url": store.imageUrl }        }  }},            _type == "collectionsCarousel" => {              ...,              "title": coalesce(title[$language], title.uk, title.ru),              "action_text": coalesce(action_text[$language], action_text.uk, action_text.ru),               "collections": collections[]->{             title,             "handle": store.slug.current,             "id": store.id,             handles,             titles,             "image": { "url": store.imageUrl }           }            },            _type == "sliderBlock" => {              ...,              slides[]{                ...,                "title": coalesce(title[$language], title.uk, title.ru),                backgroundImage{                  asset->{                    _id,                    url,                    metadata{dimensions}                  }                }              }            },            _type == "heroSlider" => {              _type,              _key,              title,              description,              "videoFile": videoFile.asset->url,              "videoPoster": videoPoster.asset->url,              videoUrl,              videoTitle,              videoDescription,              "videoTextPosition": videoTextPosition,              "videoTitleColor": videoTitleColor.hex,              "videoDescriptionColor": videoDescriptionColor.hex,              videoLinkUrl,              "videoCollection": videoCollection->{                "handle": store.slug.current              },              videoOverlay {                opacity,                color { hex }              },              slides[]{                ...,                "titleColor": titleColor.hex,                "descriptionColor": descriptionColor.hex,                overlay { opacity, color { hex } },                textBackground { opacity, color { hex }, padding, rounded },                "collection": collection->{                  title,                  "handle": store.slug.current,                  "id": store.id,                  handles,                  titles                },                buttons[]{                  ...,                  "collection": collection->{                    title,                    "handle": store.slug.current,                    "id": store.id,                    handles,                    titles                  }                }              }            },            _type == "faqs" => {              ...,              faqs[]->{                _id,                title,                body,                "text": pt::text(body)              }            },            _type == "similarProducts" => {              ...,              collection->{                 title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles              }            },            _type == "sharedSectionRef" => {              _key,              _type,              section->{                _id,                internalTitle,                content[]{                  ...,                  _type == "popularPosts" => {                    ...,                    "title": coalesce(title[$language], title.uk, title.ru),                    "posts": posts[]->{                      _id,                      title,                      slug,                      mainImage,                      publishedAt,                      language,                      "categories": coalesce(categories[]->{_id, slug, title}, []),                      author->{ name, image },                      "localizedVersion": *[_type == "translation.metadata" && references(^._id)][0].translations[_key == $language][0].value->{                        _id,                        title,                        slug,                        mainImage,                        publishedAt,                        language                      }                    }                  },                  _type == "collectionsWithPreviews" => {                    _key,                    _type,                    "title": coalesce(title[$language], title.uk, title.ru),                    previews,                    "collections": collections[]{                      _key,                      customTitle,                      "collection": collection->{                        _id,                        store{ slug{ current }, title },                        handles,                        titles                      }                    }                  },                  _type == "brandGridBlock" => {                    ...,                    "title": coalesce(title[$language], title.uk, title.ru),                    "barnds": barnds[]{                      ...,                      "collectionData": collection->{ _id, store{ slug{ current }, title } }                    }                  },                  _type == "splitImage" => {                    ...,                    "title": coalesce(title[$language], title.uk, title.ru),                    "collection": collection->{                      title,                      "handle": store.slug.current,                      "id": store.id,                      handles,                      titles                    }                  },                  _type == "features" => {                    _key,                    _type,                    "features": features[]{                      _key,                      _type,                      "title": coalesce(title[$language], title.uk, title.ru),                      "text": coalesce(text[$language], text.uk, text.ru)                    }                  },                  _type == "collectionsCarousel" => {                    ...,                    "title": coalesce(title[$language], title.uk, title.ru),                    "action_text": coalesce(action_text[$language], action_text.uk, action_text.ru),                    "collections": collections[]->{                      title,                      "handle": store.slug.current,                      "id": store.id,                      handles,                      titles,                      "image": { "url": store.imageUrl }                    }                  }                }              }            }    }  }
+// Query: *[_type == "page" && slug == $slug  && language == $language][0]{    ...,    "_translations": *[_type == "translation.metadata" && references(^._id)].translations[].value->{      title,      slug,      language    },    "seo": {    "title": coalesce(seo.title, title, ""),      "description": coalesce(seo.description,  ""),      "image": seo.image,      "noIndex": seo.noIndex == true     },    content[]{      ...,      _type == "mainCollectionGrid" => {           ...,           "title": coalesce(title[$language], title.uk, title.ru),           "collections": collections[]->{             title,             "handle": store.slug.current,             "id": store.id,             handles,             titles,             "image": {                "url": coalesce(image.asset->url, store.imageUrl),               "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)             }           }        },        _type == "productCarousel" => {             ...,             "title": coalesce(title[$language], title.uk, title.ru),             "collection": collection->{               title,               "handle": store.slug.current,               "id": store.id,               handles,               titles             }          },          _type == "popularPosts" => {            ...,            "title": coalesce(title[$language], title.uk, title.ru),            "posts": posts[]->{              _id,              title,              slug,              mainImage {                ...,                asset-> { _id, url, metadata { dimensions } },                "alt": coalesce(alt, ^.title)              },              publishedAt,              language,              "categories": coalesce(categories[]->{_id, slug, title}, []),              author->{ name, image },              "localizedVersion": *[_type == "translation.metadata" && references(^._id)][0].translations[_key == $language][0].value->{                _id,                title,                slug,                mainImage {                  ...,                  asset-> { _id, url, metadata { dimensions } },                  "alt": coalesce(alt, ^.title)                },                publishedAt,                language              }            }          },          _type == "splitImage" => {               ...,               "title": coalesce(title[$language], title.uk, title.ru),               image {                 asset->{                   _id,                   url,                   metadata{dimensions}                 },                 "alt": coalesce(alt[$language], alt.uk, alt.ru)               },               "collection": collection->{                 title,                 "handle": store.slug.current,                 "id": store.id,                 handles,                 titles               }            },            _type == "features" => {              _key,              _type,              "features": features[] {                _key,                _type,                "title": coalesce(title[$language], title.uk, title.ru),                "text": coalesce(text[$language], text.uk, text.ru),              }            },            _type == "collectionsWithPreviews" => {              _key,              _type,              "title": coalesce(title[$language], title.uk, title.ru),              previews,              "collections": collections[]{                _key,                customTitle,                "collection": collection->{                  _id,                  store{ slug{ current }, title },                  handles,                  titles                }              }            },        _type == "brandGridBlock" => {  ...,  "title": coalesce(title[$language], title.uk, title.ru),  "barnds": barnds[]{      ...,    "alt": coalesce(alt[$language], alt.uk, alt.ru),    "collectionData": collection-> {       title,                "handle": store.slug.current,                "id": store.id,                handles,                titles,                "image": { "url": store.imageUrl }        }  }},            _type == "collectionsCarousel" => {              ...,              "title": coalesce(title[$language], title.uk, title.ru),              "action_text": coalesce(action_text[$language], action_text.uk, action_text.ru),               "collections": collections[]->{             title,             "handle": store.slug.current,             "id": store.id,             handles,             titles,             "image": {                "url": coalesce(image.asset->url, store.imageUrl),               "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)             }           }            },            _type == "sliderBlock" => {              ...,              slides[]{                ...,                "title": coalesce(title[$language], title.uk, title.ru),                backgroundImage{                  asset->{                    _id,                    url,                    metadata{dimensions}                  },                  "alt": coalesce(alt[$language], alt.uk, alt.ru)                }              }            },            _type == "heroSlider" => {              _type,              _key,              title,              description,              "videoFile": videoFile.asset->url,              "videoFileWebm": videoFileWebm.asset->url,              "videoPoster": videoPoster.asset->url,              videoUrl,              videoTitle,              videoDescription,              "videoTextPosition": videoTextPosition,              "videoTitleColor": videoTitleColor.hex,              "videoDescriptionColor": videoDescriptionColor.hex,              videoLinkUrl,              "videoCollection": videoCollection->{                "handle": store.slug.current              },              videoOverlay {                opacity,                color { hex }              },              slides[]{                ...,                "titleColor": titleColor.hex,                "descriptionColor": descriptionColor.hex,                overlay { opacity, color { hex } },                textBackground { opacity, color { hex }, padding, rounded },                "imageAlt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru),                "mobileImageAlt": coalesce(mobileImage.alt[$language], mobileImage.alt.uk, mobileImage.alt.ru),                "collection": collection->{                  title,                  "handle": store.slug.current,                  "id": store.id,                  handles,                  titles                },                buttons[]{                  ...,                  "collection": collection->{                    title,                    "handle": store.slug.current,                    "id": store.id,                    handles,                    titles                  }                }              }            },            _type == "faqs" => {              ...,              faqs[]->{                _id,                title,                body,                "text": pt::text(body)              }            },            _type == "similarProducts" => {              ...,              collection->{                 title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles              }            },            _type == "sharedSectionRef" => {              _key,              _type,              section->{                _id,                internalTitle,                content[]{                  ...,                  _type == "popularPosts" => {                    ...,                    "title": coalesce(title[$language], title.uk, title.ru),                    "posts": posts[]->{                      _id,                      title,                      slug,                      mainImage {                        ...,                        asset-> { _id, url, metadata { dimensions } },                        "alt": coalesce(alt, ^.title)                      },                      publishedAt,                      language,                      "categories": coalesce(categories[]->{_id, slug, title}, []),                      author->{ name, image },                      "localizedVersion": *[_type == "translation.metadata" && references(^._id)][0].translations[_key == $language][0].value->{                        _id,                        title,                        slug,                        mainImage {                          ...,                          asset-> { _id, url, metadata { dimensions } },                          "alt": coalesce(alt, ^.title)                        },                        publishedAt,                        language                      }                    }                  },                  _type == "collectionsWithPreviews" => {                    _key,                    _type,                    "title": coalesce(title[$language], title.uk, title.ru),                    previews,                    "collections": collections[]{                      _key,                      customTitle,                      "collection": collection->{                        _id,                        store{ slug{ current }, title },                        handles,                        titles                      }                    }                  },                  _type == "brandGridBlock" => {                    ...,                    "title": coalesce(title[$language], title.uk, title.ru),                    "barnds": barnds[]{                      ...,                      "alt": coalesce(alt[$language], alt.uk, alt.ru),                      "collectionData": collection->{ _id, store{ slug{ current }, title } }                    }                  },                  _type == "splitImage" => {                    ...,                    "title": coalesce(title[$language], title.uk, title.ru),                    image {                      asset->{                        _id,                        url,                        metadata{dimensions}                      },                      "alt": coalesce(alt[$language], alt.uk, alt.ru)                    },                    "collection": collection->{                      title,                      "handle": store.slug.current,                      "id": store.id,                      handles,                      titles                    }                  },                  _type == "features" => {                    _key,                    _type,                    "features": features[]{                      _key,                      _type,                      "title": coalesce(title[$language], title.uk, title.ru),                      "text": coalesce(text[$language], text.uk, text.ru)                    }                  },                  _type == "collectionsCarousel" => {                    ...,                    "title": coalesce(title[$language], title.uk, title.ru),                    "action_text": coalesce(action_text[$language], action_text.uk, action_text.ru),                    "collections": collections[]->{                      title,                      "handle": store.slug.current,                      "id": store.id,                      handles,                      titles,                      "image": {                         "url": coalesce(image.asset->url, store.imageUrl),                        "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)                      }                    }                  }                }              }            }    }  }
 export type HOME_PAGEResult = {
   _id: string;
   _type: 'page';
@@ -2860,6 +3019,14 @@ export type HOME_PAGEResult = {
           media?: unknown;
           hotspot?: SanityImageHotspot;
           crop?: SanityImageCrop;
+          alt:
+            | Array<{
+                _type: 'localizedString';
+                ru?: string;
+                uk?: string;
+              }>
+            | string
+            | null;
           handle?: Slug;
           collection?: {
             _ref: string;
@@ -2913,6 +3080,7 @@ export type HOME_PAGEResult = {
           } | null;
           image: {
             url: string | null;
+            alt: null;
           };
         }> | null;
         enable_action?: boolean;
@@ -2948,6 +3116,7 @@ export type HOME_PAGEResult = {
           media?: unknown;
           hotspot?: SanityImageHotspot;
           crop?: SanityImageCrop;
+          alt?: LocalizedString;
           handle?: Slug;
           _type: 'preview';
           _key: string;
@@ -3000,6 +3169,7 @@ export type HOME_PAGEResult = {
             media?: unknown;
             hotspot?: SanityImageHotspot;
             crop?: SanityImageCrop;
+            alt?: LocalizedString;
             _type: 'image';
           };
           label?: LocalizedString;
@@ -3073,6 +3243,7 @@ export type HOME_PAGEResult = {
           media?: unknown;
           hotspot?: SanityImageHotspot;
           crop?: SanityImageCrop;
+          alt?: LocalizedString;
           _type: 'image';
         };
         buttonText?: string;
@@ -3125,6 +3296,7 @@ export type HOME_PAGEResult = {
             media?: unknown;
             hotspot?: SanityImageHotspot;
             crop?: SanityImageCrop;
+            alt?: LocalizedString;
             _type: 'image';
           };
           mobileImage?: {
@@ -3137,6 +3309,7 @@ export type HOME_PAGEResult = {
             media?: unknown;
             hotspot?: SanityImageHotspot;
             crop?: SanityImageCrop;
+            alt?: LocalizedString;
             _type: 'image';
           };
           buttons: Array<{
@@ -3173,8 +3346,25 @@ export type HOME_PAGEResult = {
               ru?: string;
             } | null;
           } | null;
+          imageAlt:
+            | Array<{
+                _type: 'localizedString';
+                ru?: string;
+                uk?: string;
+              }>
+            | string
+            | null;
+          mobileImageAlt:
+            | Array<{
+                _type: 'localizedString';
+                ru?: string;
+                uk?: string;
+              }>
+            | string
+            | null;
         }> | null;
         videoFile: string | null;
+        videoFileWebm: string | null;
         videoPoster: string | null;
         videoUrl: string | null;
         videoTitle: string | null;
@@ -3228,6 +3418,7 @@ export type HOME_PAGEResult = {
           } | null;
           image: {
             url: string | null;
+            alt: null;
           };
         }> | null;
       }
@@ -3247,16 +3438,17 @@ export type HOME_PAGEResult = {
           title: string | null;
           slug: Slug | null;
           mainImage: {
-            asset?: {
-              _ref: string;
-              _type: 'reference';
-              _weak?: boolean;
-              [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-            };
+            asset: {
+              _id: string;
+              url: string | null;
+              metadata: {
+                dimensions: SanityImageDimensions | null;
+              } | null;
+            } | null;
             media?: unknown;
             hotspot?: SanityImageHotspot;
             crop?: SanityImageCrop;
-            alt?: string;
+            alt: string | null;
             _type: 'image';
           } | null;
           publishedAt: string | null;
@@ -3280,6 +3472,7 @@ export type HOME_PAGEResult = {
               media?: unknown;
               hotspot?: SanityImageHotspot;
               crop?: SanityImageCrop;
+              alt?: LocalizedString;
               _type: 'image';
             } | null;
           } | null;
@@ -3297,16 +3490,17 @@ export type HOME_PAGEResult = {
                 title: string | null;
                 slug: Slug | null;
                 mainImage: {
-                  asset?: {
-                    _ref: string;
-                    _type: 'reference';
-                    _weak?: boolean;
-                    [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-                  };
+                  asset: {
+                    _id: string;
+                    url: string | null;
+                    metadata: {
+                      dimensions: SanityImageDimensions | null;
+                    } | null;
+                  } | null;
                   media?: unknown;
                   hotspot?: SanityImageHotspot;
                   crop?: SanityImageCrop;
-                  alt?: string;
+                  alt: string | null;
                   _type: 'image';
                 } | null;
                 publishedAt: string | null;
@@ -3385,6 +3579,14 @@ export type HOME_PAGEResult = {
                   media?: unknown;
                   hotspot?: SanityImageHotspot;
                   crop?: SanityImageCrop;
+                  alt:
+                    | Array<{
+                        _type: 'localizedString';
+                        ru?: string;
+                        uk?: string;
+                      }>
+                    | string
+                    | null;
                   handle?: Slug;
                   collection?: {
                     _ref: string;
@@ -3431,6 +3633,7 @@ export type HOME_PAGEResult = {
                   } | null;
                   image: {
                     url: string | null;
+                    alt: null;
                   };
                 }> | null;
                 enable_action?: boolean;
@@ -3466,6 +3669,7 @@ export type HOME_PAGEResult = {
                   media?: unknown;
                   hotspot?: SanityImageHotspot;
                   crop?: SanityImageCrop;
+                  alt?: LocalizedString;
                   handle?: Slug;
                   _type: 'preview';
                   _key: string;
@@ -3518,6 +3722,7 @@ export type HOME_PAGEResult = {
                     media?: unknown;
                     hotspot?: SanityImageHotspot;
                     crop?: SanityImageCrop;
+                    alt?: LocalizedString;
                     _type: 'image';
                   };
                   label?: LocalizedString;
@@ -3590,6 +3795,7 @@ export type HOME_PAGEResult = {
                   media?: unknown;
                   hotspot?: SanityImageHotspot;
                   crop?: SanityImageCrop;
+                  alt?: LocalizedString;
                   _type: 'image';
                 };
                 buttonText?: string;
@@ -3616,6 +3822,16 @@ export type HOME_PAGEResult = {
                   media?: unknown;
                   _type: 'file';
                 };
+                videoFileWebm?: {
+                  asset?: {
+                    _ref: string;
+                    _type: 'reference';
+                    _weak?: boolean;
+                    [internalGroqTypeReferenceTo]?: 'sanity.fileAsset';
+                  };
+                  media?: unknown;
+                  _type: 'file';
+                };
                 videoPoster?: {
                   asset?: {
                     _ref: string;
@@ -3626,6 +3842,7 @@ export type HOME_PAGEResult = {
                   media?: unknown;
                   hotspot?: SanityImageHotspot;
                   crop?: SanityImageCrop;
+                  alt?: LocalizedString;
                   _type: 'image';
                 };
                 videoUrl?: string;
@@ -3683,16 +3900,17 @@ export type HOME_PAGEResult = {
                   title: string | null;
                   slug: Slug | null;
                   mainImage: {
-                    asset?: {
-                      _ref: string;
-                      _type: 'reference';
-                      _weak?: boolean;
-                      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-                    };
+                    asset: {
+                      _id: string;
+                      url: string | null;
+                      metadata: {
+                        dimensions: SanityImageDimensions | null;
+                      } | null;
+                    } | null;
                     media?: unknown;
                     hotspot?: SanityImageHotspot;
                     crop?: SanityImageCrop;
-                    alt?: string;
+                    alt: string | null;
                     _type: 'image';
                   } | null;
                   publishedAt: string | null;
@@ -3716,6 +3934,7 @@ export type HOME_PAGEResult = {
                       media?: unknown;
                       hotspot?: SanityImageHotspot;
                       crop?: SanityImageCrop;
+                      alt?: LocalizedString;
                       _type: 'image';
                     } | null;
                   } | null;
@@ -3733,16 +3952,17 @@ export type HOME_PAGEResult = {
                         title: string | null;
                         slug: Slug | null;
                         mainImage: {
-                          asset?: {
-                            _ref: string;
-                            _type: 'reference';
-                            _weak?: boolean;
-                            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-                          };
+                          asset: {
+                            _id: string;
+                            url: string | null;
+                            metadata: {
+                              dimensions: SanityImageDimensions | null;
+                            } | null;
+                          } | null;
                           media?: unknown;
                           hotspot?: SanityImageHotspot;
                           crop?: SanityImageCrop;
-                          alt?: string;
+                          alt: string | null;
                           _type: 'image';
                         } | null;
                         publishedAt: string | null;
@@ -3805,6 +4025,7 @@ export type HOME_PAGEResult = {
                     media?: unknown;
                     hotspot?: SanityImageHotspot;
                     crop?: SanityImageCrop;
+                    alt?: LocalizedString;
                     _type: 'image';
                   };
                   link?: Array<
@@ -3845,18 +4066,23 @@ export type HOME_PAGEResult = {
                   } | null;
                 } | null;
                 description?: LocalizedString;
-                image?: {
-                  asset?: {
-                    _ref: string;
-                    _type: 'reference';
-                    _weak?: boolean;
-                    [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-                  };
-                  media?: unknown;
-                  hotspot?: SanityImageHotspot;
-                  crop?: SanityImageCrop;
-                  _type: 'image';
-                };
+                image: {
+                  asset: {
+                    _id: string;
+                    url: string | null;
+                    metadata: {
+                      dimensions: SanityImageDimensions | null;
+                    } | null;
+                  } | null;
+                  alt:
+                    | Array<{
+                        _type: 'localizedString';
+                        ru?: string;
+                        uk?: string;
+                      }>
+                    | string
+                    | null;
+                } | null;
                 textPosition?:
                   | 'bottom-center'
                   | 'bottom-left'
@@ -3922,6 +4148,14 @@ export type HOME_PAGEResult = {
                 dimensions: SanityImageDimensions | null;
               } | null;
             } | null;
+            alt:
+              | Array<{
+                  _type: 'localizedString';
+                  ru?: string;
+                  uk?: string;
+                }>
+              | string
+              | null;
           } | null;
           link?: Array<
             | ({
@@ -3961,18 +4195,23 @@ export type HOME_PAGEResult = {
           } | null;
         } | null;
         description?: LocalizedString;
-        image?: {
-          asset?: {
-            _ref: string;
-            _type: 'reference';
-            _weak?: boolean;
-            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
-          };
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          _type: 'image';
-        };
+        image: {
+          asset: {
+            _id: string;
+            url: string | null;
+            metadata: {
+              dimensions: SanityImageDimensions | null;
+            } | null;
+          } | null;
+          alt:
+            | Array<{
+                _type: 'localizedString';
+                ru?: string;
+                uk?: string;
+              }>
+            | string
+            | null;
+        } | null;
         textPosition?:
           | 'bottom-center'
           | 'bottom-left'
@@ -4029,7 +4268,7 @@ export type HOME_PAGEResult = {
   >;
 } | null;
 // Variable: HOME_PAGE_QUERY
-// Query: *[_id == "siteSettings" ][0]{    homePageMan->{      ...,      content[]{        ...,        _id,        _type == "sliderBlock" => {          slides[]{             ...,            _key,            link[]{             ...,             reference->{               _id,               _type,               title,               "slug": select(                 _type == "product" => store.slug.current,                 _type == "collection" => store.slug.current,                 _type == "page" => slug.current               )             }           },            backgroundImage{              asset->{                _id,                url,                metadata{dimensions}              }            }          }        },        _type == "productCarousel" => {          products[]->{            _id,            store{              title,              isDeleted,              previewImageUrl,              priceRange{              maxVariantPrice,              minVariantPrice              },              productType            }          },          collection -> {            _id,            title,            store{             imageUrl,             isDeleted,             slug{             current             },             title            }          }        },        _type == "collectionsCarousel" => {          collections[]->{            _id,            title,            store{             imageUrl,             isDeleted,             slug{             current             },             title            }          }        },        _type == "splitImage" => {          ...,          description,          link[]{            ...,            reference->{              _id,              _type,              title,              "slug": select(                _type == "product" => store.slug.current,                _type == "collection" => store.slug.current,                _type == "page" => slug.current              )            }          }        },        _type == "collectionsWithPreviews" => {          ...,          collections[]{            ...,            collection->{              _id,              store{ slug{ current }, title },              handles,              titles            }          }        },        _type == "faqs" => {          ...,          faqs[]->{            _id,            title,            body,            "text": pt::text(body)          }        },        _type == "sharedSectionRef" => {          section->{            _id,            internalTitle,            content[]{              ...,              _type == "brandGridBlock" => {                barnds[]{                  ...,                  asset->{ _id, url, metadata{dimensions} },                  collection->{ _id, store{ slug{ current }, title } }                }              }            }          }        }      }    },    homePageWoman->{      ...,      content[]{        ...,        _id,        _type == "sliderBlock" => {          slides[]{             ...,            _key,            link[]{             ...,             reference->{               _id,               _type,               title,               "slug": select(                 _type == "product" => store.slug.current,                 _type == "collection" => store.slug.current,                 _type == "page" => slug.current               )             }           },            backgroundImage{              asset->{                _id,                url,                metadata{dimensions}              }            }          }        },        _type == "productCarousel" => {          products[]->{            _id,            store{              title,              isDeleted,              previewImageUrl,              priceRange{              maxVariantPrice,              minVariantPrice              },              productType            }          },          collection -> {            _id,            title,            store{             imageUrl,             isDeleted,             slug{             current             },             title            }          }        },        _type == "collectionsCarousel" => {          collections[]->{            _id,            title,            store{             imageUrl,             isDeleted,             slug{             current             },             title            }          }        },        _type == "splitImage" => {          ...,          description,          link[]{            ...,            reference->{              _id,              _type,              title,              "slug": select(                _type == "product" => store.slug.current,                _type == "collection" => store.slug.current,                _type == "page" => slug.current              )            }          }        },        _type == "collectionsWithPreviews" => {          ...,          collections[]{            ...,            collection->{              _id,              store{ slug{ current }, title },              handles,              titles            }          }        },        _type == "faqs" => {          ...,          faqs[]->{            _id,            title,            body,            "text": pt::text(body)          }        },        _type == "sharedSectionRef" => {          section->{            _id,            internalTitle,            content[]{              ...,              _type == "brandGridBlock" => {                barnds[]{                  ...,                  asset->{ _id, url, metadata{dimensions} },                  collection->{ _id, store{ slug{ current }, title } }                }              }            }          }        }      }    }  }
+// Query: *[_id == "siteSettings" ][0]{    homePageMan->{      ...,      content[]{        ...,        _id,        _type == "sliderBlock" => {          slides[]{             ...,            _key,            link[]{             ...,             reference->{               _id,               _type,               title,               "slug": select(                 _type == "product" => store.slug.current,                 _type == "collection" => store.slug.current,                 _type == "page" => slug.current               )             }           },            backgroundImage{              asset->{                _id,                url,                metadata{dimensions}              },              "alt": coalesce(alt[$language], alt.uk, alt.ru)            }          }        },        _type == "productCarousel" => {          products[]->{            _id,            store{              title,              isDeleted,              previewImageUrl,              priceRange{              maxVariantPrice,              minVariantPrice              },              productType            }          },          collection -> {            _id,            title,            store{             imageUrl,             isDeleted,             slug{             current             },             title            }          }        },        _type == "collectionsCarousel" => {          collections[]->{            _id,            title,            store{             imageUrl,             isDeleted,             slug{             current             },             title            },            "image": {               "url": coalesce(image.asset->url, store.imageUrl),              "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)            }          }        },        _type == "splitImage" => {          ...,          image {            asset->{              _id,              url,              metadata{dimensions}            },            "alt": coalesce(alt[$language], alt.uk, alt.ru)          },          description,          link[]{            ...,            reference->{              _id,              _type,              title,              "slug": select(                _type == "product" => store.slug.current,                _type == "collection" => store.slug.current,                _type == "page" => slug.current              )            }          }        },        _type == "collectionsWithPreviews" => {          ...,          collections[]{            ...,            collection->{              _id,              store{ slug{ current }, title },              handles,              titles            }          }        },        _type == "faqs" => {          ...,          faqs[]->{            _id,            title,            body,            "text": pt::text(body)          }        },        _type == "sharedSectionRef" => {          section->{            _id,            internalTitle,            content[]{              ...,              _type == "brandGridBlock" => {                barnds[]{                  ...,                  asset->{ _id, url, metadata{dimensions} },                  "alt": coalesce(alt[$language], alt.uk, alt.ru),                  collection->{ _id, store{ slug{ current }, title } }                }              }            }          }        }      }    },    homePageWoman->{      ...,      content[]{        ...,        _id,        _type == "sliderBlock" => {          slides[]{             ...,            _key,            link[]{             ...,             reference->{               _id,               _type,               title,               "slug": select(                 _type == "product" => store.slug.current,                 _type == "collection" => store.slug.current,                 _type == "page" => slug.current               )             }           },            backgroundImage{              asset->{                _id,                url,                metadata{dimensions}              },              "alt": coalesce(alt[$language], alt.uk, alt.ru)            }          }        },        _type == "productCarousel" => {          products[]->{            _id,            store{              title,              isDeleted,              previewImageUrl,              priceRange{              maxVariantPrice,              minVariantPrice              },              productType            }          },          collection -> {            _id,            title,            store{             imageUrl,             isDeleted,             slug{             current             },             title            }          }        },        _type == "collectionsCarousel" => {          collections[]->{            _id,            title,            store{             imageUrl,             isDeleted,             slug{             current             },             title            },            "image": {               "url": coalesce(image.asset->url, store.imageUrl),              "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)            }          }        },        _type == "splitImage" => {          ...,          image {            asset->{              _id,              url,              metadata{dimensions}            },            "alt": coalesce(alt[$language], alt.uk, alt.ru)          },          description,          link[]{            ...,            reference->{              _id,              _type,              title,              "slug": select(                _type == "product" => store.slug.current,                _type == "collection" => store.slug.current,                _type == "page" => slug.current              )            }          }        },        _type == "collectionsWithPreviews" => {          ...,          collections[]{            ...,            collection->{              _id,              store{ slug{ current }, title },              handles,              titles            }          }        },        _type == "faqs" => {          ...,          faqs[]->{            _id,            title,            body,            "text": pt::text(body)          }        },        _type == "sharedSectionRef" => {          section->{            _id,            internalTitle,            content[]{              ...,              _type == "brandGridBlock" => {                barnds[]{                  ...,                  asset->{ _id, url, metadata{dimensions} },                  "alt": coalesce(alt[$language], alt.uk, alt.ru),                  collection->{ _id, store{ slug{ current }, title } }                }              }            }          }        }      }    }  }
 export type HOME_PAGE_QUERYResult = {
   homePageMan: null;
   homePageWoman: null;
@@ -4049,6 +4288,10 @@ export type OG_IMAGE_QUERYResult =
       image: null;
     }
   | {
+      title: LocalizedString | null;
+      image: null;
+    }
+  | {
       title: string | null;
       image: null;
     }
@@ -4063,11 +4306,19 @@ export type OG_IMAGE_QUERYResult =
     }
   | null;
 // Variable: SITE_LOGO_QUERY
-// Query: *[_type == 'siteSettings'][0]{    "logo": header.icon.asset->{      url    }  }
+// Query: *[_type == 'siteSettings'][0]{    "logo": header.icon.asset->{      url    },    "logoAlt": coalesce(header.icon.alt[$language], header.icon.alt.uk, header.icon.alt.ru)  }
 export type SITE_LOGO_QUERYResult = {
   logo: {
     url: string | null;
   } | null;
+  logoAlt:
+    | Array<{
+        _type: 'localizedString';
+        ru?: string;
+        uk?: string;
+      }>
+    | string
+    | null;
 } | null;
 // Variable: SITEMAP_QUERY
 // Query: *[_type in ["page", "post"] && defined(slug.current)] {    "href": select(      _type == "page" => "/" + slug.current,      _type == "post" => select(        defined(language) => "/" + language + "/posts/" + slug.current,        "/posts/" + slug.current      ),      slug.current    ),    _updatedAt,    language}
@@ -4077,7 +4328,7 @@ export type SITEMAP_QUERYResult = Array<{
   language: string | null;
 }>;
 // Variable: HEADER_QUERY
-// Query: *[_type == 'siteSettings'][0]{    infoBar {      ...,      telephone,      viberPhone,      "text": coalesce(text[$locale], text.uk, text.ru, ""),      link {        ...,        "collectionData": reference-> {          title,          "handle": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    },    header {      ...,      categoryLinks[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      },      mainCategory[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    },    brandsNavigation {      topBrands,      collections[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    },    navImages {      woman[]{        _key,        url,        menuIndex,        imageTitle,        imageButtonLabel,        imageButtonUrl,        brandSlug,        "imageUrl": image.asset->url,        "imageWidth": image.asset->metadata.dimensions.width,        "imageHeight": image.asset->metadata.dimensions.height,        "collectionHandle": collection->store.slug.current,        "collectionTitle": collection->store.title,        "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,      },      man[]{        _key,        url,        menuIndex,        imageTitle,        imageButtonLabel,        imageButtonUrl,        brandSlug,        "imageUrl": image.asset->url,        "imageWidth": image.asset->metadata.dimensions.width,        "imageHeight": image.asset->metadata.dimensions.height,        "collectionHandle": collection->store.slug.current,        "collectionTitle": collection->store.title,        "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,      }    },    navDropdowns {      woman[]{        _key,        menuIndex,        columns[]{          _key,          "title": coalesce(title[$locale], title.uk, title.ru, collection->store.title, ""),          "url": collection->store.slug.current,          items[]->{            _id,            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, store.title, ""),            "handle": store.slug.current,            "navTitleColor": navTitleColor          },          "outletLink": outletLink {            "label": coalesce(label[$locale], label.uk, label.ru, ""),            "collectionHandle": collection->store.slug.current,            url          },          "actionButton": actionButton {            "label": coalesce(label[$locale], label.uk, label.ru, ""),            "collectionHandle": collection->store.slug.current,            url          }        }      },      man[]{        _key,        menuIndex,        columns[]{          _key,          "title": coalesce(title[$locale], title.uk, title.ru, collection->store.title, ""),          "url": collection->store.slug.current,          items[]->{            _id,            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, store.title, ""),            "handle": store.slug.current,            "navTitleColor": navTitleColor          },          "outletLink": outletLink {            "label": coalesce(label[$locale], label.uk, label.ru, ""),            "collectionHandle": collection->store.slug.current,            url          },          "actionButton": actionButton {            "label": coalesce(label[$locale], label.uk, label.ru, ""),            "collectionHandle": collection->store.slug.current,            url          }        }      }    }  }
+// Query: *[_type == 'siteSettings'][0]{    infoBar {      ...,      telephone,      viberPhone,      "text": coalesce(text[$locale], text.uk, text.ru, ""),      link {        ...,        "collectionData": reference-> {          title,          "handle": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    },    header {      ...,      categoryLinks[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      },      mainCategory[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    },    brandsNavigation {      "tabTitle": coalesce(tabTitle[$locale], tabTitle.uk, tabTitle.ru, ""),      topBrandsWoman,      topBrandsMan,      collections[]{        _key,        "title": coalesce(title[$locale], title.uk, title.ru, ""),        "collectionData": reference-> {          title,          "slug": store.slug.current,          "pageHandle": slug,          "id": store.id,          handles,          titles        }      }    },    navDropdowns {      woman[]{        _key,        isBrandsTab,        topBrands[]->{          _id,          "title": coalesce(titles[$locale], titles.uk, store.title, ""),          "handle": coalesce(handles[$locale], handles.uk, store.slug.current),        },        "tabTitle": coalesce(tabTitle[$locale], tabTitle.uk, tabTitle.ru, tabCollection->titles[$locale], tabCollection->titles.uk, tabCollection->store.title, ""),        "tabUrl": coalesce(tabUrl, tabCollection->handles[$locale], tabCollection->handles.uk, tabCollection->store.slug.current),        tabImage {          url,          imageTitle,          imageButtonLabel,          imageButtonUrl,          brandSlug,          "imageUrl": image.asset->url,          "imageWidth": image.asset->metadata.dimensions.width,          "imageHeight": image.asset->metadata.dimensions.height,          "alt": coalesce(image.alt[$locale], image.alt.uk, image.alt.ru),          "collectionHandle": collection->store.slug.current,          "collectionTitle": collection->store.title,          "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,        },        columns[]{          _key,          "title": coalesce(title[$locale], title.uk, title.ru, collection->titles[$locale], collection->titles.uk, collection->store.title, ""),          "url": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),          items[]->{            _id,            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, titles[$locale], titles.uk, store.title, ""),            "handle": coalesce(handles[$locale], handles.uk, handles.ru, store.slug.current),            "navTitleColor": navTitleColor          },          "outletLink": outletLink {            "label": coalesce(label[$locale], label.uk, label.ru, ""),            "collectionHandle": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),            url          },          "actionButton": actionButton {            "label": coalesce(label[$locale], label.uk, label.ru, ""),            "collectionHandle": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),            url          }        }      },      man[]{        _key,        isBrandsTab,        topBrands[]->{          _id,          "title": coalesce(titles[$locale], titles.uk, store.title, ""),          "handle": coalesce(handles[$locale], handles.uk, store.slug.current),        },        "tabTitle": coalesce(tabTitle[$locale], tabTitle.uk, tabTitle.ru, tabCollection->titles[$locale], tabCollection->titles.uk, tabCollection->store.title, ""),        "tabUrl": coalesce(tabUrl, tabCollection->handles[$locale], tabCollection->handles.uk, tabCollection->store.slug.current),        tabImage {          url,          imageTitle,          imageButtonLabel,          imageButtonUrl,          brandSlug,          "imageUrl": image.asset->url,          "imageWidth": image.asset->metadata.dimensions.width,          "imageHeight": image.asset->metadata.dimensions.height,          "alt": coalesce(image.alt[$locale], image.alt.uk, image.alt.ru),          "collectionHandle": collection->store.slug.current,          "collectionTitle": collection->store.title,          "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,        },        columns[]{          _key,          "title": coalesce(title[$locale], title.uk, title.ru, collection->titles[$locale], collection->titles.uk, collection->store.title, ""),          "url": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),          items[]->{            _id,            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, titles[$locale], titles.uk, store.title, ""),            "handle": coalesce(handles[$locale], handles.uk, handles.ru, store.slug.current),            "navTitleColor": navTitleColor          },          "outletLink": outletLink {            "label": coalesce(label[$locale], label.uk, label.ru, ""),            "collectionHandle": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),            url          },          "actionButton": actionButton {            "label": coalesce(label[$locale], label.uk, label.ru, ""),            "collectionHandle": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),            url          }        }      }    }  }
 export type HEADER_QUERYResult = {
   infoBar: {
     _type: 'infoBar';
@@ -4215,83 +4466,72 @@ export type HEADER_QUERYResult = {
       media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
+      alt?: LocalizedString;
       _type: 'image';
     };
   } | null;
-  brandsNavigation: {
-    topBrands: Array<string> | null;
-    collections: Array<{
+  brandsNavigation: null;
+  navDropdowns: {
+    woman: Array<{
       _key: string;
-      title:
+      isBrandsTab: boolean | null;
+      topBrands: Array<{
+        _id: string;
+        title:
+          | Array<{
+              uk?: string;
+              ru?: string;
+            }>
+          | string
+          | '';
+        handle:
+          | Array<{
+              uk?: string;
+              ru?: string;
+            }>
+          | string
+          | null;
+      }> | null;
+      tabTitle:
         | Array<{
             _type: 'localizedString';
             ru?: string;
             uk?: string;
           }>
+        | Array<{
+            uk?: string;
+            ru?: string;
+          }>
         | string
         | '';
-      collectionData:
-        | {
-            title: string | null;
-            slug: null;
-            pageHandle: string | null;
-            id: null;
-            handles: null;
-            titles: null;
-          }
-        | {
-            title: null;
-            slug: string | null;
-            pageHandle: null;
-            id: number | null;
-            handles: {
-              uk?: string;
-              ru?: string;
-            } | null;
-            titles: {
-              uk?: string;
-              ru?: string;
-            } | null;
-          }
+      tabUrl:
+        | Array<{
+            uk?: string;
+            ru?: string;
+          }>
+        | string
         | null;
-    }> | null;
-  } | null;
-  navImages: {
-    woman: Array<{
-      _key: string;
-      url: string | null;
-      menuIndex: number | null;
-      imageTitle: string | null;
-      imageButtonLabel: string | null;
-      imageButtonUrl: string | null;
-      brandSlug: string | null;
-      imageUrl: string | null;
-      imageWidth: number | null;
-      imageHeight: number | null;
-      collectionHandle: string | null;
-      collectionTitle: string | null;
-      imageButtonCollectionHandle: string | null;
-    }> | null;
-    man: Array<{
-      _key: string;
-      url: string | null;
-      menuIndex: number | null;
-      imageTitle: string | null;
-      imageButtonLabel: string | null;
-      imageButtonUrl: string | null;
-      brandSlug: string | null;
-      imageUrl: string | null;
-      imageWidth: number | null;
-      imageHeight: number | null;
-      collectionHandle: string | null;
-      collectionTitle: string | null;
-      imageButtonCollectionHandle: string | null;
-    }> | null;
-  } | null;
-  navDropdowns: {
-    woman: Array<{
-      _key: string;
-      menuIndex: number | null;
+      tabImage: {
+        url: string | null;
+        imageTitle: string | null;
+        imageButtonLabel: string | null;
+        imageButtonUrl: string | null;
+        brandSlug: string | null;
+        imageUrl: string | null;
+        imageWidth: number | null;
+        imageHeight: number | null;
+        alt:
+          | Array<{
+              _type: 'localizedString';
+              ru?: string;
+              uk?: string;
+            }>
+          | string
+          | null;
+        collectionHandle: string | null;
+        collectionTitle: string | null;
+        imageButtonCollectionHandle: string | null;
+      } | null;
       columns: Array<{
         _key: string;
         title:
@@ -4300,9 +4540,19 @@ export type HEADER_QUERYResult = {
               ru?: string;
               uk?: string;
             }>
+          | Array<{
+              uk?: string;
+              ru?: string;
+            }>
           | string
           | '';
-        url: string | null;
+        url:
+          | Array<{
+              uk?: string;
+              ru?: string;
+            }>
+          | string
+          | null;
         items: Array<{
           _id: string;
           title:
@@ -4311,9 +4561,19 @@ export type HEADER_QUERYResult = {
                 ru?: string;
                 uk?: string;
               }>
+            | Array<{
+                uk?: string;
+                ru?: string;
+              }>
             | string
             | '';
-          handle: string | null;
+          handle:
+            | Array<{
+                uk?: string;
+                ru?: string;
+              }>
+            | string
+            | null;
           navTitleColor: 'blue' | 'default' | 'green' | 'orange' | 'red' | null;
         }> | null;
         outletLink: {
@@ -4325,7 +4585,13 @@ export type HEADER_QUERYResult = {
               }>
             | string
             | '';
-          collectionHandle: string | null;
+          collectionHandle:
+            | Array<{
+                uk?: string;
+                ru?: string;
+              }>
+            | string
+            | null;
           url: string | null;
         } | null;
         actionButton: {
@@ -4337,14 +4603,77 @@ export type HEADER_QUERYResult = {
               }>
             | string
             | '';
-          collectionHandle: string | null;
+          collectionHandle:
+            | Array<{
+                uk?: string;
+                ru?: string;
+              }>
+            | string
+            | null;
           url: string | null;
         } | null;
       }> | null;
     }> | null;
     man: Array<{
       _key: string;
-      menuIndex: number | null;
+      isBrandsTab: boolean | null;
+      topBrands: Array<{
+        _id: string;
+        title:
+          | Array<{
+              uk?: string;
+              ru?: string;
+            }>
+          | string
+          | '';
+        handle:
+          | Array<{
+              uk?: string;
+              ru?: string;
+            }>
+          | string
+          | null;
+      }> | null;
+      tabTitle:
+        | Array<{
+            _type: 'localizedString';
+            ru?: string;
+            uk?: string;
+          }>
+        | Array<{
+            uk?: string;
+            ru?: string;
+          }>
+        | string
+        | '';
+      tabUrl:
+        | Array<{
+            uk?: string;
+            ru?: string;
+          }>
+        | string
+        | null;
+      tabImage: {
+        url: string | null;
+        imageTitle: string | null;
+        imageButtonLabel: string | null;
+        imageButtonUrl: string | null;
+        brandSlug: string | null;
+        imageUrl: string | null;
+        imageWidth: number | null;
+        imageHeight: number | null;
+        alt:
+          | Array<{
+              _type: 'localizedString';
+              ru?: string;
+              uk?: string;
+            }>
+          | string
+          | null;
+        collectionHandle: string | null;
+        collectionTitle: string | null;
+        imageButtonCollectionHandle: string | null;
+      } | null;
       columns: Array<{
         _key: string;
         title:
@@ -4353,9 +4682,19 @@ export type HEADER_QUERYResult = {
               ru?: string;
               uk?: string;
             }>
+          | Array<{
+              uk?: string;
+              ru?: string;
+            }>
           | string
           | '';
-        url: string | null;
+        url:
+          | Array<{
+              uk?: string;
+              ru?: string;
+            }>
+          | string
+          | null;
         items: Array<{
           _id: string;
           title:
@@ -4364,9 +4703,19 @@ export type HEADER_QUERYResult = {
                 ru?: string;
                 uk?: string;
               }>
+            | Array<{
+                uk?: string;
+                ru?: string;
+              }>
             | string
             | '';
-          handle: string | null;
+          handle:
+            | Array<{
+                uk?: string;
+                ru?: string;
+              }>
+            | string
+            | null;
           navTitleColor: 'blue' | 'default' | 'green' | 'orange' | 'red' | null;
         }> | null;
         outletLink: {
@@ -4378,7 +4727,13 @@ export type HEADER_QUERYResult = {
               }>
             | string
             | '';
-          collectionHandle: string | null;
+          collectionHandle:
+            | Array<{
+                uk?: string;
+                ru?: string;
+              }>
+            | string
+            | null;
           url: string | null;
         } | null;
         actionButton: {
@@ -4390,7 +4745,13 @@ export type HEADER_QUERYResult = {
               }>
             | string
             | '';
-          collectionHandle: string | null;
+          collectionHandle:
+            | Array<{
+                uk?: string;
+                ru?: string;
+              }>
+            | string
+            | null;
           url: string | null;
         } | null;
       }> | null;
@@ -4423,11 +4784,109 @@ export type FOOTER_QUERYResult = {
     paymentMethods: Array<string> | null;
   } | null;
 } | null;
+// Variable: PROMOTION_BANNER_QUERY
+// Query: *[_type == "promotionBanner" && (enabled == true || _id in path("drafts.**"))][0]{    _id,    enabled,    image,    "imageAlt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru),    "title": coalesce(title[$language], title.uk, title.ru),    "description": coalesce(description[$language], description.uk, description.ru),    discountCode,    actionButton {      "label": coalesce(label[$language], label.uk, label.ru),      url,      womanUrl,      manUrl,      "womanCollection": womanCollection->{        title,        "handle": store.slug.current,        handles,        titles      },      "manCollection": manCollection->{        title,        "handle": store.slug.current,        handles,        titles      }    },    behavior {      trigger,      delaySeconds,      scrollPercent,      cooldownHours,      showOnce,      resetToken    }  }
+export type PROMOTION_BANNER_QUERYResult = {
+  _id: string;
+  enabled: boolean | null;
+  image: {
+    asset?: {
+      _ref: string;
+      _type: 'reference';
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset';
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: LocalizedString;
+    _type: 'image';
+  } | null;
+  imageAlt:
+    | Array<{
+        _type: 'localizedString';
+        ru?: string;
+        uk?: string;
+      }>
+    | string
+    | null;
+  title:
+    | Array<{
+        _type: 'localizedString';
+        ru?: string;
+        uk?: string;
+      }>
+    | string
+    | null;
+  description:
+    | Array<{
+        _type: 'localizedString';
+        ru?: string;
+        uk?: string;
+      }>
+    | string
+    | null;
+  discountCode: string | null;
+  actionButton: {
+    label:
+      | Array<{
+          _type: 'localizedString';
+          ru?: string;
+          uk?: string;
+        }>
+      | string
+      | null;
+    url: string | null;
+    womanUrl: string | null;
+    manUrl: string | null;
+    womanCollection: {
+      title: null;
+      handle: string | null;
+      handles: {
+        uk?: string;
+        ru?: string;
+      } | null;
+      titles: {
+        uk?: string;
+        ru?: string;
+      } | null;
+    } | null;
+    manCollection: {
+      title: null;
+      handle: string | null;
+      handles: {
+        uk?: string;
+        ru?: string;
+      } | null;
+      titles: {
+        uk?: string;
+        ru?: string;
+      } | null;
+    } | null;
+  } | null;
+  behavior: {
+    trigger: 'delay' | 'exit_intent' | 'scroll' | null;
+    delaySeconds: number | null;
+    scrollPercent: number | null;
+    cooldownHours: number | null;
+    showOnce: boolean | null;
+    resetToken: string | null;
+  } | null;
+} | null;
 // Variable: COLLECTION_IS_BRAND_QUERY
-// Query: *[_type == "collection" && store.slug.current == $handle][0]{ isBrand, customTitle }
+// Query: *[_type == "collection" && (store.slug.current == $handle || handles.uk == $handle || handles.ru == $handle)][0]{     isBrand,     customTitle,    handles,    titles,    "handle": store.slug.current  }
 export type COLLECTION_IS_BRAND_QUERYResult = {
   isBrand: boolean | null;
   customTitle: LocalizedString | null;
+  handles: {
+    uk?: string;
+    ru?: string;
+  } | null;
+  titles: {
+    uk?: string;
+    ru?: string;
+  } | null;
+  handle: string | null;
 } | null;
 
 // Query TypeMap
@@ -4436,27 +4895,28 @@ declare module '@sanity/client' {
   interface SanityQueries {
     '*[_type == "locale"]|order(default, name asc){\n    _id,\n    tag,\n    name,\n    default,\n    fallback->{tag}\n  }': LOCALES_QUERYResult;
     '*[_type == "locale" && default == true][0].tag': DEFAULT_LOCALE_QUERYResult;
-    '*[_type == "post" && defined(slug.current) && (language == $language || language == "en" || !defined(language))] | order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_WITH_FALLBACK_QUERYResult;
-    '*[_type == "post" && defined(slug.current)]|order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_QUERYResult;
-    '*[_type == "post" && defined(slug.current) && (language == $language || !defined(language))] | order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_BY_LANGUAGE_QUERYResult;
-    '*[_type == "post" && defined(slug.current) && language == "uk"] | order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_UA_DEBUG_QUERYResult;
+    '*[_type == "post" && defined(slug.current) && (language == $language || language == "en" || !defined(language))] | order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage {\n    ...,\n    asset-> { _id, url, metadata { dimensions } },\n    alt\n  },\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_WITH_FALLBACK_QUERYResult;
+    '*[_type == "post" && defined(slug.current)]|order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage {\n    ...,\n    asset-> { _id, url, metadata { dimensions } },\n    alt\n  },\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_QUERYResult;
+    '*[_type == "post" && defined(slug.current) && (language == $language || !defined(language))] | order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage {\n    ...,\n    asset-> { _id, url, metadata { dimensions } },\n    alt\n  },\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_BY_LANGUAGE_QUERYResult;
+    '*[_type == "post" && defined(slug.current) && language == "uk"] | order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage {\n    ...,\n    asset-> { _id, url, metadata { dimensions } },\n    alt\n  },\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_UA_DEBUG_QUERYResult;
     '*[_type == "post" && defined(slug.current)] | order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  language,\n  "hasLanguage": defined(language)\n}': ALL_POSTS_DEBUG_QUERYResult;
     '*[_type == "post" && defined(slug.current)]{\n  "slug": slug.current,\n  language\n}': POSTS_SLUGS_QUERYResult;
     '*[_type == "post" && defined(slug.current) && language == $language]{\n  "slug": slug.current,\n  language\n}': POSTS_SLUGS_BY_LANGUAGE_QUERYResult;
     '*[_type == "page" && defined(slug.current)]{\n  "slug": slug.current,\n  language\n}': PAGE_SLUGS_QUERYResult;
-    '*[_type == "post" && slug.current == $slug][0]{\n  _id,\n  title,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  },\n  relatedPosts[]{\n    _key,\n    ...@->{_id, title, slug, language, mainImage, publishedAt}\n  },\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n}': POST_QUERYResult;
-    '*[_type == "post" && slug.current == $slug && (language == $language || !defined(language))][0]{\n  _id,\n  title,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  },\n  relatedPosts[]{\n    _key,\n    ...@->{_id, title, slug, language, mainImage, publishedAt}\n  },\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n}': POST_BY_LANGUAGE_QUERYResult;
-    '*[_type == "post" && defined(slug.current) && (language == "en" || !defined(language))] | order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_EN_FALLBACK_QUERYResult;
-    '*[_type == "post" && slug.current == $slug && (language == "en" || !defined(language))][0]{\n  _id,\n  title,\n  body,\n  mainImage,\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  },\n  relatedPosts[]{\n    _key,\n    ...@->{_id, title, slug, language, mainImage, publishedAt}\n  },\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n}': POST_WITH_FALLBACK_QUERYResult;
-    '*[_type == "page" && slug == $slug][0]{\n  ...,\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n  content[]{\n    ...,\n    _type == "contentPageBlock" => {\n      body[]{\n        ...,\n        markDefs[]{\n          ...,\n          _type == "link" => {\n            ...,\n            "href": string(@.href)\n          }\n        }\n      }\n    },\n    _type == "similarProducts" => {\n      collection -> {\n        _id,\n        title,\n        store{\n         imageUrl,\n         isDeleted,\n         slug{\n         current\n         },\n         title\n        }\n      }\n    },\n    _type == "sliderBlock" => {\n      slides[]{\n         ...,\n        _key,\n        link[]{\n         ...,\n         reference->{\n           _id,\n           _type,\n           title,\n           "slug": select(\n             _type == "product" => store.slug.current,\n             _type == "collection" => store.slug.current,\n             _type == "page" => slug.current\n           )\n         }\n       },\n        backgroundImage{\n          asset->{\n            _id,\n            url,\n            metadata{dimensions}\n          }\n        }\n      }\n    },\n    _type == "productCarousel" => {\n      products[]->{\n        _id,\n        store{\n          title,\n          isDeleted,\n          previewImageUrl,\n          priceRange{\n          maxVariantPrice,\n          minVariantPrice\n          },\n          productType\n        }\n      },\n      collection -> {\n        _id,\n        title,\n        store{\n         imageUrl,\n         isDeleted,\n         slug{\n         current\n         },\n         title\n        }\n      }\n    },\n    _type == "collectionsCarousel" => {\n      collections[]->{\n        _id,\n        title,\n        store{\n         imageUrl,\n         isDeleted,\n         slug{\n         current\n         },\n         title\n        }\n      }\n    },\n    _type == "splitImage" => {\n      ...,\n      link[]{\n        ...,\n        reference->{\n          _id,\n          _type,\n          title,\n          "slug": select(\n            _type == "product" => store.slug.current,\n            _type == "collection" => store.slug.current,\n            _type == "page" => slug.current\n          )\n        }\n      }\n    },\n    _type == "faqs" => {\n      ...,\n      items[]{ _key, icon, label }\n    }\n  }\n}': PAGE_QUERYResult;
-    '*[_type == "page" && slug == $slug  && language == $language][0]{\n    ...,\n    "_translations": *[_type == "translation.metadata" && references(^._id)].translations[].value->{\n      title,\n      slug,\n      language\n    },\n    "seo": {\n    "title": coalesce(seo.title, title, ""),\n      "description": coalesce(seo.description,  ""),\n      "image": seo.image,\n      "noIndex": seo.noIndex == true\n     },\n    content[]{\n      ...,\n      _type == "mainCollectionGrid" => {\n           ...,\n           "title": coalesce(title[$language], title.uk, title.ru),\n           "collections": collections[]->{\n             title,\n             "handle": store.slug.current,\n             "id": store.id,\n             handles,\n             titles,\n             "image": { "url": coalesce(image.asset->url, store.imageUrl) }\n           }\n        },\n        _type == "productCarousel" => {\n             ...,\n             "title": coalesce(title[$language], title.uk, title.ru),\n             "collection": collection->{\n               title,\n               "handle": store.slug.current,\n               "id": store.id,\n               handles,\n               titles\n             }\n          },\n          _type == "popularPosts" => {\n            ...,\n            "title": coalesce(title[$language], title.uk, title.ru),\n            "posts": posts[]->{\n              _id,\n              title,\n              slug,\n              mainImage,\n              publishedAt,\n              language,\n              "categories": coalesce(categories[]->{_id, slug, title}, []),\n              author->{ name, image },\n              "localizedVersion": *[_type == "translation.metadata" && references(^._id)][0].translations[_key == $language][0].value->{\n                _id,\n                title,\n                slug,\n                mainImage,\n                publishedAt,\n                language\n              }\n            }\n          },\n          _type == "splitImage" => {\n               ...,\n               "title": coalesce(title[$language], title.uk, title.ru),\n               "collection": collection->{\n                 title,\n                 "handle": store.slug.current,\n                 "id": store.id,\n                 handles,\n                 titles\n               }\n            },\n            _type == "features" => {\n              _key,\n              _type,\n              "features": features[] {\n                _key,\n                _type,\n                "title": coalesce(title[$language], title.uk, title.ru),\n                "text": coalesce(text[$language], text.uk, text.ru),\n              }\n            },\n            _type == "collectionsWithPreviews" => {\n              _key,\n              _type,\n              "title": coalesce(title[$language], title.uk, title.ru),\n              previews,\n              "collections": collections[]{\n                _key,\n                customTitle,\n                "collection": collection->{\n                  _id,\n                  store{ slug{ current }, title },\n                  handles,\n                  titles\n                }\n              }\n            },\n        _type == "brandGridBlock" => {\n  ...,\n  "title": coalesce(title[$language], title.uk, title.ru),\n  "barnds": barnds[]{\n      ...,\n    "collectionData": collection-> {\n       title,\n                "handle": store.slug.current,\n                "id": store.id,\n                handles,\n                titles,\n                "image": { "url": store.imageUrl }\n        }\n  }\n},\n            _type == "collectionsCarousel" => {\n              ...,\n              "title": coalesce(title[$language], title.uk, title.ru),\n              "action_text": coalesce(action_text[$language], action_text.uk, action_text.ru),\n               "collections": collections[]->{\n             title,\n             "handle": store.slug.current,\n             "id": store.id,\n             handles,\n             titles,\n             "image": { "url": store.imageUrl }\n           }\n            },\n            _type == "sliderBlock" => {\n              ...,\n              slides[]{\n                ...,\n                "title": coalesce(title[$language], title.uk, title.ru),\n                backgroundImage{\n                  asset->{\n                    _id,\n                    url,\n                    metadata{dimensions}\n                  }\n                }\n              }\n            },\n            _type == "heroSlider" => {\n              _type,\n              _key,\n              title,\n              description,\n              "videoFile": videoFile.asset->url,\n              "videoPoster": videoPoster.asset->url,\n              videoUrl,\n              videoTitle,\n              videoDescription,\n              "videoTextPosition": videoTextPosition,\n              "videoTitleColor": videoTitleColor.hex,\n              "videoDescriptionColor": videoDescriptionColor.hex,\n              videoLinkUrl,\n              "videoCollection": videoCollection->{\n                "handle": store.slug.current\n              },\n              videoOverlay {\n                opacity,\n                color { hex }\n              },\n              slides[]{\n                ...,\n                "titleColor": titleColor.hex,\n                "descriptionColor": descriptionColor.hex,\n                overlay { opacity, color { hex } },\n                textBackground { opacity, color { hex }, padding, rounded },\n                "collection": collection->{\n                  title,\n                  "handle": store.slug.current,\n                  "id": store.id,\n                  handles,\n                  titles\n                },\n                buttons[]{\n                  ...,\n                  "collection": collection->{\n                    title,\n                    "handle": store.slug.current,\n                    "id": store.id,\n                    handles,\n                    titles\n                  }\n                }\n              }\n            },\n            _type == "faqs" => {\n              ...,\n              faqs[]->{\n                _id,\n                title,\n                body,\n                "text": pt::text(body)\n              }\n            },\n            _type == "similarProducts" => {\n              ...,\n              collection->{\n                 title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n              }\n            },\n            _type == "sharedSectionRef" => {\n              _key,\n              _type,\n              section->{\n                _id,\n                internalTitle,\n                content[]{\n                  ...,\n                  _type == "popularPosts" => {\n                    ...,\n                    "title": coalesce(title[$language], title.uk, title.ru),\n                    "posts": posts[]->{\n                      _id,\n                      title,\n                      slug,\n                      mainImage,\n                      publishedAt,\n                      language,\n                      "categories": coalesce(categories[]->{_id, slug, title}, []),\n                      author->{ name, image },\n                      "localizedVersion": *[_type == "translation.metadata" && references(^._id)][0].translations[_key == $language][0].value->{\n                        _id,\n                        title,\n                        slug,\n                        mainImage,\n                        publishedAt,\n                        language\n                      }\n                    }\n                  },\n                  _type == "collectionsWithPreviews" => {\n                    _key,\n                    _type,\n                    "title": coalesce(title[$language], title.uk, title.ru),\n                    previews,\n                    "collections": collections[]{\n                      _key,\n                      customTitle,\n                      "collection": collection->{\n                        _id,\n                        store{ slug{ current }, title },\n                        handles,\n                        titles\n                      }\n                    }\n                  },\n                  _type == "brandGridBlock" => {\n                    ...,\n                    "title": coalesce(title[$language], title.uk, title.ru),\n                    "barnds": barnds[]{\n                      ...,\n                      "collectionData": collection->{ _id, store{ slug{ current }, title } }\n                    }\n                  },\n                  _type == "splitImage" => {\n                    ...,\n                    "title": coalesce(title[$language], title.uk, title.ru),\n                    "collection": collection->{\n                      title,\n                      "handle": store.slug.current,\n                      "id": store.id,\n                      handles,\n                      titles\n                    }\n                  },\n                  _type == "features" => {\n                    _key,\n                    _type,\n                    "features": features[]{\n                      _key,\n                      _type,\n                      "title": coalesce(title[$language], title.uk, title.ru),\n                      "text": coalesce(text[$language], text.uk, text.ru)\n                    }\n                  },\n                  _type == "collectionsCarousel" => {\n                    ...,\n                    "title": coalesce(title[$language], title.uk, title.ru),\n                    "action_text": coalesce(action_text[$language], action_text.uk, action_text.ru),\n                    "collections": collections[]->{\n                      title,\n                      "handle": store.slug.current,\n                      "id": store.id,\n                      handles,\n                      titles,\n                      "image": { "url": store.imageUrl }\n                    }\n                  }\n                }\n              }\n            }\n    }\n  }': HOME_PAGEResult;
-    '*[_id == "siteSettings" ][0]{\n    homePageMan->{\n      ...,\n      content[]{\n        ...,\n        _id,\n        _type == "sliderBlock" => {\n          slides[]{\n             ...,\n            _key,\n            link[]{\n             ...,\n             reference->{\n               _id,\n               _type,\n               title,\n               "slug": select(\n                 _type == "product" => store.slug.current,\n                 _type == "collection" => store.slug.current,\n                 _type == "page" => slug.current\n               )\n             }\n           },\n            backgroundImage{\n              asset->{\n                _id,\n                url,\n                metadata{dimensions}\n              }\n            }\n          }\n        },\n        _type == "productCarousel" => {\n          products[]->{\n            _id,\n            store{\n              title,\n              isDeleted,\n              previewImageUrl,\n              priceRange{\n              maxVariantPrice,\n              minVariantPrice\n              },\n              productType\n            }\n          },\n          collection -> {\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "collectionsCarousel" => {\n          collections[]->{\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "splitImage" => {\n          ...,\n          description,\n          link[]{\n            ...,\n            reference->{\n              _id,\n              _type,\n              title,\n              "slug": select(\n                _type == "product" => store.slug.current,\n                _type == "collection" => store.slug.current,\n                _type == "page" => slug.current\n              )\n            }\n          }\n        },\n        _type == "collectionsWithPreviews" => {\n          ...,\n          collections[]{\n            ...,\n            collection->{\n              _id,\n              store{ slug{ current }, title },\n              handles,\n              titles\n            }\n          }\n        },\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        },\n        _type == "sharedSectionRef" => {\n          section->{\n            _id,\n            internalTitle,\n            content[]{\n              ...,\n              _type == "brandGridBlock" => {\n                barnds[]{\n                  ...,\n                  asset->{ _id, url, metadata{dimensions} },\n                  collection->{ _id, store{ slug{ current }, title } }\n                }\n              }\n            }\n          }\n        }\n      }\n    },\n    homePageWoman->{\n      ...,\n      content[]{\n        ...,\n        _id,\n        _type == "sliderBlock" => {\n          slides[]{\n             ...,\n            _key,\n            link[]{\n             ...,\n             reference->{\n               _id,\n               _type,\n               title,\n               "slug": select(\n                 _type == "product" => store.slug.current,\n                 _type == "collection" => store.slug.current,\n                 _type == "page" => slug.current\n               )\n             }\n           },\n            backgroundImage{\n              asset->{\n                _id,\n                url,\n                metadata{dimensions}\n              }\n            }\n          }\n        },\n        _type == "productCarousel" => {\n          products[]->{\n            _id,\n            store{\n              title,\n              isDeleted,\n              previewImageUrl,\n              priceRange{\n              maxVariantPrice,\n              minVariantPrice\n              },\n              productType\n            }\n          },\n          collection -> {\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "collectionsCarousel" => {\n          collections[]->{\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "splitImage" => {\n          ...,\n          description,\n          link[]{\n            ...,\n            reference->{\n              _id,\n              _type,\n              title,\n              "slug": select(\n                _type == "product" => store.slug.current,\n                _type == "collection" => store.slug.current,\n                _type == "page" => slug.current\n              )\n            }\n          }\n        },\n        _type == "collectionsWithPreviews" => {\n          ...,\n          collections[]{\n            ...,\n            collection->{\n              _id,\n              store{ slug{ current }, title },\n              handles,\n              titles\n            }\n          }\n        },\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        },\n        _type == "sharedSectionRef" => {\n          section->{\n            _id,\n            internalTitle,\n            content[]{\n              ...,\n              _type == "brandGridBlock" => {\n                barnds[]{\n                  ...,\n                  asset->{ _id, url, metadata{dimensions} },\n                  collection->{ _id, store{ slug{ current }, title } }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }': HOME_PAGE_QUERYResult;
+    '*[_type == "post" && slug.current == $slug][0]{\n  _id,\n  title,\n  body,\n  mainImage {\n    ...,\n    asset-> { _id, url, metadata { dimensions } },\n    alt\n  },\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  },\n  relatedPosts[]{\n    _key,\n    ...@->{_id, title, slug, language, mainImage { ..., asset-> { _id, url, metadata { dimensions } }, alt }, publishedAt}\n  },\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n}': POST_QUERYResult;
+    '*[_type == "post" && slug.current == $slug && (language == $language || !defined(language))][0]{\n  _id,\n  title,\n  body,\n  mainImage {\n    ...,\n    asset-> { _id, url, metadata { dimensions } },\n    alt\n  },\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  },\n  relatedPosts[]{\n    _key,\n    ...@->{_id, title, slug, language, mainImage { ..., asset-> { _id, url, metadata { dimensions } }, alt }, publishedAt}\n  },\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n}': POST_BY_LANGUAGE_QUERYResult;
+    '*[_type == "post" && defined(slug.current) && (language == "en" || !defined(language))] | order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage {\n    ...,\n    asset-> { _id, url, metadata { dimensions } },\n    alt\n  },\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}': POSTS_EN_FALLBACK_QUERYResult;
+    '*[_type == "post" && slug.current == $slug && (language == "en" || !defined(language))][0]{\n  _id,\n  title,\n  body,\n  mainImage {\n    ...,\n    asset-> { _id, url, metadata { dimensions } },\n    alt\n  },\n  publishedAt,\n  language,\n  "categories": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  },\n  relatedPosts[]{\n    _key,\n    ...@->{_id, title, slug, language, mainImage { ..., asset-> { _id, url, metadata { dimensions } }, alt }, publishedAt}\n  },\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n}': POST_WITH_FALLBACK_QUERYResult;
+    '*[_type == "page" && slug == $slug && language == $language][0]{\n  ...,\n  "seo": {\n  "title": coalesce(seo.title, title, ""),\n    "description": coalesce(seo.description,  ""),\n    "image": seo.image,\n    "noIndex": seo.noIndex == true\n   },\n  content[]{\n    ...,\n    _type == "contentPageBlock" => {\n      body[]{\n        ...,\n        markDefs[]{\n          ...,\n          _type == "link" => {\n            ...,\n            "href": string(@.href)\n          }\n        }\n      }\n    },\n    _type == "similarProducts" => {\n      collection -> {\n        _id,\n        title,\n        store{\n         imageUrl,\n         isDeleted,\n         slug{\n         current\n         },\n         title\n        }\n      }\n    },\n    _type == "sliderBlock" => {\n      slides[]{\n         ...,\n        _key,\n        link[]{\n         ...,\n         reference->{\n           _id,\n           _type,\n           title,\n           "slug": select(\n             _type == "product" => store.slug.current,\n             _type == "collection" => store.slug.current,\n             _type == "page" => slug.current\n           )\n         }\n       },\n        backgroundImage{\n          asset->{\n            _id,\n            url,\n            metadata{dimensions}\n          },\n          "alt": coalesce(alt[$language], alt.uk, alt.ru)\n        }\n      }\n    },\n    _type == "productCarousel" => {\n      products[]->{\n        _id,\n        store{\n          title,\n          isDeleted,\n          previewImageUrl,\n          priceRange{\n          maxVariantPrice,\n          minVariantPrice\n          },\n          productType\n        }\n      },\n      collection -> {\n        _id,\n        title,\n        store{\n         imageUrl,\n         isDeleted,\n         slug{\n         current\n         },\n         title\n        }\n      }\n    },\n    _type == "collectionsCarousel" => {\n      collections[]->{\n        _id,\n        title,\n        store{\n         imageUrl,\n         isDeleted,\n         slug{\n         current\n         },\n         title\n        },\n        "image": { \n          "url": coalesce(image.asset->url, store.imageUrl),\n          "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)\n        }\n      }\n    },\n    _type == "splitImage" => {\n      ...,\n      image{\n        asset->{\n          _id,\n          url,\n          metadata{dimensions}\n        },\n        "alt": coalesce(alt[$language], alt.uk, alt.ru)\n      },\n      link[]{\n        ...,\n        reference->{\n          _id,\n          _type,\n          title,\n          "slug": select(\n            _type == "product" => store.slug.current,\n            _type == "collection" => store.slug.current,\n            _type == "page" => slug.current\n          )\n        }\n      }\n    },\n    _type == "faqs" => {\n      ...,\n      items[]{ _key, icon, label }\n    }\n  }\n}': PAGE_QUERYResult;
+    '*[_type == "page" && slug == $slug  && language == $language][0]{\n    ...,\n    "_translations": *[_type == "translation.metadata" && references(^._id)].translations[].value->{\n      title,\n      slug,\n      language\n    },\n    "seo": {\n    "title": coalesce(seo.title, title, ""),\n      "description": coalesce(seo.description,  ""),\n      "image": seo.image,\n      "noIndex": seo.noIndex == true\n     },\n    content[]{\n      ...,\n      _type == "mainCollectionGrid" => {\n           ...,\n           "title": coalesce(title[$language], title.uk, title.ru),\n           "collections": collections[]->{\n             title,\n             "handle": store.slug.current,\n             "id": store.id,\n             handles,\n             titles,\n             "image": { \n               "url": coalesce(image.asset->url, store.imageUrl),\n               "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)\n             }\n           }\n        },\n        _type == "productCarousel" => {\n             ...,\n             "title": coalesce(title[$language], title.uk, title.ru),\n             "collection": collection->{\n               title,\n               "handle": store.slug.current,\n               "id": store.id,\n               handles,\n               titles\n             }\n          },\n          _type == "popularPosts" => {\n            ...,\n            "title": coalesce(title[$language], title.uk, title.ru),\n            "posts": posts[]->{\n              _id,\n              title,\n              slug,\n              mainImage {\n                ...,\n                asset-> { _id, url, metadata { dimensions } },\n                "alt": coalesce(alt, ^.title)\n              },\n              publishedAt,\n              language,\n              "categories": coalesce(categories[]->{_id, slug, title}, []),\n              author->{ name, image },\n              "localizedVersion": *[_type == "translation.metadata" && references(^._id)][0].translations[_key == $language][0].value->{\n                _id,\n                title,\n                slug,\n                mainImage {\n                  ...,\n                  asset-> { _id, url, metadata { dimensions } },\n                  "alt": coalesce(alt, ^.title)\n                },\n                publishedAt,\n                language\n              }\n            }\n          },\n          _type == "splitImage" => {\n               ...,\n               "title": coalesce(title[$language], title.uk, title.ru),\n               image {\n                 asset->{\n                   _id,\n                   url,\n                   metadata{dimensions}\n                 },\n                 "alt": coalesce(alt[$language], alt.uk, alt.ru)\n               },\n               "collection": collection->{\n                 title,\n                 "handle": store.slug.current,\n                 "id": store.id,\n                 handles,\n                 titles\n               }\n            },\n            _type == "features" => {\n              _key,\n              _type,\n              "features": features[] {\n                _key,\n                _type,\n                "title": coalesce(title[$language], title.uk, title.ru),\n                "text": coalesce(text[$language], text.uk, text.ru),\n              }\n            },\n            _type == "collectionsWithPreviews" => {\n              _key,\n              _type,\n              "title": coalesce(title[$language], title.uk, title.ru),\n              previews,\n              "collections": collections[]{\n                _key,\n                customTitle,\n                "collection": collection->{\n                  _id,\n                  store{ slug{ current }, title },\n                  handles,\n                  titles\n                }\n              }\n            },\n        _type == "brandGridBlock" => {\n  ...,\n  "title": coalesce(title[$language], title.uk, title.ru),\n  "barnds": barnds[]{\n      ...,\n    "alt": coalesce(alt[$language], alt.uk, alt.ru),\n    "collectionData": collection-> {\n       title,\n                "handle": store.slug.current,\n                "id": store.id,\n                handles,\n                titles,\n                "image": { "url": store.imageUrl }\n        }\n  }\n},\n            _type == "collectionsCarousel" => {\n              ...,\n              "title": coalesce(title[$language], title.uk, title.ru),\n              "action_text": coalesce(action_text[$language], action_text.uk, action_text.ru),\n               "collections": collections[]->{\n             title,\n             "handle": store.slug.current,\n             "id": store.id,\n             handles,\n             titles,\n             "image": { \n               "url": coalesce(image.asset->url, store.imageUrl),\n               "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)\n             }\n           }\n            },\n            _type == "sliderBlock" => {\n              ...,\n              slides[]{\n                ...,\n                "title": coalesce(title[$language], title.uk, title.ru),\n                backgroundImage{\n                  asset->{\n                    _id,\n                    url,\n                    metadata{dimensions}\n                  },\n                  "alt": coalesce(alt[$language], alt.uk, alt.ru)\n                }\n              }\n            },\n            _type == "heroSlider" => {\n              _type,\n              _key,\n              title,\n              description,\n              "videoFile": videoFile.asset->url,\n              "videoFileWebm": videoFileWebm.asset->url,\n              "videoPoster": videoPoster.asset->url,\n              videoUrl,\n              videoTitle,\n              videoDescription,\n              "videoTextPosition": videoTextPosition,\n              "videoTitleColor": videoTitleColor.hex,\n              "videoDescriptionColor": videoDescriptionColor.hex,\n              videoLinkUrl,\n              "videoCollection": videoCollection->{\n                "handle": store.slug.current\n              },\n              videoOverlay {\n                opacity,\n                color { hex }\n              },\n              slides[]{\n                ...,\n                "titleColor": titleColor.hex,\n                "descriptionColor": descriptionColor.hex,\n                overlay { opacity, color { hex } },\n                textBackground { opacity, color { hex }, padding, rounded },\n                "imageAlt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru),\n                "mobileImageAlt": coalesce(mobileImage.alt[$language], mobileImage.alt.uk, mobileImage.alt.ru),\n                "collection": collection->{\n                  title,\n                  "handle": store.slug.current,\n                  "id": store.id,\n                  handles,\n                  titles\n                },\n                buttons[]{\n                  ...,\n                  "collection": collection->{\n                    title,\n                    "handle": store.slug.current,\n                    "id": store.id,\n                    handles,\n                    titles\n                  }\n                }\n              }\n            },\n            _type == "faqs" => {\n              ...,\n              faqs[]->{\n                _id,\n                title,\n                body,\n                "text": pt::text(body)\n              }\n            },\n            _type == "similarProducts" => {\n              ...,\n              collection->{\n                 title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n              }\n            },\n            _type == "sharedSectionRef" => {\n              _key,\n              _type,\n              section->{\n                _id,\n                internalTitle,\n                content[]{\n                  ...,\n                  _type == "popularPosts" => {\n                    ...,\n                    "title": coalesce(title[$language], title.uk, title.ru),\n                    "posts": posts[]->{\n                      _id,\n                      title,\n                      slug,\n                      mainImage {\n                        ...,\n                        asset-> { _id, url, metadata { dimensions } },\n                        "alt": coalesce(alt, ^.title)\n                      },\n                      publishedAt,\n                      language,\n                      "categories": coalesce(categories[]->{_id, slug, title}, []),\n                      author->{ name, image },\n                      "localizedVersion": *[_type == "translation.metadata" && references(^._id)][0].translations[_key == $language][0].value->{\n                        _id,\n                        title,\n                        slug,\n                        mainImage {\n                          ...,\n                          asset-> { _id, url, metadata { dimensions } },\n                          "alt": coalesce(alt, ^.title)\n                        },\n                        publishedAt,\n                        language\n                      }\n                    }\n                  },\n                  _type == "collectionsWithPreviews" => {\n                    _key,\n                    _type,\n                    "title": coalesce(title[$language], title.uk, title.ru),\n                    previews,\n                    "collections": collections[]{\n                      _key,\n                      customTitle,\n                      "collection": collection->{\n                        _id,\n                        store{ slug{ current }, title },\n                        handles,\n                        titles\n                      }\n                    }\n                  },\n                  _type == "brandGridBlock" => {\n                    ...,\n                    "title": coalesce(title[$language], title.uk, title.ru),\n                    "barnds": barnds[]{\n                      ...,\n                      "alt": coalesce(alt[$language], alt.uk, alt.ru),\n                      "collectionData": collection->{ _id, store{ slug{ current }, title } }\n                    }\n                  },\n                  _type == "splitImage" => {\n                    ...,\n                    "title": coalesce(title[$language], title.uk, title.ru),\n                    image {\n                      asset->{\n                        _id,\n                        url,\n                        metadata{dimensions}\n                      },\n                      "alt": coalesce(alt[$language], alt.uk, alt.ru)\n                    },\n                    "collection": collection->{\n                      title,\n                      "handle": store.slug.current,\n                      "id": store.id,\n                      handles,\n                      titles\n                    }\n                  },\n                  _type == "features" => {\n                    _key,\n                    _type,\n                    "features": features[]{\n                      _key,\n                      _type,\n                      "title": coalesce(title[$language], title.uk, title.ru),\n                      "text": coalesce(text[$language], text.uk, text.ru)\n                    }\n                  },\n                  _type == "collectionsCarousel" => {\n                    ...,\n                    "title": coalesce(title[$language], title.uk, title.ru),\n                    "action_text": coalesce(action_text[$language], action_text.uk, action_text.ru),\n                    "collections": collections[]->{\n                      title,\n                      "handle": store.slug.current,\n                      "id": store.id,\n                      handles,\n                      titles,\n                      "image": { \n                        "url": coalesce(image.asset->url, store.imageUrl),\n                        "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)\n                      }\n                    }\n                  }\n                }\n              }\n            }\n    }\n  }': HOME_PAGEResult;
+    '*[_id == "siteSettings" ][0]{\n    homePageMan->{\n      ...,\n      content[]{\n        ...,\n        _id,\n        _type == "sliderBlock" => {\n          slides[]{\n             ...,\n            _key,\n            link[]{\n             ...,\n             reference->{\n               _id,\n               _type,\n               title,\n               "slug": select(\n                 _type == "product" => store.slug.current,\n                 _type == "collection" => store.slug.current,\n                 _type == "page" => slug.current\n               )\n             }\n           },\n            backgroundImage{\n              asset->{\n                _id,\n                url,\n                metadata{dimensions}\n              },\n              "alt": coalesce(alt[$language], alt.uk, alt.ru)\n            }\n          }\n        },\n        _type == "productCarousel" => {\n          products[]->{\n            _id,\n            store{\n              title,\n              isDeleted,\n              previewImageUrl,\n              priceRange{\n              maxVariantPrice,\n              minVariantPrice\n              },\n              productType\n            }\n          },\n          collection -> {\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "collectionsCarousel" => {\n          collections[]->{\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            },\n            "image": { \n              "url": coalesce(image.asset->url, store.imageUrl),\n              "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)\n            }\n          }\n        },\n        _type == "splitImage" => {\n          ...,\n          image {\n            asset->{\n              _id,\n              url,\n              metadata{dimensions}\n            },\n            "alt": coalesce(alt[$language], alt.uk, alt.ru)\n          },\n          description,\n          link[]{\n            ...,\n            reference->{\n              _id,\n              _type,\n              title,\n              "slug": select(\n                _type == "product" => store.slug.current,\n                _type == "collection" => store.slug.current,\n                _type == "page" => slug.current\n              )\n            }\n          }\n        },\n        _type == "collectionsWithPreviews" => {\n          ...,\n          collections[]{\n            ...,\n            collection->{\n              _id,\n              store{ slug{ current }, title },\n              handles,\n              titles\n            }\n          }\n        },\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        },\n        _type == "sharedSectionRef" => {\n          section->{\n            _id,\n            internalTitle,\n            content[]{\n              ...,\n              _type == "brandGridBlock" => {\n                barnds[]{\n                  ...,\n                  asset->{ _id, url, metadata{dimensions} },\n                  "alt": coalesce(alt[$language], alt.uk, alt.ru),\n                  collection->{ _id, store{ slug{ current }, title } }\n                }\n              }\n            }\n          }\n        }\n      }\n    },\n    homePageWoman->{\n      ...,\n      content[]{\n        ...,\n        _id,\n        _type == "sliderBlock" => {\n          slides[]{\n             ...,\n            _key,\n            link[]{\n             ...,\n             reference->{\n               _id,\n               _type,\n               title,\n               "slug": select(\n                 _type == "product" => store.slug.current,\n                 _type == "collection" => store.slug.current,\n                 _type == "page" => slug.current\n               )\n             }\n           },\n            backgroundImage{\n              asset->{\n                _id,\n                url,\n                metadata{dimensions}\n              },\n              "alt": coalesce(alt[$language], alt.uk, alt.ru)\n            }\n          }\n        },\n        _type == "productCarousel" => {\n          products[]->{\n            _id,\n            store{\n              title,\n              isDeleted,\n              previewImageUrl,\n              priceRange{\n              maxVariantPrice,\n              minVariantPrice\n              },\n              productType\n            }\n          },\n          collection -> {\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            }\n          }\n        },\n        _type == "collectionsCarousel" => {\n          collections[]->{\n            _id,\n            title,\n            store{\n             imageUrl,\n             isDeleted,\n             slug{\n             current\n             },\n             title\n            },\n            "image": { \n              "url": coalesce(image.asset->url, store.imageUrl),\n              "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)\n            }\n          }\n        },\n        _type == "splitImage" => {\n          ...,\n          image {\n            asset->{\n              _id,\n              url,\n              metadata{dimensions}\n            },\n            "alt": coalesce(alt[$language], alt.uk, alt.ru)\n          },\n          description,\n          link[]{\n            ...,\n            reference->{\n              _id,\n              _type,\n              title,\n              "slug": select(\n                _type == "product" => store.slug.current,\n                _type == "collection" => store.slug.current,\n                _type == "page" => slug.current\n              )\n            }\n          }\n        },\n        _type == "collectionsWithPreviews" => {\n          ...,\n          collections[]{\n            ...,\n            collection->{\n              _id,\n              store{ slug{ current }, title },\n              handles,\n              titles\n            }\n          }\n        },\n        _type == "faqs" => {\n          ...,\n          faqs[]->{\n            _id,\n            title,\n            body,\n            "text": pt::text(body)\n          }\n        },\n        _type == "sharedSectionRef" => {\n          section->{\n            _id,\n            internalTitle,\n            content[]{\n              ...,\n              _type == "brandGridBlock" => {\n                barnds[]{\n                  ...,\n                  asset->{ _id, url, metadata{dimensions} },\n                  "alt": coalesce(alt[$language], alt.uk, alt.ru),\n                  collection->{ _id, store{ slug{ current }, title } }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }': HOME_PAGE_QUERYResult;
     '\n  *[_type == "redirect" && isEnabled == true] {\n      source,\n      destination,\n      permanent\n  }\n': REDIRECTS_QUERYResult;
     '\n  *[_id == $id][0]{\n    title,\n    "image": mainImage.asset->{\n      url,\n      metadata {\n        palette\n      }\n    }\n  }\n': OG_IMAGE_QUERYResult;
-    '\n  *[_type == \'siteSettings\'][0]{\n    "logo": header.icon.asset->{\n      url\n    }\n  }\n': SITE_LOGO_QUERYResult;
+    '\n  *[_type == \'siteSettings\'][0]{\n    "logo": header.icon.asset->{\n      url\n    },\n    "logoAlt": coalesce(header.icon.alt[$language], header.icon.alt.uk, header.icon.alt.ru)\n  }\n': SITE_LOGO_QUERYResult;
     '\n*[_type in ["page", "post"] && defined(slug.current)] {\n    "href": select(\n      _type == "page" => "/" + slug.current,\n      _type == "post" => select(\n        defined(language) => "/" + language + "/posts/" + slug.current,\n        "/posts/" + slug.current\n      ),\n      slug.current\n    ),\n    _updatedAt,\n    language\n}\n': SITEMAP_QUERYResult;
-    '\n  *[_type == \'siteSettings\'][0]{\n    infoBar {\n      ...,\n      telephone,\n      viberPhone,\n      "text": coalesce(text[$locale], text.uk, text.ru, ""),\n      link {\n        ...,\n        "collectionData": reference-> {\n          title,\n          "handle": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    header {\n      ...,\n      categoryLinks[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      },\n      mainCategory[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    brandsNavigation {\n      topBrands,\n      collections[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    navImages {\n      woman[]{\n        _key,\n        url,\n        menuIndex,\n        imageTitle,\n        imageButtonLabel,\n        imageButtonUrl,\n        brandSlug,\n        "imageUrl": image.asset->url,\n        "imageWidth": image.asset->metadata.dimensions.width,\n        "imageHeight": image.asset->metadata.dimensions.height,\n        "collectionHandle": collection->store.slug.current,\n        "collectionTitle": collection->store.title,\n        "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,\n      },\n      man[]{\n        _key,\n        url,\n        menuIndex,\n        imageTitle,\n        imageButtonLabel,\n        imageButtonUrl,\n        brandSlug,\n        "imageUrl": image.asset->url,\n        "imageWidth": image.asset->metadata.dimensions.width,\n        "imageHeight": image.asset->metadata.dimensions.height,\n        "collectionHandle": collection->store.slug.current,\n        "collectionTitle": collection->store.title,\n        "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,\n      }\n    },\n    navDropdowns {\n      woman[]{\n        _key,\n        menuIndex,\n        columns[]{\n          _key,\n          "title": coalesce(title[$locale], title.uk, title.ru, collection->store.title, ""),\n          "url": collection->store.slug.current,\n          items[]->{\n            _id,\n            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, store.title, ""),\n            "handle": store.slug.current,\n            "navTitleColor": navTitleColor\n          },\n          "outletLink": outletLink {\n            "label": coalesce(label[$locale], label.uk, label.ru, ""),\n            "collectionHandle": collection->store.slug.current,\n            url\n          },\n          "actionButton": actionButton {\n            "label": coalesce(label[$locale], label.uk, label.ru, ""),\n            "collectionHandle": collection->store.slug.current,\n            url\n          }\n        }\n      },\n      man[]{\n        _key,\n        menuIndex,\n        columns[]{\n          _key,\n          "title": coalesce(title[$locale], title.uk, title.ru, collection->store.title, ""),\n          "url": collection->store.slug.current,\n          items[]->{\n            _id,\n            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, store.title, ""),\n            "handle": store.slug.current,\n            "navTitleColor": navTitleColor\n          },\n          "outletLink": outletLink {\n            "label": coalesce(label[$locale], label.uk, label.ru, ""),\n            "collectionHandle": collection->store.slug.current,\n            url\n          },\n          "actionButton": actionButton {\n            "label": coalesce(label[$locale], label.uk, label.ru, ""),\n            "collectionHandle": collection->store.slug.current,\n            url\n          }\n        }\n      }\n    }\n  }\n': HEADER_QUERYResult;
+    '\n  *[_type == \'siteSettings\'][0]{\n    infoBar {\n      ...,\n      telephone,\n      viberPhone,\n      "text": coalesce(text[$locale], text.uk, text.ru, ""),\n      link {\n        ...,\n        "collectionData": reference-> {\n          title,\n          "handle": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    header {\n      ...,\n      categoryLinks[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      },\n      mainCategory[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    brandsNavigation {\n      "tabTitle": coalesce(tabTitle[$locale], tabTitle.uk, tabTitle.ru, ""),\n      topBrandsWoman,\n      topBrandsMan,\n      collections[]{\n        _key,\n        "title": coalesce(title[$locale], title.uk, title.ru, ""),\n        "collectionData": reference-> {\n          title,\n          "slug": store.slug.current,\n          "pageHandle": slug,\n          "id": store.id,\n          handles,\n          titles\n        }\n      }\n    },\n    navDropdowns {\n      woman[]{\n        _key,\n        isBrandsTab,\n        topBrands[]->{\n          _id,\n          "title": coalesce(titles[$locale], titles.uk, store.title, ""),\n          "handle": coalesce(handles[$locale], handles.uk, store.slug.current),\n        },\n        "tabTitle": coalesce(tabTitle[$locale], tabTitle.uk, tabTitle.ru, tabCollection->titles[$locale], tabCollection->titles.uk, tabCollection->store.title, ""),\n        "tabUrl": coalesce(tabUrl, tabCollection->handles[$locale], tabCollection->handles.uk, tabCollection->store.slug.current),\n        tabImage {\n          url,\n          imageTitle,\n          imageButtonLabel,\n          imageButtonUrl,\n          brandSlug,\n          "imageUrl": image.asset->url,\n          "imageWidth": image.asset->metadata.dimensions.width,\n          "imageHeight": image.asset->metadata.dimensions.height,\n          "alt": coalesce(image.alt[$locale], image.alt.uk, image.alt.ru),\n          "collectionHandle": collection->store.slug.current,\n          "collectionTitle": collection->store.title,\n          "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,\n        },\n        columns[]{\n          _key,\n          "title": coalesce(title[$locale], title.uk, title.ru, collection->titles[$locale], collection->titles.uk, collection->store.title, ""),\n          "url": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),\n          items[]->{\n            _id,\n            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, titles[$locale], titles.uk, store.title, ""),\n            "handle": coalesce(handles[$locale], handles.uk, handles.ru, store.slug.current),\n            "navTitleColor": navTitleColor\n          },\n          "outletLink": outletLink {\n            "label": coalesce(label[$locale], label.uk, label.ru, ""),\n            "collectionHandle": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),\n            url\n          },\n          "actionButton": actionButton {\n            "label": coalesce(label[$locale], label.uk, label.ru, ""),\n            "collectionHandle": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),\n            url\n          }\n        }\n      },\n      man[]{\n        _key,\n        isBrandsTab,\n        topBrands[]->{\n          _id,\n          "title": coalesce(titles[$locale], titles.uk, store.title, ""),\n          "handle": coalesce(handles[$locale], handles.uk, store.slug.current),\n        },\n        "tabTitle": coalesce(tabTitle[$locale], tabTitle.uk, tabTitle.ru, tabCollection->titles[$locale], tabCollection->titles.uk, tabCollection->store.title, ""),\n        "tabUrl": coalesce(tabUrl, tabCollection->handles[$locale], tabCollection->handles.uk, tabCollection->store.slug.current),\n        tabImage {\n          url,\n          imageTitle,\n          imageButtonLabel,\n          imageButtonUrl,\n          brandSlug,\n          "imageUrl": image.asset->url,\n          "imageWidth": image.asset->metadata.dimensions.width,\n          "imageHeight": image.asset->metadata.dimensions.height,\n          "alt": coalesce(image.alt[$locale], image.alt.uk, image.alt.ru),\n          "collectionHandle": collection->store.slug.current,\n          "collectionTitle": collection->store.title,\n          "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,\n        },\n        columns[]{\n          _key,\n          "title": coalesce(title[$locale], title.uk, title.ru, collection->titles[$locale], collection->titles.uk, collection->store.title, ""),\n          "url": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),\n          items[]->{\n            _id,\n            "title": coalesce(navTitle[$locale], navTitle.uk, navTitle.ru, titles[$locale], titles.uk, store.title, ""),\n            "handle": coalesce(handles[$locale], handles.uk, handles.ru, store.slug.current),\n            "navTitleColor": navTitleColor\n          },\n          "outletLink": outletLink {\n            "label": coalesce(label[$locale], label.uk, label.ru, ""),\n            "collectionHandle": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),\n            url\n          },\n          "actionButton": actionButton {\n            "label": coalesce(label[$locale], label.uk, label.ru, ""),\n            "collectionHandle": coalesce(collection->handles[$locale], collection->handles.uk, collection->store.slug.current),\n            url\n          }\n        }\n      }\n    }\n  }\n': HEADER_QUERYResult;
     "\n  *[_type == 'siteSettings'][0]{\n    footerSettings {\n      socialLinks[] {\n        platform,\n        url\n      },\n      workingHours {\n        uk,\n        ru\n      },\n      address {\n        uk,\n        ru\n      },\n      paymentMethods\n    }\n  }\n": FOOTER_QUERYResult;
-    '*[_type == "collection" && store.slug.current == $handle][0]{ isBrand, customTitle }': COLLECTION_IS_BRAND_QUERYResult;
+    '*[_type == "promotionBanner" && (enabled == true || _id in path("drafts.**"))][0]{\n    _id,\n    enabled,\n    image,\n    "imageAlt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru),\n    "title": coalesce(title[$language], title.uk, title.ru),\n    "description": coalesce(description[$language], description.uk, description.ru),\n    discountCode,\n    actionButton {\n      "label": coalesce(label[$language], label.uk, label.ru),\n      url,\n      womanUrl,\n      manUrl,\n      "womanCollection": womanCollection->{\n        title,\n        "handle": store.slug.current,\n        handles,\n        titles\n      },\n      "manCollection": manCollection->{\n        title,\n        "handle": store.slug.current,\n        handles,\n        titles\n      }\n    },\n    behavior {\n      trigger,\n      delaySeconds,\n      scrollPercent,\n      cooldownHours,\n      showOnce,\n      resetToken\n    }\n  }': PROMOTION_BANNER_QUERYResult;
+    '*[_type == "collection" && (store.slug.current == $handle || handles.uk == $handle || handles.ru == $handle)][0]{ \n    isBrand, \n    customTitle,\n    handles,\n    titles,\n    "handle": store.slug.current\n  }': COLLECTION_IS_BRAND_QUERYResult;
   }
 }

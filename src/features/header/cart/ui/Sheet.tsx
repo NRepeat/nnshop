@@ -99,7 +99,8 @@ const CartSheet = async ({ locale }: { locale: string }) => {
   const discountRate = cartDiscountTotal > 0 && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
   const discountAmount = subtotalAmount * discountRate;
   const totalAmount = Math.max(0, subtotalAmount - discountAmount);
-  const tickerText = headerData?.infoBar?.text;
+  const rawTickerText = headerData?.infoBar?.text;
+  const tickerText = typeof rawTickerText === 'string' ? rawTickerText : undefined;
 
   return (
     <>

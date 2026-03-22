@@ -1,6 +1,7 @@
 import { sanityFetch } from '@/shared/sanity/lib/sanityFetch';
 import { normalizeLocaleForSanity } from '@shared/lib/locale';
 import { POSTS_BY_LANGUAGE_QUERY } from '@/shared/sanity/lib/query';
+import type { POSTS_BY_LANGUAGE_QUERYResult } from '@shared/sanity/types';
 import { setRequestLocale } from 'next-intl/server';
 import { Metadata } from 'next';
 import { generatePageMetadata } from '@shared/lib/seo/generateMetadata';
@@ -30,12 +31,12 @@ export default async function BlogPage({ params }: Props) {
   setRequestLocale(locale);
   const sanityLocale = await normalizeLocaleForSanity(locale);
 
-  const posts = await sanityFetch({
+  const posts = (await sanityFetch({
     query: POSTS_BY_LANGUAGE_QUERY,
     params: { language: sanityLocale },
     revalidate: 3600,
     tags: ['post'],
-  });
+  })) as POSTS_BY_LANGUAGE_QUERYResult;
 
   return (
     <div className="container py-8 min-h-screen">

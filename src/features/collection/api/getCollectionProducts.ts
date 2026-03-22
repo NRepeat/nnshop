@@ -25,7 +25,6 @@ export async function getCollectionProducts({
     locale: locale,
     after: info?.endCursor || undefined,
     searchParams: searchParams,
-    gender,
   });
   if (!collectionData) {
     throw new Error('Collection not found');

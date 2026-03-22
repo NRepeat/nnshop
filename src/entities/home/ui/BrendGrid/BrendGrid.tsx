@@ -41,7 +41,7 @@ export function BrandGrid({ barnds, locale, gender }: BrandGridProps) {
                 {brand.asset ? (
                   <Image
                     src={urlFor(brand).width(160).height(100).url()}
-                    alt={brand.alt || brand.collectionData?.handle || 'brand logo'}
+                    alt={brand.collectionData?.handle || 'brand logo'}
                     fill
                     sizes="160px"
                     className={cn('object-contain', {
@@ -71,7 +71,7 @@ export function BrandGrid({ barnds, locale, gender }: BrandGridProps) {
                           {brand.asset ? (
                             <Image
                               src={urlFor(brand).width(160).height(100).url()}
-                              alt={brand.alt || brand.collectionData?.handle || 'brand logo'}
+                              alt={brand.collectionData?.handle || 'brand logo'}
                               fill
                               sizes="160px"
                               className={cn('object-contain', {
