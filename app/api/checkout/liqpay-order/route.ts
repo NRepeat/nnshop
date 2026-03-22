@@ -30,10 +30,10 @@ export async function POST(req: NextRequest) {
     if (!completeCheckoutData) {
       return NextResponse.json({ error: 'Checkout data missing' }, { status: 400 });
     }
-
-    // 2. Fetch cart for rro_info price data (before order creation, cart still exists)
+ 
+    // 2. Fetchf cart for rro_info price data (before order creation, cart still exists)
     const cartData = await getCart({ userId: session.user.id, locale });
-    const cartLineItems = cartData?.cart?.lines?.edges?.map((e: any) => {
+    const cartLineItems = (cartData && 'cart' in cartData ? cartData.cart : null)?.lines?.edges?.map((e: any) => {
       const variantGid: string = e.node.merchandise.id;
       const numericId = parseInt(variantGid.split('/').pop() || '0', 10);
       return {
@@ -55,13 +55,20 @@ export async function POST(req: NextRequest) {
     const createdOrder = orderResult.order;
     console.log('[liqpay-order] order created:', createdOrder.id);
 
+    // Use Shopify's confirmed order total so LiqPay amount matches the order exactly.
+    // The frontend `amount` is a raw float; Shopify rounds per line-item via toFixed(2),
+    // which can produce a 1-2 kopeck difference.
+    const shopifyTotal = parseFloat(createdOrder.totalPriceSet.shopMoney.amount);
+    const liqpayAmount = shopifyTotal > 0 ? shopifyTotal : amount;
+    const liqpayCurrency = createdOrder.totalPriceSet.shopMoney.currencyCode || currency;
+
     // 4. Save payment info
     await savePaymentInfo(
       {
         paymentMethod: 'pay-now',
         paymentProvider: 'liqpay',
-        amount,
-        currency,
+        amount: liqpayAmount,
+        currency: liqpayCurrency,
         description: `LiqPay order ${createdOrder.name}`,
       },
       createdOrder.id,
@@ -71,8 +78,8 @@ export async function POST(req: NextRequest) {
     const params = await getLiqpayFormParams({
       shopifyOrderId: createdOrder.id,
       orderName: createdOrder.name || `#${createdOrder.id.split('/').pop()}`,
-      amount,
-      currency,
+      amount: liqpayAmount,
+      currency: liqpayCurrency,
       checkoutData: completeCheckoutData,
       lineItems: cartLineItems ?? createdOrder.lineItems?.edges?.map((e: any) => ({
         title: e.node.title,
