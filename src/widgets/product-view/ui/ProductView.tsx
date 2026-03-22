@@ -144,11 +144,11 @@ export async function ProductView({
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/`}>{tHeader('nav.home')}</BreadcrumbLink>
+            <BreadcrumbLink href={`/${locale}`}>{tHeader('nav.home')}</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/${gender}`}>
+            <BreadcrumbLink href={`/${locale}/${gender}`}>
               {genderLabel}
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -156,7 +156,7 @@ export async function ProductView({
             <>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href={collectionHandle ? `/${gender}/${collectionHandle}` : `/search?q=${displayCategory}`}>
+                <BreadcrumbLink href={collectionHandle ? `/${locale}/${gender}/${collectionHandle}` : `/${locale}/search?q=${displayCategory}`}>
                   {displayCategory}
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -165,7 +165,7 @@ export async function ProductView({
             <>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href={`/brand/${vendorToHandle(product.vendor)}`}>
+                <BreadcrumbLink href={`/${locale}/brand/${vendorToHandle(product.vendor)}`}>
                   {product.vendor}
                 </BreadcrumbLink>
               </BreadcrumbItem>
