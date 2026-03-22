@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 import { useRouter } from '@shared/i18n/navigation';
 import { PaymentInfo, getPaymentSchema } from '../schema/paymentSchema';
 import { savePaymentInfo } from '../api/savePaymentInfo';
-import { getLiqpayFormParams } from '../api/getLiqpayFormParams';
 import { Button } from '@shared/ui/button';
 import { Form } from '@shared/ui/form';
 import PaymentMethodSelection from './PaymentMethodSelection';
@@ -65,12 +64,11 @@ export default function PaymentForm({
   );
   const [isMerging, setIsMerging] = useState(false);
   const prevUserIdRef = useRef<string | null>(null);
-  const [liqpayParams, setLiqpayParams] = useState<{ data: string; signature: string; checkoutUrl: string } | null>(null);
-  const liqpayFormRef = useRef<HTMLFormElement>(null);
+  const [liqpayParams, setLiqpayParams] = useState<{ data: string; signature: string } | null>(null);
+  const liqpaySubmitRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const userId = session?.user?.id ?? null;
-    // Only lock when user identity changes (anonymous → identified session merge)
     if (prevUserIdRef.current !== null && prevUserIdRef.current !== userId) {
       setIsMerging(true);
       const timer = setTimeout(() => setIsMerging(false), 1500);
@@ -80,17 +78,44 @@ export default function PaymentForm({
     prevUserIdRef.current = userId;
   }, [session?.user?.id]);
 
-  // Initialize LiqPay widget once params are ready
+  // Try to auto-click the LiqPay submit button once it's rendered.
+  // On non-Safari browsers this succeeds; on Safari the user sees the button
+  // and can click it manually as a fallback.
   useEffect(() => {
-    if (liqpayParams && liqpayFormRef.current) {
-      liqpayFormRef.current.submit();
+    if (liqpayParams && liqpaySubmitRef.current) {
+      console.log('[PaymentForm] LiqPay: auto-clicking submit button');
+      liqpaySubmitRef.current.click();
     }
   }, [liqpayParams]);
 
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
+    console.log('[PaymentForm] submit:', data.paymentMethod, data.paymentProvider);
     setIsLoading(true);
     try {
-      // 1. Create the Shopify order
+      // 4a. LiqPay: use a regular API fetch instead of server actions.
+      // Server actions trigger RSC refresh which races against the form POST to
+      // liqpay.ua → Next.js "Falling back to browser navigation" overrides it.
+      if (data.paymentMethod === 'pay-now' && data.paymentProvider === 'liqpay') {
+        console.log('[PaymentForm] LiqPay: calling API route');
+        const res = await fetch('/api/checkout/liqpay-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ locale, amount, currency }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          console.error('[PaymentForm] LiqPay API error:', err);
+          toast.error(err.error || t('errorSavingPaymentInformation'));
+          setIsLoading(false);
+          return;
+        }
+        const params = await res.json();
+        console.log('[PaymentForm] LiqPay: rendering form');
+        setLiqpayParams(params);
+        return;
+      }
+
+      // 4b. All other methods: create order via server action
       const orderResult = await createOrder(
         completeCheckoutData,
         locale,
@@ -99,44 +124,27 @@ export default function PaymentForm({
       );
 
       if (!orderResult.success || !orderResult.order) {
+        console.error('[PaymentForm] createOrder failed:', orderResult.errors);
         toast.error(orderResult.errors?.[0] || t('errorSavingPaymentInformation'));
         setIsLoading(false);
         return;
       }
 
       const createdOrder = orderResult.order;
+      console.log('[PaymentForm] order created:', createdOrder.id);
       const orderName = (createdOrder.name || createdOrder.id.split('/').pop() || '').replace('#', '');
 
-      // 2. Save payment info (need to find the DB order by shopifyOrderId)
-      // The createOrder function already saved it to DB, find it
       await savePaymentInfo(data, createdOrder.id);
 
-      // 3. Reset the cart (best-effort — order already exists in Shopify)
+      // 4b. All other methods: reset cart, then redirect to success page.
+      // Safe to reset here because we're navigating away immediately after.
       try {
         await resetCartSession();
+        console.log('[PaymentForm] cart reset after non-liqpay order', createdOrder.id);
       } catch (resetError) {
         console.error('[PaymentForm] resetCartSession failed (non-blocking):', resetError);
       }
 
-      // 4a. LiqPay: redirect to LiqPay checkout when liqpay provider selected
-      if (data.paymentMethod === 'pay-now' && data.paymentProvider === 'liqpay') {
-        const params = await getLiqpayFormParams({
-          shopifyOrderId: createdOrder.id,
-          orderName: createdOrder.name || `#${createdOrder.id.split('/').pop()}`,
-          amount,
-          currency,
-          checkoutData: completeCheckoutData,
-          lineItems: createdOrder.lineItems?.edges?.map((e: any) => ({
-            title: e.node.title,
-            quantity: e.node.quantity,
-          })),
-        });
-        setLiqpayParams(params);
-        // form auto-submits via useEffect — keep loading spinner
-        return;
-      }
-
-      // 4b. All other methods: redirect to success page immediately
       toast.success(t('paymentInformationSaved'));
       router.push(`/checkout/success/${encodeURIComponent(orderName)}`);
     } catch (error) {
@@ -146,23 +154,31 @@ export default function PaymentForm({
     }
   };
 
-  // LiqPay widget container — popup opens automatically via useEffect
+  // After order is created, show the LiqPay payment form.
+  // The useEffect above tries to auto-click the submit button.
+  // If Safari blocks it, the user sees a visible "Pay" button as fallback.
   if (liqpayParams) {
     return (
-      <div className="w-full max-w-4xl mx-auto flex items-center justify-center py-12">
+      <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center py-12 gap-6">
         <div className="flex items-center gap-3 text-gray-600">
           <div className="w-6 h-6 border-2 border-gray-300 border-t-green-800 rounded-full animate-spin" />
           <span>{t('processingPayment')}</span>
         </div>
         <form
-          ref={liqpayFormRef}
           method="POST"
-          action={liqpayParams.checkoutUrl}
+          action="https://www.liqpay.ua/api/3/checkout"
           acceptCharset="utf-8"
-          className="hidden"
+          className="flex flex-col items-center gap-3"
         >
           <input type="hidden" name="data" value={liqpayParams.data} />
           <input type="hidden" name="signature" value={liqpayParams.signature} />
+          <button
+            ref={liqpaySubmitRef}
+            type="submit"
+            className="px-6 py-3 bg-green-800 text-white font-semibold rounded hover:bg-green-700 transition-colors"
+          >
+            {t('completePayment')}
+          </button>
         </form>
       </div>
     );
