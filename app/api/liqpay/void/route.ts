@@ -13,14 +13,23 @@ const GET_ORDER_AMOUNT_QUERY = `
 `;
 
 export async function POST(request: NextRequest) {
+  // Auth — reject if secret is configured and header doesn't match.
+  // Also reject if secret is NOT configured: this endpoint triggers financial
+  // operations and must never be publicly accessible.
   const authHeader = request.headers.get('Authorization');
-  if (INTERNAL_API_SECRET && authHeader !== `Bearer ${INTERNAL_API_SECRET}`) {
+  if (!INTERNAL_API_SECRET || authHeader !== `Bearer ${INTERNAL_API_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const body = await request.json();
-  const { orderName } = body;
-  const rawId: string | undefined = body.shopifyOrderId;
+  let body: Record<string, unknown>;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+  }
+
+  const orderName = typeof body.orderName === 'string' ? body.orderName : undefined;
+  const rawId = typeof body.shopifyOrderId === 'string' ? body.shopifyOrderId : undefined;
   const shopifyOrderId = rawId
     ? rawId.startsWith('gid://')
       ? rawId
@@ -53,6 +62,12 @@ export async function POST(request: NextRequest) {
   if (desc.includes('captured')) {
     console.warn(`[liqpay/void] order ${order.orderName} was already captured — void skipped (use refund)`);
     return NextResponse.json({ message: 'Already captured, void skipped', orderName: order.orderName });
+  }
+
+  // ── Guard: capture in progress — do not void concurrently ─────────────────
+  if (desc.includes('capturing')) {
+    console.warn(`[liqpay/void] capture in progress for ${order.orderName} — void skipped to avoid race condition`);
+    return NextResponse.json({ message: 'Capture in progress, void skipped', orderName: order.orderName });
   }
 
   // ── Idempotency guard ──────────────────────────────────────────────────────
