@@ -126,6 +126,10 @@ export default function PaymentForm({
           amount,
           currency,
           checkoutData: completeCheckoutData,
+          lineItems: createdOrder.lineItems?.edges?.map((e: any) => ({
+            title: e.node.title,
+            quantity: e.node.quantity,
+          })),
         });
         setLiqpayParams(params);
         // form auto-submits via useEffect — keep loading spinner
