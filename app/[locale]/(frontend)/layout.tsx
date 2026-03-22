@@ -19,6 +19,8 @@ import { generateOrganizationJsonLd, generateWebSiteJsonLd } from '@shared/lib/s
 import Script from 'next/script';
 import { ConsentBanner } from '@features/consent/ui/ConsentBanner';
 import { GA4Identify } from '@shared/lib/analytics/GA4Identify';
+import { GA4PageView } from '@shared/lib/analytics/GA4PageView';
+import { ClarityInit } from '@shared/lib/analytics/ClarityInit';
 
 const jostSans = Onest({
   variable: '--font-jost-sans',
@@ -133,18 +135,10 @@ export default async function RootLayout(props: RootProps) {
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             gtag('js', new Date());
-            gtag('config', 'G-05RL9JZJKK');
+            gtag('config', 'G-05RL9JZJKK', { send_page_view: false });
           `}
         </Script>
-        <Script id="microsoft-clarity" strategy="afterInteractive">
-          {`
-            (function(c,l,a,r,i,t,y){
-              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "vztlk5wswb");
-          `}
-        </Script>
+        <ClarityInit />
         <Script
           id="pulse-live-chat"
           src="/assets/pulse/livechat/loader.js"
@@ -173,6 +167,7 @@ export default async function RootLayout(props: RootProps) {
               <Footer locale={locale} />
             </Suspense>
             <ConsentBanner />
+            <GA4PageView />
             <GA4Identify />
           </ScrollDirectionProvider>
         </Providers>
