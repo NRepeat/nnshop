@@ -11,6 +11,7 @@ import { headers } from 'next/headers';
 import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
 import { HEADER_QUERY } from '@shared/sanity/lib/query';
+import { GA4ViewCartEvent } from '@shared/lib/analytics/GA4ViewCartEvent';
 
 const CartSheet = async ({ locale }: { locale: string }) => {
   const [session, headerData] = await Promise.all([
@@ -161,11 +162,20 @@ const CartWithEmptyState = ({
   discountRate: number;
   tickerText?: string;
 }) => {
+  const ga4Items = (products || []).map((p: any) => ({
+    item_id: p.id,
+    item_name: p.title,
+    price: Number(p.price),
+    quantity: p.quantity,
+  }));
+
   if (!cartId || !products || products.length === 0) {
     return <EmptyState locale={locale} />;
   } else {
     return (
-      <Content
+      <>
+        <GA4ViewCartEvent items={ga4Items} value={totalAmount} currency={currencySymbol} />
+        <Content
         mockProducts={products}
         estimateTotal={estimateTotal}
         currencySymbol={currencySymbol}
@@ -178,6 +188,7 @@ const CartWithEmptyState = ({
         discountRate={discountRate}
         tickerText={tickerText}
       />
+      </>
     );
   }
 };
