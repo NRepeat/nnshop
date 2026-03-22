@@ -15,10 +15,10 @@ describe('SEO Metadata Generation (Phase 14)', () => {
       expect(formatTitle(shortTitle)).toBe('Short Title');
     });
 
-    it('should truncate titles longer than 60 characters', () => {
-      const longTitle = 'This is a very very very very very very very very very very long title';
+    it('should truncate titles longer than 70 characters', () => {
+      const longTitle = 'This is a very very very very very very very very very very very long title';
       const formatted = formatTitle(longTitle);
-      expect(formatted.length).toBeLessThanOrEqual(60);
+      expect(formatted.length).toBeLessThanOrEqual(70);
       expect(formatted).toContain('...');
     });
 

@@ -23,11 +23,8 @@ import { FilterSheet } from '@features/collection/ui/FilterSheet';
 import { SortSelect } from '@features/collection/ui/SortSelect';
 import { ActiveFiltersCarousel } from '@features/collection/ui/ActiveFiltersCarousel';
 import { EnableScrollHide } from '@shared/ui/EnableScrollHide';
-import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
-import { auth } from '@features/auth/lib/auth';
-import { prisma } from '@shared/lib/prisma';
 import { toFilterSlug } from '@shared/lib/filterSlug';
 import { filterProducts } from '@features/collection/lib/filterProducts';
 
@@ -53,11 +50,8 @@ export const BrandGrid = async ({
   const decodedSlug = decodeURIComponent(slug);
   setRequestLocale(locale);
 
-  const headersList = await headers();
-  const genderFromHeader = headersList.get('x-gender');
-
   const gender =
-    (awaitedSearchParams._gender as string | undefined) || genderFromHeader || 'woman';
+    (awaitedSearchParams._gender as string | undefined) || 'woman';
   const searchParamsWithoutGender = Object.fromEntries(
     Object.entries(awaitedSearchParams).filter(([k]) => k !== '_gender'),
   );
@@ -145,21 +139,9 @@ export const BrandGrid = async ({
     optionGroups,
   );
 
-  const session = await auth.api.getSession({ headers: await headers() });
-  let favoriteProductIds = new Set<string>();
-  if (session?.user?.id) {
-    const favorites = await prisma.favoriteProduct.findMany({
-      where: {
-        userId: session.user.id,
-        productId: { in: rawProducts.map((p) => p.id) },
-      },
-      select: { productId: true },
-    });
-    favoriteProductIds = new Set(favorites.map((f) => f.productId));
-  }
   const productsWithFav = rawProducts.map((product) => ({
     ...product,
-    isFav: favoriteProductIds.has(product.id),
+    isFav: false,
   }));
 
   const initialFilters = hasFilters

@@ -4,6 +4,7 @@ import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 import { Breadcrumbs } from '@shared/ui/breadcrumbs';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Metadata } from 'next';
+import { generatePageMetadata } from '@shared/lib/seo/generateMetadata';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
@@ -14,11 +15,16 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'BrandsPage' });
+  const isUk = locale === 'uk';
+  const seoTitle = isUk
+    ? 'Бренди взуття та одягу — каталог | MioMio'
+    : 'Бренды обуви и одежды — каталог | MioMio';
 
-  return {
-    title: t('title'),
-    description: t('description'),
-  };
+  return generatePageMetadata(
+    { title: seoTitle, description: t('description') },
+    locale,
+    '/brands',
+  );
 }
 
 // Group brands by first letter

@@ -5,11 +5,11 @@ export function stripInvisible(str: string): string {
   return str.replace(/[\u200b\u200c\u200d\ufeff\u00ad\u034f\u115f\u1160\u17b4\u17b5\u180b-\u180e\u2060-\u206f\ufe00-\ufe0f]/g, '').trim();
 }
 
-/** Formats title to be between 30 and 60 characters, truncating if necessary */
+/** Truncates title to 70 characters max (Cyrillic chars are pixel-wider than Latin) */
 export function formatTitle(title: string): string {
   const clean = stripInvisible(title);
-  if (clean.length > 60) {
-    return clean.substring(0, 57) + '...';
+  if (clean.length > 70) {
+    return clean.substring(0, 67) + '...';
   }
   return clean;
 }
@@ -75,12 +75,8 @@ export function generateProductMetadata(
 ): Metadata {
   const isUk = locale === 'uk';
 
-  // Create a clean title without repeating words
-  // Example: if productType is "Босоніжки" and title is "Босоніжки Albano ...", we don't want to repeat "Босоніжки"
-  const type = stripInvisible(product.productType || '');
   const vendor = stripInvisible(product.vendor || '');
   const productTitle = stripInvisible(product.title || '');
-  const sku = product.variants?.edges?.[0]?.node?.sku?.trim() || '';
 
   let baseTitle = '';
   if (productTitle.toLowerCase().includes(vendor.toLowerCase())) {
@@ -89,17 +85,7 @@ export function generateProductMetadata(
     baseTitle = `${vendor} ${productTitle}`;
   }
 
-  // Ensure productType is included if it's not already in the title
-  if (type && !baseTitle.toLowerCase().includes(type.toLowerCase())) {
-    baseTitle = `${type} ${baseTitle}`;
-  }
-
-  // Add SKU (article number) to ensure title uniqueness
-  if (sku) {
-    baseTitle = `${baseTitle} арт. ${sku}`;
-  }
-
-  const rawTitle = isUk 
+  const rawTitle = isUk
     ? `Купити ${baseTitle} в інтернет-магазині | MioMio` 
     : `Купить ${baseTitle} в интернет-магазине | MioMio`;
   const title = formatTitle(rawTitle);

@@ -204,6 +204,7 @@ export const POST_BY_LANGUAGE_QUERY =
   },
   publishedAt,
   language,
+  "slug": slug.current,
   "categories": coalesce(
     categories[]->{
       _id,
@@ -226,6 +227,10 @@ export const POST_BY_LANGUAGE_QUERY =
     "image": seo.image,
     "noIndex": seo.noIndex == true
    },
+  "translations": *[_type == "translation.metadata" && references(^._id)][0].translations[].value->{
+    "slug": slug.current,
+    language
+  },
 }`);
 
 // Get posts with English fallback - separate query for fallback logic

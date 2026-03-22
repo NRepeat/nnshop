@@ -7,6 +7,8 @@ import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
 import { ArrowUp } from 'lucide-react';
 import { Button } from '@shared/ui/button';
 import { filterProducts } from '../lib/filterProducts';
+import { getFavoriteProductIds } from '../api/get-favorite-ids';
+import { useSession } from '@features/auth/lib/client';
 
 export const ClientGridWrapper = ({
   initialPageInfo,
@@ -23,6 +25,27 @@ export const ClientGridWrapper = ({
   selectedSizeSlugs?: string[];
   optionGroups?: Record<string, { name: string; values: string[] }>;
 }) => {
+  const session = useSession();
+  const [favSet, setFavSet] = useState<Set<string>>(new Set());
+
+  // Stable key — only changes when the actual product IDs change (filters, load more)
+  const productIdsKey = initialProducts.map((p) => p.id).join(',');
+
+  useEffect(() => {
+    const user = session.data?.user as (NonNullable<typeof session.data>['user'] & { isAnonymous?: boolean }) | undefined;
+    if (!user || user.isAnonymous || session.isPending) return;
+    getFavoriteProductIds(initialProducts.map((p) => p.id)).then((ids) => {
+      setFavSet(new Set(ids));
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productIdsKey, session.data, session.isPending]);
+
+  const products = React.useMemo(
+    () => initialProducts.map((p) => ({ ...p, isFav: favSet.has(p.id) })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [initialProducts, favSet],
+  );
+
   // Convert serializable props back to Set/Map for filterProducts
   const sizeSet = React.useMemo(
     () => new Set(selectedSizeSlugs),
@@ -53,11 +76,12 @@ export const ClientGridWrapper = ({
           <ClientGrid
             products={
               filterProducts(
-                initialProducts,
+                products,
                 sizeSet,
                 groupMap,
               ) as (Product & { isFav: boolean })[]
             }
+            hasNextPage={initialPageInfo?.hasNextPage}
           />
           <div className="w-full items-center">
             <Suspense fallback={null}>

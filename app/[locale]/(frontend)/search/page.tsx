@@ -23,12 +23,14 @@ import {
 import { SearchIcon } from 'lucide-react';
 import { Skeleton } from '@shared/ui/skeleton';
 
-export const metadata: Metadata = {
-  robots: {
-    index: false,
-    follow: true,
-  },
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const base = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
+  return {
+    robots: { index: false, follow: true },
+    alternates: { canonical: `${base}/${locale}/search` },
+  };
+}
 
 const PREDICTIVE_SEARCH_QUERY = `#graphql
   query predictiveSearchQuery(

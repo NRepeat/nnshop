@@ -12,7 +12,6 @@ interface StaticPage {
 }
 
 const STATIC_PAGES: StaticPage[] = [
-  { path: '/uk', priority: 1.0 },
   { path: '/uk/woman', priority: 1.0 },
   { path: '/uk/man', priority: 1.0 },
   { path: '/uk/brands', priority: 0.8 },
@@ -24,12 +23,12 @@ const STATIC_PAGES: StaticPage[] = [
   { path: '/uk/info/privacy-policy', priority: 0.4 },
 ];
 
-export async function GET() {
-  const today = formatDate(new Date());
+const DEPLOY_DATE = formatDate(new Date());
 
+export async function GET() {
   const entries = STATIC_PAGES.map((p) => ({
     url: `${BASE_URL}${p.path}`,
-    lastModified: today,
+    lastModified: DEPLOY_DATE,
     changeFrequency: p.priority >= 1.0 ? 'daily' : 'monthly',
     priority: p.priority,
     alternates: {

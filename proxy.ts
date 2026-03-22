@@ -107,6 +107,12 @@ export async function proxy(request: NextRequest) {
       url.pathname = `/${locale}/404`;
       return NextResponse.rewrite(url);
     }
+
+    // Repetitive path: /uk/woman/woman, /uk/man/man etc
+    // Pass through to the collection page which calls notFound() → proper HTTP 404
+    if (isGender && segments.length >= 3 && segments[2] === segments[1]) {
+      return NextResponse.next();
+    }
   }
 
   // 4. Determine effective gender: URL takes priority, then search params, then cookie

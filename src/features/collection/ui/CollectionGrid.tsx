@@ -22,16 +22,13 @@ import { ActiveFiltersCarousel } from './ActiveFiltersCarousel';
 import { GridToggle } from './GridToggle';
 import { EnableScrollHide } from '@shared/ui/EnableScrollHide';
 import { SearchParams } from '~/app/[locale]/(frontend)/(home)/[gender]/(collection)/[slug]/page';
-import { headers } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
 import { PathSync } from '@entities/path-sync/ui/path-sync';
-import { auth } from '@features/auth/lib/auth';
 import { JsonLd } from '@shared/ui/JsonLd';
 import {
   generateBreadcrumbJsonLd,
   generateItemListJsonLd,
 } from '@shared/lib/seo/jsonld';
-import { prisma } from '@shared/lib/prisma';
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@shared/ui/empty';
 import { PackageSearch } from 'lucide-react';
 import { toFilterSlug } from '@shared/lib/filterSlug';
@@ -70,7 +67,7 @@ export const CollectionGrid = async ({
   const allSlugs = await getCollectionSlugs();
   const resolvedHandle = resolveCollectionHandle(slug, gender, new Set(allSlugs));
 
-  const [sanityCollection, currentData, session] = await Promise.all([
+  const [sanityCollection, currentData] = await Promise.all([
     sanityFetch({
       query: COLLECTION_IS_BRAND_QUERY,
       params: { handle: resolvedHandle },
@@ -82,7 +79,6 @@ export const CollectionGrid = async ({
       locale: locale,
       searchParams: awaitedSearchParams,
     }),
-    auth.api.getSession({ headers: await headers() }),
   ]);
 
   if (sanityCollection?.isBrand) {
@@ -160,19 +156,6 @@ export const CollectionGrid = async ({
     });
   }
 
-  // Batch check favorites
-  let favoriteProductIds = new Set<string>();
-  if (session?.user?.id) {
-    const favorites = await prisma.favoriteProduct.findMany({
-      where: {
-        userId: session.user.id,
-        productId: { in: rawProducts.map((p) => p.id) },
-      },
-      select: { productId: true },
-    });
-    favoriteProductIds = new Set(favorites.map((f) => f.productId));
-  }
-
   const sortParam = awaitedSearchParams.sort as string | undefined;
   if (sortParam === 'price-asc' || sortParam === 'price-desc') {
     rawProducts.sort((a, b) => {
@@ -183,7 +166,7 @@ export const CollectionGrid = async ({
 
   const productsWithFav = rawProducts.map((product) => ({
     ...product,
-    isFav: favoriteProductIds.has(product.id),
+    isFav: false,
   }));
 
   const targetLocale = locale === 'ru' ? 'uk' : 'ru';

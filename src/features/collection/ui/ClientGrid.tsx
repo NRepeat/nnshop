@@ -18,10 +18,19 @@ const item = {
 
 export const ClientGrid = ({
   products,
+  hasNextPage,
 }: {
   products: (Product & { isFav: boolean })[];
+  hasNextPage?: boolean;
 }) => {
   const cols = useGridStore((s) => s.cols);
+  const lgCols = cols === '3' ? 5 : 4;
+
+  const trimmedLength = Math.floor(products.length / lgCols) * lgCols;
+  const displayProducts =
+    !hasNextPage && trimmedLength > 0 && trimmedLength < products.length
+      ? products.slice(0, trimmedLength)
+      : products;
 
   return (
     <motion.div
@@ -36,7 +45,7 @@ export const ClientGrid = ({
       )}
     >
       <AnimatePresence>
-        {products.map((product, index) => (
+        {displayProducts.map((product, index) => (
           <motion.div
             key={product.id}
             className="col-span-1"

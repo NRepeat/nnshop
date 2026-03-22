@@ -8,7 +8,7 @@ import {
 } from '@/shared/sanity/lib/query';
 import { setRequestLocale } from 'next-intl/server';
 import { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/lib/seo/generateMetadata';
+import { generatePageMetadata, stripInvisible } from '@shared/lib/seo/generateMetadata';
 import { Post } from '@widgets/post';
 import { notFound } from 'next/navigation';
 
@@ -46,16 +46,34 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? 'Читайте в блозі MioMio: поради зі стилю, добірки та практичні гіди з вибору взуття й одягу.'
     : 'Читайте в блоге MioMio: советы по стилю, подборки и практичные гайды по выбору обуви и одежды.';
 
-  return generatePageMetadata(
-    {
-      title: post.seo?.title || `${post.title} | MioMio`,
-      description: post.seo?.description || fallbackDescription,
-      noIndex: post.seo?.noIndex ?? false,
-      image: ogImage,
-    },
-    locale,
-    `/blog/${slug}`,
+  const cleanTitle = stripInvisible(post.seo?.title || `${post.title} | MioMio`);
+  const altTranslation = post.translations?.find(
+    (t: { slug: string; language: string }) =>
+      isUk ? t.language === 'ru' : t.language === 'uk' || t.language === 'ua',
   );
+  const ukSlug = isUk ? slug : (altTranslation?.slug ?? slug);
+  const ruSlug = isUk ? (altTranslation?.slug ?? slug) : slug;
+
+  return {
+    ...generatePageMetadata(
+      {
+        title: cleanTitle,
+        description: post.seo?.description || fallbackDescription,
+        noIndex: post.seo?.noIndex ?? false,
+        image: ogImage,
+      },
+      locale,
+      `/blog/${slug}`,
+    ),
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua'}/${locale}/blog/${slug}`,
+      languages: {
+        uk: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua'}/uk/blog/${ukSlug}`,
+        ru: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua'}/ru/blog/${ruSlug}`,
+        'x-default': `${process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua'}/uk/blog/${ukSlug}`,
+      },
+    },
+  };
 }
 
 export async function generateStaticParams() {
