@@ -2,7 +2,7 @@ import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link'
 import { HeaderBarProps } from '@widgets/header/ui/Header';
 import { NavButton } from './NavButton';
 import { Suspense } from 'react';
-import { cookieGenderGet } from '../api/setCookieGender';
+import { headers } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
 import clsx from 'clsx';
 import { getMainMenu } from '../api/getMainMenu';
@@ -56,11 +56,12 @@ async function buildLevel2Map(locale: string): Promise<Record<string, string>> {
 
 export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   const { locale } = props;
-  const [t, gender, level2Map] = await Promise.all([
+  const [t, headersList, level2Map] = await Promise.all([
     getTranslations({ locale, namespace: 'Header.nav' }),
-    cookieGenderGet(),
+    headers(),
     buildLevel2Map(locale),
   ]);
+  const gender = headersList.get('x-gender');
   const currentGender = (GENDERS.includes(gender as any) ? gender : null) || DEFAULT_GENDER;
 
   const links =
@@ -117,7 +118,8 @@ const GenderSession = async ({
   level2Map: Record<string, string>;
   className?: string;
 }) => {
-  const rawGender = await cookieGenderGet();
+  const headersList = await headers();
+  const rawGender = headersList.get('x-gender');
   const gender = (GENDERS.includes(rawGender as any) ? rawGender : null) || DEFAULT_GENDER;
   return (
     <NavButton gender={gender} slug={slug} level2Map={level2Map} className={className}>

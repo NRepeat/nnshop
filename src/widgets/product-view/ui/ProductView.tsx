@@ -14,7 +14,6 @@ import {
 } from '@shared/ui/breadcrumb';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { generateBreadcrumbJsonLd } from '@shared/lib/seo/jsonld/breadcrumb';
-import { cookies } from 'next/headers';
 import { ViewTracker } from '@entities/recently-viewed/ui/ViewTracker';
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
@@ -23,6 +22,27 @@ import { getReletedProducts } from '@entities/product/api/get-related-products';
 import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 import { DEFAULT_GENDER } from '@shared/config/shop';
 import { SITE_URL } from '@shared/config/brand';
+import { GenderSync } from './GenderSync';
+
+// Maps custom.gender metaobject handles → app gender keys
+const GENDER_HANDLE_MAP: Record<string, 'man' | 'woman' | 'unisex'> = {
+  choloviche: 'man',
+  zhinoche:   'woman',
+  uniseks:    'unisex',
+};
+
+function resolveGenderFromMetafield(product: any): 'man' | 'woman' | 'unisex' | null {
+  const refs = product?.genderMetafield?.references?.edges ?? [];
+  if (refs.length === 0) return null;
+  const handles: string[] = refs.map((e: any) => e.node?.handle).filter(Boolean);
+  const hasMen   = handles.some((h) => GENDER_HANDLE_MAP[h] === 'man');
+  const hasWomen = handles.some((h) => GENDER_HANDLE_MAP[h] === 'woman');
+  const hasUnisex = handles.some((h) => GENDER_HANDLE_MAP[h] === 'unisex');
+  if (hasUnisex || (hasMen && hasWomen)) return 'unisex';
+  if (hasMen)   return 'man';
+  if (hasWomen) return 'woman';
+  return null;
+}
 
 const RelatedProducts = dynamic(() => import('./RelatedProducts').then(mod => mod.RelatedProducts));
 
@@ -42,13 +62,17 @@ export async function ProductView({
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const tHeader = await getTranslations({ locale, namespace: 'Header' });
-  const cookieStore = await cookies();
-  const gender = cookieStore.get('gender')?.value || DEFAULT_GENDER;
   const awaitedSearchParams = searchParams ? await searchParams : {};
   const collectionFromUrl = awaitedSearchParams.collection as string | undefined;
 
   const categoryName = product.productType;
   const allCollections = product.collections?.edges?.map(e => e.node) || [];
+
+  // Resolve gender from custom.gender metafield (set by update-product-gender-metafield script)
+  const resolvedGender = resolveGenderFromMetafield(product);
+  const isUnisex = resolvedGender === 'unisex';
+  // For URL-based navigation use woman as fallback for unisex
+  const gender = (resolvedGender === 'unisex' ? DEFAULT_GENDER : resolvedGender) ?? DEFAULT_GENDER;
   
   let selectedCollection = null;
 
@@ -65,7 +89,7 @@ export async function ProductView({
   }
 
   if (!selectedCollection) {
-    // Try to find a collection that matches current gender
+    // Try to find a collection that matches the resolved gender
     const genderMarker = gender === 'man' ? 'cholov' : 'zhin';
     selectedCollection = allCollections.find(c => 
       c.handle.toLowerCase().includes(genderMarker) || 
@@ -76,10 +100,16 @@ export async function ProductView({
   const displayCategory = categoryName || selectedCollection?.title;
   const collectionHandle = cleanSlug(selectedCollection?.handle);
 
+  const genderLabel = isUnisex
+    ? tHeader('nav.unisex')
+    : gender === 'man'
+      ? tHeader('nav.man')
+      : tHeader('nav.woman');
+
   const breadcrumbItems = [
     { name: tHeader('nav.home'), url: `${SITE_URL}/${locale}` },
     {
-      name: gender === 'man' ? tHeader('nav.man') : tHeader('nav.woman'),
+      name: genderLabel,
       url: `${SITE_URL}/${locale}/${gender}`,
     },
     ...(displayCategory
@@ -109,6 +139,7 @@ export async function ProductView({
 
   return (
     <div className="container space-y-16 my-8 h-fit min-h-screen">
+      <GenderSync gender={resolvedGender} />
       <JsonLd data={generateBreadcrumbJsonLd(breadcrumbItems)} />
       <Breadcrumb>
         <BreadcrumbList>
@@ -118,7 +149,7 @@ export async function ProductView({
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink href={`/${gender}`}>
-              {gender === 'man' ? tHeader('nav.man') : tHeader('nav.woman')}
+              {genderLabel}
             </BreadcrumbLink>
           </BreadcrumbItem>
           {displayCategory ? (

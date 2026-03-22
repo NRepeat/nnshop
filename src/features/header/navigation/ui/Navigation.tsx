@@ -2,11 +2,10 @@ import React from 'react';
 import {
   NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
 } from '@shared/ui/navigation-menu';
 import { DEFAULT_GENDER, GENDERS } from '@shared/config/shop';
 import { getCollectionImages } from '../api/getCollectionImages';
-import { cookies, headers } from 'next/headers';
+import { headers } from 'next/headers';
 import { NavigationClient } from './NavigationClient';
 import { Skeleton } from '@shared/ui/skeleton';
 import { NavigationItemClient } from './NavigationItemClient';
@@ -80,15 +79,13 @@ export const CurrentNavigationSession = async ({
   gender?: string;
   navDropdowns?: NavDropdowns;
 }) => {
-  const [cookie, headersList] = await Promise.all([cookies(), headers()]);
-  const cookieGender = cookie.get('gender')?.value;
+  const headersList = await headers();
   const headerGender = headersList.get('x-gender');
   const currentGender =
     gender ||
     (headerGender && GENDERS.includes(headerGender as any)
       ? headerGender
       : null) ||
-    (GENDERS.includes(cookieGender as any) ? cookieGender : null) ||
     DEFAULT_GENDER;
   return (
     <Navigation

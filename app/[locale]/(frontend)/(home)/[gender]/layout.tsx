@@ -1,5 +1,4 @@
 import { setRequestLocale } from 'next-intl/server';
-import { SetGenderCookie } from '@features/header/navigation/ui/SetGenderCookie';
 
 export default async function LocaleLayout({
   children,
@@ -8,13 +7,12 @@ export default async function LocaleLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string; gender: string }>;
 }>) {
-  const { locale, gender } = await params;
+  const { locale } = await params;
 
   setRequestLocale(locale);
   return (
-    <div>
-      <SetGenderCookie gender={gender} />
+    <>
       {children}
-    </div>
+    </>
   );
 }

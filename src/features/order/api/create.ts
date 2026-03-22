@@ -301,7 +301,7 @@ export async function createOrder(
         `Промокод: ${applicableDiscounts.map((d) => d.code).join(', ')}`,
       );
     } else if (cartDiscountTotal > 0) {
-      noteLines.push(`Автоматична знижка: -${Math.round(cartDiscountTotal)} ${currencyCode}`);
+      // noteLines.push(`Автоматична знижка: -${Math.round(cartDiscountTotal)} ${currencyCode}`);
     }
 
     if (deliveryMethod === 'selfPickup') {

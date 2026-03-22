@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-21T23:15:00.000Z"
+last_updated: "2026-03-22T00:00:00.000Z"
 progress:
   total_phases: 17
-  completed_phases: 10
-  total_plans: 40
-  completed_plans: 37
+  completed_phases: 17
+  total_plans: 41
+  completed_plans: 41
 ---
 
 # Project State
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-23)
 
 **Core value:** The checkout-to-order flow works reliably and securely for every user — anonymous or authenticated — without data leaks, silent failures, or broken UI.
-**Current focus:** Phase 16 — SEO Image Alt Text
+**Current focus:** Phase 17 — Gender Navigation Architecture
 
 ## Current Position
 
-Phase: 16 (SEO Image Alt Text)
+Phase: 17 (Gender Navigation Architecture)
 Plan: 1 of 1 in current phase completed
 Status: Complete
-Last activity: 2026-03-21
+Last activity: 2026-03-22
 
 Progress: [██████████] 100% (of current SEO wave)
 
@@ -33,9 +33,9 @@ Progress: [██████████] 100% (of current SEO wave)
 
 **Velocity:**
 
-- Total plans completed: 37
+- Total plans completed: 41
 - Average duration: 2.8 min
-- Total execution time: 1.8 hours
+- Total execution time: 1.9 hours
 
 **By Phase:**
 
@@ -43,11 +43,12 @@ Progress: [██████████] 100% (of current SEO wave)
 |-------|-------|-------|----------|
 | 15-seo-schema-markup | 1 | 5 min | 5 min |
 | 16-seo-image-alt-text | 1 | 15 min | 15 min |
+| 17-gender-navigation-architecture | 1 | 10 min | 10 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 13-01 (5 min), 14-01 (3 min), 15-01 (5 min), 16-01 (15 min)
-- Trend: Consistent (4 plans in this session)
+- Last 5 plans: 14-01 (3 min), 15-01 (5 min), 16-01 (15 min), 17-01 (10 min)
+- Trend: Consistent (5 plans in this session)
 
 *Updated after each plan completion*
 
@@ -65,12 +66,13 @@ Progress: [██████████] 100% (of current SEO wave)
 ### Decisions
 
 - [Phase 16]: Standardized product alt text format as `{Product Title} {Variant Info}` to balance SEO and readability.
-- [Phase 16]: Added `localizedString` to all Sanity image fields to allow unique alt text per language (UK/RU).
-- [Phase 16]: Implemented a non-destructive fallback pattern: `image.altText || getProductAlt(product, variant)` to respect manual Shopify edits.
-- [Phase 16]: Decoded HTML entities in generated alt text to ensure human-readable strings in `alt` attributes.
+- [Phase 17]: Eliminated 'gender' cookie and moved to URL-derived state via segments and x-gender header.
+- [Phase 17]: Removed dead components GenderProvider and SetGenderCookie that relied on cookie state.
+- [Phase 17]: Refactored all header/navigation components to use headers() for gender state, ensuring consistency during back-navigation.
+- [Phase 17]: Updated ProductView to use headers() and URL-based collection handles for breadcrumbs, maintaining context without cookies.
 
 ## Session Continuity
 
-Last session: 2026-03-21T23:15:00.000Z
-Stopped at: Completed 16-01-PLAN.md — SEO Image Alt Text implementation
+Last session: 2026-03-22T00:00:00.000Z
+Stopped at: Completed 17-01-PLAN.md — Gender Navigation Architecture implementation
 Resume file: None

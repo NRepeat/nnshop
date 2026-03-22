@@ -61,6 +61,18 @@ export const GET_PRODUCT_QUERY = `#graphql
           }
         }
       }
+      genderMetafield: metafield(namespace: "custom", key: "gender") {
+        value
+        references(first: 5) {
+          edges {
+            node {
+              ... on Metaobject {
+                handle
+              }
+            }
+          }
+        }
+      }
 
       priceRange {
         maxVariantPrice {

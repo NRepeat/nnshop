@@ -280,10 +280,15 @@ Plans:
 
 ### Phase 17: Gender navigation architecture: derive gender from URL instead of cookie to fix back navigation state bug
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Eliminate the 'gender' cookie and rely entirely on URL segments for gender state to fix back-navigation UI desync.
+**Requirements**: SEO-17-01, SEO-17-02
 **Depends on:** Phase 16
-**Plans:** 0 plans
+**Success Criteria** (what must be TRUE):
+  1. Gender is never stored in or read from a cookie; it is derived exclusively from the URL segment (e.g., `/[locale]/[gender]`).
+  2. After woman→man navigation, pressing the browser Back button correctly restores the woman content, breadcrumbs, and navigation context.
+  3. No multiple H1s appear in the DOM after product→related→Back navigation.
+  4. Gender switcher correctly updates the URL without writing a cookie.
+**Plans:** 1 plan
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 17 to break down)
+- [x] 17-01-PLAN.md — Cookie-less gender navigation refactor (SEO-17-01, SEO-17-02)

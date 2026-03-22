@@ -58,6 +58,11 @@ export default function PaymentForm({
   const selectedPaymentMethodValue = form.watch('paymentMethod');
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
+  const LIQPAY_ALLOWED_EMAILS = ['nnazarov55@gmail.com'];
+  const canUseLiqpay = LIQPAY_ALLOWED_EMAILS.includes(session?.user?.email ?? '');
+  const visiblePaymentProviders = paymentProviders.filter(
+    (p) => p.id !== 'liqpay' || canUseLiqpay,
+  );
   const [isMerging, setIsMerging] = useState(false);
   const prevUserIdRef = useRef<string | null>(null);
   const [liqpayParams, setLiqpayParams] = useState<{ data: string; signature: string; checkoutUrl: string } | null>(null);
@@ -117,6 +122,7 @@ export default function PaymentForm({
       if (data.paymentMethod === 'pay-now' && data.paymentProvider === 'liqpay') {
         const params = await getLiqpayFormParams({
           shopifyOrderId: createdOrder.id,
+          orderName: createdOrder.name || `#${createdOrder.id.split('/').pop()}`,
           amount,
           currency,
           checkoutData: completeCheckoutData,
@@ -190,7 +196,7 @@ export default function PaymentForm({
 
         {selectedPaymentMethodValue === 'pay-now' && (
           <PaymentProviderSelection
-            paymentProviders={paymentProviders}
+            paymentProviders={visiblePaymentProviders}
             onSelectPaymentProvider={(provider: string) =>
               form.setValue(
                 'paymentProvider',

@@ -14,7 +14,6 @@ import { Menu, ChevronRightIcon } from 'lucide-react';
 import { useRouter } from '@shared/i18n/navigation';
 import { Button } from '@shared/ui/button';
 import { saveGenderPreference } from '../api/saveGender';
-import { cookieGenderSet } from '../api/setCookieGender';
 import { Link } from '@shared/i18n/navigation';
 
 const InstagramIcon = () => (
@@ -91,7 +90,6 @@ const NavigationSheet = ({
     const genderMatch = link.match(/^\/(woman|man)\//);
     if (genderMatch) {
       const gender = genderMatch[1] as 'woman' | 'man';
-      cookieGenderSet(gender);
       saveGenderPreference(gender);
     }
     navigate.push(link);

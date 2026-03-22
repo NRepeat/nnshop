@@ -5,6 +5,7 @@ import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 
 interface LiqpayFormParamsInput {
   shopifyOrderId: string;
+  orderName: string; // human-readable order number e.g. "#6001"
   amount: number;
   currency: string;
   checkoutData?: Omit<CheckoutData, 'paymentInfo'> | null;
@@ -23,13 +24,13 @@ export async function getLiqpayFormParams(input: LiqpayFormParamsInput): Promise
     throw new Error('LiqPay keys not configured');
   }
 
-  const { shopifyOrderId, amount, currency, checkoutData } = input;
+  const { shopifyOrderId, orderName, amount, currency, checkoutData } = input;
   const orderId = shopifyOrderId.split('/').pop()!;
 
   // Round to 2 decimal places to avoid floating-point artifacts (e.g. 13150.0000000001)
   const roundedAmount = Math.round(amount * 100) / 100;
 
-  const description = `Оплата замовлення #${orderId} — Mio Mio`;
+  const description = `Оплата замовлення ${orderName} — Mio Mio`;
 
   const liqpay = new LiqPay(publicKey, privateKey);
   const { data, signature } = liqpay.cnbObject({
