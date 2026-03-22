@@ -30,8 +30,8 @@ export async function POST(req: NextRequest) {
     if (!completeCheckoutData) {
       return NextResponse.json({ error: 'Checkout data missing' }, { status: 400 });
     }
-
-    // 2. Fetch cart for rro_info price data (before order creation, cart still exists)
+ 
+    // 2. Fetchf cart for rro_info price data (before order creation, cart still exists)
     const cartData = await getCart({ userId: session.user.id, locale });
     const cartLineItems = (cartData && 'cart' in cartData ? cartData.cart : null)?.lines?.edges?.map((e: any) => {
       const variantGid: string = e.node.merchandise.id;
