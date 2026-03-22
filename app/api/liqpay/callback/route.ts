@@ -57,6 +57,11 @@ export async function POST(request: NextRequest) {
             orderId: order.id,
           };
           await savePaymentInfo(paymentInfo, shopifyOrderId);
+          try {
+            await resetCartSession(order.id);
+          } catch {
+            // Cart may already be cleared — non-blocking
+          }
         }
       }
       return NextResponse.json({ message: 'Hold received' });

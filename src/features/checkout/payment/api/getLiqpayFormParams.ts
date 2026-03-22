@@ -9,7 +9,7 @@ interface LiqpayFormParamsInput {
   amount: number;
   currency: string;
   checkoutData?: Omit<CheckoutData, 'paymentInfo'> | null;
-  lineItems?: { title: string; quantity: number }[];
+  lineItems?: { title: string; quantity: number; variantId?: number; price?: number }[];
 }
 
 export async function getLiqpayFormParams(input: LiqpayFormParamsInput): Promise<{
@@ -45,6 +45,26 @@ export async function getLiqpayFormParams(input: LiqpayFormParamsInput): Promise
         .slice(0, 500)
     : description;
 
+  // Build rro_info for fiscal receipt if we have per-item prices
+  const rroItems = lineItems
+    ?.filter((item) => item.variantId && item.price != null)
+    .map((item) => ({
+      amount: item.quantity,
+      price: Math.round(item.price! * 100) / 100,
+      cost: Math.round(item.price! * item.quantity * 100) / 100,
+      id: item.variantId!,
+    }));
+
+  const rro_info =
+    rroItems && rroItems.length > 0
+      ? {
+          items: rroItems,
+          ...(input.checkoutData?.contactInfo?.email
+            ? { delivery_emails: [input.checkoutData.contactInfo.email] }
+            : {}),
+        }
+      : undefined;
+
   const liqpay = new LiqPay(publicKey, privateKey);
   const { data, signature } = liqpay.cnbObject({
     version: 3,
@@ -59,6 +79,7 @@ export async function getLiqpayFormParams(input: LiqpayFormParamsInput): Promise
     product_name,
     product_description,
     product_url: baseUrl,
+    ...(rro_info ? { rro_info } : {}),
   });
 
   return { data, signature, checkoutUrl: 'https://www.liqpay.ua/api/3/checkout' };
