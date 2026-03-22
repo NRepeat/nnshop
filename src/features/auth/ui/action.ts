@@ -178,7 +178,7 @@ export const createGoogleSignInHandler = (
 ) => {
   return async () => {
     try {
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin.replace(/:\d+$/, '');
+      const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || window.location.origin.replace(/:\d+$/, '');
       const resolvedCallback = callbackUrl
         ? callbackUrl.startsWith('http')
           ? callbackUrl
