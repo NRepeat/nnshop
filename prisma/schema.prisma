@@ -27,6 +27,7 @@ model User {
   paymentInformation  PaymentInformation?
   favoriteProducts    FavoriteProduct[]
   recentlyViewed      RecentlyViewedProduct[]
+  gaClientId          String?              // GA4 _ga cookie client_id, updated on each visit
 
   @@unique([email])
   @@map("user")

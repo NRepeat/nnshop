@@ -18,6 +18,7 @@ import { SessionBanner } from '@features/session-banner';
 import { generateOrganizationJsonLd, generateWebSiteJsonLd } from '@shared/lib/seo/jsonld';
 import Script from 'next/script';
 import { ConsentBanner } from '@features/consent/ui/ConsentBanner';
+import { GA4Identify } from '@shared/lib/analytics/GA4Identify';
 
 const jostSans = Onest({
   variable: '--font-jost-sans',
@@ -163,6 +164,7 @@ export default async function RootLayout(props: RootProps) {
               <Footer locale={locale} />
             </Suspense>
             <ConsentBanner />
+            <GA4Identify />
           </ScrollDirectionProvider>
         </Providers>
         <Suspense>

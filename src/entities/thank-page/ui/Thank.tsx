@@ -17,6 +17,7 @@ import {
   CardDescription,
 } from '@shared/ui/card';
 import { connection } from 'next/server';
+import { GA4PurchaseEvent } from '@shared/lib/analytics/GA4PurchaseEvent';
 
 export const Thank = async ({
   params,
@@ -74,6 +75,23 @@ export const Thank = async ({
     : null;
 
   return (
+    <>
+    {total && (
+      <GA4PurchaseEvent
+        transactionId={displayOrderId}
+        value={Number(total.amount)}
+        currency={total.currencyCode}
+        items={lineItems.map(({ node: item }) => ({
+          item_name: item.title,
+          item_variant:
+            item.variant?.title && item.variant.title !== 'Default Title'
+              ? item.variant.title
+              : undefined,
+          quantity: item.quantity,
+          price: Number(item.variant?.price?.amount ?? 0),
+        }))}
+      />
+    )}
     <Card className="w-full max-w-full p-0 shadow-none border-none">
       <CardHeader className="px-0 pb-4 items-center text-center">
         <CardTitle className="text-xl font-bold">{t('title')}</CardTitle>
@@ -202,5 +220,6 @@ export const Thank = async ({
         </Button>
       </CardFooter>
     </Card>
+    </>
   );
 };
