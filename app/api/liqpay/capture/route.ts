@@ -47,7 +47,14 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { orderName, shopifyOrderId } = body;
+  const { orderName } = body;
+  const rawId: string | undefined = body.shopifyOrderId;
+  // Normalize: itali-shop-app stores numeric IDs, nnshop DB stores GIDs
+  const shopifyOrderId = rawId
+    ? rawId.startsWith('gid://')
+      ? rawId
+      : `gid://shopify/Order/${rawId}`
+    : undefined;
   console.log(`[liqpay/capture] request: shopifyOrderId=${shopifyOrderId} orderName=${orderName}`);
 
   if (!orderName && !shopifyOrderId) {
