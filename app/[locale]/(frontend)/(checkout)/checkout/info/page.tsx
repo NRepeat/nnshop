@@ -4,6 +4,7 @@ import { CheckoutAuthGate } from '@features/checkout/contact-info/ui/CheckoutAut
 import { Skeleton } from '@shared/ui/skeleton';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
+import { GA4BeginCheckoutEvent } from '@shared/lib/analytics/GA4BeginCheckoutEvent';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -37,6 +38,7 @@ export default async function InfoPage(props: Props) {
 
   return (
     <div className="space-y-8">
+      <GA4BeginCheckoutEvent />
       <Suspense fallback={<ContactInfoFormSkeleton />}>
         <ContactInfo locale={locale} />
       </Suspense>

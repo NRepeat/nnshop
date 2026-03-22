@@ -129,6 +129,31 @@ export function AddToCartButton({
 
       if (result.success) {
         toast.success(t('addedToCart'));
+        if (window.gtag) {
+          const price = parseFloat(
+            selectedVariant?.price?.amount ?? product?.priceRange?.maxVariantPrice?.amount ?? '0',
+          );
+          const currency =
+            selectedVariant?.price?.currencyCode ??
+            product?.priceRange?.maxVariantPrice?.currencyCode ??
+            DEFAULT_CURRENCY_CODE;
+          const size = selectedVariant?.selectedOptions?.find((o) =>
+            ['розмір', 'размер', 'size'].includes(o.name.toLowerCase()),
+          )?.value;
+          window.gtag('event', 'add_to_cart', {
+            currency,
+            value: price,
+            items: [
+              {
+                item_id: variantId,
+                item_name: product?.title,
+                item_variant: size,
+                price,
+                quantity: 1,
+              },
+            ],
+          });
+        }
         scrollYRef.current = window.scrollY;
         setPendingActions(true);
         startRefresh(() => {

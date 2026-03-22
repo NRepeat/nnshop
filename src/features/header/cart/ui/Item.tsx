@@ -86,7 +86,12 @@ const CartItem = ({
               <span>{getCurrencySymbol(DEFAULT_CURRENCY_CODE)}</span>
             </p>
             <div className="absolute top-2 -right-0.5 mr-1 mt-1 z-10">
-              <RemoveItemButton cartId={cartId} itemId={itemId} />
+              <RemoveItemButton
+                cartId={cartId}
+                itemId={itemId}
+                itemName={product.title}
+                price={Number(product.price)}
+              />
             </div>
           </div>
         </CardContent>

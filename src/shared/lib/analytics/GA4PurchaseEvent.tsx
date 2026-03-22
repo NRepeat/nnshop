@@ -41,7 +41,9 @@ export function GA4PurchaseEvent({
 
     if (typeof window === 'undefined' || !window.gtag) return;
 
-    window.gtag('event', 'purchase', {
+    // `order_placed` = order successfully submitted (fires for all payment methods).
+    // Actual revenue is confirmed server-side: LiqPay → hold_wait, COD → DELIVERED.
+    window.gtag('event', 'order_placed', {
       transaction_id: transactionId,
       value,
       currency,

@@ -37,6 +37,7 @@ import { PackageSearch } from 'lucide-react';
 import { toFilterSlug } from '@shared/lib/filterSlug';
 import { filterProducts } from '@features/collection/lib/filterProducts';
 import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
+import { GA4ViewItemListEvent } from '@shared/lib/analytics/GA4ViewItemListEvent';
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
 
 function getEffectivePrice(product: { priceRange?: { maxVariantPrice?: { amount: any } }; metafield?: { key?: string; value?: string } | null }): number {
@@ -203,8 +204,20 @@ export const CollectionGrid = async ({
     };
   });
 
+  const ga4Items = productsWithFav.map((p) => ({
+    item_id: p.id,
+    item_name: p.title,
+    price: parseFloat(p.priceRange?.minVariantPrice?.amount ?? '0'),
+    item_brand: p.vendor,
+  }));
+
   return (
     <>
+      <GA4ViewItemListEvent
+        listId={resolvedHandle}
+        listName={displayTitle || resolvedHandle}
+        items={ga4Items}
+      />
       <PathSync paths={paths} />
       <JsonLd
         data={generateBreadcrumbJsonLd([

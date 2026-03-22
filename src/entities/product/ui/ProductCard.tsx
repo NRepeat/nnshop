@@ -203,6 +203,18 @@ export const ProductCard = ({
         prefetch
         className="absolute inset-0 z-10"
         aria-label={product.title}
+        onClick={() => {
+          if (typeof window !== 'undefined' && window.gtag) {
+            window.gtag('event', 'select_item', {
+              items: [{
+                item_id: product.id,
+                item_name: product.title,
+                item_brand: product.vendor,
+                price: parseFloat(product.priceRange?.minVariantPrice?.amount ?? '0'),
+              }],
+            });
+          }
+        }}
       />
       <CardContent className="flex flex-col p-1 py-3 md:p-2 md:py-2.5  border-0 shadow-none h-full gap-4 bg-transparent">
         {withInnerShadow && (

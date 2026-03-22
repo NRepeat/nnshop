@@ -6,6 +6,7 @@ import { getDeliveryInfo } from '@features/checkout/delivery/api/getDeliveryInfo
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
 import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
+import { GA4EventOnMount } from '@shared/lib/analytics/GA4EventOnMount';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -46,8 +47,11 @@ export default async function PaymentPage(props: Props) {
   }
 
   return (
-    <Suspense fallback={<PaymentFormSkeleton />}>
-      <Payment locale={locale} />
-    </Suspense>
+    <>
+      <GA4EventOnMount event="add_payment_info" />
+      <Suspense fallback={<PaymentFormSkeleton />}>
+        <Payment locale={locale} />
+      </Suspense>
+    </>
   );
 }

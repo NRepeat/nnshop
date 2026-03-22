@@ -33,6 +33,7 @@
     "@daveyplate/better-auth-ui": "^3.3.15",
     "@formatjs/intl-localematcher": "^0.6.2",
     "@marsidev/react-turnstile": "^1.3.1",
+    "@microsoft/clarity": "^1.0.2",
     "@opentelemetry/api-logs": "^0.213.0",
     "@opentelemetry/exporter-logs-otlp-http": "^0.213.0",
     "@opentelemetry/resources": "^2.6.0",

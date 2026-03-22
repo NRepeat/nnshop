@@ -23,6 +23,7 @@ import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 import { DEFAULT_GENDER } from '@shared/config/shop';
 import { SITE_URL } from '@shared/config/brand';
 import { GenderSync } from './GenderSync';
+import { GA4ViewItemEvent } from '@shared/lib/analytics/GA4ViewItemEvent';
 
 // Maps custom.gender metaobject handles → app gender keys
 const GENDER_HANDLE_MAP: Record<string, 'man' | 'woman' | 'unisex'> = {
@@ -140,6 +141,13 @@ export async function ProductView({
   return (
     <div className="container space-y-16 my-8 h-fit min-h-screen">
       <GenderSync gender={resolvedGender} />
+      <GA4ViewItemEvent
+        itemId={product.id}
+        itemName={product.title}
+        price={parseFloat(product.priceRange.minVariantPrice.amount)}
+        currency={product.priceRange.minVariantPrice.currencyCode}
+        itemBrand={product.vendor}
+      />
       <JsonLd data={generateBreadcrumbJsonLd(breadcrumbItems)} />
       <Breadcrumb>
         <BreadcrumbList>
