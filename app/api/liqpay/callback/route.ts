@@ -5,7 +5,6 @@ import { PaymentInfo } from '@features/checkout/payment/schema/paymentSchema';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { captureServerEvent, captureServerError } from '@shared/lib/posthog/posthog-server';
-import { trackServerPurchase } from '@shared/lib/analytics/server';
 import { PRICE_APP_URL, INTERNAL_API_SECRET } from '@shared/config/shop';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -62,25 +61,6 @@ export async function POST(request: NextRequest) {
             await resetCartSession(order.id);
           } catch {
             // Cart may already be cleared — non-blocking
-          }
-
-          // GA4 Measurement Protocol — server-side purchase (100% reliable)
-          try {
-            const user = await prisma.user.findUnique({
-              where: { id: order.userId },
-              select: { id: true, gaClientId: true },
-            });
-            if (user?.gaClientId) {
-              await trackServerPurchase({
-                clientId: user.gaClientId,
-                userId: user.id,
-                transactionId: order.orderName || rawOrderId,
-                value: paymentData.amount,
-                currency: paymentData.currency,
-              });
-            }
-          } catch (gaErr) {
-            console.error('[LiqPay callback] GA4 MP failed:', gaErr);
           }
         }
       }
