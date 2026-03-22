@@ -178,14 +178,25 @@ export const createGoogleSignInHandler = (
 ) => {
   return async () => {
     try {
-      await client.signIn.social({
+      const resolvedCallback = callbackUrl
+        ? callbackUrl.startsWith('http')
+          ? callbackUrl
+          : `${window.location.origin}${callbackUrl}`
+        : `${window.location.origin}/uk/woman`;
+      console.log('[google-auth] starting signIn.social, callbackURL=', resolvedCallback);
+      const result = await client.signIn.social({
         provider: 'google',
-        callbackURL: callbackUrl || '/uk/woman',
+        callbackURL: resolvedCallback,
       });
+      console.log('[google-auth] signIn.social result=', result);
+      if (result?.error) {
+        console.error('[google-auth] error from result:', result.error);
+        toast.error(tErrors('googleSignInFailed'));
+      }
     } catch (error) {
       // DOM Events thrown when page navigation interrupts JS are not real errors
       if (!(error instanceof Error)) return;
-      console.error('Google sign in error:', error);
+      console.error('[google-auth] caught exception:', error);
       toast.error(tErrors('googleSignInFailed'));
     }
   };
