@@ -72,5 +72,8 @@ export async function getOrderById(
     totalPriceSet: {
       presentmentMoney: order.total ?? { amount: '0', currencyCode: DEFAULT_CURRENCY_CODE },
     },
+    totalDiscountsSet: order.totalDiscounts
+      ? { presentmentMoney: order.totalDiscounts }
+      : undefined,
   } as Order;
 }

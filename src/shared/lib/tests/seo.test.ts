@@ -39,7 +39,7 @@ describe('SEO Metadata Generation (Phase 14)', () => {
 
     it('should generate UK title within 30-60 chars', () => {
       const metadata = generateProductMetadata(mockProduct, 'uk', 'slug');
-      const title = metadata.title?.absolute as string;
+      const title = (metadata.title as { absolute?: string })?.absolute as string;
       expect(title.length).toBeGreaterThanOrEqual(30);
       expect(title.length).toBeLessThanOrEqual(60);
       expect(title).toContain('Купити');
@@ -47,7 +47,7 @@ describe('SEO Metadata Generation (Phase 14)', () => {
 
     it('should generate RU title uniquely', () => {
       const metadata = generateProductMetadata(mockProduct, 'ru', 'slug');
-      const title = metadata.title?.absolute as string;
+      const title = (metadata.title as { absolute?: string })?.absolute as string;
       expect(title).toContain('Купить');
     });
 
@@ -64,7 +64,7 @@ describe('SEO Metadata Generation (Phase 14)', () => {
 
     it('should include gender in title and meet length requirements', () => {
       const metadata = generateCollectionMetadata(mockCollection, 'uk', 'slug', 'woman');
-      const title = metadata.title?.absolute as string;
+      const title = (metadata.title as { absolute?: string })?.absolute as string;
       expect(title).toContain('для жінок');
       expect(title.length).toBeGreaterThanOrEqual(30);
       expect(title.length).toBeLessThanOrEqual(60);
@@ -72,7 +72,7 @@ describe('SEO Metadata Generation (Phase 14)', () => {
 
     it('should generate unique RU collection title', () => {
       const metadata = generateCollectionMetadata(mockCollection, 'ru', 'slug', 'woman');
-      const title = metadata.title?.absolute as string;
+      const title = (metadata.title as { absolute?: string })?.absolute as string;
       expect(title).toContain('для женщин');
       expect(title).toContain('Купить');
     });
@@ -85,7 +85,7 @@ describe('SEO Metadata Generation (Phase 14)', () => {
 
     it('should generate brand title within 30-60 chars', () => {
       const metadata = generateBrandMetadata(mockBrand, 'uk', 'slug');
-      const title = metadata.title?.absolute as string;
+      const title = (metadata.title as { absolute?: string })?.absolute as string;
       expect(title.length).toBeGreaterThanOrEqual(30);
       expect(title.length).toBeLessThanOrEqual(60);
       expect(title).toContain('купити в інтернет-магазині');

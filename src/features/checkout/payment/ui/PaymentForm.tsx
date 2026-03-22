@@ -17,8 +17,6 @@ import { paymentMethods, paymentProviders } from '../lib/constants';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import resetCartSession from '@features/cart/api/resetCartSession';
 import { createOrder } from '@features/order/api/create';
-import { useSession } from '@features/auth/lib/client';
-
 interface PaymentFormProps {
   defaultValues?: PaymentInfo | null;
   amount: number;
@@ -47,8 +45,8 @@ export default function PaymentForm({
     shouldFocusError: false,
     shouldUnregister: false,
     defaultValues: {
-      paymentMethod: defaultValues?.paymentMethod || 'after-delivered',
-      paymentProvider: defaultValues?.paymentProvider || 'bank-transfer',
+      paymentMethod: defaultValues?.paymentMethod || 'pay-now',
+      paymentProvider: defaultValues?.paymentProvider || 'liqpay',
       amount: amount,
       currency: currency || defaultValues?.currency,
       description: defaultValues?.description || 'Order payment',
@@ -56,27 +54,8 @@ export default function PaymentForm({
   });
   const selectedPaymentMethodValue = form.watch('paymentMethod');
   const [isLoading, setIsLoading] = useState(false);
-  const { data: session } = useSession();
-  const LIQPAY_ALLOWED_EMAILS = ['nnazarov55@gmail.com'];
-  const canUseLiqpay = LIQPAY_ALLOWED_EMAILS.includes(session?.user?.email ?? '');
-  const visiblePaymentProviders = paymentProviders.filter(
-    (p) => p.id !== 'liqpay' || canUseLiqpay,
-  );
-  const [isMerging, setIsMerging] = useState(false);
-  const prevUserIdRef = useRef<string | null>(null);
   const [liqpayParams, setLiqpayParams] = useState<{ data: string; signature: string } | null>(null);
   const liqpaySubmitRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    const userId = session?.user?.id ?? null;
-    if (prevUserIdRef.current !== null && prevUserIdRef.current !== userId) {
-      setIsMerging(true);
-      const timer = setTimeout(() => setIsMerging(false), 1500);
-      prevUserIdRef.current = userId;
-      return () => clearTimeout(timer);
-    }
-    prevUserIdRef.current = userId;
-  }, [session?.user?.id]);
 
   // Try to auto-click the LiqPay submit button once it's rendered.
   // On non-Safari browsers this succeeds; on Safari the user sees the button
@@ -216,7 +195,7 @@ export default function PaymentForm({
 
         {selectedPaymentMethodValue === 'pay-now' && (
           <PaymentProviderSelection
-            paymentProviders={visiblePaymentProviders}
+            paymentProviders={paymentProviders}
             onSelectPaymentProvider={(provider: string) =>
               form.setValue(
                 'paymentProvider',
@@ -229,16 +208,11 @@ export default function PaymentForm({
         <div className="space-y-3">
           <Button
             className="w-full h-12 bg-green-800 rounded"
-            disabled={isMerging || isLoading}
+            disabled={isLoading}
             // @ts-ignore
             onClick={form.handleSubmit(onSubmit)}
           >
-            {isMerging ? (
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                <span>{t('completePayment')}</span>
-              </div>
-            ) : isLoading ? (
+            {isLoading ? (
               <div className="flex items-center gap-3">
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                 <span>{t('processingPayment')}</span>

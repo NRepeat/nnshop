@@ -17,7 +17,7 @@ export type FilterProduct = {
   variants: {
     edges: { node: FilterVariant }[];
   };
-  handle: string;
+  handle?: string;
 };
 
 export type OptionGroup = {

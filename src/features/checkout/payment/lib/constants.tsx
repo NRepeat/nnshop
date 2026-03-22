@@ -1,4 +1,4 @@
-import { PackageCheck, Building2, CreditCard } from 'lucide-react';
+import { PackageCheck, CreditCard } from 'lucide-react';
 import { PaymentInfo } from '../schema/paymentSchema';
 import Image from 'next/image';
 
@@ -27,11 +27,6 @@ export const paymentProviders: {
   name: string;
   icon: React.ReactNode;
 }[] = [
-  {
-    id: 'bank-transfer',
-    name: 'За реквізитами',
-    icon: <Building2 />,
-  },
   {
     id: 'liqpay',
     name: 'LiqPay',

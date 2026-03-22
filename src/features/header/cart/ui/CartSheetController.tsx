@@ -6,7 +6,7 @@ import { useCartUIStore } from '@shared/store/use-cart-ui-store';
 
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
+    gtag?: (...args: unknown[]) => void;
   }
 }
 

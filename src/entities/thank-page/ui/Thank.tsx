@@ -65,15 +65,8 @@ export const Thank = async ({
   const total = shopifyOrder?.totalPriceSet?.presentmentMoney;
   const currencySymbol = total ? getCurrencySymbol(total.currencyCode) : 'грн';
 
-  // Discount = subtotal + shipping - total (works when there are no taxes)
-  const discountAmount = subtotal && total
-    ? Math.round(
-        (Number(subtotal.amount) +
-          Number(shipping?.amount ?? 0) -
-          Number(total.amount)) *
-          100,
-      ) / 100
-    : 0;
+  const discountMoney = shopifyOrder?.totalDiscountsSet?.presentmentMoney;
+  const discountAmount = discountMoney ? Number(discountMoney.amount) : 0;
   const email = shopifyOrder?.email || session.user.email;
 
   const orderDate = dbOrder?.createdAt
@@ -187,25 +180,6 @@ export const Thank = async ({
             {/* Totals */}
             {total && (
               <div className="border-t border-gray-100 px-4 py-3 space-y-1.5 bg-gray-50/60">
-                {subtotal && (
-                  <div className="flex justify-between text-xs text-gray-500">
-                    <span>{t('subtotal')}</span>
-                    <span>
-                      {Math.round(Number(subtotal.amount))}{' '}
-                      {getCurrencySymbol(subtotal.currencyCode)}
-                    </span>
-                  </div>
-                )}
-                {shipping && (
-                  <div className="flex justify-between text-xs text-gray-500">
-                    <span>{t('shipping')}</span>
-                    <span>
-                      {Number(shipping.amount) === 0
-                        ? t('free')
-                        : `${Math.round(Number(shipping.amount))} ${getCurrencySymbol(shipping.currencyCode)}`}
-                    </span>
-                  </div>
-                )}
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-xs text-green-600">
                     <span>{t('discount')}</span>

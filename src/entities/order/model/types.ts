@@ -60,6 +60,12 @@ export interface Order {
       currencyCode: string;
     };
   };
+  totalDiscountsSet?: {
+    presentmentMoney: {
+      amount: string;
+      currencyCode: string;
+    };
+  };
   discountApplications?: {
     edges: {
       node: {
