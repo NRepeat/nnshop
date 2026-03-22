@@ -117,6 +117,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'LiqPay refund failed' }, { status: 500 });
   }
 
+  // LiqPay returns HTTP 200 even on errors — check result/status fields
+  if (liqpayResult?.result === 'error') {
+    console.error(`[liqpay/void] LiqPay returned error for ${order.orderName}:`, liqpayResult);
+    return NextResponse.json(
+      { error: 'LiqPay refund error', liqpayStatus: liqpayResult?.status },
+      { status: 502 },
+    );
+  }
+
   // ── Update DB ──────────────────────────────────────────────────────────────
   if (paymentInfo) {
     await prisma.paymentInformation.update({
