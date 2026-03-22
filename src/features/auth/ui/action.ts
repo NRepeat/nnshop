@@ -178,11 +178,12 @@ export const createGoogleSignInHandler = (
 ) => {
   return async () => {
     try {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin.replace(/:\d+$/, '');
       const resolvedCallback = callbackUrl
         ? callbackUrl.startsWith('http')
           ? callbackUrl
-          : `${window.location.origin}${callbackUrl}`
-        : `${window.location.origin}/uk/woman`;
+          : `${siteUrl}${callbackUrl}`
+        : `${siteUrl}/uk/woman`;
       console.log('[google-auth] starting signIn.social, callbackURL=', resolvedCallback);
       const result = await client.signIn.social({
         provider: 'google',
