@@ -7,12 +7,22 @@ import { MouseEvent, useTransition } from 'react';
 import { toast } from 'sonner';
 import { X } from 'lucide-react';
 
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+  }
+}
+
 export const RemoveItemButton = ({
   cartId,
   itemId,
+  itemName,
+  price,
 }: {
   cartId: string;
   itemId: string;
+  itemName?: string;
+  price?: number;
 }) => {
   const t = useTranslations('Header.cart.drawer');
   const [isPending, startTransition] = useTransition();
@@ -25,6 +35,11 @@ export const RemoveItemButton = ({
       const result = await removeProductFromCart(cartId, itemId);
       if (result.success) {
         toast.success(t('removeSuccess'));
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'remove_from_cart', {
+            items: [{ item_id: itemId, item_name: itemName, price }],
+          });
+        }
       } else {
         toast.error(t('removeError'));
       }

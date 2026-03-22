@@ -5,6 +5,7 @@ import { Skeleton } from '@shared/ui/skeleton';
 import getContactInfo from '@features/checkout/contact-info/api/get-contact-info';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
+import { GA4EventOnMount } from '@shared/lib/analytics/GA4EventOnMount';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -32,8 +33,11 @@ export default async function DeliveryPage(props: Props) {
   }
 
   return (
-    <Suspense fallback={<DeliveryFormSkeleton />}>
-      <Delivery locale={locale} />
-    </Suspense>
+    <>
+      <GA4EventOnMount event="add_shipping_info" />
+      <Suspense fallback={<DeliveryFormSkeleton />}>
+        <Delivery locale={locale} />
+      </Suspense>
+    </>
   );
 }

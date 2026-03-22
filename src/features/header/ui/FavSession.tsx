@@ -62,6 +62,11 @@ export const FavSession = memo(({
         }
       } else {
         setIsFav(result.isFavorited);
+        if (result.isFavorited && typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'add_to_wishlist', {
+            items: [{ item_id: productId }],
+          });
+        }
         router.refresh();
       }
     } catch {
