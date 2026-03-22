@@ -23,7 +23,11 @@ export const POSTS_WITH_FALLBACK_QUERY =
   title,
   slug,
   body,
-  mainImage,
+  mainImage {
+    ...,
+    asset-> { _id, url, metadata { dimensions } },
+    alt
+  },
   publishedAt,
   language,
   "categories": coalesce(
@@ -46,7 +50,11 @@ export const POSTS_QUERY =
   title,
   slug,
   body,
-  mainImage,
+  mainImage {
+    ...,
+    asset-> { _id, url, metadata { dimensions } },
+    alt
+  },
   publishedAt,
   language,
   "categories": coalesce(
@@ -70,7 +78,11 @@ export const POSTS_BY_LANGUAGE_QUERY =
   title,
   slug,
   body,
-  mainImage,
+  mainImage {
+    ...,
+    asset-> { _id, url, metadata { dimensions } },
+    alt
+  },
   publishedAt,
   language,
   "categories": coalesce(
@@ -94,7 +106,11 @@ export const POSTS_UA_DEBUG_QUERY =
   title,
   slug,
   body,
-  mainImage,
+  mainImage {
+    ...,
+    asset-> { _id, url, metadata { dimensions } },
+    alt
+  },
   publishedAt,
   language,
   "categories": coalesce(
@@ -144,7 +160,11 @@ export const POST_QUERY =
   _id,
   title,
   body,
-  mainImage,
+  mainImage {
+    ...,
+    asset-> { _id, url, metadata { dimensions } },
+    alt
+  },
   publishedAt,
   language,
   "categories": coalesce(
@@ -161,7 +181,7 @@ export const POST_QUERY =
   },
   relatedPosts[]{
     _key,
-    ...@->{_id, title, slug, language, mainImage, publishedAt}
+    ...@->{_id, title, slug, language, mainImage { ..., asset-> { _id, url, metadata { dimensions } }, alt }, publishedAt}
   },
   "seo": {
   "title": coalesce(seo.title, title, ""),
@@ -177,7 +197,11 @@ export const POST_BY_LANGUAGE_QUERY =
   _id,
   title,
   body,
-  mainImage,
+  mainImage {
+    ...,
+    asset-> { _id, url, metadata { dimensions } },
+    alt
+  },
   publishedAt,
   language,
   "categories": coalesce(
@@ -194,7 +218,7 @@ export const POST_BY_LANGUAGE_QUERY =
   },
   relatedPosts[]{
     _key,
-    ...@->{_id, title, slug, language, mainImage, publishedAt}
+    ...@->{_id, title, slug, language, mainImage { ..., asset-> { _id, url, metadata { dimensions } }, alt }, publishedAt}
   },
   "seo": {
   "title": coalesce(seo.title, title, ""),
@@ -211,7 +235,11 @@ export const POSTS_EN_FALLBACK_QUERY =
   title,
   slug,
   body,
-  mainImage,
+  mainImage {
+    ...,
+    asset-> { _id, url, metadata { dimensions } },
+    alt
+  },
   publishedAt,
   language,
   "categories": coalesce(
@@ -234,7 +262,11 @@ export const POST_WITH_FALLBACK_QUERY =
   _id,
   title,
   body,
-  mainImage,
+  mainImage {
+    ...,
+    asset-> { _id, url, metadata { dimensions } },
+    alt
+  },
   publishedAt,
   language,
   "categories": coalesce(
@@ -251,7 +283,7 @@ export const POST_WITH_FALLBACK_QUERY =
   },
   relatedPosts[]{
     _key,
-    ...@->{_id, title, slug, language, mainImage, publishedAt}
+    ...@->{_id, title, slug, language, mainImage { ..., asset-> { _id, url, metadata { dimensions } }, alt }, publishedAt}
   },
   "seo": {
   "title": coalesce(seo.title, title, ""),
@@ -320,7 +352,8 @@ export const PAGE_QUERY =
             _id,
             url,
             metadata{dimensions}
-          }
+          },
+          "alt": coalesce(alt[$language], alt.uk, alt.ru)
         }
       }
     },
@@ -362,11 +395,23 @@ export const PAGE_QUERY =
          current
          },
          title
+        },
+        "image": { 
+          "url": coalesce(image.asset->url, store.imageUrl),
+          "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)
         }
       }
     },
     _type == "splitImage" => {
       ...,
+      image{
+        asset->{
+          _id,
+          url,
+          metadata{dimensions}
+        },
+        "alt": coalesce(alt[$language], alt.uk, alt.ru)
+      },
       link[]{
         ...,
         reference->{
@@ -412,7 +457,10 @@ export const HOME_PAGE =
              "id": store.id,
              handles,
              titles,
-             "image": { "url": coalesce(image.asset->url, store.imageUrl) }
+             "image": { 
+               "url": coalesce(image.asset->url, store.imageUrl),
+               "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)
+             }
            }
         },
         _type == "productCarousel" => {
@@ -433,7 +481,11 @@ export const HOME_PAGE =
               _id,
               title,
               slug,
-              mainImage,
+              mainImage {
+                ...,
+                asset-> { _id, url, metadata { dimensions } },
+                "alt": coalesce(alt, ^.title)
+              },
               publishedAt,
               language,
               "categories": coalesce(categories[]->{_id, slug, title}, []),
@@ -442,7 +494,11 @@ export const HOME_PAGE =
                 _id,
                 title,
                 slug,
-                mainImage,
+                mainImage {
+                  ...,
+                  asset-> { _id, url, metadata { dimensions } },
+                  "alt": coalesce(alt, ^.title)
+                },
                 publishedAt,
                 language
               }
@@ -451,6 +507,14 @@ export const HOME_PAGE =
           _type == "splitImage" => {
                ...,
                "title": coalesce(title[$language], title.uk, title.ru),
+               image {
+                 asset->{
+                   _id,
+                   url,
+                   metadata{dimensions}
+                 },
+                 "alt": coalesce(alt[$language], alt.uk, alt.ru)
+               },
                "collection": collection->{
                  title,
                  "handle": store.slug.current,
@@ -490,6 +554,7 @@ export const HOME_PAGE =
   "title": coalesce(title[$language], title.uk, title.ru),
   "barnds": barnds[]{
       ...,
+    "alt": coalesce(alt[$language], alt.uk, alt.ru),
     "collectionData": collection-> {
        title,
                 "handle": store.slug.current,
@@ -510,7 +575,10 @@ export const HOME_PAGE =
              "id": store.id,
              handles,
              titles,
-             "image": { "url": store.imageUrl }
+             "image": { 
+               "url": coalesce(image.asset->url, store.imageUrl),
+               "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)
+             }
            }
             },
             _type == "sliderBlock" => {
@@ -523,7 +591,8 @@ export const HOME_PAGE =
                     _id,
                     url,
                     metadata{dimensions}
-                  }
+                  },
+                  "alt": coalesce(alt[$language], alt.uk, alt.ru)
                 }
               }
             },
@@ -555,6 +624,8 @@ export const HOME_PAGE =
                 "descriptionColor": descriptionColor.hex,
                 overlay { opacity, color { hex } },
                 textBackground { opacity, color { hex }, padding, rounded },
+                "imageAlt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru),
+                "mobileImageAlt": coalesce(mobileImage.alt[$language], mobileImage.alt.uk, mobileImage.alt.ru),
                 "collection": collection->{
                   title,
                   "handle": store.slug.current,
@@ -609,7 +680,11 @@ export const HOME_PAGE =
                       _id,
                       title,
                       slug,
-                      mainImage,
+                      mainImage {
+                        ...,
+                        asset-> { _id, url, metadata { dimensions } },
+                        "alt": coalesce(alt, ^.title)
+                      },
                       publishedAt,
                       language,
                       "categories": coalesce(categories[]->{_id, slug, title}, []),
@@ -618,7 +693,11 @@ export const HOME_PAGE =
                         _id,
                         title,
                         slug,
-                        mainImage,
+                        mainImage {
+                          ...,
+                          asset-> { _id, url, metadata { dimensions } },
+                          "alt": coalesce(alt, ^.title)
+                        },
                         publishedAt,
                         language
                       }
@@ -645,12 +724,21 @@ export const HOME_PAGE =
                     "title": coalesce(title[$language], title.uk, title.ru),
                     "barnds": barnds[]{
                       ...,
+                      "alt": coalesce(alt[$language], alt.uk, alt.ru),
                       "collectionData": collection->{ _id, store{ slug{ current }, title } }
                     }
                   },
                   _type == "splitImage" => {
                     ...,
                     "title": coalesce(title[$language], title.uk, title.ru),
+                    image {
+                      asset->{
+                        _id,
+                        url,
+                        metadata{dimensions}
+                      },
+                      "alt": coalesce(alt[$language], alt.uk, alt.ru)
+                    },
                     "collection": collection->{
                       title,
                       "handle": store.slug.current,
@@ -679,7 +767,10 @@ export const HOME_PAGE =
                       "id": store.id,
                       handles,
                       titles,
-                      "image": { "url": store.imageUrl }
+                      "image": { 
+                        "url": coalesce(image.asset->url, store.imageUrl),
+                        "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)
+                      }
                     }
                   }
                 }
@@ -716,7 +807,8 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
                 _id,
                 url,
                 metadata{dimensions}
-              }
+              },
+              "alt": coalesce(alt[$language], alt.uk, alt.ru)
             }
           }
         },
@@ -758,11 +850,23 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
              current
              },
              title
+            },
+            "image": { 
+              "url": coalesce(image.asset->url, store.imageUrl),
+              "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)
             }
           }
         },
         _type == "splitImage" => {
           ...,
+          image {
+            asset->{
+              _id,
+              url,
+              metadata{dimensions}
+            },
+            "alt": coalesce(alt[$language], alt.uk, alt.ru)
+          },
           description,
           link[]{
             ...,
@@ -809,6 +913,7 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
                 barnds[]{
                   ...,
                   asset->{ _id, url, metadata{dimensions} },
+                  "alt": coalesce(alt[$language], alt.uk, alt.ru),
                   collection->{ _id, store{ slug{ current }, title } }
                 }
               }
@@ -844,7 +949,8 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
                 _id,
                 url,
                 metadata{dimensions}
-              }
+              },
+              "alt": coalesce(alt[$language], alt.uk, alt.ru)
             }
           }
         },
@@ -886,11 +992,23 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
              current
              },
              title
+            },
+            "image": { 
+              "url": coalesce(image.asset->url, store.imageUrl),
+              "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)
             }
           }
         },
         _type == "splitImage" => {
           ...,
+          image {
+            asset->{
+              _id,
+              url,
+              metadata{dimensions}
+            },
+            "alt": coalesce(alt[$language], alt.uk, alt.ru)
+          },
           description,
           link[]{
             ...,
@@ -937,6 +1055,7 @@ export const HOME_PAGE_QUERY = defineQuery(`*[_id == "siteSettings" ][0]{
                 barnds[]{
                   ...,
                   asset->{ _id, url, metadata{dimensions} },
+                  "alt": coalesce(alt[$language], alt.uk, alt.ru),
                   collection->{ _id, store{ slug{ current }, title } }
                 }
               }
@@ -970,7 +1089,8 @@ export const SITE_LOGO_QUERY = defineQuery(`
   *[_type == 'siteSettings'][0]{
     "logo": header.icon.asset->{
       url
-    }
+    },
+    "logoAlt": coalesce(header.icon.alt[$language], header.icon.alt.uk, header.icon.alt.ru)
   }
 `);
 export const SITEMAP_QUERY = defineQuery(`
@@ -1071,6 +1191,7 @@ export const HEADER_QUERY = defineQuery(`
           "imageUrl": image.asset->url,
           "imageWidth": image.asset->metadata.dimensions.width,
           "imageHeight": image.asset->metadata.dimensions.height,
+          "alt": coalesce(image.alt[$locale], image.alt.uk, image.alt.ru),
           "collectionHandle": collection->store.slug.current,
           "collectionTitle": collection->store.title,
           "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,
@@ -1116,6 +1237,7 @@ export const HEADER_QUERY = defineQuery(`
           "imageUrl": image.asset->url,
           "imageWidth": image.asset->metadata.dimensions.width,
           "imageHeight": image.asset->metadata.dimensions.height,
+          "alt": coalesce(image.alt[$locale], image.alt.uk, image.alt.ru),
           "collectionHandle": collection->store.slug.current,
           "collectionTitle": collection->store.title,
           "imageButtonCollectionHandle": imageButtonCollection->store.slug.current,

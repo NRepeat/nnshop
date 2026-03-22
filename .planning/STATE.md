@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-21T13:45:00.000Z"
+last_updated: "2026-03-22T00:00:00.000Z"
 progress:
-  total_phases: 16
-  completed_phases: 9
-  total_plans: 39
-  completed_plans: 36
+  total_phases: 17
+  completed_phases: 17
+  total_plans: 41
+  completed_plans: 41
 ---
 
 # Project State
@@ -18,35 +18,37 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-23)
 
 **Core value:** The checkout-to-order flow works reliably and securely for every user — anonymous or authenticated — without data leaks, silent failures, or broken UI.
-**Current focus:** Phase 15 — SEO Schema Markup
+**Current focus:** Phase 17 — Gender Navigation Architecture
 
 ## Current Position
 
-Phase: 15 (SEO Schema Markup)
+Phase: 17 (Gender Navigation Architecture)
 Plan: 1 of 1 in current phase completed
 Status: Complete
-Last activity: 2026-03-21
+Last activity: 2026-03-22
 
-Progress: [█████████░] 90%
+Progress: [██████████] 100% (of current SEO wave)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 36
-- Average duration: 2.7 min
-- Total execution time: 1.75 hours
+- Total plans completed: 41
+- Average duration: 2.8 min
+- Total execution time: 1.9 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 15-seo-schema-markup | 1 | 5 min | 5 min |
+| 16-seo-image-alt-text | 1 | 15 min | 15 min |
+| 17-gender-navigation-architecture | 1 | 10 min | 10 min |
 
 **Recent Trend:**
 
-- Last 5 plans: 12-01 (3 min), 12-02 (4 min), 13-01 (5 min), 14-01 (3 min), 15-01 (5 min)
-- Trend: Consistent (5 plans)
+- Last 5 plans: 14-01 (3 min), 15-01 (5 min), 16-01 (15 min), 17-01 (10 min)
+- Trend: Consistent (5 plans in this session)
 
 *Updated after each plan completion*
 
@@ -63,13 +65,14 @@ Progress: [█████████░] 90%
 
 ### Decisions
 
-- [Phase 15]: Centralized social links in `@shared/config/brand` to ensure consistency across Organization schema and Footer.
-- [Phase 15]: ItemList schema URLs are canonical and include the locale prefix for accurate search engine indexing.
-- [Phase 15]: Product return/shipping policies use hardcoded UA-specific values (14 days, free shipping) to match business rules.
-- [Phase 15]: Added `SearchAction` to WebSite schema to enable Google Sitelinks Searchbox.
+- [Phase 16]: Standardized product alt text format as `{Product Title} {Variant Info}` to balance SEO and readability.
+- [Phase 17]: Eliminated 'gender' cookie and moved to URL-derived state via segments and x-gender header.
+- [Phase 17]: Removed dead components GenderProvider and SetGenderCookie that relied on cookie state.
+- [Phase 17]: Refactored all header/navigation components to use headers() for gender state, ensuring consistency during back-navigation.
+- [Phase 17]: Updated ProductView to use headers() and URL-based collection handles for breadcrumbs, maintaining context without cookies.
 
 ## Session Continuity
 
-Last session: 2026-03-21T13:45:00.000Z
-Stopped at: Completed 15-01-PLAN.md — SEO Schema Markup expansion
+Last session: 2026-03-22T00:00:00.000Z
+Stopped at: Completed 17-01-PLAN.md — Gender Navigation Architecture implementation
 Resume file: None

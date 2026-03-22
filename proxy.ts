@@ -10,7 +10,6 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   let segments = pathname.split('/').filter(Boolean);
   const allowedGenders = ['man', 'woman'];
-  const genderCookie = request.cookies.get('gender')?.value;
 
   // 0. Fast escape for well-known and system paths
   if (pathname.startsWith('/.well-known/')) {
@@ -102,18 +101,6 @@ export async function proxy(request: NextRequest) {
     const isGender = allowedGenders.includes(secondSegment);
     const isSystemPath = reservedSystemPaths.includes(secondSegment);
 
-    // 3. Fix brand URLs with _gender parameter (SEO consolidation)
-    if (secondSegment === 'brand' && segments.length >= 3) {
-      const _gender = request.nextUrl.searchParams.get('_gender');
-      if (_gender) {
-        const url = new URL(request.url);
-        url.searchParams.delete('_gender');
-        const response = NextResponse.redirect(url, { status: 301 });
-        response.cookies.set('gender', cleanSlug(_gender), { path: '/', maxAge: 60 * 60 * 24 * 365 });
-        return response;
-      }
-    }
-
     // If it's not a valid gender and not a known system route, it's a 404.
     if (!isGender && !isSystemPath) {
       const url = new URL(request.url);
@@ -122,22 +109,19 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 4. Determine effective gender: URL takes priority over cookie
+  // 4. Determine effective gender: URL takes priority, then search params, then cookie
   const urlGender = segments.length >= 2 && allowedGenders.includes(segments[1]) ? segments[1] : null;
-  const effectiveGender = urlGender || (genderCookie && allowedGenders.includes(genderCookie) ? genderCookie : 'woman');
+  const searchGender = request.nextUrl.searchParams.get('_gender');
+  const cookieGender = request.cookies.get('gender')?.value;
+  
+  const effectiveGender = urlGender || 
+    (searchGender && allowedGenders.includes(searchGender) ? searchGender : 
+    (cookieGender && allowedGenders.includes(cookieGender) ? cookieGender : 'woman'));
 
   const i18nResponse = handleI18nRouting(request);
 
-  // Update cookie if missing or stale
-  if (!genderCookie) {
-    i18nResponse.cookies.set('gender', cleanSlug(effectiveGender), { path: '/', maxAge: 60 * 60 * 24 * 365 });
-  } else if (urlGender && genderCookie !== urlGender) {
-    i18nResponse.cookies.set('gender', cleanSlug(urlGender), { path: '/', maxAge: 60 * 60 * 24 * 365 });
-  }
-
   // For non-redirect responses, forward x-gender as a request header so server
-  // components can read the correct gender immediately (without waiting for the
-  // cookie to round-trip to the browser and back).
+  // components can read the correct gender immediately.
   const isRedirect = i18nResponse.status >= 300 && i18nResponse.status < 400;
   if (!isRedirect) {
     const requestHeaders = new Headers(request.headers);
@@ -145,8 +129,16 @@ export async function proxy(request: NextRequest) {
 
     const finalResponse = NextResponse.next({ request: { headers: requestHeaders } });
 
-    // Copy cookies from the i18n response
+    // Set/Update the gender cookie to match the effective gender
+    finalResponse.cookies.set('gender', effectiveGender, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      sameSite: 'lax',
+    });
+
+    // Copy other cookies from the i18n response
     i18nResponse.cookies.getAll().forEach((cookie) => {
+      if (cookie.name === 'gender') return; // already set above
       finalResponse.cookies.set(cookie.name, cookie.value, {
         path: cookie.path,
         maxAge: cookie.maxAge,

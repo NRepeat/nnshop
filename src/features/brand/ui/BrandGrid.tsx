@@ -53,16 +53,11 @@ export const BrandGrid = async ({
   const decodedSlug = decodeURIComponent(slug);
   setRequestLocale(locale);
 
-  const cookieStore = await headers();
-  const cookieHeader = cookieStore.get('cookie') || '';
-  const genderFromCookie = cookieHeader.includes('gender=man')
-    ? 'man'
-    : cookieHeader.includes('gender=woman')
-      ? 'woman'
-      : undefined;
+  const headersList = await headers();
+  const genderFromHeader = headersList.get('x-gender');
 
   const gender =
-    (awaitedSearchParams._gender as string | undefined) || genderFromCookie;
+    (awaitedSearchParams._gender as string | undefined) || genderFromHeader || 'woman';
   const searchParamsWithoutGender = Object.fromEntries(
     Object.entries(awaitedSearchParams).filter(([k]) => k !== '_gender'),
   );
@@ -74,8 +69,6 @@ export const BrandGrid = async ({
       first: 20,
       locale: locale,
       searchParams: searchParamsWithoutGender,
-      gender,
-      genderTag: gender,
     }),
   ];
 
@@ -85,8 +78,6 @@ export const BrandGrid = async ({
         handle: decodedSlug,
         first: 20,
         locale: locale,
-        gender,
-        genderTag: gender,
       }),
     );
   }

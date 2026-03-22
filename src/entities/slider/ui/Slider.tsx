@@ -34,7 +34,9 @@ export function HeroSwiper({ slides }: HeroSwiperProps) {
                   src={slide.backgroundImage?.asset.url}
                   className="min-h-[250px] object-cover md:min-h-fit md:object-contain"
                   alt={
-                    getLocalizedString(slide.title, locale) || 'Slider Image'
+                    (slide.backgroundImage as any)?.alt ||
+                    getLocalizedString(slide.title, locale) ||
+                    'Slider Image'
                   }
                   width={1920}
                   height={1280}

@@ -11,7 +11,6 @@
 
 import { prisma } from '../../../shared/lib/prisma';
 import { storefrontClient } from '../../../shared/lib/shopify/client';
-import { toast } from 'sonner';
 
 import { Session, User } from 'better-auth';
 import {
@@ -218,18 +217,24 @@ export const anonymousCartBuyerIdentityUpdate = async ({
       );
 
       if (mergedCartId === null) {
-        // Total failure: all retries exhausted — log and notify user, leave both carts intact
+        // Total failure: all retries exhausted (e.g. user's Shopify cart expired).
+        // Fallback: claim anonymous cart as user's cart to prevent cascade delete.
         console.error(
-          '[cart-merge] addLinesToCart total failure after retries',
+          '[cart-merge] addLinesToCart total failure — falling back to anon cart reassignment',
           {
-            step: 'shopify-cart-lines-add-total-failure',
+            step: 'shopify-cart-lines-add-total-failure-fallback',
             userId: newUser.user.id,
             anonUserId: anonymousUser.user.id,
-            orderId: undefined,
-            error: 'All 3 retry attempts failed',
           },
         );
-        toast("Couldn't sync your cart. Your items are still saved.");
+        // Delete stale user cart from DB, then fall through to path B reassignment below.
+        try {
+          await prisma.cart.delete({ where: { id: userCartRecord.id } });
+        } catch (e) {
+          console.error('[cart-merge] failed to delete stale user cart', e instanceof Error ? e.message : String(e));
+        }
+        // Reassign anonymous cart to user (path B fallback)
+        await reassignAnonCartToUser(anonCartRecord, newUser, anonymousUser);
         return;
       }
 
@@ -278,52 +283,57 @@ export const anonymousCartBuyerIdentityUpdate = async ({
     }
   } else {
     // 6. User has no existing cart — re-assign anonymous cart to user
-    let finalCartToken = anonCartRecord.cartToken;
-
-    // 6a. Update buyer identity (non-fatal — log failure but continue)
-    const updatedCartId = await updateShopifyBuyerIdentity(
-      anonCartRecord.cartToken.split('?')[0],
-      newUser.user.email,
-    );
-    if (updatedCartId) {
-      finalCartToken = updatedCartId;
-    } else {
-      console.error(
-        '[cart-merge] updateShopifyBuyerIdentity non-fatal failure (no-userCart path)',
-        {
-          step: 'shopify-buyer-identity-update-non-fatal',
-          userId: newUser.user.id,
-          anonUserId: anonymousUser.user.id,
-          orderId: undefined,
-          error:
-            'Buyer identity update failed; continuing with cart reassignment',
-        },
-      );
-    }
-
-    // 6b. Wrap DB mutation in a Prisma transaction (RELY-01)
-    const captured = { finalCartToken };
-    try {
-      await prisma.$transaction(async (tx) => {
-        await tx.cart.update({
-          where: { id: anonCartRecord.id },
-          data: {
-            userId: newUser.user.id,
-            cartToken: captured.finalCartToken,
-          },
-        });
-      });
-    } catch (error) {
-      console.error(
-        '[cart-merge] prisma transaction failed (no-userCart path)',
-        {
-          step: 'prisma-cart-reassign-failed',
-          userId: newUser.user.id,
-          anonUserId: anonymousUser.user.id,
-          orderId: undefined,
-          error: error instanceof Error ? error.message : String(error),
-        },
-      );
-    }
+    await reassignAnonCartToUser(anonCartRecord, newUser, anonymousUser);
   }
 };
+
+async function reassignAnonCartToUser(
+  anonCartRecord: { id: string; cartToken: string },
+  newUser: NewUserArg,
+  anonymousUser: AnonymousUserArg,
+) {
+  // CRITICAL STEP FIRST: claim ownership to prevent cascade delete when anonymous user is deleted.
+  // Do this BEFORE any Shopify calls so the cart survives even if Shopify fails.
+  try {
+    await prisma.cart.update({
+      where: { id: anonCartRecord.id },
+      data: { userId: newUser.user.id },
+    });
+  } catch (error) {
+    console.error('[cart-merge] critical userId update failed — cart may be lost on anon user deletion', {
+      step: 'prisma-cart-claim-failed',
+      userId: newUser.user.id,
+      anonUserId: anonymousUser.user.id,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    throw error; // Re-throw so onLinkAccount knows this failed
+  }
+
+  // Update buyer identity on Shopify (non-fatal — cart is already safely claimed above)
+  const updatedCartId = await updateShopifyBuyerIdentity(
+    anonCartRecord.cartToken.split('?')[0],
+    newUser.user.email,
+  );
+
+  if (updatedCartId && updatedCartId !== anonCartRecord.cartToken.split('?')[0]) {
+    try {
+      await prisma.cart.update({
+        where: { id: anonCartRecord.id },
+        data: { cartToken: updatedCartId },
+      });
+    } catch (error) {
+      console.error('[cart-merge] cartToken update failed (non-critical — cart is already claimed)', {
+        step: 'prisma-cart-token-update-failed',
+        userId: newUser.user.id,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  } else if (!updatedCartId) {
+    console.error('[cart-merge] updateShopifyBuyerIdentity non-fatal failure (no-userCart path)', {
+      step: 'shopify-buyer-identity-update-non-fatal',
+      userId: newUser.user.id,
+      anonUserId: anonymousUser.user.id,
+      error: 'Buyer identity update failed; cart ownership already transferred',
+    });
+  }
+}

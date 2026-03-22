@@ -253,8 +253,6 @@ export const getCollection = async ({
   last,
   before,
   locale,
-  gender,
-  genderTag,
 }: {
   handle: string;
   searchParams?: { [key: string]: string | string[] | undefined };
@@ -263,10 +261,6 @@ export const getCollection = async ({
   last?: number;
   before?: string;
   locale: string;
-  gender?: string;
-  /** When set, adds a Shopify tag filter for this gender value (e.g. 'woman' | 'man').
-   *  Use only for brand/vendor pages where a single collection contains both genders. */
-  genderTag?: string;
 }) => {
   'use cache';
   cacheLife('max');

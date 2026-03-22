@@ -4,7 +4,7 @@ import Image from 'next/image';
 const Logo = (props: { className?: string }) => (
   <Image
     src={imageLogo}
-    alt="Logo"
+    alt="MioMio"
     width={150}
     height={150}
     unoptimized

@@ -5,6 +5,7 @@ import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { cn } from '@shared/lib/utils';
 import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
 import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
+import { getProductAlt } from '@shared/lib/seo';
 
 type ProductCardSPPProps = {
   product: Product;
@@ -42,7 +43,7 @@ export const ProductCardSPP = ({
   link = true,
 }: ProductCardSPPProps) => {
   const { url: imageUrl, altText } = product.featuredImage || {};
-  const imageAlt = altText || product.title;
+  const imageAlt = altText || getProductAlt(product);
 
   const priceAmount = parseFloat(product.priceRange?.maxVariantPrice.amount);
   const currencyCode = product.priceRange?.maxVariantPrice.currencyCode;

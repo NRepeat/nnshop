@@ -52,6 +52,9 @@
 ### SEO
 
 - [ ] **SEO-01**: Product and collection pages render a unique `<meta name="description">` tag derived from Shopify product description / collection description
+- [ ] **SEO-16-01**: Product images render with descriptive, localized alt text using Product Title + Variant Info (e.g. 'Чорні шкіряні черевики AGL жіночі')
+- [ ] **SEO-16-02**: Sanity content images have an 'alt' field in schema, fetched via GROQ, and rendered in UI with localization support
+- [ ] **SEO-16-03**: All decorative images across the site explicitly use alt="" to ensure accessibility compliance
 
 ### Accessibility
 
@@ -124,10 +127,13 @@
 | A11Y-03 | Phase 7 | Complete |
 | QUAL-01 | Phase 7 | Pending |
 | QUAL-02 | Phase 7 | Pending |
+| SEO-16-01 | Phase 16 | Pending |
+| SEO-16-02 | Phase 16 | Pending |
+| SEO-16-03 | Phase 16 | Pending |
 
 **Coverage:**
-- v1 requirements: 26 total
-- Mapped to phases: 26
+- v1 requirements: 29 total
+- Mapped to phases: 29
 - Unmapped: 0
 
 ---

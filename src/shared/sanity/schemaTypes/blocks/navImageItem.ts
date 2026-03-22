@@ -11,6 +11,13 @@ export const navImageItem = defineType({
       type: 'image',
       options: { hotspot: true },
       validation: (Rule) => Rule.required(),
+      fields: [
+        defineField({
+          name: 'alt',
+          type: 'localizedString',
+          title: 'Alt Text',
+        }),
+      ],
     }),
     defineField({
       name: 'menuIndex',

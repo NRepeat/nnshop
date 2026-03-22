@@ -32,18 +32,18 @@ export const paymentProviders: {
     name: 'За реквізитами',
     icon: <Building2 />,
   },
-  // {
-  //   id: 'liqpay',
-  //   name: 'LiqPay',
-  //   icon: (
-  //     <Image
-  //       width={40}
-  //       height={40}
-  //       src="https://static.liqpay.ua/buttons/logo-white.svg"
-  //       alt="LiqPay"
-  //       className="w-5 h-5 object-contain"
-  //       onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-  //     />
-  //   ),
-  // },
-] as const;
+  {
+    id: 'liqpay',
+    name: 'LiqPay',
+    icon: (
+      <Image
+        width={40}
+        height={40}
+        src="https://static.liqpay.ua/buttons/logo-white.svg"
+        alt="LiqPay"
+        className="w-5 h-5 object-contain"
+        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+      />
+    ),
+  },
+] as const; 

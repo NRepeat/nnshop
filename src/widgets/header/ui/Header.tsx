@@ -74,7 +74,7 @@ export const Header = async ({ locale }: { locale: string }) => {
                           src={urlFor(headerData?.header.icon?.asset).url()}
                           width={304}
                           height={24}
-                          alt={'logo'}
+                          alt={'MioMio'}
                           className="w-full h-full max-w-[180px]"
                         />
                       )}
@@ -85,7 +85,6 @@ export const Header = async ({ locale }: { locale: string }) => {
                 {headerData?.header?.icon?.asset && (
                   <LogoLink
                     locale={locale}
-                    iconUrl={urlFor(headerData?.header.icon?.asset).url()}
                     alt="MioMio"
                   />
                 )}

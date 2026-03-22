@@ -6,6 +6,7 @@ import { useTransition, useState, useMemo, useEffect } from 'react';
 import { detectGenderFromHandle } from '@entities/collection/lib/resolve-handle';
 import { DEFAULT_GENDER } from '@shared/config/shop';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useProductGenderStore } from '@shared/store/use-product-gender-store';
 
 export const NavButton = ({
   children,
@@ -28,6 +29,9 @@ export const NavButton = ({
 
   const segments = pathname.split('/').filter(Boolean);
   const isBrandPage = segments[0] === 'brand';
+  const isProductPage = segments.includes('product');
+
+  const productGender = useProductGenderStore((s) => s.productGender);
 
   const genderInUrl = isBrandPage
     ? (searchParams.get('_gender') ?? undefined)
@@ -35,11 +39,18 @@ export const NavButton = ({
 
   useEffect(() => {
     setOptimisticSlug(null);
-  }, [pathname]);
+    router.refresh();
+  }, [pathname, router]);
+
+  // On product pages: derive active state from product's gender metafield
+  // unisex → neither button is active; null → fall back to header gender prop
+  const effectiveGender = isProductPage && productGender !== null
+    ? (productGender === 'unisex' ? null : productGender)
+    : (genderInUrl ?? gender ?? DEFAULT_GENDER);
 
   const isActive = optimisticSlug
     ? optimisticSlug === slug
-    : (genderInUrl ?? gender ?? DEFAULT_GENDER) === slug;
+    : effectiveGender === slug;
 
   const toPath = useMemo(() => {
     if (isBrandPage) {
@@ -63,7 +74,6 @@ export const NavButton = ({
   const onClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setOptimisticSlug(slug);
-    document.cookie = `gender=${slug};path=/;max-age=${60 * 60 * 24 * 365}`;
     startTransition(() => {
       router.push(toPath);
       router.refresh();

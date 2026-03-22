@@ -19,6 +19,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 5: Observability & Scaling** - Add production error tracking and remove hardcoded limits
 - [ ] **Phase 7: Lighthouse Audit Fixes** - Resolve SEO, accessibility, and quality issues surfaced by Lighthouse audit
 - [x] **Phase 15: SEO Schema Markup** - add OnlineStore WebSite SearchAction ItemList shipping and return policy schemas (completed 2026-03-21)
+- [x] **Phase 16: SEO Image Alt Text** - add descriptive alt text to all product and content images (completed 2026-03-21)
+- [ ] **Phase 17: Gender navigation architecture** - derive gender from URL instead of cookie to fix back navigation state bug
 
 ## Phase Details
 
@@ -156,6 +158,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 13. SEO Redirect Architecture | 2/2 | Complete   | 2026-03-21 |
 | 14. SEO Metadata Templates | 1/1 | Complete   | 2026-03-21 |
 | 15. SEO Schema Markup | 1/1 | Complete   | 2026-03-21 |
+| 16. SEO Image Alt Text | 1/1 | Complete   | 2026-03-21 |
 
 ### Phase 8: Recently Viewed Products section and Newsletter subscription section
 
@@ -267,20 +270,25 @@ Plans:
 
 ### Phase 16: SEO Image Alt Text: add descriptive alt text to all product and content images
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Implement descriptive and localized alt text for all product and content images to improve SEO and accessibility.
+**Requirements**: SEO-16-01, SEO-16-02, SEO-16-03
 **Depends on:** Phase 15
-**Plans:** 0 plans
+**Plans:** 1 plan
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 16 to break down)
+- [x] 16-01-PLAN.md — Image Alt implementation across product and content images (SEO-16-01, SEO-16-02, SEO-16-03) (completed 2026-03-21)
 
 ### Phase 17: Gender navigation architecture: derive gender from URL instead of cookie to fix back navigation state bug
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Eliminate the 'gender' cookie and rely entirely on URL segments for gender state to fix back-navigation UI desync.
+**Requirements**: SEO-17-01, SEO-17-02
 **Depends on:** Phase 16
-**Plans:** 0 plans
+**Success Criteria** (what must be TRUE):
+  1. Gender is never stored in or read from a cookie; it is derived exclusively from the URL segment (e.g., `/[locale]/[gender]`).
+  2. After woman→man navigation, pressing the browser Back button correctly restores the woman content, breadcrumbs, and navigation context.
+  3. No multiple H1s appear in the DOM after product→related→Back navigation.
+  4. Gender switcher correctly updates the URL without writing a cookie.
+**Plans:** 1 plan
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 17 to break down)
+- [x] 17-01-PLAN.md — Cookie-less gender navigation refactor (SEO-17-01, SEO-17-02)

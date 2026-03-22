@@ -30,6 +30,13 @@ export const faqsType = defineType({
               title: 'Icon',
               type: 'image',
               options: { hotspot: false },
+              fields: [
+                defineField({
+                  name: 'alt',
+                  type: 'localizedString',
+                  title: 'Alt Text',
+                }),
+              ],
             }),
             defineField({
               name: 'label',

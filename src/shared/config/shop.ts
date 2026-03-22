@@ -1,5 +1,5 @@
-// Default gender for users without a gender cookie
-export const DEFAULT_GENDER = 'woman' as const;
+// Default gender for users when not specified in URL
+export const DEFAULT_GENDER = 'woman';
 
 // All supported genders (used for routing and segmentation)
 export const GENDERS = ['woman', 'man'] as const;

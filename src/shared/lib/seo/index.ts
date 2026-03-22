@@ -8,3 +8,4 @@ export {
   generateProductJsonLd,
   generateBreadcrumbJsonLd,
 } from './jsonld';
+export { getProductAlt } from './getImageAlt';

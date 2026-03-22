@@ -26,6 +26,11 @@ export const collectionsWithPreviews = defineType({
           name: 'preview',
           fields: [
             defineField({
+              name: 'alt',
+              type: 'localizedString',
+              title: 'Alt Text',
+            }),
+            defineField({
               type: 'slug',
               name: 'handle',
             }),

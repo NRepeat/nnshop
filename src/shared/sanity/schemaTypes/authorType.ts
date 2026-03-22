@@ -24,6 +24,13 @@ export const authorType = defineType({
       options: {
         hotspot: true,
       },
+      fields: [
+        defineField({
+          name: 'alt',
+          type: 'localizedString',
+          title: 'Alt Text',
+        }),
+      ],
     }),
     defineField({
       name: 'bio',
