@@ -138,7 +138,6 @@ export default async function RootLayout(props: RootProps) {
             gtag('config', 'G-05RL9JZJKK', { send_page_view: false });
           `}
         </Script>
-        <ClarityInit />
         <Script
           id="pulse-live-chat"
           src="/assets/pulse/livechat/loader.js"
@@ -169,6 +168,7 @@ export default async function RootLayout(props: RootProps) {
             <ConsentBanner />
             <GA4PageView />
             <GA4Identify />
+            <ClarityInit />
           </ScrollDirectionProvider>
         </Providers>
         <Suspense>
