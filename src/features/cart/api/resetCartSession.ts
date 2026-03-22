@@ -32,8 +32,8 @@ const resetCartSession = async (completedOrderId?: string) => {
           },
         });
         if (!sessionCart) {
-          console.warn('Cart not found sessionCart throwing error.');
-          throw new Error('Cart not found');
+          console.warn('Cart not found — already reset, skipping.');
+          return;
         }
         await tx.cart.update({
           where: {
