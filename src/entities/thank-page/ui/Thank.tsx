@@ -63,6 +63,16 @@ export const Thank = async ({
   const shipping = shopifyOrder?.totalShippingPriceSet?.presentmentMoney;
   const total = shopifyOrder?.totalPriceSet?.presentmentMoney;
   const currencySymbol = total ? getCurrencySymbol(total.currencyCode) : 'грн';
+
+  // Discount = subtotal + shipping - total (works when there are no taxes)
+  const discountAmount = subtotal && total
+    ? Math.round(
+        (Number(subtotal.amount) +
+          Number(shipping?.amount ?? 0) -
+          Number(total.amount)) *
+          100,
+      ) / 100
+    : 0;
   const email = shopifyOrder?.email || session.user.email;
 
   const orderDate = dbOrder?.createdAt
@@ -176,6 +186,12 @@ export const Thank = async ({
                         ? t('free')
                         : `${Math.round(Number(shipping.amount))} ${getCurrencySymbol(shipping.currencyCode)}`}
                     </span>
+                  </div>
+                )}
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-xs text-green-600">
+                    <span>{t('discount')}</span>
+                    <span>-{Math.round(discountAmount)} {currencySymbol}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm font-bold text-gray-900 pt-1 border-t border-gray-200">
