@@ -45,7 +45,7 @@ export default function PaymentForm({
     shouldFocusError: false,
     shouldUnregister: false,
     defaultValues: {
-      paymentMethod: defaultValues?.paymentMethod || 'pay-now',
+      paymentMethod: defaultValues?.paymentMethod || 'after-delivered',
       paymentProvider: defaultValues?.paymentProvider || 'liqpay',
       amount: amount,
       currency: currency || defaultValues?.currency,
