@@ -86,7 +86,11 @@ export async function POST(request: NextRequest) {
     // hold_wait — funds blocked.
     // Flips draft → false in DB, then fires process-order to keyCRM + eSputnik.
     // The Shopify order was created with sendReceipt: false, so no Shopify email is ever sent.
-    if (paymentData.status === 'hold_wait' || paymentData.status === 'sandbox_hold_wait') {
+    if (
+      paymentData.status === 'hold_wait' ||
+      paymentData.status === 'sandbox_hold_wait' ||
+      paymentData.status === 'wait_secure'
+    ) {
       const rawOrderId = paymentData.order_id;
       if (rawOrderId) {
         const shopifyOrderId = rawOrderId.includes('gid://')
