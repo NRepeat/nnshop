@@ -7,6 +7,7 @@ import { headers } from 'next/headers';
 import { Suspense } from 'react';
 import { getProduct } from '@entities/product/api/getProduct';
 import { notFound } from 'next/navigation';
+import { isDevEmail, isDevOnlyHandle } from '@shared/lib/dev-access';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import { Heart } from 'lucide-react';
 import { Button } from '@shared/ui/button';
@@ -47,6 +48,9 @@ export default async function ProductPage({ params, searchParams }: Props) {
   const handle = decodeURIComponent(slug);
   setRequestLocale(locale);
 
+  if (isDevOnlyHandle(handle) && !(await isDevEmail())) {
+    notFound();
+  }
 
   return (
     <Suspense fallback={<ProductViewSkeleton handle={handle} />}>

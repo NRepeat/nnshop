@@ -13,6 +13,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
 import { COLLECTION_IS_BRAND_QUERY } from '@shared/sanity/lib/query';
 import { redirect, notFound } from 'next/navigation';
+import { isDevEmail, isDevOnlyHandle } from '@shared/lib/dev-access';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -95,6 +96,10 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   const decodedSlug = decodeURIComponent(slug);
   const allSlugs = await getCollectionSlugs();
   const resolvedHandle = resolveCollectionHandle(decodedSlug, gender, new Set(allSlugs));
+
+  if (isDevOnlyHandle(resolvedHandle) && !(await isDevEmail())) {
+    notFound();
+  }
 
   const [sanityCollection, { collection }] = await Promise.all([
     sanityFetch({
