@@ -23,7 +23,7 @@ export function OrderProcessing({
   prismaOrderId,
   shopifyOrderId,
   locale,
-  timeoutMs = 90_000,
+  timeoutMs = 45_000,
 }: OrderProcessingProps) {
   const router = useRouter();
   const cancelledRef = useRef(false);

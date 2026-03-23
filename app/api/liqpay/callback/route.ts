@@ -1,6 +1,7 @@
 import LiqPay from '@entities/liqpay/model';
 import resetCartSession from '@features/cart/api/resetCartSession';
 import { savePaymentInfo } from '@features/checkout/payment/api/savePaymentInfo';
+import { cancelShopifyOrder } from '@features/order/api/cancelShopifyOrder';
 import { PaymentInfo } from '@features/checkout/payment/schema/paymentSchema';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
@@ -326,6 +327,27 @@ export async function POST(request: NextRequest) {
         { status: 200 },
       );
     }
+    // Payment failed / cancelled by user — cancel the pending Shopify order immediately
+    // so the polling UI detects notFound and redirects back to payment without waiting.
+    if (
+      paymentData.status === 'failure' ||
+      paymentData.status === 'error' ||
+      paymentData.status === 'reversed' ||
+      paymentData.status === 'expired'
+    ) {
+      const rawOrderId = paymentData.order_id;
+      if (rawOrderId) {
+        const shopifyOrderId = rawOrderId.includes('gid://')
+          ? rawOrderId
+          : `gid://shopify/Order/${rawOrderId}`;
+        const order = await prisma.order.findUnique({ where: { shopifyOrderId } });
+        if (order?.draft) {
+          await cancelShopifyOrder(order.id, shopifyOrderId);
+        }
+      }
+      return NextResponse.json({ message: 'Payment cancelled' });
+    }
+
     return NextResponse.json({ message: 'Callback received' });
   } catch (error) {
     await captureServerError(error, {
