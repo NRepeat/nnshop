@@ -22,26 +22,16 @@ const ORDER_MARK_AS_PAID_MUTATION = `
  * Fetches Shopify order details needed to build the process-order payload.
  * Called from hold_wait to fire keyCRM + eSputnik after payment is confirmed.
  */
+// PII fields (email, phone, shippingAddress) are omitted — fetched separately
+// via itali-shop-app /api/customer to avoid Shopify plan PII restrictions.
 const GET_ORDER_FOR_PROCESS_ORDER = `
   query getOrderForProcessOrder($id: ID!) {
     order(id: $id) {
       id
       name
-      email
-      phone
       note
       totalDiscountsSet { shopMoney { amount } }
       totalPriceSet { shopMoney { currencyCode } }
-      shippingAddress {
-        firstName
-        lastName
-        address1
-        address2
-        city
-        countryCode
-        zip
-        phone
-      }
       lineItems(first: 50) {
         edges {
           node {
@@ -132,15 +122,55 @@ export async function POST(request: NextRequest) {
             const shopifyOrder = shopifyData?.order;
             if (shopifyOrder) {
               const numericOrderId = shopifyOrderId.replace('gid://shopify/Order/', '');
-              const shippingAddr = shopifyOrder.shippingAddress;
               const totalDiscount = Number(shopifyOrder.totalDiscountsSet?.shopMoney?.amount ?? 0);
               const currency = shopifyOrder.totalPriceSet?.shopMoney?.currencyCode ?? paymentData.currency;
+
+              // Fetch PII (email, phone, shippingAddress) from itali-shop-app
+              let customerEmail = '';
+              let customerPhone = '';
+              let shippingAddr: Record<string, string | null> | null = null;
+              try {
+                const dbUser = await prisma.user.findUnique({
+                  where: { id: order.id },
+                  select: { email: true },
+                });
+                const userEmail = dbUser?.email;
+                if (userEmail) {
+                  const customerRes = await fetch(
+                    `${PRICE_APP_URL}/api/customer?email=${encodeURIComponent(userEmail)}`,
+                  );
+                  if (customerRes.ok) {
+                    const customerJson = await customerRes.json();
+                    const cust = customerJson.customer;
+                    customerEmail = cust?.email || '';
+                    customerPhone = cust?.phone || '';
+                    const matchingOrder = cust?.orders?.find(
+                      (o: any) => o.name === shopifyOrder.name,
+                    );
+                    const addr = matchingOrder?.shippingAddress ?? cust?.defaultAddress;
+                    if (addr) {
+                      shippingAddr = {
+                        first_name: addr.firstName || '',
+                        last_name: addr.lastName || '',
+                        address1: addr.address1 || '',
+                        address2: addr.address2 || null,
+                        city: addr.city || '',
+                        country: addr.country || '',
+                        zip: addr.zip || '',
+                        phone: addr.phone || '',
+                      };
+                    }
+                  }
+                }
+              } catch {
+                // non-blocking — proceed with empty customer info
+              }
 
               const webhookPayload = {
                 id: Number(numericOrderId),
                 name: shopifyOrder.name,
-                email: shopifyOrder.email || '',
-                phone: shopifyOrder.phone || '',
+                email: customerEmail,
+                phone: customerPhone,
                 created_at: new Date().toISOString(),
                 currency,
                 financial_status: 'pending',
@@ -148,23 +178,12 @@ export async function POST(request: NextRequest) {
                 note_attributes: [],
                 payment_gateway_names: ['liqpay'],
                 customer: {
-                  first_name: shippingAddr?.firstName || '',
-                  last_name: shippingAddr?.lastName || '',
-                  email: shopifyOrder.email || '',
-                  phone: shopifyOrder.phone || '',
+                  first_name: shippingAddr?.first_name || '',
+                  last_name: shippingAddr?.last_name || '',
+                  email: customerEmail,
+                  phone: customerPhone,
                 },
-                shipping_address: shippingAddr
-                  ? {
-                      first_name: shippingAddr.firstName || '',
-                      last_name: shippingAddr.lastName || '',
-                      address1: shippingAddr.address1 || '',
-                      address2: shippingAddr.address2 || null,
-                      city: shippingAddr.city || '',
-                      country: shippingAddr.countryCode || '',
-                      zip: shippingAddr.zip || '',
-                      phone: shippingAddr.phone || '',
-                    }
-                  : null,
+                shipping_address: shippingAddr,
                 line_items: (shopifyOrder.lineItems?.edges ?? [])
                   .filter((e: any) => e.node.quantity > 0)
                   .map((e: any) => {
