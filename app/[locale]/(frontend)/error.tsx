@@ -14,6 +14,12 @@ export default function Error({
   const posthog = usePostHog();
 
   useEffect(() => {
+    // After a new deployment, clients with stale JS bundles get "Failed to find Server Action".
+    // Reloading fetches the new bundle and resolves the mismatch automatically.
+    if (error.message?.includes('Failed to find Server Action')) {
+      window.location.reload();
+      return;
+    }
     posthog?.captureException(error);
   }, [error, posthog]);
 

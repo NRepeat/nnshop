@@ -20,7 +20,8 @@ import Script from 'next/script';
 import { ConsentBanner } from '@features/consent/ui/ConsentBanner';
 import { GA4Identify } from '@shared/lib/analytics/GA4Identify';
 import { GA4PageView } from '@shared/lib/analytics/GA4PageView';
-import { ClarityInit } from '@shared/lib/analytics/ClarityInit';
+import { PostHogPageView } from '@shared/lib/posthog/PostHogPageView';
+import { PostHogIdentify } from '@shared/lib/posthog/PostHogIdentify';
 
 const jostSans = Onest({
   variable: '--font-jost-sans',
@@ -183,7 +184,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             <ConsentBanner />
             <GA4PageView />
             <GA4Identify />
-            <ClarityInit />
+            <Suspense>
+              <PostHogPageView />
+            </Suspense>
+            <Suspense>
+              <PostHogIdentify />
+            </Suspense>
           </ScrollDirectionProvider>
         </Providers>
         <Suspense>
