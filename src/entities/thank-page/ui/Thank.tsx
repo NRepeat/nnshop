@@ -18,7 +18,7 @@ import {
 } from '@shared/ui/card';
 import { connection } from 'next/server';
 import { GA4PurchaseEvent } from '@shared/lib/analytics/GA4PurchaseEvent';
-import { cancelShopifyOrder } from '@features/order/api/cancelShopifyOrder';
+import { OrderProcessing } from './OrderProcessing';
 
 export const Thank = async ({
   params,
@@ -35,37 +35,35 @@ export const Thank = async ({
   const searchId = decodeURIComponent(orderId);
   let displayOrderId = `#${searchId}`;
 
-  const findOrder = () =>
-    prisma.order.findFirst({
-      where: {
-        userId: session.user.id,
-        OR: [
-          { orderName: { contains: searchId } },
-          { shopifyOrderId: { contains: searchId } },
-          { shopifyDraftOrderId: { contains: searchId } },
-        ],
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-  // Poll for up to ~14s (7 × 2s) waiting for LiqPay callback to flip draft → false.
-  // The callback races the browser redirect, so we give it time before giving up.
-  const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
-  let dbOrder = await findOrder();
-  for (let i = 0; i < 7 && dbOrder?.draft; i++) {
-    await sleep(2000);
-    dbOrder = await findOrder();
-  }
+  const dbOrder = await prisma.order.findFirst({
+    where: {
+      userId: session.user.id,
+      OR: [
+        { orderName: { contains: searchId } },
+        { shopifyOrderId: { contains: searchId } },
+        { shopifyDraftOrderId: { contains: searchId } },
+      ],
+    },
+    orderBy: { createdAt: 'desc' },
+  });
 
   console.log(dbOrder, 'dbOrder');
   console.log('[Thank] dbOrder:', JSON.stringify(dbOrder));
 
-  if (!dbOrder || dbOrder.draft) {
-    console.log('[Thank] draft=true or no order — cancelling and redirecting. shopifyOrderId:', dbOrder?.shopifyOrderId);
-    if (dbOrder?.draft && dbOrder.shopifyOrderId) {
-      await cancelShopifyOrder(dbOrder.id, dbOrder.shopifyOrderId);
-    }
+  // Order still pending — show polling UI; client will refresh once callback fires
+  if (!dbOrder) {
     redirect({ href: '/checkout/payment', locale });
+  }
+
+  if (dbOrder.draft) {
+    return (
+      <OrderProcessing
+        orderId={searchId}
+        prismaOrderId={dbOrder.id}
+        shopifyOrderId={dbOrder.shopifyOrderId ?? ''}
+        locale={locale}
+      />
+    );
   }
 
   if (dbOrder?.orderName) displayOrderId = dbOrder.orderName;
