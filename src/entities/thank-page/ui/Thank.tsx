@@ -52,7 +52,7 @@ export const Thank = async ({
 
   // Order still pending — show polling UI; client will refresh once callback fires
   if (!dbOrder) {
-    redirect({ href: '/checkout/payment', locale });
+    return redirect({ href: '/checkout/payment', locale });
   }
 
   if (dbOrder.draft) {
