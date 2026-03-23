@@ -125,42 +125,35 @@ export async function POST(request: NextRequest) {
               const totalDiscount = Number(shopifyOrder.totalDiscountsSet?.shopMoney?.amount ?? 0);
               const currency = shopifyOrder.totalPriceSet?.shopMoney?.currencyCode ?? paymentData.currency;
 
-              // Fetch PII (email, phone, shippingAddress) from itali-shop-app
+              // Get customer PII from our own DB (entered by user during checkout)
               let customerEmail = '';
               let customerPhone = '';
               let shippingAddr: Record<string, string | null> | null = null;
               try {
-                const dbUser = await prisma.user.findUnique({
-                  where: { id: order.id },
-                  select: { email: true },
-                });
-                const userEmail = dbUser?.email;
-                if (userEmail) {
-                  const customerRes = await fetch(
-                    `${PRICE_APP_URL}/api/customer?email=${encodeURIComponent(userEmail)}`,
-                  );
-                  if (customerRes.ok) {
-                    const customerJson = await customerRes.json();
-                    const cust = customerJson.customer;
-                    customerEmail = cust?.email || '';
-                    customerPhone = cust?.phone || '';
-                    const matchingOrder = cust?.orders?.find(
-                      (o: any) => o.name === shopifyOrder.name,
-                    );
-                    const addr = matchingOrder?.shippingAddress ?? cust?.defaultAddress;
-                    if (addr) {
-                      shippingAddr = {
-                        first_name: addr.firstName || '',
-                        last_name: addr.lastName || '',
-                        address1: addr.address1 || '',
-                        address2: addr.address2 || null,
-                        city: addr.city || '',
-                        country: addr.country || '',
-                        zip: addr.zip || '',
-                        phone: addr.phone || '',
-                      };
-                    }
-                  }
+                const [contactInfo, deliveryInfo] = await Promise.all([
+                  prisma.contactInformation.findUnique({ where: { userId: order.userId } }),
+                  prisma.deliveryInformation.findUnique({
+                    where: { userId: order.userId },
+                    include: { novaPoshtaDepartment: true },
+                  }),
+                ]);
+                if (contactInfo) {
+                  customerEmail = contactInfo.email;
+                  customerPhone = contactInfo.phone;
+                  const address = deliveryInfo?.address ||
+                    deliveryInfo?.novaPoshtaDepartment?.shortName || '';
+                  const city = deliveryInfo?.city ||
+                    deliveryInfo?.novaPoshtaDepartment?.city || '';
+                  shippingAddr = {
+                    first_name: contactInfo.name,
+                    last_name: contactInfo.lastName,
+                    address1: address,
+                    address2: null,
+                    city,
+                    country: contactInfo.countryCode || 'UA',
+                    zip: deliveryInfo?.postalCode || '',
+                    phone: contactInfo.phone,
+                  };
                 }
               } catch {
                 // non-blocking — proceed with empty customer info
