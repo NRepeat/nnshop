@@ -138,6 +138,21 @@ export async function POST(request: NextRequest) {
       'hold_completion',
     );
     console.log(`[liqpay/capture] hold_completion response:`, JSON.stringify(liqpayResult));
+
+    // LiqPay returned an error result (e.g. payment not yet in hold_wait state)
+    if (liqpayResult?.result === 'error') {
+      console.warn(`[liqpay/capture] hold_completion error for ${order.orderName}: ${liqpayResult.err_description}`);
+      if (paymentInfo) {
+        await prisma.paymentInformation.update({
+          where: { id: paymentInfo.id },
+          data: { description: `capture_failed: ${liqpayResult.err_description} (${new Date().toISOString()})` },
+        }).catch(() => {});
+      }
+      return NextResponse.json(
+        { error: 'LiqPay hold_completion error', detail: liqpayResult.err_description },
+        { status: 422 },
+      );
+    }
   } catch (err) {
     console.error('[liqpay/capture] hold_completion failed after retries:', err);
     // Reset soft lock so it can be retried manually
