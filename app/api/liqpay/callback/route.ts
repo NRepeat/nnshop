@@ -221,7 +221,8 @@ export async function POST(request: NextRequest) {
     }
 
     // hold_wait / sandbox_hold_wait — funds are blocked and ready to capture.
-    // Triggers capture directly; does NOT re-fire process-order (already done on wait_secure).
+    // 1. Flip draft → false if still in draft (sandbox or skipped wait_secure).
+    // 2. If CRM already confirmed the order (capture_pending flag), auto-trigger capture now.
     if (
       paymentData.status === 'hold_wait' ||
       paymentData.status === 'sandbox_hold_wait'
@@ -232,7 +233,11 @@ export async function POST(request: NextRequest) {
           ? rawOrderId
           : `gid://shopify/Order/${rawOrderId}`;
 
-        const order = await prisma.order.findUnique({ where: { shopifyOrderId } });
+        const order = await prisma.order.findUnique({
+          where: { shopifyOrderId },
+          include: { user: { include: { paymentInformation: true } } },
+        });
+
         if (order && order.draft) {
           // Ensure draft is flipped (in case wait_secure was skipped, e.g. sandbox)
           const paymentInfo: PaymentInfo = {
@@ -246,6 +251,26 @@ export async function POST(request: NextRequest) {
           await savePaymentInfo(paymentInfo, shopifyOrderId);
           await prisma.order.update({ where: { id: order.id }, data: { draft: false } });
           try { await resetCartSession(order.id); } catch { /* non-blocking */ }
+        }
+
+        // If CRM confirmed the order while payment was still in wait_secure,
+        // the capture endpoint marked it capture_pending. Trigger capture now.
+        if (order) {
+          const desc = order.user?.paymentInformation?.description ?? '';
+          if (desc.startsWith('capture_pending')) {
+            console.log(`[callback hold_wait] capture_pending detected for ${shopifyOrderId} — triggering auto-capture`);
+            const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? '';
+            const secret = process.env.INTERNAL_API_SECRET;
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (secret) headers['Authorization'] = `Bearer ${secret}`;
+            fetch(`${siteUrl}/api/liqpay/capture`, {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({ shopifyOrderId }),
+            })
+              .then((r) => console.log(`[callback hold_wait] auto-capture response: ${r.status}`))
+              .catch((err) => console.error('[callback hold_wait] auto-capture failed:', err));
+          }
         }
       }
       return NextResponse.json({ message: 'Hold received' });

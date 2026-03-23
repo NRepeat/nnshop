@@ -141,12 +141,25 @@ export async function POST(request: NextRequest) {
 
     // LiqPay returned an error result (e.g. payment not yet in hold_wait state)
     if (liqpayResult?.result === 'error') {
-      console.warn(`[liqpay/capture] hold_completion error for ${order.orderName}: ${liqpayResult.err_description}`);
+      const isPendingVerification = liqpayResult.status === 'wait_secure';
+      console.warn(
+        `[liqpay/capture] hold_completion error for ${order.orderName} (liqpay_status=${liqpayResult.status}): ${liqpayResult.err_description}`,
+      );
       if (paymentInfo) {
+        const desc = isPendingVerification
+          ? `capture_pending: ${new Date().toISOString()}`
+          : `capture_failed: ${liqpayResult.err_description} (${new Date().toISOString()})`;
         await prisma.paymentInformation.update({
           where: { id: paymentInfo.id },
-          data: { description: `capture_failed: ${liqpayResult.err_description} (${new Date().toISOString()})` },
+          data: { description: desc },
         }).catch(() => {});
+      }
+      if (isPendingVerification) {
+        console.log(`[liqpay/capture] payment still in wait_secure for ${order.orderName} — marked capture_pending, queue will retry`);
+        return NextResponse.json(
+          { status: 'pending', message: 'Payment pending bank verification' },
+          { status: 202 },
+        );
       }
       return NextResponse.json(
         { error: 'LiqPay hold_completion error', detail: liqpayResult.err_description },
