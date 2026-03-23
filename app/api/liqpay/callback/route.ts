@@ -250,6 +250,12 @@ export async function POST(request: NextRequest) {
         orderId: order.id,
       };
       await savePaymentInfo(paymentInfo, shopifyOrderId);
+
+      // Flip draft → false in case hold_wait was skipped (sandbox / direct charge)
+      if (order.draft) {
+        await prisma.order.update({ where: { id: order.id }, data: { draft: false } });
+      }
+
       try {
         await resetCartSession(order.id);
       } catch {

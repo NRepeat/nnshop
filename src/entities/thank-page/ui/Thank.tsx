@@ -34,27 +34,35 @@ export const Thank = async ({
 
   const searchId = decodeURIComponent(orderId);
   let displayOrderId = `#${searchId}`;
-  const dbOrder = await prisma.order.findFirst({
-    where: {
-      userId: session.user.id,
-      OR: [
-        { orderName: { contains: searchId } },
-        { shopifyOrderId: { contains: searchId } },
-        { shopifyDraftOrderId: { contains: searchId } }, // draft order flow
-      ],
-    },
-    orderBy: { createdAt: 'desc' },
-  });
-  console.log(dbOrder, 'dbOrder');
 
-  // If the order is still in draft state the user cancelled (or abandoned) the LiqPay payment.
-  // The hold_wait callback flips draft → false only after payment is confirmed.
+  const findOrder = () =>
+    prisma.order.findFirst({
+      where: {
+        userId: session.user.id,
+        OR: [
+          { orderName: { contains: searchId } },
+          { shopifyOrderId: { contains: searchId } },
+          { shopifyDraftOrderId: { contains: searchId } },
+        ],
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+  // Poll for up to ~14s (7 × 2s) waiting for LiqPay callback to flip draft → false.
+  // The callback races the browser redirect, so we give it time before giving up.
+  const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+  let dbOrder = await findOrder();
+  for (let i = 0; i < 7 && dbOrder?.draft; i++) {
+    await sleep(2000);
+    dbOrder = await findOrder();
+  }
+
+  console.log(dbOrder, 'dbOrder');
   console.log('[Thank] dbOrder:', JSON.stringify(dbOrder));
+
   if (!dbOrder || dbOrder.draft) {
     console.log('[Thank] draft=true or no order — cancelling and redirecting. shopifyOrderId:', dbOrder?.shopifyOrderId);
     if (dbOrder?.draft && dbOrder.shopifyOrderId) {
-      // Cancel the PENDING Shopify order so it doesn't litter the admin as an unpaid order.
-      // notifyCustomer: false — no email sent. DB record deleted on success.
       await cancelShopifyOrder(dbOrder.id, dbOrder.shopifyOrderId);
     }
     redirect({ href: '/checkout/payment', locale });
