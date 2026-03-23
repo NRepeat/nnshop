@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: 'Already voided', orderName: order.orderName });
   }
 
-  const numericOrderId = order.shopifyOrderId.split('/').pop()!;
+  const numericOrderId = order.shopifyOrderId!.split('/').pop()!;
 
   // ── Resolve amount ─────────────────────────────────────────────────────────
   let amount = paymentInfo?.amount;

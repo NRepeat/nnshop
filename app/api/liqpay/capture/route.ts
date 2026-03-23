@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
     console.log(`[liqpay/capture] DB marked as "capturing" for ${order.orderName}`);
   }
 
-  const numericOrderId = order.shopifyOrderId.split('/').pop()!;
+  const numericOrderId = order.shopifyOrderId!.split('/').pop()!;
 
   // ── Resolve amount ────────────────────────────────────────────────────────
   let amount = paymentInfo?.amount;

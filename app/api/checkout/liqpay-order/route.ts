@@ -10,7 +10,10 @@ import { getCart } from '@entities/cart/api/get';
 /**
  * POST /api/checkout/liqpay-order
  *
- * Creates a Shopify order and returns LiqPay form params.
+ * Creates a Shopify order (sendReceipt: false → no Shopify email) and returns LiqPay form params.
+ * The order is saved with draft: true in our DB. The hold_wait callback flips it to false
+ * and fires process-order (keyCRM + eSputnik) only after payment is confirmed.
+ *
  * Uses a regular API route (not a server action) to avoid Next.js RSC refresh,
  * which would race against the form submission to liqpay.ua and navigate
  * the user back to the checkout page ("Falling back to browser navigation").
@@ -30,8 +33,8 @@ export async function POST(req: NextRequest) {
     if (!completeCheckoutData) {
       return NextResponse.json({ error: 'Checkout data missing' }, { status: 400 });
     }
- 
-    // 2. Fetchf cart for rro_info price data (before order creation, cart still exists)
+
+    // 2. Fetch cart for rro_info price data (before order creation, cart still exists)
     const cartData = await getCart({ userId: session.user.id, locale });
     const cartLineItems = (cartData && 'cart' in cartData ? cartData.cart : null)?.lines?.edges?.map((e: any) => {
       const variantGid: string = e.node.merchandise.id;
@@ -44,8 +47,13 @@ export async function POST(req: NextRequest) {
       };
     });
 
-    // 3. Create the Shopify order
-    const orderResult = await createOrder(completeCheckoutData, locale, false, 'pay-now');
+    // 3. Create the Shopify order with sendReceipt: false (no Shopify email).
+    //    Saved as draft: true in DB — hold_wait callback confirms payment and flips to false.
+    //    process-order (keyCRM + eSputnik) is skipped here; fired in hold_wait instead.
+    const orderResult = await createOrder(completeCheckoutData, locale, false, 'pay-now', {
+      skipProcessOrder: true,
+      draftInDb: true,
+    });
     if (!orderResult.success || !orderResult.order) {
       return NextResponse.json(
         { error: orderResult.errors?.[0] || 'Failed to create order' },
@@ -53,11 +61,9 @@ export async function POST(req: NextRequest) {
       );
     }
     const createdOrder = orderResult.order;
-    console.log('[liqpay-order] order created:', createdOrder.id);
+    console.log('[liqpay-order] order created (draft):', createdOrder.id);
 
     // Use Shopify's confirmed order total so LiqPay amount matches the order exactly.
-    // The frontend `amount` is a raw float; Shopify rounds per line-item via toFixed(2),
-    // which can produce a 1-2 kopeck difference.
     const shopifyTotal = parseFloat(createdOrder.totalPriceSet.shopMoney.amount);
     const liqpayAmount = shopifyTotal > 0 ? shopifyTotal : amount;
     const liqpayCurrency = createdOrder.totalPriceSet.shopMoney.currencyCode || currency;

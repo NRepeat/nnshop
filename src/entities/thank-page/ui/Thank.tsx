@@ -1,4 +1,4 @@
-import { Link } from '@shared/i18n/navigation';
+import { Link, redirect } from '@shared/i18n/navigation';
 import { getTranslations } from 'next-intl/server';
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
@@ -18,6 +18,7 @@ import {
 } from '@shared/ui/card';
 import { connection } from 'next/server';
 import { GA4PurchaseEvent } from '@shared/lib/analytics/GA4PurchaseEvent';
+import { cancelShopifyOrder } from '@features/order/api/cancelShopifyOrder';
 
 export const Thank = async ({
   params,
@@ -39,11 +40,26 @@ export const Thank = async ({
       OR: [
         { orderName: { contains: searchId } },
         { shopifyOrderId: { contains: searchId } },
+        { shopifyDraftOrderId: { contains: searchId } }, // draft order flow
       ],
     },
     orderBy: { createdAt: 'desc' },
   });
   console.log(dbOrder, 'dbOrder');
+
+  // If the order is still in draft state the user cancelled (or abandoned) the LiqPay payment.
+  // The hold_wait callback flips draft → false only after payment is confirmed.
+  console.log('[Thank] dbOrder:', JSON.stringify(dbOrder));
+  if (!dbOrder || dbOrder.draft) {
+    console.log('[Thank] draft=true or no order — cancelling and redirecting. shopifyOrderId:', dbOrder?.shopifyOrderId);
+    if (dbOrder?.draft && dbOrder.shopifyOrderId) {
+      // Cancel the PENDING Shopify order so it doesn't litter the admin as an unpaid order.
+      // notifyCustomer: false — no email sent. DB record deleted on success.
+      await cancelShopifyOrder(dbOrder.id, dbOrder.shopifyOrderId);
+    }
+    redirect({ href: '/checkout/payment', locale });
+  }
+
   if (dbOrder?.orderName) displayOrderId = dbOrder.orderName;
 
   let shopifyOrder = null;

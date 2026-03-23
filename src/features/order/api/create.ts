@@ -74,6 +74,7 @@ export async function createOrder(
   locale: string = 'uk',
   sendReceipt: boolean = false,
   paymentMethod?: string,
+  options: { skipProcessOrder?: boolean; draftInDb?: boolean } = {},
 ): Promise<{
   success: boolean;
   order?: OrderResult;
@@ -392,7 +393,7 @@ export async function createOrder(
           shopifyOrderId: createdOrder.id,
           orderName: createdOrder.name,
           userId: session.user.id,
-          draft: false,
+          draft: options.draftInDb ?? false,
           usedDiscountCodes: applicableDiscounts.map((d) => d.code.toUpperCase()),
         },
       });
@@ -408,6 +409,11 @@ export async function createOrder(
 
     // Trigger KeyCRM + eSputnik immediately (bypasses slow Shopify webhook)
     // Fire-and-forget — order already exists in Shopify, don't block the user
+    // Skipped for LiqPay orders: process-order is fired after hold_wait callback instead,
+    // so CRM entry + email are only created once payment is actually confirmed.
+    if (options.skipProcessOrder) {
+      return { success: true, order: createdOrder };
+    }
     try {
       const numericOrderId = createdOrder.id.replace('gid://shopify/Order/', '');
       const webhookPayload = {

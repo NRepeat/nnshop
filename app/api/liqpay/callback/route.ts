@@ -5,7 +5,7 @@ import { PaymentInfo } from '@features/checkout/payment/schema/paymentSchema';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { captureServerEvent, captureServerError } from '@shared/lib/posthog/posthog-server';
-import { PRICE_APP_URL, INTERNAL_API_SECRET } from '@shared/config/shop';
+import { PRICE_APP_URL, INTERNAL_API_SECRET, SHOPIFY_STORE_DOMAIN } from '@shared/config/shop';
 import { NextRequest, NextResponse } from 'next/server';
 
 const ORDER_MARK_AS_PAID_MUTATION = `
@@ -13,6 +13,48 @@ const ORDER_MARK_AS_PAID_MUTATION = `
     orderMarkAsPaid(input: $input) {
       order { id }
       userErrors { field message }
+    }
+  }
+`;
+
+/**
+ * Fetches Shopify order details needed to build the process-order payload.
+ * Called from hold_wait to fire keyCRM + eSputnik after payment is confirmed.
+ */
+const GET_ORDER_FOR_PROCESS_ORDER = `
+  query getOrderForProcessOrder($id: ID!) {
+    order(id: $id) {
+      id
+      name
+      email
+      phone
+      note
+      totalDiscountsSet { shopMoney { amount } }
+      totalPriceSet { shopMoney { currencyCode } }
+      shippingAddress {
+        firstName
+        lastName
+        address1
+        address2
+        city
+        countryCode
+        zip
+        phone
+      }
+      lineItems(first: 50) {
+        edges {
+          node {
+            title
+            quantity
+            originalUnitPriceSet { shopMoney { amount } }
+            variant {
+              id
+              title
+              product { id }
+            }
+          }
+        }
+      }
     }
   }
 `;
@@ -39,13 +81,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
     const paymentData = liqpay.decodeData(data);
-    console.log(paymentData,'paymentData')
+    console.log(paymentData, 'paymentData');
 
-    // hold_wait — funds blocked, order not yet paid
+    // hold_wait — funds blocked.
+    // Flips draft → false in DB, then fires process-order to keyCRM + eSputnik.
+    // The Shopify order was created with sendReceipt: false, so no Shopify email is ever sent.
     if (paymentData.status === 'hold_wait' || paymentData.status === 'sandbox_hold_wait') {
       const rawOrderId = paymentData.order_id;
       if (rawOrderId) {
-        const shopifyOrderId = rawOrderId.includes('gid://') ? rawOrderId : `gid://shopify/Order/${rawOrderId}`;
+        const shopifyOrderId = rawOrderId.includes('gid://')
+          ? rawOrderId
+          : `gid://shopify/Order/${rawOrderId}`;
+
         const order = await prisma.order.findUnique({ where: { shopifyOrderId } });
         if (order) {
           const paymentInfo: PaymentInfo = {
@@ -57,10 +104,105 @@ export async function POST(request: NextRequest) {
             orderId: order.id,
           };
           await savePaymentInfo(paymentInfo, shopifyOrderId);
+
+          // Confirm payment: flip draft → false and clear cart
+          await prisma.order.update({
+            where: { id: order.id },
+            data: { draft: false },
+          });
+
           try {
             await resetCartSession(order.id);
           } catch {
             // Cart may already be cleared — non-blocking
+          }
+
+          // Fire process-order to keyCRM + eSputnik (first time order enters CRM)
+          // Fetch the order from Shopify to build the payload
+          try {
+            const shopifyData = await adminClient.client.request<any, { id: string }>({
+              query: GET_ORDER_FOR_PROCESS_ORDER,
+              variables: { id: shopifyOrderId },
+            });
+            const shopifyOrder = shopifyData?.order;
+            if (shopifyOrder) {
+              const numericOrderId = shopifyOrderId.replace('gid://shopify/Order/', '');
+              const shippingAddr = shopifyOrder.shippingAddress;
+              const totalDiscount = Number(shopifyOrder.totalDiscountsSet?.shopMoney?.amount ?? 0);
+              const currency = shopifyOrder.totalPriceSet?.shopMoney?.currencyCode ?? paymentData.currency;
+
+              const webhookPayload = {
+                id: Number(numericOrderId),
+                name: shopifyOrder.name,
+                email: shopifyOrder.email || '',
+                phone: shopifyOrder.phone || '',
+                created_at: new Date().toISOString(),
+                currency,
+                financial_status: 'pending',
+                note: shopifyOrder.note || '',
+                note_attributes: [],
+                payment_gateway_names: ['liqpay'],
+                customer: {
+                  first_name: shippingAddr?.firstName || '',
+                  last_name: shippingAddr?.lastName || '',
+                  email: shopifyOrder.email || '',
+                  phone: shopifyOrder.phone || '',
+                },
+                shipping_address: shippingAddr
+                  ? {
+                      first_name: shippingAddr.firstName || '',
+                      last_name: shippingAddr.lastName || '',
+                      address1: shippingAddr.address1 || '',
+                      address2: shippingAddr.address2 || null,
+                      city: shippingAddr.city || '',
+                      country: shippingAddr.countryCode || '',
+                      zip: shippingAddr.zip || '',
+                      phone: shippingAddr.phone || '',
+                    }
+                  : null,
+                line_items: (shopifyOrder.lineItems?.edges ?? [])
+                  .filter((e: any) => e.node.quantity > 0)
+                  .map((e: any) => {
+                    const node = e.node;
+                    const variant = node.variant;
+                    return {
+                      title: node.title,
+                      variant_title:
+                        variant?.title && variant.title !== 'Default Title' ? variant.title : '',
+                      quantity: node.quantity,
+                      price: node.originalUnitPriceSet?.shopMoney?.amount || '0',
+                      product_id: Number(
+                        variant?.product?.id?.replace('gid://shopify/Product/', '') || 0,
+                      ),
+                      variant_id: Number(
+                        variant?.id?.replace('gid://shopify/ProductVariant/', '') || 0,
+                      ),
+                      sku: '',
+                    };
+                  }),
+                shipping_lines: [],
+                applied_discount:
+                  totalDiscount > 0
+                    ? { type: 'total', title: 'Знижка', amount: totalDiscount.toFixed(2) }
+                    : null,
+              };
+
+              const internalHeaders: Record<string, string> = {
+                'Content-Type': 'application/json',
+              };
+              if (INTERNAL_API_SECRET)
+                internalHeaders['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
+
+              fetch(`${PRICE_APP_URL}/api/internal/process-order`, {
+                method: 'POST',
+                headers: internalHeaders,
+                body: JSON.stringify({ payload: webhookPayload, shop: SHOPIFY_STORE_DOMAIN }),
+              }).catch((err) => {
+                console.error('[LiqPay callback] process-order call failed:', err);
+              });
+            }
+          } catch (fetchErr) {
+            console.error('[LiqPay callback] failed to fetch order for process-order:', fetchErr);
           }
         }
       }
@@ -111,13 +253,18 @@ export async function POST(request: NextRequest) {
       try {
         await resetCartSession(order.id);
       } catch {
-        // Cart may already be cleared from PaymentForm — non-blocking
+        // Cart may already be cleared from hold_wait — non-blocking
       }
 
       // Mark order as paid in Shopify so orders/paid webhook fires
       try {
         const result = await adminClient.client.request<
-          { orderMarkAsPaid: { order: { id: string } | null; userErrors: Array<{ field: string; message: string }> } },
+          {
+            orderMarkAsPaid: {
+              order: { id: string } | null;
+              userErrors: Array<{ field: string; message: string }>;
+            };
+          },
           { input: { id: string } }
         >({
           query: ORDER_MARK_AS_PAID_MUTATION,
