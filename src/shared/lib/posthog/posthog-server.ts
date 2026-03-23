@@ -1,11 +1,27 @@
+import { PostHog } from 'posthog-node';
+import { after } from 'next/server';
 import { logger } from './logger';
 
+function getClient() {
+  return new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+    host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+    flushAt: 1,
+    flushInterval: 0,
+  });
+}
+
 export async function captureServerEvent(
-  _distinctId: string,
-  _event: string,
-  _properties?: Record<string, unknown>,
+  distinctId: string,
+  event: string,
+  properties?: Record<string, unknown>,
 ) {
-  // PostHog removed — no-op
+  try {
+    const client = getClient();
+    client.capture({ distinctId, event, properties });
+    after(async () => { await client.shutdown(); });
+  } catch {
+    // non-blocking — never break request flow
+  }
 }
 
 export async function captureServerError(
@@ -29,4 +45,21 @@ export async function captureServerError(
       Object.entries(context.extra ?? {}).map(([k, v]) => [k, String(v)]),
     ),
   });
+
+  try {
+    const client = getClient();
+    client.capture({
+      distinctId: context.userId ?? 'server',
+      event: 'server_error',
+      properties: {
+        service: context.service,
+        action: context.action,
+        error: errorMessage,
+        ...context.extra,
+      },
+    });
+    after(async () => { await client.shutdown(); });
+  } catch {
+    // non-blocking
+  }
 }

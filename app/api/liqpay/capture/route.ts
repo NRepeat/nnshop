@@ -141,7 +141,9 @@ export async function POST(request: NextRequest) {
 
     // LiqPay returned an error result (e.g. payment not yet in hold_wait state)
     if (liqpayResult?.result === 'error') {
-      const isPendingVerification = liqpayResult.status === 'wait_secure';
+      // LiqPay returns err_code='payment_err_status' when payment is not yet in hold_wait
+      // (e.g. still in wait_secure bank verification). status field is 'error', not 'wait_secure'.
+      const isPendingVerification = liqpayResult.err_code === 'payment_err_status';
       console.warn(
         `[liqpay/capture] hold_completion error for ${order.orderName} (liqpay_status=${liqpayResult.status}): ${liqpayResult.err_description}`,
       );
