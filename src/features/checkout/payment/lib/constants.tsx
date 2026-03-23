@@ -14,6 +14,12 @@ export const paymentMethods: {
     availableMethods: [],
     icon: <PackageCheck />,
   },
+  {
+    id: 'pay-now',
+    name: 'Pay Now',
+    availableMethods: ['bank-transfer', 'liqpay'],
+    icon: <CreditCard />,
+  },
 ] as const;
 
 export const paymentProviders: {

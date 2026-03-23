@@ -60,8 +60,8 @@ export const Thank = async ({
   }
 
   const lineItems = shopifyOrder?.lineItems?.edges ?? [];
-  const subtotal = shopifyOrder?.subtotalPriceSet?.presentmentMoney;
-  const shipping = shopifyOrder?.totalShippingPriceSet?.presentmentMoney;
+  const _subtotal = shopifyOrder?.subtotalPriceSet?.presentmentMoney;
+  const _shipping = shopifyOrder?.totalShippingPriceSet?.presentmentMoney;
   const total = shopifyOrder?.totalPriceSet?.presentmentMoney;
   const currencySymbol = total ? getCurrencySymbol(total.currencyCode) : 'грн';
 

@@ -1,7 +1,7 @@
 'use server';
 
 import { getCollection } from '@entities/collection/api/getCollection';
-import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
+import { PageInfo } from '@shared/lib/shopify/types/storefront.types';
 import { auth } from '@features/auth/lib/auth';
 import { headers } from 'next/headers';
 import { prisma } from '@shared/lib/prisma';
@@ -11,7 +11,7 @@ export async function getCollectionProducts({
   slug,
   locale,
   searchParams,
-  gender,
+  gender: _gender,
 }: {
   info?: PageInfo;
   slug: string;

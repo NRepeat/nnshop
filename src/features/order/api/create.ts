@@ -142,7 +142,7 @@ export async function createOrder(
     const applicableDiscounts = (cart.discountCodes ?? []).filter(
       (d) => d.applicable,
     );
-    const hasApplicableDiscount = applicableDiscounts.length > 0;
+    const _hasApplicableDiscount = applicableDiscounts.length > 0;
     // Sum cart-level + line-level discountAllocations to capture both order-level and
     // product-level automatic discounts (automatic line discounts only appear at line level)
     const cartDiscountTotal = [

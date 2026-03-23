@@ -47,7 +47,7 @@ export const ProductCard = ({
   withInnerShadow,
   withSizes = true,
   addToCard,
-  source = 'collection',
+  source: _source = 'collection',
   priority = false,
 }: ProductCardProps) => {
   const t = useTranslations('ProductCard');

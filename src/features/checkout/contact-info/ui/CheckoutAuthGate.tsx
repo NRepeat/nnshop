@@ -26,8 +26,6 @@ import {
   createSignUpHandler,
   createGoogleSignInHandler,
 } from '@features/auth/ui/action';
-import { client } from '@features/auth/lib/client';
-import { toast } from 'sonner';
 
 type Mode = 'signIn' | 'signUp';
 

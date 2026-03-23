@@ -2,7 +2,6 @@ import Image from 'next/image';
 import { Link } from '@shared/i18n/navigation';
 import { urlFor } from '@/shared/sanity/lib/image';
 import { HOME_PAGEResult } from '@/shared/sanity/types';
-import { Button } from '@/shared/ui/button';
 import { stegaClean } from 'next-sanity';
 import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link';
 import { getLocalizedString } from '@shared/sanity/utils/getLocalizedString';

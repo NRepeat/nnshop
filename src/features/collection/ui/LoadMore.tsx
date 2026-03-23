@@ -5,11 +5,10 @@ import { Button } from '@shared/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useQueryState, parseAsInteger } from 'nuqs';
-import { useEffect, useTransition } from 'react';
-import { useInView } from 'react-intersection-observer';
+import { useTransition } from 'react';
 
 export default function LoadMore({
-  handle,
+  handle: _handle,
   initialPageInfo,
 }: {
   handle: string;
@@ -21,7 +20,6 @@ export default function LoadMore({
 }) {
   const t = useTranslations('LoadMore');
   const [isPending, startTransition] = useTransition();
-  const { ref, inView } = useInView();
 
   const [limit, setLimit] = useQueryState(
     'limit',
