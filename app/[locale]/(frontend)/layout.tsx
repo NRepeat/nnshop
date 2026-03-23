@@ -122,7 +122,7 @@ export default async function RootLayout(props: RootProps) {
               'ad_storage': 'denied',
               'ad_user_data': 'denied',
               'ad_personalization': 'denied',
-              'analytics_storage': 'denied',
+              'analytics_storage': 'granted',
               'wait_for_update': 500
             });
           `}
