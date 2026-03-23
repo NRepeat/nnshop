@@ -74,14 +74,10 @@ export async function POST(request: NextRequest) {
     const paymentData = liqpay.decodeData(data);
     console.log(paymentData, 'paymentData');
 
-    // hold_wait — funds blocked.
-    // Flips draft → false in DB, then fires process-order to keyCRM + eSputnik.
-    // The Shopify order was created with sendReceipt: false, so no Shopify email is ever sent.
-    if (
-      paymentData.status === 'hold_wait' ||
-      paymentData.status === 'sandbox_hold_wait' ||
-      paymentData.status === 'wait_secure'
-    ) {
+    // wait_secure — bank is processing the hold; funds not yet blocked.
+    // Flips draft → false so the thank-you page shows, fires process-order to keyCRM + eSputnik.
+    // Capture will be triggered later when hold_wait arrives.
+    if (paymentData.status === 'wait_secure') {
       const rawOrderId = paymentData.order_id;
       if (rawOrderId) {
         const shopifyOrderId = rawOrderId.includes('gid://')
@@ -100,7 +96,7 @@ export async function POST(request: NextRequest) {
           };
           await savePaymentInfo(paymentInfo, shopifyOrderId);
 
-          // Confirm payment: flip draft → false and clear cart
+          // Flip draft → false so polling UI shows the thank-you page
           await prisma.order.update({
             where: { id: order.id },
             data: { draft: false },
@@ -113,7 +109,6 @@ export async function POST(request: NextRequest) {
           }
 
           // Fire process-order to keyCRM + eSputnik (first time order enters CRM)
-          // Fetch the order from Shopify to build the payload
           try {
             const shopifyData = await adminClient.client.request<any, { id: string }>({
               query: GET_ORDER_FOR_PROCESS_ORDER,
@@ -125,7 +120,6 @@ export async function POST(request: NextRequest) {
               const totalDiscount = Number(shopifyOrder.totalDiscountsSet?.shopMoney?.amount ?? 0);
               const currency = shopifyOrder.totalPriceSet?.shopMoney?.currencyCode ?? paymentData.currency;
 
-              // Get customer PII from our own DB (entered by user during checkout)
               let customerEmail = '';
               let customerPhone = '';
               let shippingAddr: Record<string, string | null> | null = null;
@@ -221,6 +215,37 @@ export async function POST(request: NextRequest) {
           } catch (fetchErr) {
             console.error('[LiqPay callback] failed to fetch order for process-order:', fetchErr);
           }
+        }
+      }
+      return NextResponse.json({ message: 'Wait secure received' });
+    }
+
+    // hold_wait / sandbox_hold_wait — funds are blocked and ready to capture.
+    // Triggers capture directly; does NOT re-fire process-order (already done on wait_secure).
+    if (
+      paymentData.status === 'hold_wait' ||
+      paymentData.status === 'sandbox_hold_wait'
+    ) {
+      const rawOrderId = paymentData.order_id;
+      if (rawOrderId) {
+        const shopifyOrderId = rawOrderId.includes('gid://')
+          ? rawOrderId
+          : `gid://shopify/Order/${rawOrderId}`;
+
+        const order = await prisma.order.findUnique({ where: { shopifyOrderId } });
+        if (order && order.draft) {
+          // Ensure draft is flipped (in case wait_secure was skipped, e.g. sandbox)
+          const paymentInfo: PaymentInfo = {
+            amount: paymentData.amount,
+            currency: paymentData.currency,
+            paymentMethod: 'pay-now',
+            paymentProvider: 'bank-transfer',
+            description: `LiqPay hold: status=${paymentData.status}, liqpayOrderId=${paymentData.payment_id || ''}`,
+            orderId: order.id,
+          };
+          await savePaymentInfo(paymentInfo, shopifyOrderId);
+          await prisma.order.update({ where: { id: order.id }, data: { draft: false } });
+          try { await resetCartSession(order.id); } catch { /* non-blocking */ }
         }
       }
       return NextResponse.json({ message: 'Hold received' });
