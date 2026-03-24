@@ -46,15 +46,23 @@ export default function PaymentForm({
     shouldUnregister: false,
     defaultValues: {
       paymentMethod: defaultValues?.paymentMethod || 'pay-now',
-      paymentProvider: defaultValues?.paymentProvider || 'liqpay',
+      paymentProvider:
+        defaultValues?.paymentProvider ||
+        (defaultValues?.paymentMethod === 'after-delivered'
+          ? 'after-delivered'
+          : undefined),
       amount: amount,
       currency: currency || defaultValues?.currency,
       description: defaultValues?.description || 'Order payment',
     },
   });
   const selectedPaymentMethodValue = form.watch('paymentMethod');
+  const selectedPaymentProviderValue = form.watch('paymentProvider');
   const [isLoading, setIsLoading] = useState(false);
-  const [liqpayParams, setLiqpayParams] = useState<{ data: string; signature: string } | null>(null);
+  const [liqpayParams, setLiqpayParams] = useState<{
+    data: string;
+    signature: string;
+  } | null>(null);
   const liqpaySubmitRef = useRef<HTMLButtonElement>(null);
 
   // Try to auto-click the LiqPay submit button once it's rendered.
@@ -185,12 +193,20 @@ export default function PaymentForm({
 
         <PaymentMethodSelection
           paymentMethods={paymentMethods}
-          onSelectPaymentMethod={(method: string) =>
+          onSelectPaymentMethod={(method: string) => {
             form.setValue(
               'paymentMethod',
               method as PaymentInfo['paymentMethod'],
-            )
-          }
+            );
+            // If After Delivered is selected, automatically set the provider
+            if (method === 'after-delivered') {
+              form.setValue('paymentProvider', 'after-delivered');
+            } else {
+              // Reset provider when switching back to Pay Now to force manual selection
+              // @ts-ignore
+              form.setValue('paymentProvider', undefined);
+            }
+          }}
         />
 
         {selectedPaymentMethodValue === 'pay-now' && (
@@ -208,7 +224,7 @@ export default function PaymentForm({
         <div className="space-y-3">
           <Button
             className="w-full h-12 bg-green-800 rounded"
-            disabled={isLoading}
+            disabled={isLoading || !selectedPaymentProviderValue}
             // @ts-ignore
             onClick={form.handleSubmit(onSubmit)}
           >
