@@ -20,7 +20,7 @@ export async function captureServerEvent(
     client.capture({ distinctId, event, properties });
     after(async () => {
       try {
-        await client.flushAsync();
+        await client.flush();
       } catch {
         // ignore — non-blocking
       }
@@ -66,7 +66,7 @@ export async function captureServerError(
     });
     after(async () => {
       try {
-        await client.flushAsync();
+        await client.flush();
       } catch {
         // ignore — non-blocking
       }
