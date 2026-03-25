@@ -190,7 +190,7 @@ function VideoHero({
           alt=""
           aria-hidden
           fetchPriority="high"
-          className="absolute inset-0 w-full h-full object-cover max-h-[75vh]"
+          className="absolute inset-0 w-full h-full object-cover max-h-[75vh] "
         />
       )}
       <video
