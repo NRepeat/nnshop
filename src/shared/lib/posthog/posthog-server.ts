@@ -18,7 +18,13 @@ export async function captureServerEvent(
   try {
     const client = getClient();
     client.capture({ distinctId, event, properties });
-    after(async () => { await client.shutdown(); });
+    after(async () => {
+      try {
+        await client.flushAsync();
+      } catch {
+        // ignore — non-blocking
+      }
+    });
   } catch {
     // non-blocking — never break request flow
   }
@@ -58,7 +64,13 @@ export async function captureServerError(
         ...context.extra,
       },
     });
-    after(async () => { await client.shutdown(); });
+    after(async () => {
+      try {
+        await client.flushAsync();
+      } catch {
+        // ignore — non-blocking
+      }
+    });
   } catch {
     // non-blocking
   }
