@@ -11,7 +11,23 @@ if (!adminAccessToken) {
   );
 }
 
-export const adminClient = await shopifyFactory.createAuthenticatedClient(
-  ShopifyClientType.ADMIN,
-  adminAccessToken,
-);
+const clientId = adminAccessToken;
+
+// Dynamic wrapper: resolves a fresh/valid token from the factory on every
+// request, so expired tokens are transparently refreshed without restarting.
+export const adminClient = {
+  get client() {
+    return {
+      request: async <T, V>(params: {
+        query: string;
+        variables: V;
+      }): Promise<T> => {
+        const { client } = await shopifyFactory.createAuthenticatedClient(
+          ShopifyClientType.ADMIN,
+          clientId,
+        );
+        return client.request<T, V>(params);
+      },
+    };
+  },
+};
