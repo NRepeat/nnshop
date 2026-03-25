@@ -13,7 +13,7 @@ import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { headers } from 'next/headers';
-import { captureServerError } from '@shared/lib/posthog/posthog-server';
+import { captureServerEvent, captureServerError } from '@shared/lib/posthog/posthog-server';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { formatPhoneForShopify } from '@features/checkout/schema/contactInfoSchema';
@@ -485,6 +485,15 @@ export async function createOrder(
     } catch (internalErr) {
       console.error('[createOrder] failed to build internal process-order payload:', internalErr);
     }
+
+    await captureServerEvent(session.user.id, 'order_placed', {
+      order_id: createdOrder.id,
+      order_name: createdOrder.name,
+      amount: createdOrder.totalPriceSet.shopMoney.amount,
+      currency: createdOrder.totalPriceSet.shopMoney.currencyCode,
+      payment_method: paymentMethod ?? 'cod',
+      items_count: cart.lines.edges.length,
+    });
 
     return {
       success: true,
