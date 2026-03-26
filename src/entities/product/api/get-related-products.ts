@@ -1,7 +1,7 @@
 import { getProductsByIds } from './getProductsByIds';
 
 export const getReletedProducts = async (ids: string[], locale: string) => {
-  'use cache'
+  'use cache';
   try {
     if (!ids || ids.length === 0) {
       return [];
@@ -12,8 +12,10 @@ export const getReletedProducts = async (ids: string[], locale: string) => {
       ids.map((id, i) => [id.match(/\/(\d+)$/)?.[1] ?? id, i]),
     );
     return [...res].sort((a, b) => {
-      const aIdx = indexMap.get(a.id.match(/\/(\d+)$/)?.[1] ?? a.id) ?? Infinity;
-      const bIdx = indexMap.get(b.id.match(/\/(\d+)$/)?.[1] ?? b.id) ?? Infinity;
+      const aIdx =
+        indexMap.get(a.id.match(/\/(\d+)$/)?.[1] ?? a.id) ?? Infinity;
+      const bIdx =
+        indexMap.get(b.id.match(/\/(\d+)$/)?.[1] ?? b.id) ?? Infinity;
       return aIdx - bIdx;
     });
   } catch (err) {

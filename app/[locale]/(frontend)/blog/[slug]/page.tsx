@@ -27,11 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 
   if (!post) {
-    return generatePageMetadata(
-      { title: 'Блог | MioMio' },
-      locale,
-      `/blog/${slug}`,
-    );
+    notFound();
   }
 
   const isUk = locale === 'uk';

@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { getCollection } from '@entities/collection/api/getCollection';
 import { generateBrandMetadata } from '@shared/lib/seo/generateMetadata';
+import { notFound } from 'next/navigation';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -16,28 +17,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params;
   const decodedSlug = decodeURIComponent(slug);
 
-  try {
-    const { collection } = await getCollection({
-      handle: decodedSlug,
-      first: 1,
-      locale,
-    });
+  const { collection } = await getCollection({
+    handle: decodedSlug,
+    first: 1,
+    locale,
+  });
 
-    if (!collection.collection) {
-      return { title: 'Brand Not Found' };
-    }
-
-    return generateBrandMetadata(
-      {
-        title: collection.collection.title,
-        image: collection.collection.image ?? null,
-      },
-      locale,
-      decodedSlug,
-    );
-  } catch {
-    return { title: 'Brand Not Found' };
+  if (!collection?.collection) {
+    notFound();
   }
+
+  return generateBrandMetadata(
+    {
+      title: collection.collection.title,
+      image: collection.collection.image ?? null,
+    },
+    locale,
+    decodedSlug,
+  );
 }
 
 export default async function BrandPage({ params, searchParams }: Props) {

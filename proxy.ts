@@ -4,12 +4,85 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 
 import { hasGenderedSuffix } from '@entities/collection/lib/resolve-handle';
+import { storefrontClient } from '@shared/lib/shopify/client';
+import { StorefrontLanguageCode } from '@shared/lib/clients/types';
+import { notFound } from 'next/navigation';
+
 const handleI18nRouting = createMiddleware(routing);
+
+async function checkProductExists(handle: string, locale: string) {
+  try {
+    const query = `#graphql
+      query checkProduct($handle: String!) {
+        product(handle: $handle) {
+          id
+        }
+      }
+    `;
+    const response = await storefrontClient.request<any, { handle: string }>({
+      query,
+      variables: { handle },
+      language: locale as StorefrontLanguageCode,
+    });
+    return !!response.product;
+  } catch (e) {
+    console.error(`❌ Proxy: Error checking product ${handle}:`, e);
+    return true; // Fail safe
+  }
+}
+async function checkCollectionExists(handle: string, locale: string) {
+  try {
+    const query = `#graphql
+      query checkProduct($handle: String!) {
+        collection(handle: $handle) {
+          id
+        }
+      }
+    `;
+    const response = await storefrontClient.request<any, { handle: string }>({
+      query,
+      variables: { handle },
+      language: locale as StorefrontLanguageCode,
+    });
+    return !!response.collection;
+  } catch (e) {
+    console.error(`❌ Proxy: Error checking collectio ${handle}:`, e);
+    return true; // Fail safe
+  }
+}
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Skip internal and checked requests
+  if (
+    pathname.includes('_next') ||
+    pathname.includes('favicon') ||
+    request.headers.get('x-middleware-skip') === 'true'
+  ) {
+    return NextResponse.next();
+  }
+
   let segments = pathname.split('/').filter(Boolean);
   const allowedGenders = ['man', 'woman'];
+
+  const locale = segments[0] || 'uk';
+  const isProductPage = segments.length >= 3 && segments[1] === 'product';
+
+  if (isProductPage) {
+    const handle = decodeURIComponent(segments[2]);
+    const exists = await checkProductExists(handle, locale);
+
+    if (!exists) {
+      console.log(`🚫 Proxy: Product ${handle} not found. Returning 404.`);
+      const url = new URL(request.url);
+      url.pathname = `/${locale}/404`; // Standard path for not found
+
+      const response = NextResponse.rewrite(url, { status: 404 });
+      response.headers.set('x-middleware-skip', 'true');
+      return NextResponse.rewrite(new URL('/404', url), { status: 404 });
+    }
+  }
 
   // 0. Fast escape for well-known and system paths
   if (pathname.startsWith('/.well-known/')) {
@@ -23,7 +96,8 @@ export async function proxy(request: NextRequest) {
   // 1. Canonical Host & Protocol Normalization
   const host = request.headers.get('host') || '';
   const protocol = request.headers.get('x-forwarded-proto') || 'https';
-  const isProductionDomain = host === 'miomio.com.ua' || host === 'www.miomio.com.ua';
+  const isProductionDomain =
+    host === 'miomio.com.ua' || host === 'www.miomio.com.ua';
   const canonicalHost = 'www.miomio.com.ua';
 
   if (isProductionDomain && (host !== canonicalHost || protocol === 'http')) {
@@ -45,13 +119,19 @@ export async function proxy(request: NextRequest) {
   // 3.1 Fix /[locale]/productt/[slug] → /[locale]/product/[slug] (301)
   const producttMatch = url.pathname.match(/^\/(uk|ru)\/productt\/(.+)$/);
   if (producttMatch) {
-    url.pathname = cleanSlug(`/${producttMatch[1]}/product/${producttMatch[2]}`);
+    url.pathname = cleanSlug(
+      `/${producttMatch[1]}/product/${producttMatch[2]}`,
+    );
     segments = url.pathname.split('/').filter(Boolean);
     changed = true;
   }
 
   // 3.2 Fast redirect for Ukrainian gendered handles on Russian locale
-  if (segments.length >= 3 && segments[0] === 'ru' && allowedGenders.includes(segments[1])) {
+  if (
+    segments.length >= 3 &&
+    segments[0] === 'ru' &&
+    allowedGenders.includes(segments[1])
+  ) {
     const slug = segments[2];
     if (hasGenderedSuffix(slug)) {
       url.pathname = `/uk/${segments[1]}/${slug}`;
@@ -82,79 +162,57 @@ export async function proxy(request: NextRequest) {
 
   // 2. Route Guard & Gender Detection
   if (segments.length >= 2) {
-    const locale = segments[0];
     const secondSegment = segments[1];
-    
+
     const reservedSystemPaths = [
-      'account', 'auth', 'blog', 'brand', 'brands', 
-      'cart', 'checkout', 'favorites', 'info', 
-      'orders', 'product', 'quick', 'search'
+      'account',
+      'auth',
+      'blog',
+      'brand',
+      'brands',
+      'cart',
+      'checkout',
+      'favorites',
+      'info',
+      'orders',
+      'product',
+      'quick',
+      'search',
     ];
 
     const isGender = allowedGenders.includes(secondSegment);
     const isSystemPath = reservedSystemPaths.includes(secondSegment);
 
     // If it's not a valid gender and not a known system route, it's a 404.
+    // We stop processing here and let Next.js return a true 404 status.
     if (!isGender && !isSystemPath) {
-      const url = new URL(request.url);
-      url.pathname = `/${locale}/404`;
-      return NextResponse.rewrite(url);
+      return NextResponse.next();
     }
 
     // Repetitive path: /uk/woman/woman, /uk/man/man etc
-    // Pass through to the collection page which calls notFound() → proper HTTP 404
     if (isGender && segments.length >= 3 && segments[2] === segments[1]) {
       return NextResponse.next();
     }
-  }
+    if (isGender && segments.length >= 3) {
+      const handle = decodeURIComponent(segments[2]);
+      const exists = await checkCollectionExists(handle, locale);
 
-  // 4. Determine effective gender: URL takes priority, then search params, then cookie
-  const urlGender = segments.length >= 2 && allowedGenders.includes(segments[1]) ? segments[1] : null;
-  const searchGender = request.nextUrl.searchParams.get('_gender');
-  const cookieGender = request.cookies.get('gender')?.value;
-  
-  const effectiveGender = urlGender || 
-    (searchGender && allowedGenders.includes(searchGender) ? searchGender : 
-    (cookieGender && allowedGenders.includes(cookieGender) ? cookieGender : 'woman'));
+      if (!exists) {
+        console.log(`🚫 Proxy: Collection ${handle} not found. Returning 404.`,segments,exists);
+        const url = new URL(request.url);
+        url.pathname = `/${locale}/404`; // Standard path for not found
+
+        const response = NextResponse.rewrite(url, { status: 404 });
+        response.headers.set('x-middleware-skip', 'true');
+        return NextResponse.rewrite(new URL('/404', url), { status: 404 });
+      }
+    }
+  }
 
   const i18nResponse = handleI18nRouting(request);
 
-  // For non-redirect responses, forward x-gender as a request header so server
-  // components can read the correct gender immediately.
-  const isRedirect = i18nResponse.status >= 300 && i18nResponse.status < 400;
-  if (!isRedirect) {
-    const requestHeaders = new Headers(request.headers);
-    requestHeaders.set('x-gender', effectiveGender);
-    requestHeaders.set('x-pathname', url.pathname);
-
-    const finalResponse = NextResponse.next({ request: { headers: requestHeaders } });
-
-    // Set/Update the gender cookie to match the effective gender
-    finalResponse.cookies.set('gender', effectiveGender, {
-      path: '/',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-      sameSite: 'lax',
-    });
-
-    // Copy other cookies from the i18n response
-    i18nResponse.cookies.getAll().forEach((cookie) => {
-      if (cookie.name === 'gender') return; // already set above
-      finalResponse.cookies.set(cookie.name, cookie.value, {
-        path: cookie.path,
-        maxAge: cookie.maxAge,
-        httpOnly: cookie.httpOnly,
-        secure: cookie.secure,
-        sameSite: cookie.sameSite as 'lax' | 'strict' | 'none' | undefined,
-      });
-    });
-
-    // Forward x-middleware-rewrite so next-intl locale routing still works
-    const rewrite = i18nResponse.headers.get('x-middleware-rewrite');
-    if (rewrite) finalResponse.headers.set('x-middleware-rewrite', rewrite);
-
-    return finalResponse;
-  }
-
+  // Important: if the URL contains /product/, and we know it will trigger notFound()
+  // on the page level, we must ensure we don't fix the status to 200 via rewrites here.
   return i18nResponse;
 }
 

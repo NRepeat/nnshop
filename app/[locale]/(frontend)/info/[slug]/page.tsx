@@ -74,6 +74,28 @@ const pageDescriptions: Record<string, Record<string, string>> = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
+  const sanityLocale = await normalizeLocaleForSanity(locale);
+
+  const hardcodedSlugs = [
+    'contacts',
+    'delivery',
+    'sustainability',
+    'payment-returns',
+    'public-offer-agreement',
+    'privacy-policy',
+  ];
+
+  const isHardcoded = hardcodedSlugs.includes(slug);
+  
+  const pageContent = isHardcoded ? null : await sanityFetch({
+    query: PAGE_QUERY,
+    params: { language: sanityLocale, slug },
+    tags: [`page:${slug}`],
+  });
+
+  if (!isHardcoded && !pageContent) {
+    notFound();
+  }
 
   const title = seoTitles[locale]?.[slug] || pageTitles[locale]?.[slug] || slug;
   const description = pageDescriptions[locale]?.[slug];

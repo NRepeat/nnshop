@@ -108,4 +108,11 @@ describe('proxy.ts redirect logic', () => {
     expect(getStatus(res)).toBe(301);
     expect(getRedirectUrl(res)).toBe('https://www.miomio.com.ua/ru/product/slug');
   });
+
+  it('normalizes search query parameter q to lowercase', async () => {
+    const req = createRequest('https://www.miomio.com.ua/uk/search?q=Shoes');
+    const res = await proxy(req);
+    expect(getStatus(res)).toBe(301);
+    expect(getRedirectUrl(res)).toBe('https://www.miomio.com.ua/uk/search?q=shoes');
+  });
 });

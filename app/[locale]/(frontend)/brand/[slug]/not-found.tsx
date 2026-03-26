@@ -1,5 +1,13 @@
 import { Button } from '@shared/ui/button';
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const generateMetadata = async (): Promise<Metadata> => {
+  return {
+    robots: { index: false, follow: false },
+    alternates: { canonical: null },
+  };
+};
 
 export default function BrandNotFound() {
   return (

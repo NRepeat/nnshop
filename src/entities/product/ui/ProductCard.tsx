@@ -182,11 +182,12 @@ export const ProductCard = ({
 
   const handleMouseEnter = useCallback(() => {
     if (productImages.length <= 1) return;
-    productImages.slice(1).forEach(({ url }) => {
-      if (!url) return;
+    // Only preload the next image instead of all 5 to save bandwidth and improve performance
+    const nextImageUrl = productImages[1]?.url;
+    if (nextImageUrl) {
       const img = new window.Image();
-      img.src = url;
-    });
+      img.src = nextImageUrl;
+    }
   }, [productImages]);
 
   return (

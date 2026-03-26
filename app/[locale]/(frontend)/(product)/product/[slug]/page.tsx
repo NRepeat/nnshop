@@ -27,20 +27,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params;
   const decodedSlug = decodeURIComponent(slug);
 
-  try {
-    const { originProduct: product } = await getProduct({
-      handle: slug,
-      locale,
-    });
+  const { originProduct: product } = await getProduct({
+    handle: slug,
+    locale,
+  });
 
-    if (!product) {
-      return { title: 'Product Not Found' };
-    }
-
-    return generateProductMetadata(product, locale, decodedSlug);
-  } catch {
-    return { title: 'Product Not Found' };
+  if (!product) {
+    notFound();
   }
+
+  return generateProductMetadata(product, locale, decodedSlug);
 }
 
 export default async function ProductPage({ params, searchParams }: Props) {
@@ -52,9 +48,16 @@ export default async function ProductPage({ params, searchParams }: Props) {
     notFound();
   }
 
+  const { originProduct: product } = await getProduct({ handle, locale });
+
+  if (!product) {
+    notFound();
+  }
+
   return (
     <Suspense fallback={<ProductViewSkeleton handle={handle} />}>
       <ProductContent
+        product={product}
         handle={handle}
         locale={locale}
         searchParams={searchParams}
@@ -64,20 +67,16 @@ export default async function ProductPage({ params, searchParams }: Props) {
 }
 
 const ProductContent = async ({
+  product,
   handle,
   locale,
   searchParams,
 }: {
+  product: any;
   handle: string;
   locale: string;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
-  const { originProduct: product } = await getProduct({ handle, locale });
-
-  if (!product) {
-    return notFound();
-  }
-
   return (
     <>
       <JsonLd data={generateProductJsonLd(product, locale)} />

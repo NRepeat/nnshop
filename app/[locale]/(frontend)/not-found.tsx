@@ -1,6 +1,7 @@
 import { Button } from '@shared/ui/button';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@shared/i18n/navigation';
+
 export default async function NotFoundPage() {
   let locale = 'uk';
   try {

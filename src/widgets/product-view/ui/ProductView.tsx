@@ -2,7 +2,10 @@ import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.
 import { getInventoryLevels } from '@entities/product/api/getInventoryLevels';
 import { ProductViewProvider } from './ProductViewProvider';
 import { getTranslations } from 'next-intl/server';
-import { getMetaobject, ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
+import {
+  getMetaobject,
+  ProductMEtaobjectType,
+} from '@entities/metaobject/api/get-metaobject';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 import {
   Breadcrumb,
@@ -28,26 +31,36 @@ import { GA4ViewItemEvent } from '@shared/lib/analytics/GA4ViewItemEvent';
 // Maps custom.gender metaobject handles → app gender keys
 const GENDER_HANDLE_MAP: Record<string, 'man' | 'woman' | 'unisex'> = {
   choloviche: 'man',
-  zhinoche:   'woman',
-  uniseks:    'unisex',
+  zhinoche: 'woman',
+  uniseks: 'unisex',
 };
 
-function resolveGenderFromMetafield(product: any): 'man' | 'woman' | 'unisex' | null {
+function resolveGenderFromMetafield(
+  product: any,
+): 'man' | 'woman' | 'unisex' | null {
   const refs = product?.genderMetafield?.references?.edges ?? [];
   if (refs.length === 0) return null;
-  const handles: string[] = refs.map((e: any) => e.node?.handle).filter(Boolean);
-  const hasMen   = handles.some((h) => GENDER_HANDLE_MAP[h] === 'man');
+  const handles: string[] = refs
+    .map((e: any) => e.node?.handle)
+    .filter(Boolean);
+  const hasMen = handles.some((h) => GENDER_HANDLE_MAP[h] === 'man');
   const hasWomen = handles.some((h) => GENDER_HANDLE_MAP[h] === 'woman');
   const hasUnisex = handles.some((h) => GENDER_HANDLE_MAP[h] === 'unisex');
   if (hasUnisex || (hasMen && hasWomen)) return 'unisex';
-  if (hasMen)   return 'man';
+  if (hasMen) return 'man';
   if (hasWomen) return 'woman';
   return null;
 }
 
-const RelatedProducts = dynamic(() => import('./RelatedProducts').then(mod => mod.RelatedProducts));
+const RelatedProducts = dynamic(() =>
+  import('./RelatedProducts').then((mod) => mod.RelatedProducts),
+);
 
-const RecentlyViewedSection = dynamic(() => import('@entities/recently-viewed/ui/RecentlyViewedSection').then(mod => mod.RecentlyViewedSection));
+const RecentlyViewedSection = dynamic(() =>
+  import('@entities/recently-viewed/ui/RecentlyViewedSection').then(
+    (mod) => mod.RecentlyViewedSection,
+  ),
+);
 
 export async function ProductView({
   product,
@@ -64,37 +77,45 @@ export async function ProductView({
 }) {
   const tHeader = await getTranslations({ locale, namespace: 'Header' });
   const awaitedSearchParams = searchParams ? await searchParams : {};
-  const collectionFromUrl = awaitedSearchParams.collection as string | undefined;
+  const collectionFromUrl = awaitedSearchParams.collection as
+    | string
+    | undefined;
 
   const categoryName = product.productType;
-  const allCollections = product.collections?.edges?.map(e => e.node) || [];
+  const allCollections = product.collections?.edges?.map((e) => e.node) || [];
 
   // Resolve gender from custom.gender metafield (set by update-product-gender-metafield script)
   const resolvedGender = resolveGenderFromMetafield(product);
   const isUnisex = resolvedGender === 'unisex';
   // For URL-based navigation use woman as fallback for unisex
-  const gender = (resolvedGender === 'unisex' ? DEFAULT_GENDER : resolvedGender) ?? DEFAULT_GENDER;
-  
+  const gender =
+    (resolvedGender === 'unisex' ? DEFAULT_GENDER : resolvedGender) ??
+    DEFAULT_GENDER;
+
   let selectedCollection = null;
 
   if (collectionFromUrl) {
-    selectedCollection = allCollections.find(c => c.handle === collectionFromUrl);
+    selectedCollection = allCollections.find(
+      (c) => c.handle === collectionFromUrl,
+    );
   }
 
   if (!selectedCollection && categoryName) {
     // Try to find a collection that matches the product category (productType)
-    selectedCollection = allCollections.find(c => 
-      c.title.toLowerCase() === categoryName.toLowerCase() ||
-      c.handle.toLowerCase().includes(categoryName.toLowerCase())
+    selectedCollection = allCollections.find(
+      (c) =>
+        c.title.toLowerCase() === categoryName.toLowerCase() ||
+        c.handle.toLowerCase().includes(categoryName.toLowerCase()),
     );
   }
 
   if (!selectedCollection) {
     // Try to find a collection that matches the resolved gender
     const genderMarker = gender === 'man' ? 'cholov' : 'zhin';
-    selectedCollection = allCollections.find(c => 
-      c.handle.toLowerCase().includes(genderMarker) || 
-      c.title.toLowerCase().includes(gender === 'man' ? 'чолов' : 'жін')
+    selectedCollection = allCollections.find(
+      (c) =>
+        c.handle.toLowerCase().includes(genderMarker) ||
+        c.title.toLowerCase().includes(gender === 'man' ? 'чолов' : 'жін'),
     );
   }
 
@@ -152,7 +173,9 @@ export async function ProductView({
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/${locale}`}>{tHeader('nav.home')}</BreadcrumbLink>
+            <BreadcrumbLink href={`/${locale}`}>
+              {tHeader('nav.home')}
+            </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -164,7 +187,13 @@ export async function ProductView({
             <>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href={collectionHandle ? `/${locale}/${gender}/${collectionHandle}` : `/${locale}/search?q=${displayCategory}`}>
+                <BreadcrumbLink
+                  href={
+                    collectionHandle
+                      ? `/${locale}/${gender}/${collectionHandle}`
+                      : `/${locale}/search?q=${displayCategory}`
+                  }
+                >
                   {displayCategory}
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -173,7 +202,9 @@ export async function ProductView({
             <>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href={`/${locale}/brand/${vendorToHandle(product.vendor)}`}>
+                <BreadcrumbLink
+                  href={`/${locale}/brand/${vendorToHandle(product.vendor)}`}
+                >
                   {product.vendor}
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -187,21 +218,34 @@ export async function ProductView({
       </Breadcrumb>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_0.7fr_1.3fr] gap-6 lg:gap-12 relative">
-        <Gallery images={images} productId={product.id} quiqView={quiqView} product={product}>
+        <Gallery
+          images={images}
+          productId={product.id}
+          quiqView={quiqView}
+          product={product}
+        >
           {children}
         </Gallery>
-        
+
         <Suspense fallback={<ProductInfoSkeleton />}>
           <AsyncProductInfoSection product={product} locale={locale} />
         </Suspense>
       </div>
 
-      <Suspense fallback={<div className="container h-48 animate-pulse bg-muted rounded-xl" />}>
+      <Suspense
+        fallback={
+          <div className="container h-48 animate-pulse bg-muted rounded-xl" />
+        }
+      >
         <AsyncRelatedProductsSection product={product} locale={locale} />
       </Suspense>
 
       <ViewTracker productHandle={product.handle} productId={product.id} />
-      <Suspense fallback={<div className="container h-48 animate-pulse bg-muted rounded-xl" />}>
+      <Suspense
+        fallback={
+          <div className="container h-48 animate-pulse bg-muted rounded-xl" />
+        }
+      >
         <RecentlyViewedSection />
       </Suspense>
     </div>
@@ -232,17 +276,25 @@ async function AsyncProductInfoSection({ product, locale }: any) {
   };
 
   const boundProductsData = parseIds('bound-products');
-  const attributesJsonIds = product.metafields.find((m: any) => m?.key === 'attributes')?.value;
-  const parsedAttributeIDs: string[] = attributesJsonIds ? JSON.parse(attributesJsonIds as string) : [];
+  const attributesJsonIds = product.metafields.find(
+    (m: any) => m?.key === 'attributes',
+  )?.value;
+  const parsedAttributeIDs: string[] = attributesJsonIds
+    ? JSON.parse(attributesJsonIds as string)
+    : [];
   const variantIds = product.variants.edges.map((e: any) => e.node.id);
 
-  const [boundProducts, attributesResults, inventoryLevels] = await Promise.all([
-    getReletedProducts(boundProductsData, locale),
-    Promise.all(parsedAttributeIDs.map((id) => getMetaobject(id))),
-    getInventoryLevels(variantIds),
-  ]);
+  const [boundProducts, attributesResults, inventoryLevels] = await Promise.all(
+    [
+      getReletedProducts(boundProductsData, locale),
+      Promise.all(parsedAttributeIDs.map((id) => getMetaobject(id))),
+      getInventoryLevels(variantIds),
+    ],
+  );
 
-  const attributes = attributesResults.filter((attr): attr is ProductMEtaobjectType => attr !== null);
+  const attributes = attributesResults.filter(
+    (attr): attr is ProductMEtaobjectType => attr !== null,
+  );
 
   return (
     <ProductViewProvider

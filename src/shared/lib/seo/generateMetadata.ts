@@ -2,14 +2,19 @@ import { Metadata } from 'next';
 
 /** Removes zero-width and invisible Unicode characters that Shopify/Sanity data may contain */
 export function stripInvisible(str: string): string {
-  return str.replace(/[\u200b\u200c\u200d\ufeff\u00ad\u034f\u115f\u1160\u17b4\u17b5\u180b-\u180e\u2060-\u206f\ufe00-\ufe0f]/g, '').trim();
+  return str
+    .replace(
+      /[\u200b\u200c\u200d\ufeff\u00ad\u034f\u115f\u1160\u17b4\u17b5\u180b-\u180e\u2060-\u206f\ufe00-\ufe0f]/g,
+      '',
+    )
+    .trim();
 }
 
-/** Truncates title to 70 characters max (Cyrillic chars are pixel-wider than Latin) */
+/** Truncates title to 60 characters max (Cyrillic chars are pixel-wider than Latin) */
 export function formatTitle(title: string): string {
   const clean = stripInvisible(title);
-  if (clean.length > 70) {
-    return clean.substring(0, 67) + '...';
+  if (clean.length > 60) {
+    return clean.substring(0, 57) + '...';
   }
   return clean;
 }
@@ -27,7 +32,7 @@ const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.jpg`;
 export function generatePageMetadata(
   seo: SEOData,
   locale: string,
-  path: string
+  path: string,
 ): Metadata {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   const canonicalUrl = `${BASE_URL}/${locale}${normalizedPath}`;
@@ -39,8 +44,8 @@ export function generatePageMetadata(
     alternates: {
       canonical: canonicalUrl,
       languages: {
-        'uk': `${BASE_URL}/uk${normalizedPath}`,
-        'ru': `${BASE_URL}/ru${normalizedPath}`,
+        uk: `${BASE_URL}/uk${normalizedPath}`,
+        ru: `${BASE_URL}/ru${normalizedPath}`,
         'x-default': `${BASE_URL}/uk${normalizedPath}`,
       },
     },
@@ -49,7 +54,9 @@ export function generatePageMetadata(
       description: seo.description,
       url: canonicalUrl,
       siteName: 'Mio Mio',
-      images: [{ url: seo.image || DEFAULT_OG_IMAGE, width: 1200, height: 630 }],
+      images: [
+        { url: seo.image || DEFAULT_OG_IMAGE, width: 1200, height: 630 },
+      ],
       locale: locale === 'uk' ? 'uk_UA' : 'ru_UA',
       type: 'website',
     },
@@ -71,7 +78,7 @@ export function generateProductMetadata(
     variants?: { edges: { node: { sku?: string | null } }[] } | null;
   },
   locale: string,
-  slug: string
+  slug: string,
 ): Metadata {
   const isUk = locale === 'uk';
 
@@ -82,11 +89,11 @@ export function generateProductMetadata(
   if (productTitle.toLowerCase().includes(vendor.toLowerCase())) {
     baseTitle = productTitle;
   } else {
-    baseTitle = `${vendor} ${productTitle}`;
+    baseTitle = `${vendor} ${productTitle} ${product.variants?.edges[0].node.sku}`;
   }
 
   const rawTitle = isUk
-    ? `Купити ${baseTitle} в інтернет-магазині | MioMio` 
+    ? `Купити ${baseTitle} в інтернет-магазині | MioMio`
     : `Купить ${baseTitle} в интернет-магазине | MioMio`;
   const title = formatTitle(rawTitle);
 
@@ -97,7 +104,7 @@ export function generateProductMetadata(
   return generatePageMetadata(
     { title, description, image: product.featuredImage?.url },
     locale,
-    `/product/${slug}`
+    `/product/${slug}`,
   );
 }
 
@@ -119,7 +126,9 @@ export function generateCollectionMetadata(
   const genderPhrase = isUk
     ? { woman: ' для жінок', man: ' для чоловіків' }
     : { woman: ' для женщин', man: ' для мужчин' };
-  const genderSuffix = gender ? (genderPhrase[gender as 'woman' | 'man'] ?? '') : '';
+  const genderSuffix = gender
+    ? (genderPhrase[gender as 'woman' | 'man'] ?? '')
+    : '';
   const rawTitle = isUk
     ? `Купити ${cleanTitle}${genderSuffix} в інтернет-магазині | MioMio`
     : `Купить ${cleanTitle}${genderSuffix} в интернет-магазине | MioMio`;
@@ -129,14 +138,17 @@ export function generateCollectionMetadata(
     ? `Купити ${cleanTitle}${genderSuffix} в інтернет-магазині MioMio. Добірка найкращих моделей, перевіряйте наявність та обирайте свій розмір. Доставка по Україні ✔️`
     : `Купить ${cleanTitle}${genderSuffix} в интернет-магазине MioMio. Подборка лучших моделей, проверяйте наличие и выбирайте свой размер. Доставка по Украине ✔️`;
 
-  const description = templateDescription || collection.seo?.description?.trim();
+  const description =
+    templateDescription || collection.seo?.description?.trim();
 
   // Build locale-specific alternate URLs using the correct handle per locale
   const altHandle = alternateHandle || slug;
   const ukPath = `${prefix}/${isUk ? slug : altHandle}`;
   const ruPath = `${prefix}/${isUk ? altHandle : slug}`;
 
-  const normalizedPath = `${prefix}/${slug}`.startsWith('/') ? `${prefix}/${slug}` : `/${prefix}/${slug}`;
+  const normalizedPath = `${prefix}/${slug}`.startsWith('/')
+    ? `${prefix}/${slug}`
+    : `/${prefix}/${slug}`;
   const canonicalUrl = `${BASE_URL}/${locale}${normalizedPath}`;
 
   return {
@@ -146,8 +158,8 @@ export function generateCollectionMetadata(
     alternates: {
       canonical: canonicalUrl,
       languages: {
-        'uk': `${BASE_URL}/uk${ukPath}`,
-        'ru': `${BASE_URL}/ru${ruPath}`,
+        uk: `${BASE_URL}/uk${ukPath}`,
+        ru: `${BASE_URL}/ru${ruPath}`,
         'x-default': `${BASE_URL}/uk${ukPath}`,
       },
     },
@@ -156,7 +168,13 @@ export function generateCollectionMetadata(
       description,
       url: canonicalUrl,
       siteName: 'Mio Mio',
-      images: [{ url: collection.image?.url || `${BASE_URL}/og-image.jpg`, width: 1200, height: 630 }],
+      images: [
+        {
+          url: collection.image?.url || `${BASE_URL}/og-image.jpg`,
+          width: 1200,
+          height: 630,
+        },
+      ],
       locale: locale === 'uk' ? 'uk_UA' : 'ru_UA',
       type: 'website',
     },
@@ -175,7 +193,7 @@ export function generateBrandMetadata(
     image?: { url: string } | null;
   },
   locale: string,
-  slug: string
+  slug: string,
 ): Metadata {
   const isUk = locale === 'uk';
   const cleanTitle = stripInvisible(brand.title);
@@ -191,6 +209,6 @@ export function generateBrandMetadata(
   return generatePageMetadata(
     { title, description, image: brand.image?.url },
     locale,
-    `/brand/${slug}`
+    `/brand/${slug}`,
   );
 }

@@ -29,49 +29,45 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale, gender } = await params;
   const decodedSlug = decodeURIComponent(slug);
 
-  try {
-    const allSlugs = await getCollectionSlugs();
-    const resolvedHandle = resolveCollectionHandle(
-      decodedSlug,
-      gender,
-      new Set(allSlugs),
-    );
+  const allSlugs = await getCollectionSlugs();
+  const resolvedHandle = resolveCollectionHandle(
+    decodedSlug,
+    gender,
+    new Set(allSlugs),
+  );
 
-    const [{ collection, alternateHandle }, sanityCollection] =
-      await Promise.all([
-        getCollection({
-          handle: resolvedHandle,
-          locale,
-          first: 1,
-        }),
-        sanityFetch({
-          query: COLLECTION_IS_BRAND_QUERY,
-          params: { handle: resolvedHandle },
-          tags: [`collection:${resolvedHandle}`],
-        }),
-      ]);
+  const [{ collection, alternateHandle }, sanityCollection] =
+    await Promise.all([
+      getCollection({
+        handle: resolvedHandle,
+        locale,
+        first: 1,
+      }),
+      sanityFetch({
+        query: COLLECTION_IS_BRAND_QUERY,
+        params: { handle: resolvedHandle },
+        tags: [`collection:${resolvedHandle}`],
+      }),
+    ]);
 
-    if (!collection.collection?.id) {
-      return { title: 'Collection Not Found' };
-    }
-
-    const displayTitle =
-      sanityCollection?.customTitle?.[locale as 'uk' | 'ru'] ||
-      collection.collection.title;
-
-    return generateCollectionMetadata(
-      {
-        ...collection.collection,
-        title: displayTitle,
-      },
-      locale,
-      slug,
-      gender,
-      alternateHandle,
-    );
-  } catch {
-    return { title: 'Collection Not Found' };
+  if (!collection.collection?.id) {
+    notFound();
   }
+
+  const displayTitle =
+    sanityCollection?.customTitle?.[locale as 'uk' | 'ru'] ||
+    collection.collection.title;
+
+  return generateCollectionMetadata(
+    {
+      ...collection.collection,
+      title: displayTitle,
+    },
+    locale,
+    slug,
+    gender,
+    alternateHandle,
+  );
 }
 
 export async function generateStaticParams() {

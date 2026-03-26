@@ -18,10 +18,13 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const page = await getRootPage(locale);
+  const isUk = locale === 'uk';
 
   return generatePageMetadata(
     {
-      title: 'Mio Mio',
+      title: isUk 
+        ? 'Mio Mio — інтернет-магазин італійського одягу та взуття' 
+        : 'Mio Mio — интернет-магазин итальянской одежды и обуви',
       description: page?.seo?.description || undefined,
     },
     locale,
