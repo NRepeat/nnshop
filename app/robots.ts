@@ -22,11 +22,7 @@ export default function robots(): MetadataRoute.Robots {
           '/ru/account/',
           '/uk/favorites/',
           '/ru/favorites/',
-          '/uk/search',
-          '/uk/search/',
-          '/ru/search',
-          '/ru/search/',
-          '/search',
+          '*/search*',
           // URL parameters that generate duplicates
           '/*?q=',
           '/*?sort=*',
