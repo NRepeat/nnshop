@@ -60,15 +60,8 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 3.3 Root and Locale Roots
-  if (segments.length === 0) {
-    url.pathname = '/uk/woman';
-    changed = true;
-  } else if (segments.length === 1 && routing.locales.includes(segments[0])) {
-    url.pathname = `/${segments[0]}/woman`;
-    changed = true;
-  } else {
-    // 3.4 Missing Locale Prefix
+  // 3.3 Missing Locale Prefix (root and locale-only paths handled by i18n middleware)
+  if (segments.length > 0) {
     const hasLocale = routing.locales.includes(segments[0]);
     if (!hasLocale) {
       url.pathname = cleanSlug(`/uk${url.pathname}`);
@@ -132,6 +125,7 @@ export async function proxy(request: NextRequest) {
   if (!isRedirect) {
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set('x-gender', effectiveGender);
+    requestHeaders.set('x-pathname', url.pathname);
 
     const finalResponse = NextResponse.next({ request: { headers: requestHeaders } });
 

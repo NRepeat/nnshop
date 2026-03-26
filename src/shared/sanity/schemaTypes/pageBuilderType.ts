@@ -22,6 +22,7 @@ export const pageBuilderType = defineType({
     defineArrayMember({ type: 'productComments' }),
     defineArrayMember({ type: 'collectionsWithPreviews' }),
     defineArrayMember({ type: 'popularPosts' }),
+    defineArrayMember({ type: 'collectionBannerGrid' }),
   ],
   options: {
     insertMenu: {

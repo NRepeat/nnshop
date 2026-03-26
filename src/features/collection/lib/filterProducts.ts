@@ -65,7 +65,7 @@ export function filterProducts<T extends FilterProduct>(
       return (
         product.totalInventory === null ||
         product.totalInventory === undefined ||
-        product.totalInventory > 0
+        product.totalInventory >= 1
       );
     }
 

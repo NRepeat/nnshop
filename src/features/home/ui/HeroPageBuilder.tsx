@@ -9,6 +9,7 @@ import {
   PopularPosts,
   ProductCarouselSkeleton,
   PreviewsCollectionsSkeleton,
+  CollectionBannerGrid,
 } from '@entities/home/ui';
 import { BrandGrid } from '@entities/home/ui/BrendGrid/BrendGrid';
 import { PreviewsCollections } from '@entities/home/ui/previews-collections';
@@ -46,6 +47,8 @@ type SharedSectionRefBlock = {
 type HeroPageProps = {
   locale: Locale;
   gender: string;
+  /** Override the Sanity page slug to fetch. Defaults to `gender`. */
+  slug?: string;
 };
 
 const renderBlock = (
@@ -55,6 +58,17 @@ const renderBlock = (
   isFirst: boolean = false,
   tickerText?: string,
 ): React.ReactNode => {
+  if ((block as any)._type === 'collectionBannerGrid') {
+    return (
+      <CollectionBannerGrid
+        key={(block as any)._key}
+        locale={locale}
+        gender={gender}
+        {...(block as any)}
+      />
+    );
+  }
+
   switch (block._type) {
     case 'heroSlider': {
       const hero = block as any;
@@ -218,9 +232,9 @@ const renderBlock = (
   }
 };
 
-export const HeroPageBuilder = async ({ gender, locale }: HeroPageProps) => {
+export const HeroPageBuilder = async ({ gender, locale, slug }: HeroPageProps) => {
   const [page, headerData] = await Promise.all([
-    getHomePage({ locale, gender }),
+    getHomePage({ locale, gender: slug ?? gender }),
     sanityFetch({
       query: HEADER_QUERY,
       params: { locale },

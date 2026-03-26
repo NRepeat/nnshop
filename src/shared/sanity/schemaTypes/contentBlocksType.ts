@@ -23,6 +23,7 @@ export const contentBlocksType = defineType({
 
     // Collection blocks
     defineArrayMember({ type: 'mainCollectionGrid', title: 'Collection Grid' }),
+    defineArrayMember({ type: 'collectionBannerGrid', title: 'Collection Banner Grid' }),
     defineArrayMember({ type: 'collectionsCarousel', title: 'Collections Carousel' }),
     defineArrayMember({ type: 'collectionsWithPreviews', title: 'Collections with Previews' }),
 
@@ -50,7 +51,7 @@ export const contentBlocksType = defineType({
       showIcons: true,
       groups: [
         { name: 'hero', title: 'Hero & Sliders', of: ['heroSlider', 'hero', 'sliderBlock'] },
-        { name: 'collections', title: 'Collections', of: ['mainCollectionGrid', 'collectionsCarousel', 'collectionsWithPreviews'] },
+        { name: 'collections', title: 'Collections', of: ['mainCollectionGrid', 'collectionBannerGrid', 'collectionsCarousel', 'collectionsWithPreviews'] },
         { name: 'products', title: 'Products', of: ['productCarousel', 'similarProducts', 'productDetails', 'productComments'] },
         { name: 'brands', title: 'Brands', of: ['brandGridBlock'] },
         { name: 'content', title: 'Content', of: ['splitImage', 'features', 'contentPageBlock', 'elegantEase'] },

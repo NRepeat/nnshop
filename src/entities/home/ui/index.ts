@@ -8,3 +8,4 @@ export * from './MainCollectionGridSkeleton';
 export * from './ProductCarouselSkeleton';
 export * from './PreviewsCollectionsSkeleton';
 export * from './popular-posts';
+export * from './collection-banner-grid';

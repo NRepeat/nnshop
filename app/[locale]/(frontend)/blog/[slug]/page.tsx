@@ -47,9 +47,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : 'Читайте в блоге MioMio: советы по стилю, подборки и практичные гайды по выбору обуви и одежды.';
 
   const cleanTitle = stripInvisible(post.seo?.title || `${post.title} | MioMio`);
-  const altTranslation = post.translations?.find(
-    (t: { slug: string; language: string }) =>
-      isUk ? t.language === 'ru' : t.language === 'uk' || t.language === 'ua',
+  const altTranslation = post.translations?.filter(Boolean).find(
+    (t) => isUk ? t?.language === 'ru' : t?.language === 'uk' || t?.language === 'ua',
   );
   const ukSlug = isUk ? slug : (altTranslation?.slug ?? slug);
   const ruSlug = isUk ? (altTranslation?.slug ?? slug) : slug;

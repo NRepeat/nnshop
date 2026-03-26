@@ -173,6 +173,16 @@ export const getProduct = async ({
         alternateHandle: null,
       };
     }
+
+    // The returned handle must match the requested handle exactly.
+    // If they differ, the requested handle belongs to another locale —
+    // this URL should 404 for the current locale.
+    if (product.product.handle !== handle) {
+      return {
+        originProduct: null,
+        alternateHandle: product.product.handle,
+      };
+    }
     const alternateRequest = storefrontClient.request<
       {
         product: { handle: string };

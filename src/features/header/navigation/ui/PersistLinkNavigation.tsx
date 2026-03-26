@@ -63,6 +63,9 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
   ]);
   const gender = headersList.get('x-gender');
   const currentGender = (GENDERS.includes(gender as any) ? gender : null) || DEFAULT_GENDER;
+  const pathname = headersList.get('x-pathname') ?? '';
+  const pathSegments = pathname.split('/').filter(Boolean);
+  const isRootPage = pathSegments.length <= 1; // e.g. /uk or /ru
 
   const links =
     props.mainCategory?.map((category) => {
@@ -120,7 +123,12 @@ const GenderSession = async ({
 }) => {
   const headersList = await headers();
   const rawGender = headersList.get('x-gender');
-  const gender = (GENDERS.includes(rawGender as any) ? rawGender : null) || DEFAULT_GENDER;
+  const rawPathname = headersList.get('x-pathname') ?? '';
+  const segments = rawPathname.split('/').filter(Boolean);
+  const isRoot = segments.length <= 1;
+  const gender = isRoot
+    ? undefined
+    : (GENDERS.includes(rawGender as any) ? rawGender : null) || DEFAULT_GENDER;
   return (
     <NavButton gender={gender} slug={slug} level2Map={level2Map} className={className}>
       {label}

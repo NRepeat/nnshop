@@ -1,4 +1,8 @@
-import { getCollection, getCollectionFilters, getCollectionSlugs } from '@entities/collection/api/getCollection';
+import {
+  getCollection,
+  getCollectionFilters,
+  getCollectionSlugs,
+} from '@entities/collection/api/getCollection';
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
@@ -13,7 +17,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@shared/ui/breadcrumb';
-import { resolveCollectionHandle, detectGenderFromHandle } from '@entities/collection/lib/resolve-handle';
+import {
+  resolveCollectionHandle,
+  detectGenderFromHandle,
+} from '@entities/collection/lib/resolve-handle';
 import { stripInvisible } from '@shared/lib/seo/generateMetadata';
 import { CollectionFilterBar } from './CollectionFilterBar';
 import { FilterSheet } from './FilterSheet';
@@ -29,7 +36,12 @@ import {
   generateBreadcrumbJsonLd,
   generateItemListJsonLd,
 } from '@shared/lib/seo/jsonld';
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@shared/ui/empty';
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from '@shared/ui/empty';
 import { PackageSearch } from 'lucide-react';
 import { toFilterSlug } from '@shared/lib/filterSlug';
 import { filterProducts } from '@features/collection/lib/filterProducts';
@@ -37,10 +49,14 @@ import { DISCOUNT_METAFIELD_KEY } from '@shared/config/shop';
 import { GA4ViewItemListEvent } from '@shared/lib/analytics/GA4ViewItemListEvent';
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://miomio.com.ua';
 
-function getEffectivePrice(product: { priceRange?: { maxVariantPrice?: { amount: any } }; metafield?: { key?: string; value?: string } | null }): number {
+function getEffectivePrice(product: {
+  priceRange?: { maxVariantPrice?: { amount: any } };
+  metafield?: { key?: string; value?: string } | null;
+}): number {
   const base = parseFloat(product.priceRange?.maxVariantPrice?.amount ?? '0');
   const discount =
-    product.metafield?.key === DISCOUNT_METAFIELD_KEY && product.metafield?.value
+    product.metafield?.key === DISCOUNT_METAFIELD_KEY &&
+    product.metafield?.value
       ? parseFloat(product.metafield.value)
       : 0;
   return base * (1 - discount / 100);
@@ -53,19 +69,27 @@ export const CollectionGrid = async ({
   params: Promise<{ locale: string; slug: string; gender: string }>;
   searchParams: Promise<SearchParams>;
 }) => {
-  const [awaitedParams, awaitedSearchParams, t, tCollection] = await Promise.all([
-    params,
-    searchParams,
-    getTranslations('Header'),
-    getTranslations('CollectionPage'),
-  ]);
+  const [awaitedParams, awaitedSearchParams, t, tCollection] =
+    await Promise.all([
+      params,
+      searchParams,
+      getTranslations('Header'),
+      getTranslations('CollectionPage'),
+    ]);
   const { locale, slug, gender } = awaitedParams;
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
-  
-  const limit = Math.min(parseInt((awaitedSearchParams.limit as string) || '20', 10), 250);
+
+  const limit = Math.min(
+    parseInt((awaitedSearchParams.limit as string) || '20', 10),
+    250,
+  );
 
   const allSlugs = await getCollectionSlugs();
-  const resolvedHandle = resolveCollectionHandle(slug, gender, new Set(allSlugs));
+  const resolvedHandle = resolveCollectionHandle(
+    slug,
+    gender,
+    new Set(allSlugs),
+  );
 
   const [sanityCollection, currentData] = await Promise.all([
     sanityFetch({
@@ -80,7 +104,7 @@ export const CollectionGrid = async ({
       searchParams: awaitedSearchParams,
     }),
   ]);
-
+  console.log('CollectionGrid', { sanityCollection, currentData });
   if (sanityCollection?.isBrand) {
     redirect(`/${locale}/brand/${resolvedHandle}`);
   }
@@ -107,8 +131,8 @@ export const CollectionGrid = async ({
 
   const displayTitle = stripInvisible(
     sanityCollection?.customTitle?.[locale as 'uk' | 'ru'] ||
-    collection.collection?.title ||
-    '',
+      collection.collection?.title ||
+      '',
   );
 
   // Build selectedSizeSlugs from URL params (direct, independent of filterDefs)
@@ -125,17 +149,31 @@ export const CollectionGrid = async ({
   if (hasFilters) {
     const filterDefs = collection.collection?.products.filters ?? [];
     for (const [key, value] of Object.entries(awaitedSearchParams)) {
-      if (key === 'minPrice' || key === 'maxPrice' || key === 'sort' || key === 'rozmir') continue;
+      if (
+        key === 'minPrice' ||
+        key === 'maxPrice' ||
+        key === 'sort' ||
+        key === 'rozmir'
+      )
+        continue;
       const definition = filterDefs.find((f) => f.id.endsWith(`.${key}`));
       if (!definition) continue;
-      const values = Array.isArray(value) ? value : (value as string).split(';');
+      const values = Array.isArray(value)
+        ? value
+        : (value as string).split(';');
       values.forEach((v) => {
-        const filterValue = definition.values.find((def) => toFilterSlug(def.label) === v);
+        const filterValue = definition.values.find(
+          (def) => toFilterSlug(def.label) === v,
+        );
         if (filterValue) {
           try {
             const parsed = JSON.parse(filterValue.input);
             if (parsed.variantOption) {
-              if (!optionGroups.has(key)) optionGroups.set(key, { name: parsed.variantOption.name, values: new Set() });
+              if (!optionGroups.has(key))
+                optionGroups.set(key, {
+                  name: parsed.variantOption.name,
+                  values: new Set(),
+                });
               optionGroups.get(key)!.values.add(parsed.variantOption.value);
             }
           } catch {}
@@ -144,8 +182,13 @@ export const CollectionGrid = async ({
     }
   }
 
-  const allEdgeProducts = collection.collection?.products.edges.map((e) => e.node) ?? [];
-  const rawProducts = filterProducts(allEdgeProducts, selectedSizeSlugs, optionGroups);
+  const allEdgeProducts =
+    collection.collection?.products.edges.map((e) => e.node) ?? [];
+  const rawProducts = filterProducts(
+    allEdgeProducts,
+    selectedSizeSlugs,
+    optionGroups,
+  );
 
   // Fetch unfiltered filter definitions for sidebar (separate from filtered collection response)
   let initialFilters = collection.collection?.products.filters;
@@ -220,7 +263,9 @@ export const CollectionGrid = async ({
         <Breadcrumb className="mb-4 md:mb-8">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/${locale}`}>{t('nav.home')}</BreadcrumbLink>
+              <BreadcrumbLink href={`/${locale}`}>
+                {t('nav.home')}
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -239,7 +284,9 @@ export const CollectionGrid = async ({
 
         <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row justify-between lg:items-end gap-6">
           <div className="flex flex-col gap-3.5 w-full">
-            {displayTitle && <h1 className="text-2xl font-bold">{displayTitle}</h1>}
+            {displayTitle && (
+              <h1 className="text-2xl font-bold">{displayTitle}</h1>
+            )}
             {collection.collection?.products.filters && (
               <Suspense fallback={null}>
                 <ActiveFiltersCarousel
@@ -250,7 +297,7 @@ export const CollectionGrid = async ({
           </div>
           <div className="flex h-full items-center flex-row gap-2 justify-between  md:justify-end">
             <GridToggle />
-            <div className='flex gap-2'>
+            <div className="flex gap-2">
               <Suspense fallback={null}>
                 <SortSelect />
               </Suspense>
@@ -279,7 +326,9 @@ export const CollectionGrid = async ({
                   <PackageSearch className="w-12 h-12 text-muted-foreground" />
                   <EmptyTitle>{tCollection('noProducts')}</EmptyTitle>
                   {hasFilters && (
-                    <EmptyDescription>{tCollection('explore')}</EmptyDescription>
+                    <EmptyDescription>
+                      {tCollection('explore')}
+                    </EmptyDescription>
                   )}
                 </EmptyHeader>
               </Empty>

@@ -9,13 +9,10 @@ import { HeaderOptions } from '@features/header/ui/HeaderOptions';
 import { LogoLink } from '@features/header/ui/LogoLink';
 import { PersistLinkNavigation } from '@features/header/navigation/ui/PersistLinkNavigation';
 import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
-import { urlFor } from '@shared/sanity/lib/image';
 import { HEADER_QUERY } from '@shared/sanity/lib/query';
 import { HEADER_QUERYResult } from '@shared/sanity/types';
 import { setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
 import { StickyHeader } from './StickyHeader';
 
 export type HeaderBarProps = Extract<
@@ -64,30 +61,7 @@ export const Header = async ({ locale }: { locale: string }) => {
               )}
             </Suspense>
             <div className="flex items-center justify-center">
-              <Suspense
-                fallback={
-                  <Link href={'/'} className="flex items-center justify-center">
-                    <div className="flex justify-center w-full items-center">
-                      {headerData?.header?.icon?.asset && (
-                        <Image
-                          src={urlFor(headerData?.header.icon?.asset).url()}
-                          width={304}
-                          height={24}
-                          alt={'MioMio'}
-                          className="w-full h-full max-w-[180px]"
-                        />
-                      )}
-                    </div>
-                  </Link>
-                }
-              >
-                {headerData?.header?.icon?.asset && (
-                  <LogoLink
-                    locale={locale}
-                    alt="MioMio"
-                  />
-                )}
-              </Suspense>
+              {headerData?.header?.icon?.asset && <LogoLink alt="MioMio" />}
             </div>
             <HeaderOptions locale={locale} />
           </div>

@@ -292,3 +292,13 @@ Plans:
 
 Plans:
 - [x] 17-01-PLAN.md — Cookie-less gender navigation refactor (SEO-17-01, SEO-17-02)
+
+### Phase 18: SEO audit fixes (canonical, redirects, 404s, image optimization, meta-tags)
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 17
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 18 to break down)

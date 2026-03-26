@@ -7,7 +7,10 @@ import {
   getCollection,
   getCollectionSlugs,
 } from '@entities/collection/api/getCollection';
-import { resolveCollectionHandle, detectGenderFromHandle } from '@entities/collection/lib/resolve-handle';
+import {
+  resolveCollectionHandle,
+  detectGenderFromHandle,
+} from '@entities/collection/lib/resolve-handle';
 import { generateCollectionMetadata } from '@shared/lib/seo/generateMetadata';
 import { setRequestLocale } from 'next-intl/server';
 import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
@@ -28,20 +31,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   try {
     const allSlugs = await getCollectionSlugs();
-    const resolvedHandle = resolveCollectionHandle(decodedSlug, gender, new Set(allSlugs));
+    const resolvedHandle = resolveCollectionHandle(
+      decodedSlug,
+      gender,
+      new Set(allSlugs),
+    );
 
-    const [{ collection, alternateHandle }, sanityCollection] = await Promise.all([
-      getCollection({
-        handle: resolvedHandle,
-        locale,
-        first: 1,
-      }),
-      sanityFetch({
-        query: COLLECTION_IS_BRAND_QUERY,
-        params: { handle: resolvedHandle },
-        tags: [`collection:${resolvedHandle}`],
-      }),
-    ]);
+    const [{ collection, alternateHandle }, sanityCollection] =
+      await Promise.all([
+        getCollection({
+          handle: resolvedHandle,
+          locale,
+          first: 1,
+        }),
+        sanityFetch({
+          query: COLLECTION_IS_BRAND_QUERY,
+          params: { handle: resolvedHandle },
+          tags: [`collection:${resolvedHandle}`],
+        }),
+      ]);
 
     if (!collection.collection?.id) {
       return { title: 'Collection Not Found' };
@@ -95,7 +103,11 @@ export default async function CollectionPage({ params, searchParams }: Props) {
 
   const decodedSlug = decodeURIComponent(slug);
   const allSlugs = await getCollectionSlugs();
-  const resolvedHandle = resolveCollectionHandle(decodedSlug, gender, new Set(allSlugs));
+  const resolvedHandle = resolveCollectionHandle(
+    decodedSlug,
+    gender,
+    new Set(allSlugs),
+  );
 
   if (isDevOnlyHandle(resolvedHandle) && !(await isDevEmail())) {
     notFound();

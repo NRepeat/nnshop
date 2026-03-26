@@ -772,12 +772,56 @@ export const HOME_PAGE =
                       "id": store.id,
                       handles,
                       titles,
-                      "image": { 
+                      "image": {
                         "url": coalesce(image.asset->url, store.imageUrl),
                         "alt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru)
                       }
                     }
+                  },
+                  _type == "collectionBannerGrid" => {
+                    _key,
+                    _type,
+                    "banners": banners[]{
+                      _key,
+                      "title": coalesce(title[$language], title.uk, title.ru),
+                      customUrl,
+                      image{
+                        asset->{ _id, url, metadata{ dimensions } },
+                        "alt": coalesce(alt[$language], alt.uk, alt.ru),
+                        hotspot,
+                        crop
+                      },
+                      "collection": collection->{
+                        title,
+                        "handle": store.slug.current,
+                        "id": store.id,
+                        handles,
+                        titles
+                      }
+                    }
                   }
+                }
+              }
+            },
+            _type == "collectionBannerGrid" => {
+              _key,
+              _type,
+              "banners": banners[]{
+                _key,
+                "title": coalesce(title[$language], title.uk, title.ru),
+                customUrl,
+                image{
+                  asset->{ _id, url, metadata{ dimensions } },
+                  "alt": coalesce(alt[$language], alt.uk, alt.ru),
+                  hotspot,
+                  crop
+                },
+                "collection": collection->{
+                  title,
+                  "handle": store.slug.current,
+                  "id": store.id,
+                  handles,
+                  titles
                 }
               }
             }

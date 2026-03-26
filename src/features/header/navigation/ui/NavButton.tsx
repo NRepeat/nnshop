@@ -48,9 +48,13 @@ export const NavButton = ({
     ? (productGender === 'unisex' ? null : productGender)
     : (genderInUrl ?? gender ?? DEFAULT_GENDER);
 
-  const isActive = optimisticSlug
-    ? optimisticSlug === slug
-    : effectiveGender === slug;
+  const isRootPage = pathname === '/';
+
+  const isActive = isRootPage
+    ? false
+    : optimisticSlug
+      ? optimisticSlug === slug
+      : effectiveGender === slug;
 
   const toPath = useMemo(() => {
     if (isBrandPage) {

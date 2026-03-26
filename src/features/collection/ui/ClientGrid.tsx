@@ -26,11 +26,7 @@ export const ClientGrid = ({
   const cols = useGridStore((s) => s.cols);
   const lgCols = cols === '3' ? 5 : 4;
 
-  const trimmedLength = Math.floor(products.length / lgCols) * lgCols;
-  const displayProducts =
-    !hasNextPage && trimmedLength > 0 && trimmedLength < products.length
-      ? products.slice(0, trimmedLength)
-      : products;
+  const displayProducts = products;
 
   return (
     <motion.div

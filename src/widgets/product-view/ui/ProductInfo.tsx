@@ -142,21 +142,27 @@ export const ProductInfo = ({
   return (
     <div className="content-stretch flex flex-col gap-[30px] items-start  py-0 relative w-full">
       <div className="flex flex-col gap-8 items-start  w-full max-w-2xl">
-        <section className="flex flex-col gap-2 w-full">
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg text-gray-800">{stripInvisible(product.title)}</h1>
-          </div>
-          {product.vendor && (
-            <Link href={`/brand/${vendorToHandle(product.vendor)}`} prefetch className="order-first">
-              <h2 className="text-xl font-semibold uppercase tracking-tight">
+        <section className="relative flex flex-col gap-2 w-full">
+          <h1 className="flex flex-col gap-1">
+            {product.vendor && (
+              <span className="text-xl font-semibold uppercase tracking-tight">
                 {product.vendor}
-              </h2>
-            </Link>
-          )}
-          {sku && (
-            <p className="text-sm text-gray-500">
-              {t('sku')}: {sku}
-            </p>
+              </span>
+            )}
+            <span className="text-lg text-gray-800">{stripInvisible(product.title)}</span>
+            {sku && (
+              <span className="text-sm text-gray-500">
+                {t('sku')}: {sku}
+              </span>
+            )}
+          </h1>
+          {product.vendor && (
+            <Link
+              href={`/brand/${vendorToHandle(product.vendor)}`}
+              prefetch
+              className="absolute top-0 left-0 w-full h-7"
+              aria-label={product.vendor}
+            />
           )}
           <ProductPrice
             product={product}
