@@ -39,7 +39,15 @@ export const PRODUCT_METAFIELDS_FRAGMENT = `#graphql
     }
   }
 `;
-
+export const GET_PROXY_PRODUCT_QUERY = `#graphql
+  query getProductByHandle($handle: String!, $variant: ID) {
+  
+    product(handle: $handle, id: $variant) {
+      id
+      title
+      handle
+    }
+  }`;
 export const GET_PRODUCT_QUERY = `#graphql
   query getProductByHandle($handle: String!, $variant: ID) {
   

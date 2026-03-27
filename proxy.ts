@@ -11,7 +11,10 @@ import {
   GetProductByHandleQuery,
 } from '@shared/lib/shopify/types/storefront.generated';
 import { GetCollectionProxy } from '@entities/collection/api/query';
-import { GET_PRODUCT_QUERY } from '@entities/product/api/getProduct';
+import {
+  GET_PRODUCT_QUERY,
+  GET_PROXY_PRODUCT_QUERY,
+} from '@entities/product/api/getProduct';
 
 const handleI18nRouting = createMiddleware(routing);
 
@@ -21,7 +24,7 @@ async function checkProductExists(handle: string, locale: string) {
       GetProductByHandleQuery,
       { handle: string }
     >({
-      query: GET_PRODUCT_QUERY,
+      query: GET_PROXY_PRODUCT_QUERY,
       variables: { handle },
       language: locale.toUpperCase() as StorefrontLanguageCode,
     });
