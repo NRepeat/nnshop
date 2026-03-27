@@ -7,13 +7,12 @@ import { redirect, unstable_rethrow } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { getCompleteCheckoutData } from '@features/checkout/api/getCompleteCheckoutData';
-import { DISCOUNT_METAFIELD_KEY, DEFAULT_CURRENCY_CODE } from '@shared/config/shop';
+import {
+  DISCOUNT_METAFIELD_KEY,
+  DEFAULT_CURRENCY_CODE,
+} from '@shared/config/shop';
 
-export default async function Payment({
-  locale,
-}: {
-  locale: string;
-}) {
+export default async function Payment({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'CheckoutPage' });
   const liqpayPublicKey = process.env.LIQPAY_PUBLIC_KEY;
   const liqpayPrivateKey = process.env.LIQPAY_PRIVATE_KEY;
@@ -43,15 +42,17 @@ export default async function Payment({
     {
       currency = cartResult.cart.cost.totalAmount.currencyCode;
       const lines = cartResult.cart.lines.edges;
-      // Calculate znizka-discounted subtotal
       let localTotal = 0;
       let shopifySubtotal = 0;
       for (const edge of lines) {
         const line = edge.node;
         const price = Number(line.cost.amountPerQuantity.amount);
-        const sale = Number(
-          line.merchandise.product.metafields?.find((m: any) => m?.key === DISCOUNT_METAFIELD_KEY)?.value || '0'
-        ) || 0;
+        const sale =
+          Number(
+            line.merchandise.product.metafields?.find(
+              (m: any) => m?.key === DISCOUNT_METAFIELD_KEY,
+            )?.value || '0',
+          ) || 0;
         const discountedPrice = sale > 0 ? price * (1 - sale / 100) : price;
         localTotal += discountedPrice * line.quantity;
         shopifySubtotal += price * line.quantity;
@@ -60,11 +61,19 @@ export default async function Payment({
       // product-level automatic discounts (automatic line discounts only appear at line level)
       const cartDiscountTotal = [
         ...(cartResult.cart.discountAllocations || []),
-        ...cartResult.cart.lines.edges.flatMap((e) => (e.node.discountAllocations as any[]) || []),
-      ].reduce((sum: number, d: any) => sum + Number(d.discountedAmount.amount), 0);
+        ...cartResult.cart.lines.edges.flatMap(
+          (e) => (e.node.discountAllocations as any[]) || [],
+        ),
+      ].reduce(
+        (sum: number, d: any) => sum + Number(d.discountedAmount.amount),
+        0,
+      );
       // Shopify calculates the discount on original prices; derive rate and apply to sale subtotal
       // cartDiscountTotal > 0 covers both code-based and automatic discounts
-      const discountRate = cartDiscountTotal > 0 && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
+      const discountRate =
+        cartDiscountTotal > 0 && shopifySubtotal > 0
+          ? cartDiscountTotal / shopifySubtotal
+          : 0;
       const discountAmount = localTotal * discountRate;
       cartAmount = Math.max(0, localTotal - discountAmount);
     }

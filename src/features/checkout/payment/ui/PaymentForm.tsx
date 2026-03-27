@@ -27,7 +27,7 @@ interface PaymentFormProps {
   completeCheckoutData: Omit<CheckoutData, 'paymentInfo'> | null;
 }
 
-export default function PaymentForm({
+export default function IPaymentForm({
   defaultValues,
   amount,
   currency = DEFAULT_CURRENCY_CODE,
@@ -46,11 +46,7 @@ export default function PaymentForm({
     shouldUnregister: false,
     defaultValues: {
       paymentMethod: defaultValues?.paymentMethod || 'pay-now',
-      paymentProvider:
-        defaultValues?.paymentProvider ||
-        (defaultValues?.paymentMethod === 'after-delivered'
-          ? 'after-delivered'
-          : undefined),
+
       amount: amount,
       currency: currency || defaultValues?.currency,
       description: defaultValues?.description || 'Order payment',
@@ -76,13 +72,20 @@ export default function PaymentForm({
   }, [liqpayParams]);
 
   const onSubmit: SubmitHandler<PaymentInfo> = async (data) => {
-    console.log('[PaymentForm] submit:', data.paymentMethod, data.paymentProvider);
+    console.log(
+      '[PaymentForm] submit:',
+      data.paymentMethod,
+      data.paymentProvider,
+    );
     setIsLoading(true);
     try {
       // 4a. LiqPay: use a regular API fetch instead of server actions.
       // Server actions trigger RSC refresh which races against the form POST to
       // liqpay.ua → Next.js "Falling back to browser navigation" overrides it.
-      if (data.paymentMethod === 'pay-now' && data.paymentProvider === 'liqpay') {
+      if (
+        data.paymentMethod === 'pay-now' &&
+        data.paymentProvider === 'liqpay'
+      ) {
         console.log('[PaymentForm] LiqPay: calling API route');
         const res = await fetch('/api/checkout/liqpay-order', {
           method: 'POST',
@@ -112,14 +115,20 @@ export default function PaymentForm({
 
       if (!orderResult.success || !orderResult.order) {
         console.error('[PaymentForm] createOrder failed:', orderResult.errors);
-        toast.error(orderResult.errors?.[0] || t('errorSavingPaymentInformation'));
+        toast.error(
+          orderResult.errors?.[0] || t('errorSavingPaymentInformation'),
+        );
         setIsLoading(false);
         return;
       }
 
       const createdOrder = orderResult.order;
       console.log('[PaymentForm] order created:', createdOrder.id);
-      const orderName = (createdOrder.name || createdOrder.id.split('/').pop() || '').replace('#', '');
+      const orderName = (
+        createdOrder.name ||
+        createdOrder.id.split('/').pop() ||
+        ''
+      ).replace('#', '');
 
       await savePaymentInfo(data, createdOrder.id);
 
@@ -127,9 +136,15 @@ export default function PaymentForm({
       // Safe to reset here because we're navigating away immediately after.
       try {
         await resetCartSession();
-        console.log('[PaymentForm] cart reset after non-liqpay order', createdOrder.id);
+        console.log(
+          '[PaymentForm] cart reset after non-liqpay order',
+          createdOrder.id,
+        );
       } catch (resetError) {
-        console.error('[PaymentForm] resetCartSession failed (non-blocking):', resetError);
+        console.error(
+          '[PaymentForm] resetCartSession failed (non-blocking):',
+          resetError,
+        );
       }
 
       toast.success(t('paymentInformationSaved'));
@@ -158,7 +173,11 @@ export default function PaymentForm({
           className="flex flex-col items-center gap-3"
         >
           <input type="hidden" name="data" value={liqpayParams.data} />
-          <input type="hidden" name="signature" value={liqpayParams.signature} />
+          <input
+            type="hidden"
+            name="signature"
+            value={liqpayParams.signature}
+          />
           <button
             ref={liqpaySubmitRef}
             type="submit"
