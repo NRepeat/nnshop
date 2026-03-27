@@ -6,26 +6,27 @@ import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 import { hasGenderedSuffix } from '@entities/collection/lib/resolve-handle';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
-import { GetCollectionQuery } from '@shared/lib/shopify/types/storefront.generated';
+import {
+  GetCollectionQuery,
+  GetProductByHandleQuery,
+} from '@shared/lib/shopify/types/storefront.generated';
 import { GetCollectionProxy } from '@entities/collection/api/query';
+import { GET_PRODUCT_QUERY } from '@entities/product/api/getProduct';
 
 const handleI18nRouting = createMiddleware(routing);
 
 async function checkProductExists(handle: string, locale: string) {
   try {
-    const query = `#graphql
-      query checkProduct($handle: String!) {
-        product(handle: $handle) {
-          id
-        }
-      }
-    `;
-    const response = await storefrontClient.request<any, { handle: string }>({
-      query,
+    const product = await storefrontClient.request<
+      GetProductByHandleQuery,
+      { handle: string }
+    >({
+      query: GET_PRODUCT_QUERY,
       variables: { handle },
-      language: locale as StorefrontLanguageCode,
+      language: locale.toUpperCase() as StorefrontLanguageCode,
     });
-    return !!response.product;
+
+    return !!product.product;
   } catch (e) {
     console.error(`❌ Proxy: Error checking product ${handle}:`, e);
     return true; // Fail safe
