@@ -108,7 +108,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   if (isDevOnlyHandle(resolvedHandle) && !(await isDevEmail())) {
     notFound();
   }
-
+  console.log(resolvedHandle,"resolvedHandle-----------")
   const [sanityCollection, { collection }] = await Promise.all([
     sanityFetch({
       query: COLLECTION_IS_BRAND_QUERY,

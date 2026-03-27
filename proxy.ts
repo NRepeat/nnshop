@@ -6,7 +6,8 @@ import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 import { hasGenderedSuffix } from '@entities/collection/lib/resolve-handle';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
-import { notFound } from 'next/navigation';
+import { GetCollectionQuery } from '@shared/lib/shopify/types/storefront.generated';
+import { GetCollectionProxy } from '@entities/collection/api/query';
 
 const handleI18nRouting = createMiddleware(routing);
 
@@ -31,23 +32,25 @@ async function checkProductExists(handle: string, locale: string) {
   }
 }
 async function checkCollectionExists(handle: string, locale: string) {
+  'use cache';
   try {
-    const query = `#graphql
-      query checkProduct($handle: String!) {
-        collection(handle: $handle) {
-          id
-        }
+    const collection = await storefrontClient.request<
+      GetCollectionQuery,
+      {
+        handle: string;
       }
-    `;
-    const response = await storefrontClient.request<any, { handle: string }>({
-      query,
-      variables: { handle },
-      language: locale as StorefrontLanguageCode,
+    >({
+      query: GetCollectionProxy,
+      variables: {
+        handle,
+      },
+      language: locale.toUpperCase() as StorefrontLanguageCode,
     });
-    return !!response.collection;
+
+    return !!collection.collection;
   } catch (e) {
     console.error(`❌ Proxy: Error checking collectio ${handle}:`, e);
-    return true; // Fail safe
+    return true;
   }
 }
 
@@ -198,7 +201,11 @@ export async function proxy(request: NextRequest) {
       const exists = await checkCollectionExists(handle, locale);
 
       if (!exists) {
-        console.log(`🚫 Proxy: Collection ${handle} not found. Returning 404.`,segments,exists);
+        console.log(
+          `🚫 Proxy: Collection ${handle} not found. Returning 404.`,
+          segments,
+          exists,
+        );
         const url = new URL(request.url);
         url.pathname = `/${locale}/404`; // Standard path for not found
 

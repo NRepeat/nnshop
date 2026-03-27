@@ -102,9 +102,8 @@ export const CollectionGrid = async ({
       first: limit,
       locale: locale,
       searchParams: awaitedSearchParams,
-    }),
+    }), 
   ]);
-  console.log('CollectionGrid', { sanityCollection, currentData });
   if (sanityCollection?.isBrand) {
     redirect(`/${locale}/brand/${resolvedHandle}`);
   }

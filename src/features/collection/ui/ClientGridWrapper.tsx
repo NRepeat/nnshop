@@ -25,7 +25,6 @@ export const ClientGridWrapper = ({
   selectedSizeSlugs?: string[];
   optionGroups?: Record<string, { name: string; values: string[] }>;
 }) => {
-  console.log('ClientGridWrapper render', { initialProducts, initialPageInfo, handle, selectedSizeSlugs, optionGroups });
   const session = useSession();
   const [favSet, setFavSet] = useState<Set<string>>(new Set());
 
