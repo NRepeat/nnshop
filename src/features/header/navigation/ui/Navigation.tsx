@@ -131,13 +131,14 @@ const Navigation = async ({
   // Tabs come from Sanity navDropdowns, sorted by menuIndex
   const tabs = navDropdowns?.[gender as 'woman' | 'man'] ?? [];
 
-  // Collect all child collection handles for prefetching featured images (only category tabs)
   const allChildHandles = [
     ...new Set(
       tabs.flatMap((tab) =>
         (tab.columns ?? []).flatMap((col) =>
           (col.items ?? [])
-            .filter((item): item is NonNullable<SanityColumnItem> => item != null)
+            .filter(
+              (item): item is NonNullable<SanityColumnItem> => item != null,
+            )
             .map((item) => item.handle),
         ),
       ),

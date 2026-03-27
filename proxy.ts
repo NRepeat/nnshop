@@ -200,6 +200,9 @@ export async function proxy(request: NextRequest) {
     if (isGender && segments.length >= 3 && segments[2] === segments[1]) {
       return NextResponse.next();
     }
+  
+    request.headers.set('x-pathname', pathname);
+
     if (isGender && segments.length >= 3) {
       const handle = decodeURIComponent(segments[2]);
       const exists = await checkCollectionExists(handle, locale);
@@ -221,9 +224,11 @@ export async function proxy(request: NextRequest) {
   }
 
   const i18nResponse = handleI18nRouting(request);
+  if (segments[1] && allowedGenders.includes(segments[1])) {
+    i18nResponse.headers.set('x-gender', segments[1]);
+  }
+  i18nResponse.headers.set('x-pathname', pathname);
 
-  // Important: if the URL contains /product/, and we know it will trigger notFound()
-  // on the page level, we must ensure we don't fix the status to 200 via rewrites here.
   return i18nResponse;
 }
 

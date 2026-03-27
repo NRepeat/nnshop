@@ -150,14 +150,15 @@ export async function getSitemapProducts(): Promise<SitemapProduct[]> {
 
   try {
     while (hasNextPage) {
-      const response: ProductsForSitemapResponse = await storefrontClient.request<
-        ProductsForSitemapResponse,
-        { first: number; after: string | null }
-      >({
-        query: GET_PRODUCTS_FOR_SITEMAP,
-        variables: { first: 250, after: cursor },
-        language: 'UK' as StorefrontLanguageCode,
-      });
+      const response: ProductsForSitemapResponse =
+        await storefrontClient.request<
+          ProductsForSitemapResponse,
+          { first: number; after: string | null }
+        >({
+          query: GET_PRODUCTS_FOR_SITEMAP,
+          variables: { first: 250, after: cursor },
+          language: 'UK' as StorefrontLanguageCode,
+        });
 
       if (response.products?.edges) {
         allProducts.push(...response.products.edges.map((edge) => edge.node));
@@ -181,12 +182,18 @@ export async function getSitemapCategories(): Promise<SitemapCategory[]> {
 
   try {
     const [ukResponse, ruResponse] = await Promise.all([
-      storefrontClient.request<CollectionsForSitemapResponse, Record<string, never>>({
+      storefrontClient.request<
+        CollectionsForSitemapResponse,
+        Record<string, never>
+      >({
         query: GET_COLLECTIONS_FOR_SITEMAP,
         variables: {},
         language: 'UK' as StorefrontLanguageCode,
       }),
-      storefrontClient.request<CollectionsForSitemapResponse, Record<string, never>>({
+      storefrontClient.request<
+        CollectionsForSitemapResponse,
+        Record<string, never>
+      >({
         query: GET_COLLECTIONS_FOR_SITEMAP,
         variables: {},
         language: 'RU' as StorefrontLanguageCode,
@@ -222,14 +229,15 @@ export async function getSitemapBrands(): Promise<SitemapBrand[]> {
 
   try {
     while (hasNextPage && vendorSet.size < 500) {
-      const response: VendorsForSitemapResponse = await storefrontClient.request<
-        VendorsForSitemapResponse,
-        { first: number; after: string | null }
-      >({
-        query: GET_VENDORS_FOR_SITEMAP,
-        variables: { first: 250, after: cursor },
-        language: 'UK' as StorefrontLanguageCode,
-      });
+      const response: VendorsForSitemapResponse =
+        await storefrontClient.request<
+          VendorsForSitemapResponse,
+          { first: number; after: string | null }
+        >({
+          query: GET_VENDORS_FOR_SITEMAP,
+          variables: { first: 250, after: cursor },
+          language: 'UK' as StorefrontLanguageCode,
+        });
 
       if (response.products?.edges) {
         for (const edge of response.products.edges) {
@@ -269,7 +277,9 @@ export async function getSitemapPosts(): Promise<SitemapPost[]> {
   cacheTag('post');
 
   try {
-    const posts = await sanityClient.fetch<SitemapPost[]>(POSTS_FOR_SITEMAP_QUERY);
+    const posts = await sanityClient.fetch<SitemapPost[]>(
+      POSTS_FOR_SITEMAP_QUERY,
+    );
     return posts ?? [];
   } catch (error) {
     console.error('Failed to fetch posts for sitemap:', error);

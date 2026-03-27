@@ -17,8 +17,26 @@ function isBrandsItem(item: { url: string; title: string }) {
 }
 
 const GENDER_SLUG_PATTERNS: Record<string, string[]> = {
-  woman: ['woman', 'women', 'female', 'жен', 'женщин', 'жінк', 'zhinok', 'zhinoch'],
-  man: ['man', 'men', 'male', 'муж', 'мужчин', 'чолов', 'cholovik', 'cholovichi'],
+  woman: [
+    'woman',
+    'women',
+    'female',
+    'жен',
+    'женщин',
+    'жінк',
+    'zhinok',
+    'zhinoch',
+  ],
+  man: [
+    'man',
+    'men',
+    'male',
+    'муж',
+    'мужчин',
+    'чолов',
+    'cholovik',
+    'cholovichi',
+  ],
 };
 function matchesGender(item: { url: string; title: string }, gender: string) {
   const slug = item.url.split('/').pop()?.toLowerCase() || '';
@@ -62,7 +80,8 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
     buildLevel2Map(locale),
   ]);
   const gender = headersList.get('x-gender');
-  const currentGender = (GENDERS.includes(gender as any) ? gender : null) || DEFAULT_GENDER;
+  const currentGender =
+    (GENDERS.includes(gender as any) ? gender : null) || DEFAULT_GENDER;
   const pathname = headersList.get('x-pathname') ?? '';
   const pathSegments = pathname.split('/').filter(Boolean);
   const isRootPage = pathSegments.length <= 1; // e.g. /uk or /ru
@@ -72,7 +91,11 @@ export const PersistLinkNavigation = async (props: HeaderBarProps) => {
       const { collectionData } = category;
       let slug = '';
       if (collectionData?.id) {
-        const resolved = resolveCollectionLink(collectionData, locale, currentGender);
+        const resolved = resolveCollectionLink(
+          collectionData,
+          locale,
+          currentGender,
+        );
         slug = cleanSlug(resolved.handle || collectionData?.pageHandle || '');
       } else {
         slug = cleanSlug(collectionData?.pageHandle || '');
@@ -130,7 +153,12 @@ const GenderSession = async ({
     ? undefined
     : (GENDERS.includes(rawGender as any) ? rawGender : null) || DEFAULT_GENDER;
   return (
-    <NavButton gender={gender} slug={slug} level2Map={level2Map} className={className}>
+    <NavButton
+      gender={gender}
+      slug={slug}
+      level2Map={level2Map}
+      className={className}
+    >
       {label}
     </NavButton>
   );

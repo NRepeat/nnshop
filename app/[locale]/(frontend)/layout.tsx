@@ -15,7 +15,10 @@ import { Suspense } from 'react';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { ScrollDirectionProvider } from '@shared/ui/ScrollDirectionProvider';
 import { SessionBanner } from '@features/session-banner';
-import { generateOrganizationJsonLd, generateWebSiteJsonLd } from '@shared/lib/seo/jsonld';
+import {
+  generateOrganizationJsonLd,
+  generateWebSiteJsonLd,
+} from '@shared/lib/seo/jsonld';
 import Script from 'next/script';
 import { ConsentBanner } from '@features/consent/ui/ConsentBanner';
 import { GA4Identify } from '@shared/lib/analytics/GA4Identify';
@@ -51,7 +54,13 @@ export const metadata: Metadata = {
     type: 'website',
     siteName: 'Mio Mio',
     locale: 'uk_UA',
-    images: [{ url: `${process.env.BLOB_BASE_URL}/og-image.jpg`, width: 1200, height: 630 }],
+    images: [
+      {
+        url: `${process.env.BLOB_BASE_URL}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
 };
 
@@ -113,8 +122,16 @@ export default async function RootLayout(props: RootProps) {
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://cdn.shopify.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://cdn.shopify.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://cdn.sanity.io"
+          crossOrigin="anonymous"
+        />
         <Script id="google-consent-init" strategy="beforeInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
