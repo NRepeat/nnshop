@@ -59,6 +59,12 @@ async function checkCollectionExists(handle: string, locale: string) {
 }
 
 export async function proxy(request: NextRequest) {
+  // Strip internal port (e.g. :3000) so redirects use clean URLs behind reverse proxy
+  const host = request.headers.get('host') || '';
+  if (host && !host.includes(':')) {
+    request.nextUrl.port = '';
+  }
+
   const { pathname } = request.nextUrl;
 
   // Skip internal and checked requests
@@ -98,19 +104,26 @@ export async function proxy(request: NextRequest) {
 
   // --- GOAL STATE NORMALIZATION BLOCK ---
   const url = new URL(request.url);
+  url.port = ''; // Always strip internal port for clean redirect URLs
   let changed = false;
 
   // 1. Canonical Host & Protocol Normalization
-  const host = request.headers.get('host') || '';
   const protocol = request.headers.get('x-forwarded-proto') || 'https';
   const isProductionDomain =
     host === 'miomio.com.ua' || host === 'www.miomio.com.ua';
   const canonicalHost = 'www.miomio.com.ua';
 
-  if (isProductionDomain && (host !== canonicalHost || protocol === 'http')) {
-    url.host = canonicalHost;
+  // Strip internal port (e.g. :3000) when behind a reverse proxy
+  if (isProductionDomain) {
+    url.port = '';
     url.protocol = 'https:';
-    changed = true;
+    if (host !== canonicalHost) {
+      url.host = canonicalHost;
+      changed = true;
+    }
+    if (protocol === 'http') {
+      changed = true;
+    }
   }
 
   // 2. Trailing Slash Normalization (except root)
