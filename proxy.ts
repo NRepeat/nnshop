@@ -59,9 +59,12 @@ async function checkCollectionExists(handle: string, locale: string) {
 }
 
 export async function proxy(request: NextRequest) {
-  // Strip internal port (e.g. :3000) so redirects use clean URLs behind reverse proxy
   const host = request.headers.get('host') || '';
-  if (host && !host.includes(':')) {
+  const isProductionHost =
+    host === 'miomio.com.ua' || host === 'www.miomio.com.ua';
+
+  // Strip internal port (e.g. :3000) only on production behind reverse proxy
+  if (isProductionHost) {
     request.nextUrl.port = '';
   }
 
@@ -104,17 +107,14 @@ export async function proxy(request: NextRequest) {
 
   // --- GOAL STATE NORMALIZATION BLOCK ---
   const url = new URL(request.url);
-  url.port = ''; // Always strip internal port for clean redirect URLs
   let changed = false;
 
   // 1. Canonical Host & Protocol Normalization
   const protocol = request.headers.get('x-forwarded-proto') || 'https';
-  const isProductionDomain =
-    host === 'miomio.com.ua' || host === 'www.miomio.com.ua';
   const canonicalHost = 'www.miomio.com.ua';
 
   // Strip internal port (e.g. :3000) when behind a reverse proxy
-  if (isProductionDomain) {
+  if (isProductionHost) {
     url.port = '';
     url.protocol = 'https:';
     if (host !== canonicalHost) {
