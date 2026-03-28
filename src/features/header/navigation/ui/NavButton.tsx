@@ -1,11 +1,11 @@
 'use client';
 import { cn } from '@shared/lib/utils';
-import { Link, usePathname } from '@shared/i18n/navigation';
+import { Link, usePathname, useRouter } from '@shared/i18n/navigation';
 import { genders } from '@shared/i18n/routing';
 import { useTransition, useState, useMemo, useEffect } from 'react';
 import { detectGenderFromHandle } from '@entities/collection/lib/resolve-handle';
 import { DEFAULT_GENDER } from '@shared/config/shop';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useProductGenderStore } from '@shared/store/use-product-gender-store';
 
 export const NavButton = ({
