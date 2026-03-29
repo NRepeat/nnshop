@@ -133,9 +133,11 @@ export async function proxy(request: NextRequest) {
   }
 
   // 2.1 Strip empty query string (trailing "?")
-  if (url.search === '?' || url.search === '') {
+  // new URL() normalizes search to '' even when raw URL has trailing '?',
+  // so check the raw URL string instead
+  if (url.search === '' && request.url.endsWith('?')) {
     url.search = '';
-    if (request.nextUrl.search === '?') changed = true;
+    changed = true;
   }
 
   // 3. Structural Path Logic
