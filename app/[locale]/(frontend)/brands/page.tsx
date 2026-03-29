@@ -7,6 +7,7 @@ import { Metadata } from 'next';
 import { generatePageMetadata } from '@shared/lib/seo/generateMetadata';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { Link as LocaleLink } from '@shared/i18n/navigation';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -83,13 +84,13 @@ const BrandsList = async ({ locale }: { locale: string }) => {
             <h2 className="text-2xl font-bold mb-4">{letter}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-2">
               {groupedBrands[letter].map((brand) => (
-                <Link
+                <LocaleLink
                   key={brand}
                   href={`/brand/${vendorToHandle(brand)}`}
                   className="text-sm hover:text-primary hover:underline transition-colors py-1"
                 >
-                  {brand}
-                </Link>
+                  {brand}s
+                </LocaleLink>
               ))}
             </div>
           </div>

@@ -2,7 +2,10 @@ import { BrandGrid } from '@features/brand/ui/BrandGrid';
 import { CollectionGridSkeleton } from '@features/collection/ui/CollectionGridSkeleton';
 import { Suspense } from 'react';
 import { Metadata } from 'next';
-import { getCollection, getCollectionSlugs } from '@entities/collection/api/getCollection';
+import {
+  getCollection,
+  getCollectionSlugs,
+} from '@entities/collection/api/getCollection';
 import { generateBrandMetadata } from '@shared/lib/seo/generateMetadata';
 import { notFound } from 'next/navigation';
 import { locales } from '@shared/i18n/routing';
