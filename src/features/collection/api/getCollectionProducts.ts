@@ -11,7 +11,7 @@ export async function getCollectionProducts({
   slug,
   locale,
   searchParams,
-  gender: _gender,
+  gender,
 }: {
   info?: PageInfo;
   slug: string;
