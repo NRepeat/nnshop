@@ -50,19 +50,14 @@ export const BrandGrid = async ({
   const decodedSlug = decodeURIComponent(slug);
   setRequestLocale(locale);
 
-  const gender =
-    (awaitedSearchParams._gender as string | undefined) || 'woman';
-  const searchParamsWithoutGender = Object.fromEntries(
-    Object.entries(awaitedSearchParams).filter(([k]) => k !== '_gender'),
-  );
-  const hasFilters = Object.keys(searchParamsWithoutGender).length > 0;
+  const hasFilters = Object.keys(awaitedSearchParams).length > 0;
 
   const collectionPromises = [
     getCollection({
       handle: decodedSlug,
       first: 20,
       locale: locale,
-      searchParams: searchParamsWithoutGender,
+      searchParams: awaitedSearchParams,
     }),
   ];
 
@@ -86,10 +81,10 @@ export const BrandGrid = async ({
 
   // Build selectedSizeSlugs from URL params (direct, independent of filterDefs)
   const selectedSizeSlugs = new Set<string>();
-  if (hasFilters && searchParamsWithoutGender.rozmir) {
-    const vals = Array.isArray(searchParamsWithoutGender.rozmir)
-      ? searchParamsWithoutGender.rozmir
-      : (searchParamsWithoutGender.rozmir as string).split(';');
+  if (hasFilters && awaitedSearchParams.rozmir) {
+    const vals = Array.isArray(awaitedSearchParams.rozmir)
+      ? awaitedSearchParams.rozmir
+      : (awaitedSearchParams.rozmir as string).split(';');
     vals.forEach((v) => selectedSizeSlugs.add(v));
   }
 
@@ -97,7 +92,7 @@ export const BrandGrid = async ({
   const optionGroups = new Map<string, { name: string; values: Set<string> }>();
   if (hasFilters) {
     const filterDefs = collection.collection?.products.filters ?? [];
-    for (const [key, value] of Object.entries(searchParamsWithoutGender)) {
+    for (const [key, value] of Object.entries(awaitedSearchParams)) {
       if (
         key === 'minPrice' ||
         key === 'maxPrice' ||
@@ -253,7 +248,6 @@ export const BrandGrid = async ({
               // @ts-ignore
               initialProducts={productsWithFav as Product[]}
               handle={decodedSlug}
-              gender={gender}
               selectedSizeSlugs={Array.from(selectedSizeSlugs)}
               optionGroups={serializableOptionGroups}
             />
