@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "npx prisma generate && next build --turbopack",
+    "build": "npx prisma generate && NODE_OPTIONS='--max-old-space-size=8192' next build --turbopack",
     "analyze": "npx prisma generate && ANALYZE=true next build",
     "start": "next start",
     "lint": "eslint",

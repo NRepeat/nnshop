@@ -52,10 +52,15 @@ export const BrandGrid = async ({
 
   const hasFilters = Object.keys(awaitedSearchParams).length > 0;
 
+  const limit = Math.min(
+    parseInt((awaitedSearchParams.limit as string) || '20', 10),
+    250,
+  );
+
   const collectionPromises = [
     getCollection({
       handle: decodedSlug,
-      first: 20,
+      first: limit,
       locale: locale,
       searchParams: awaitedSearchParams,
     }),
@@ -65,7 +70,7 @@ export const BrandGrid = async ({
     collectionPromises.push(
       getCollection({
         handle: decodedSlug,
-        first: 20,
+        first: limit,
         locale: locale,
       }),
     );

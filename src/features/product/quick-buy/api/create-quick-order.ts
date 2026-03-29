@@ -1,6 +1,6 @@
 'use server';
 
-import { DEFAULT_COUNTRY_CODE } from '@shared/config/shop';
+import { DEFAULT_COUNTRY_CODE, PRICE_APP_URL, SHOPIFY_STORE_DOMAIN, INTERNAL_API_SECRET } from '@shared/config/shop';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { auth } from '@features/auth/lib/auth';
@@ -193,6 +193,68 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
           draft: false,
         },
       });
+    }
+
+    // Trigger KeyCRM + eSputnik immediately (same pattern as regular checkout)
+    try {
+      const numericOrderId = createdOrder.id.replace('gid://shopify/Order/', '');
+      const numericVariantId = Number(orderData.variantId.replace('gid://shopify/ProductVariant/', '') || 0);
+
+      const webhookPayload = {
+        id: Number(numericOrderId),
+        name: createdOrder.name,
+        email: '',
+        phone: orderData.phone,
+        created_at: new Date().toISOString(),
+        currency: orderData.currencyCode,
+        financial_status: 'pending',
+        note: `Быстрый заказ: ${orderData.productTitle}${orderData.selectedSize ? ` (Розмір: ${orderData.selectedSize})` : ''}`,
+        note_attributes: [
+          { name: '_quick_order', value: 'true' },
+          { name: '_customer_name', value: orderData.name },
+          { name: '_customer_phone', value: orderData.phone },
+        ],
+        payment_gateway_names: ['manual'],
+        customer: {
+          first_name: firstName,
+          last_name: lastName,
+          email: '',
+          phone: orderData.phone,
+        },
+        shipping_address: {
+          first_name: firstName,
+          last_name: lastName,
+          address1: 'Быстрый заказ',
+          city: 'Не указан',
+          country: DEFAULT_COUNTRY_CODE,
+          phone: orderData.phone,
+          zip: '',
+        },
+        line_items: [{
+          title: orderData.productTitle,
+          variant_title: orderData.selectedSize || '',
+          quantity: orderData.quantity,
+          price: finalPrice.toFixed(2),
+          product_id: 0,
+          variant_id: numericVariantId,
+          sku: '',
+        }],
+        shipping_lines: [],
+        applied_discount: null,
+      };
+
+      const processHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (INTERNAL_API_SECRET) processHeaders['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
+
+      fetch(`${PRICE_APP_URL}/api/internal/process-order`, {
+        method: 'POST',
+        headers: processHeaders,
+        body: JSON.stringify({ payload: webhookPayload, shop: SHOPIFY_STORE_DOMAIN }),
+      }).catch((err) => {
+        console.error('[createQuickOrder] internal process-order call failed:', err);
+      });
+    } catch (internalErr) {
+      console.error('[createQuickOrder] failed to build process-order payload:', internalErr);
     }
 
     const distinctId = userId ?? 'anonymous';

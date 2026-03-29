@@ -1,9 +1,6 @@
 # ============================================
 # Stage 1: Dependencies Installation
 # ============================================
-# Обновлять до актуальной LTS-версии Node.js:
-# https://nodejs.org/en/about/releases/
-# Node.js 24 LTS — актуальная версия из официального Vercel примера
 ARG NODE_VERSION=24.13.0-slim
 FROM node:${NODE_VERSION} AS dependencies
 
@@ -23,15 +20,12 @@ WORKDIR /app
 
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
-# OpenSSL для Prisma
-RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
-# ── Build Args ────────────────────────────────────────────
+
+# OpenSSL для Prisma + curl для healthcheck
+RUN apt-get update -y && apt-get install -y openssl curl && rm -rf /var/lib/apt/lists/*
+
 # NEXT_PUBLIC_* инлайнятся в клиентский JS при `next build`.
-# DATABASE_URL нужен для `prisma generate` (не подключается к БД).
-
-# ──────────────────────────────────────────────────────────
-
+# Передаются через --build-arg или .env.production.local (COPY'd выше).
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
@@ -53,15 +47,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=builder --chown=node:node /app/public ./public
 
 # Директория для ISR prerender-кэша
-RUN mkdir .next
-RUN chown node:node .next
-
-# Standalone output
 RUN mkdir -p .next/cache && chown -R node:node .next
 
-COPY --from=builder --chown=node:node /app/public ./public
+# Standalone output
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
+
 # Запуск от непривилегированного пользователя
 USER node
 

@@ -1,7 +1,7 @@
 node_modules
-.next
+.next/cache
 .git
 .gitignore
 *.md
 .vscode
-.idea
+.idea.env*
