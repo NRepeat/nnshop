@@ -3,7 +3,8 @@
 import { useState, useReducer, memo } from 'react';
 import { toast } from 'sonner';
 import { toggleFavoriteProduct } from '@features/product/api/toggle-favorite';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from '@shared/i18n/navigation';
+import { useParams } from 'next/navigation';
 import { Button } from '@shared/ui/button';
 import { Heart } from 'lucide-react';
 import { cn } from '@shared/lib/utils';
@@ -34,7 +35,7 @@ export const FavSession = memo(({
     if (!user || user.isAnonymous) {
       // Preserve current search params to keep the background state stable
       const currentQuery = window.location.search;
-      router.push(`/${locale}/auth/sign-in${currentQuery}`, { scroll: false });
+      router.push(`/auth/sign-in${currentQuery}`, { scroll: false });
       return;
     }
 
@@ -56,7 +57,7 @@ export const FavSession = memo(({
         setIsFav(previousValue);
         if (result.error === 'AUTH_REQUIRED') {
           const currentQuery = window.location.search;
-          router.push(`/${locale}/auth/sign-in${currentQuery}`, { scroll: false });
+          router.push(`/auth/sign-in${currentQuery}`, { scroll: false });
         } else {
           toast("Couldn't save favorite. Try again.");
         }

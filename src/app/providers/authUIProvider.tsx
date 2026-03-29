@@ -3,7 +3,7 @@
 import { client } from '@/features/auth/lib/client';
 import { AuthUIProvider } from '@daveyplate/better-auth-ui';
 import { Link } from '@shared/i18n/navigation';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@shared/i18n/navigation';
 import { Suspense, type ReactNode } from 'react';
 
 export function Provider({ children }: { children: ReactNode }) {

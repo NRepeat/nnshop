@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@shared/i18n/navigation';
 import { Loader2 } from 'lucide-react';
 import { cancelShopifyOrder } from '@features/order/api/cancelShopifyOrder';
 
@@ -49,7 +49,7 @@ export function OrderProcessing({
 
           if (json.notFound) {
             // order was deleted (e.g. concurrent cancel) — go back to payment
-            router.replace(`/${locale}/checkout/payment`);
+            router.replace('/checkout/payment');
             return;
           }
         } catch {
@@ -65,7 +65,7 @@ export function OrderProcessing({
         } catch {
           // non-blocking
         }
-        router.replace(`/${locale}/checkout/payment`);
+        router.replace('/checkout/payment');
       }
     };
 

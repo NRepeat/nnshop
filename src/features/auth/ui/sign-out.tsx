@@ -1,6 +1,6 @@
 'use client';
 import { authClient } from '../lib/auth-client';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@shared/i18n/navigation';
 import { useEffect } from 'react';
 
 export const SignOut = () => {
@@ -8,7 +8,7 @@ export const SignOut = () => {
 
   useEffect(() => {
     authClient.signOut().then(() => {
-      router.push('/uk/woman');
+      router.push('/woman');
     });
   }, [router]);
 
