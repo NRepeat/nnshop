@@ -95,6 +95,7 @@ const ProductContent = async ({
   locale: string;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
+  await connection();
   return (
     <>
       <JsonLd data={generateProductJsonLd(product, locale)} />
