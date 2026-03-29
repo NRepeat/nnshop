@@ -70,21 +70,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   );
 }
 
+const genders = ['woman', 'man'];
+
 export async function generateStaticParams() {
   try {
     const collectionSlugs = await getCollectionSlugs();
     const params = [];
 
     for (const locale of locales) {
-      for (const slug of collectionSlugs) {
-        params.push({ locale, slug });
+      for (const gender of genders) {
+        for (const slug of collectionSlugs) {
+          params.push({ locale, gender, slug });
+        }
       }
     }
 
     return params;
   } catch (error) {
     console.error('Failed to generate static params for collections:', error);
-    return locales.map((locale) => ({ locale, slug: '' }));
+    return [];
   }
 }
 
@@ -108,7 +112,6 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   if (isDevOnlyHandle(resolvedHandle) && !(await isDevEmail())) {
     notFound();
   }
-  console.log(resolvedHandle,"resolvedHandle-----------")
   const [sanityCollection, { collection }] = await Promise.all([
     sanityFetch({
       query: COLLECTION_IS_BRAND_QUERY,

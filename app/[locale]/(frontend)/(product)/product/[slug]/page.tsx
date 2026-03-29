@@ -17,11 +17,29 @@ import { generateProductJsonLd } from '@shared/lib/seo/jsonld';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { connection } from 'next/server';
 import { ProductViewSkeleton } from '@widgets/product-view/ui/ProductViewSkeleton';
+import { getAllProductHandles } from '@entities/product/api/getAllProductsHandlers';
+import { locales } from '@shared/i18n/routing';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
+
+export async function generateStaticParams() {
+  try {
+    const handles = await getAllProductHandles('uk');
+    const params = [];
+    for (const locale of locales) {
+      for (const handle of handles) {
+        params.push({ locale, slug: handle });
+      }
+    }
+    return params;
+  } catch (error) {
+    console.error('Failed to generate static params for products:', error);
+    return [];
+  }
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params;
