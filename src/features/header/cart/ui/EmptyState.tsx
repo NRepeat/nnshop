@@ -8,7 +8,7 @@ import {
 } from '@shared/ui/empty';
 import { SheetContent, SheetHeader, SheetTitle } from '@shared/ui/sheet';
 import { getTranslations } from 'next-intl/server';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 
 export async function EmptyState({ locale }: { locale: string }) {
   const t = await getTranslations({

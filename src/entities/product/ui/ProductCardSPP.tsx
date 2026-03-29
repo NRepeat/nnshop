@@ -1,6 +1,6 @@
 import { Product } from '@shared/lib/shopify/types/storefront.types';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@shared/i18n/navigation';
 import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { cn } from '@shared/lib/utils';
 import { decodeHtmlEntities } from '@shared/lib/utils/decodeHtmlEntities';
