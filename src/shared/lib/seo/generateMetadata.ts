@@ -10,11 +10,48 @@ export function stripInvisible(str: string): string {
     .trim();
 }
 
-/** Truncates title to 60 characters max (Cyrillic chars are pixel-wider than Latin) */
+const TITLE_CHAR_LIMIT = 60;
+const LONG_SUFFIX_UK = ' в інтернет-магазині | MioMio';
+const LONG_SUFFIX_RU = ' в интернет-магазине | MioMio';
+const SHORT_SUFFIX = ' | MioMio';
+
+/**
+ * Builds a SEO title that fits within the character limit.
+ * Strategy: name (vendor + title + SKU) is always preserved for uniqueness.
+ * We sacrifice the suffix: full → short → none.
+ */
+export function buildTitle(
+  prefix: string,
+  name: string,
+  locale: string,
+): string {
+  const isUk = locale === 'uk';
+  const longSuffix = isUk ? LONG_SUFFIX_UK : LONG_SUFFIX_RU;
+
+  const full = `${prefix}${name}${longSuffix}`;
+  if (stripInvisible(full).length <= TITLE_CHAR_LIMIT) return stripInvisible(full);
+
+  const short = `${prefix}${name}${SHORT_SUFFIX}`;
+  if (stripInvisible(short).length <= TITLE_CHAR_LIMIT) return stripInvisible(short);
+
+  // Name is too long even with short suffix — drop suffix entirely
+  return stripInvisible(`${prefix}${name}`);
+}
+
+const DESC_CHAR_LIMIT = 155;
+
+/** Truncates description to fit within the character limit */
+export function formatDescription(desc: string): string {
+  const clean = stripInvisible(desc);
+  if (clean.length <= DESC_CHAR_LIMIT) return clean;
+  return clean.substring(0, DESC_CHAR_LIMIT - 1) + '…';
+}
+
+/** @deprecated Use buildTitle instead */
 export function formatTitle(title: string): string {
   const clean = stripInvisible(title);
-  if (clean.length > 60) {
-    return clean.substring(0, 57) + '...';
+  if (clean.length > TITLE_CHAR_LIMIT) {
+    return clean.substring(0, TITLE_CHAR_LIMIT - 3) + '...';
   }
   return clean;
 }
@@ -92,14 +129,12 @@ export function generateProductMetadata(
     baseTitle = `${vendor} ${productTitle} ${product.variants?.edges[0].node.sku}`;
   }
 
-  const rawTitle = isUk
-    ? `Купити ${baseTitle} в інтернет-магазині | MioMio`
-    : `Купить ${baseTitle} в интернет-магазине | MioMio`;
-  const title = formatTitle(rawTitle);
+  const titlePrefix = isUk ? 'Купити ' : 'Купить ';
+  const title = buildTitle(titlePrefix, baseTitle, locale);
 
-  const description = isUk
+  const description = formatDescription(isUk
     ? `Купити ${baseTitle} в інтернет-магазині MioMio. Фото, характеристики, доступні розміри та актуальна наявність. Доставка по Україні ✔️`
-    : `Купить ${baseTitle} в интернет-магазине MioMio. Фото, характеристики, доступные размеры и актуальное наличие. Доставка по Украине ✔️`;
+    : `Купить ${baseTitle} в интернет-магазине MioMio. Фото, характеристики, доступные размеры и актуальное наличие. Доставка по Украине ✔️`);
 
   return generatePageMetadata(
     { title, description, image: product.featuredImage?.url },
@@ -129,14 +164,12 @@ export function generateCollectionMetadata(
   const genderSuffix = gender
     ? (genderPhrase[gender as 'woman' | 'man'] ?? '')
     : '';
-  const rawTitle = isUk
-    ? `Купити ${cleanTitle}${genderSuffix} в інтернет-магазині | MioMio`
-    : `Купить ${cleanTitle}${genderSuffix} в интернет-магазине | MioMio`;
-  const title = formatTitle(rawTitle);
+  const titlePrefix = isUk ? 'Купити ' : 'Купить ';
+  const title = buildTitle(titlePrefix, `${cleanTitle}${genderSuffix}`, locale);
 
-  const templateDescription = isUk
+  const templateDescription = formatDescription(isUk
     ? `Купити ${cleanTitle}${genderSuffix} в інтернет-магазині MioMio. Добірка найкращих моделей, перевіряйте наявність та обирайте свій розмір. Доставка по Україні ✔️`
-    : `Купить ${cleanTitle}${genderSuffix} в интернет-магазине MioMio. Подборка лучших моделей, проверяйте наличие и выбирайте свой размер. Доставка по Украине ✔️`;
+    : `Купить ${cleanTitle}${genderSuffix} в интернет-магазине MioMio. Подборка лучших моделей, проверяйте наличие и выбирайте свой размер. Доставка по Украине ✔️`);
 
   const description =
     templateDescription || collection.seo?.description?.trim();
@@ -197,14 +230,12 @@ export function generateBrandMetadata(
 ): Metadata {
   const isUk = locale === 'uk';
   const cleanTitle = stripInvisible(brand.title);
-  const rawTitle = isUk
-    ? `${cleanTitle} — купити в інтернет-магазині | MioMio`
-    : `${cleanTitle} — купить в интернет-магазине | MioMio`;
-  const title = formatTitle(rawTitle);
+  const brandSuffix = isUk ? ' — купити' : ' — купить';
+  const title = buildTitle('', `${cleanTitle}${brandSuffix}`, locale);
 
-  const description = isUk
+  const description = formatDescription(isUk
     ? `${cleanTitle} в MioMio: моделі бренду, фото, доступні розміри та актуальна наявність. Зручне замовлення онлайн та доставка по Україні ✔️`
-    : `${cleanTitle} в MioMio: модели бренда, фото, доступные размеры и актуальное наличие. Удобный заказ онлайн и доставка по Украине ✔️`;
+    : `${cleanTitle} в MioMio: модели бренда, фото, доступные размеры и актуальное наличие. Удобный заказ онлайн и доставка по Украине ✔️`);
 
   return generatePageMetadata(
     { title, description, image: brand.image?.url },
