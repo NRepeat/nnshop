@@ -5,7 +5,7 @@ export default function imageLoader({
   width,
   quality,
 }: ImageLoaderProps): string {
-  const sanityQ = 100;
+  const sanityQ = 80;
   const shopifyQ = 70;
   if (src.includes('cdn.shopify.com')) {
     const url = new URL(src);

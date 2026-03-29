@@ -10,7 +10,7 @@ export function stripInvisible(str: string): string {
     .trim();
 }
 
-const TITLE_CHAR_LIMIT = 60;
+const TITLE_CHAR_LIMIT = 52;
 const LONG_SUFFIX_UK = ' в інтернет-магазині | MioMio';
 const LONG_SUFFIX_RU = ' в интернет-магазине | MioMio';
 const SHORT_SUFFIX = ' | MioMio';
@@ -80,11 +80,15 @@ export function generatePageMetadata(
     robots: seo.noIndex ? 'noindex, nofollow' : 'index, follow',
     alternates: {
       canonical: canonicalUrl,
-      languages: {
-        uk: `${BASE_URL}/uk${normalizedPath}`,
-        ru: `${BASE_URL}/ru${normalizedPath}`,
-        'x-default': `${BASE_URL}/uk${normalizedPath}`,
-      },
+      ...(seo.noIndex
+        ? {}
+        : {
+            languages: {
+              uk: `${BASE_URL}/uk${normalizedPath}`,
+              ru: `${BASE_URL}/ru${normalizedPath}`,
+              'x-default': `${BASE_URL}/uk${normalizedPath}`,
+            },
+          }),
     },
     openGraph: {
       title: seo.title || 'Mio Mio',
@@ -121,12 +125,13 @@ export function generateProductMetadata(
 
   const vendor = stripInvisible(product.vendor || '');
   const productTitle = stripInvisible(product.title || '');
+  const sku = product.variants?.edges[0]?.node.sku || '';
 
   let baseTitle = '';
   if (productTitle.toLowerCase().includes(vendor.toLowerCase())) {
-    baseTitle = productTitle;
+    baseTitle = sku ? `${productTitle} ${sku}` : productTitle;
   } else {
-    baseTitle = `${vendor} ${productTitle} ${product.variants?.edges[0].node.sku}`;
+    baseTitle = `${vendor} ${productTitle}${sku ? ` ${sku}` : ''}`;
   }
 
   const titlePrefix = isUk ? 'Купити ' : 'Купить ';
@@ -175,6 +180,7 @@ export function generateCollectionMetadata(
     templateDescription || collection.seo?.description?.trim();
 
   // Build locale-specific alternate URLs using the correct handle per locale
+  const hasAlternate = !!alternateHandle && alternateHandle !== slug;
   const altHandle = alternateHandle || slug;
   const ukPath = `${prefix}/${isUk ? slug : altHandle}`;
   const ruPath = `${prefix}/${isUk ? altHandle : slug}`;
@@ -184,17 +190,22 @@ export function generateCollectionMetadata(
     : `/${prefix}/${slug}`;
   const canonicalUrl = `${BASE_URL}/${locale}${normalizedPath}`;
 
+  // Only include alternate language hreflang if a real translated handle exists
+  const languages: Record<string, string> = {
+    uk: `${BASE_URL}/uk${ukPath}`,
+    'x-default': `${BASE_URL}/uk${ukPath}`,
+  };
+  if (hasAlternate) {
+    languages.ru = `${BASE_URL}/ru${ruPath}`;
+  }
+
   return {
     title: { absolute: title },
     description,
     robots: 'index, follow',
     alternates: {
       canonical: canonicalUrl,
-      languages: {
-        uk: `${BASE_URL}/uk${ukPath}`,
-        ru: `${BASE_URL}/ru${ruPath}`,
-        'x-default': `${BASE_URL}/uk${ukPath}`,
-      },
+      languages,
     },
     openGraph: {
       title,

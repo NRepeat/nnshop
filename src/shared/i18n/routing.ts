@@ -8,6 +8,7 @@ export const routing = defineRouting({
   locales: locales,
   defaultLocale: 'uk',
   localeDetection: false,
+  alternateLinks: false,
 });
 
 export const genders: string[] = [...GENDERS];
