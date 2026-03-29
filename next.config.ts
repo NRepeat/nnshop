@@ -4,6 +4,7 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const nextConfig: NextConfig = {
   experimental: {
     viewTransition: true,
+    cpus: 2,
   },
   trailingSlash: false,
   output: 'standalone',
