@@ -132,6 +132,12 @@ export async function proxy(request: NextRequest) {
     changed = true;
   }
 
+  // 2.1 Strip empty query string (trailing "?")
+  if (url.search === '?' || url.search === '') {
+    url.search = '';
+    if (request.nextUrl.search === '?') changed = true;
+  }
+
   // 3. Structural Path Logic
   // Refresh segments after potential trailing slash removal
   segments = url.pathname.split('/').filter(Boolean);

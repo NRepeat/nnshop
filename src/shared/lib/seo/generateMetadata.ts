@@ -71,7 +71,9 @@ export function generatePageMetadata(
   locale: string,
   path: string,
 ): Metadata {
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  const rawPath = path.startsWith('/') ? path : `/${path}`;
+  // Strip trailing slash to avoid canonical pointing to a redirect
+  const normalizedPath = rawPath === '/' ? '' : rawPath;
   const canonicalUrl = `${BASE_URL}/${locale}${normalizedPath}`;
 
   return {
