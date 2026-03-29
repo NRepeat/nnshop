@@ -52,3 +52,5 @@ next-env.d.ts
 .planning/seo audit
 .planning/seo audit/*
 .gemini
+deploy.sh
+.env.server
