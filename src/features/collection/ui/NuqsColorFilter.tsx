@@ -57,9 +57,7 @@ export function NuqsColorFilter({ filter, initialFilter }: Props) {
     <div className={cn({ 'relative': shouldScroll })}>
     <div className={cn('pr-1', { 'max-h-56 overflow-y-scroll custom-scroll': shouldScroll })}>
     <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 p-1">
-      {[...displayValues]
-        .sort((a, b) => a.label.localeCompare(b.label))
-        .map((value) => {
+      {displayValues.map((value) => {
           const isChecked = selectedValues.includes(toFilterSlug(value.label));
           const isChanging = changingFilter === toFilterSlug(value.label);
           return (

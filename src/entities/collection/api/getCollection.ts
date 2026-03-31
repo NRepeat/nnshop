@@ -205,7 +205,7 @@ export const getCollection = async ({
 
   const sort = searchParams?.sort as string | undefined;
 
-  let sortKey = 'MANUAL';
+  let sortKey: string | undefined = undefined;
   let reverse = false;
   switch (sort) {
     case 'price-asc':

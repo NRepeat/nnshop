@@ -36,22 +36,12 @@ export function CollectionFilters({ filters, initialFilters, hideVendor }: Props
   const params = useParams();
   const hasGender = !!params.gender;
   const sortedFilters = useMemo(() => {
-    const getOrder = (id: string) => {
-      if (id === 'filter.v.price') return 1;
-      if (id === 'filter.p.m.custom.size') return 2;
-      return Infinity;
-    };
-
-    const filteredAndSorted = filters
-      .filter((filter) => {
-        if (filter.id === 'filter.p.vendor' && hideVendor) return false;
-        if (filter.id === 'filter.p.m.custom.gender' && hasGender) return false;
-        if (filter.type === 'PRICE_RANGE') return true;
-        return filter.values.length > 0;
-      })
-      .sort((a, b) => getOrder(a.id) - getOrder(b.id));
-
-    return filteredAndSorted;
+    return filters.filter((filter) => {
+      if (filter.id === 'filter.p.vendor' && hideVendor) return false;
+      if (filter.id === 'filter.p.m.custom.gender' && hasGender) return false;
+      if (filter.type === 'PRICE_RANGE') return true;
+      return filter.values.length > 0;
+    });
   }, [filters, hasGender]);
 
   const initialFilterPrice = initialFilters?.find(
