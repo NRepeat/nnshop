@@ -9,25 +9,9 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Layer 1: node_modules (rarely changes, ~69MB)
-COPY --chown=node:node .next/standalone/node_modules ./node_modules
-COPY --chown=node:node .next/standalone/server.js ./server.js
-COPY --chown=node:node .next/standalone/package.json ./package.json
-
-# Layer 2: public assets (rarely changes, ~1MB)
 COPY --chown=node:node public ./public
-
-# Layer 3: static assets (changes each build, ~13MB)
+COPY --chown=node:node .next/standalone ./
 COPY --chown=node:node .next/static ./.next/static
-
-# Layer 4: server chunks (changes each build, ~20MB)
-COPY --chown=node:node .next/standalone/.next/server/chunks ./.next/server/chunks
-COPY --chown=node:node .next/standalone/.next/server/*.js ./.next/server/
-
-# Layer 5: SSG pages (heaviest, ~3.9GB, changes each build)
-COPY --chown=node:node .next/standalone/.next/server/app ./.next/server/app
-COPY --chown=node:node .next/standalone/.next/server/pages ./.next/server/pages
-
 RUN mkdir -p .next/cache && chown -R node:node .next
 
 USER node
