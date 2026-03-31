@@ -18,7 +18,7 @@ import {
 
 const handleI18nRouting = createMiddleware(routing);
 
-async function checkProductExists(handle: string, locale: string): Promise<{ exists: boolean; canonicalHandle?: string }> {
+async function checkProductExists(handle: string, locale: string): Promise<{ exists: boolean; canonicalHandle?: string; correctLocale?: string }> {
   try {
     const product = await storefrontClient.request<
       GetProductByHandleQuery,
@@ -29,7 +29,25 @@ async function checkProductExists(handle: string, locale: string): Promise<{ exi
       language: locale.toUpperCase() as StorefrontLanguageCode,
     });
 
-    if (!product.product) return { exists: false };
+    if (!product.product) {
+      // Product not found with current locale — try the other locale
+      const altLocale = locale === 'uk' ? 'ru' : 'uk';
+      const altProduct = await storefrontClient.request<
+        GetProductByHandleQuery,
+        { handle: string }
+      >({
+        query: GET_PROXY_PRODUCT_QUERY,
+        variables: { handle },
+        language: altLocale.toUpperCase() as StorefrontLanguageCode,
+      });
+
+      if (altProduct.product) {
+        // Product exists but belongs to the other locale
+        return { exists: true, canonicalHandle: altProduct.product.handle, correctLocale: altLocale };
+      }
+
+      return { exists: false };
+    }
 
     // Handle mismatch = wrong locale handle (e.g. UK handle on /ru/ path)
     if (product.product.handle !== handle) {
@@ -101,11 +119,18 @@ export async function proxy(request: NextRequest) {
       return NextResponse.rewrite(new URL('/404', request.url), { status: 404 });
     }
 
-    if (result.canonicalHandle && result.canonicalHandle !== handle) {
-      console.log(`🔀 Proxy: Product ${handle} → ${result.canonicalHandle} (locale handle redirect)`);
-      const url = new URL(request.url);
-      url.pathname = `/${locale}/product/${result.canonicalHandle}`;
-      return NextResponse.redirect(url, { status: 301 });
+    if (result.canonicalHandle || result.correctLocale) {
+      const targetLocale = result.correctLocale || locale;
+      const targetHandle = result.canonicalHandle || handle;
+      console.log(`🔀 Proxy: Product /${locale}/product/${handle} → /${targetLocale}/product/${targetHandle}`);
+      const redirectUrl = new URL(request.url);
+      if (isProductionHost) {
+        redirectUrl.host = 'www.miomio.com.ua';
+        redirectUrl.port = '';
+        redirectUrl.protocol = 'https:';
+      }
+      redirectUrl.pathname = `/${targetLocale}/product/${targetHandle}`;
+      return NextResponse.redirect(redirectUrl, { status: 301 });
     }
   }
 
