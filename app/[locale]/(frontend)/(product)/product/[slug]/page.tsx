@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params;
   const decodedSlug = decodeURIComponent(slug);
 
-  const { originProduct: product } = await getProduct({
+  const { originProduct: product, alternateHandle } = await getProduct({
     handle: slug,
     locale,
   });
@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     notFound();
   }
 
-  return generateProductMetadata(product, locale, decodedSlug);
+  return generateProductMetadata(product, locale, decodedSlug, alternateHandle);
 }
 
 export default async function ProductPage({ params, searchParams }: Props) {

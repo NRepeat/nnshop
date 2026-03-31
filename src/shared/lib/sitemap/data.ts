@@ -10,6 +10,7 @@ import { DEFAULT_GENDER } from '@shared/config/shop';
 // ---------------------------------------------------------------------------
 
 interface ProductSitemapNode {
+  id: string;
   handle: string;
   updatedAt: string;
 }
@@ -46,6 +47,7 @@ interface CollectionsForSitemapResponse {
 
 export interface SitemapProduct {
   handle: string;
+  ruHandle: string;
   updatedAt: string;
 }
 
@@ -93,6 +95,7 @@ const GET_PRODUCTS_FOR_SITEMAP = `#graphql
     products(first: $first, after: $after) {
       edges {
         node {
+          id
           handle
           updatedAt
         }
@@ -139,40 +142,59 @@ const GET_VENDORS_FOR_SITEMAP = `#graphql
 // Exported cached data functions
 // ---------------------------------------------------------------------------
 
+async function fetchAllProducts(language: StorefrontLanguageCode): Promise<ProductSitemapNode[]> {
+  const all: ProductSitemapNode[] = [];
+  let hasNextPage = true;
+  let cursor: string | null = null;
+
+  while (hasNextPage) {
+    const response: ProductsForSitemapResponse =
+      await storefrontClient.request<
+        ProductsForSitemapResponse,
+        { first: number; after: string | null }
+      >({
+        query: GET_PRODUCTS_FOR_SITEMAP,
+        variables: { first: 250, after: cursor },
+        language,
+      });
+
+    if (response.products?.edges) {
+      all.push(...response.products.edges.map((edge) => edge.node));
+      hasNextPage = response.products.pageInfo.hasNextPage;
+      cursor = response.products.pageInfo.endCursor;
+    } else {
+      hasNextPage = false;
+    }
+  }
+
+  return all;
+}
+
 export async function getSitemapProducts(): Promise<SitemapProduct[]> {
   'use cache';
   cacheLife('max');
   cacheTag('sitemap-products');
 
-  const allProducts: SitemapProduct[] = [];
-  let hasNextPage = true;
-  let cursor: string | null = null;
-
   try {
-    while (hasNextPage) {
-      const response: ProductsForSitemapResponse =
-        await storefrontClient.request<
-          ProductsForSitemapResponse,
-          { first: number; after: string | null }
-        >({
-          query: GET_PRODUCTS_FOR_SITEMAP,
-          variables: { first: 250, after: cursor },
-          language: 'UK' as StorefrontLanguageCode,
-        });
+    const [ukProducts, ruProducts] = await Promise.all([
+      fetchAllProducts('UK' as StorefrontLanguageCode),
+      fetchAllProducts('RU' as StorefrontLanguageCode),
+    ]);
 
-      if (response.products?.edges) {
-        allProducts.push(...response.products.edges.map((edge) => edge.node));
-        hasNextPage = response.products.pageInfo.hasNextPage;
-        cursor = response.products.pageInfo.endCursor;
-      } else {
-        hasNextPage = false;
-      }
+    const ruHandleById = new Map<string, string>();
+    for (const p of ruProducts) {
+      ruHandleById.set(p.id, p.handle);
     }
+
+    return ukProducts.map((p) => ({
+      handle: p.handle,
+      ruHandle: ruHandleById.get(p.id) ?? p.handle,
+      updatedAt: p.updatedAt,
+    }));
   } catch (error) {
     console.error('Failed to fetch products for sitemap:', error);
+    return [];
   }
-
-  return allProducts;
 }
 
 export async function getSitemapCategories(): Promise<SitemapCategory[]> {

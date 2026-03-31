@@ -18,7 +18,7 @@ import {
 
 const handleI18nRouting = createMiddleware(routing);
 
-async function checkProductExists(handle: string, locale: string) {
+async function checkProductExists(handle: string, locale: string): Promise<{ exists: boolean; canonicalHandle?: string }> {
   try {
     const product = await storefrontClient.request<
       GetProductByHandleQuery,
@@ -29,10 +29,17 @@ async function checkProductExists(handle: string, locale: string) {
       language: locale.toUpperCase() as StorefrontLanguageCode,
     });
 
-    return !!product.product;
+    if (!product.product) return { exists: false };
+
+    // Handle mismatch = wrong locale handle (e.g. UK handle on /ru/ path)
+    if (product.product.handle !== handle) {
+      return { exists: true, canonicalHandle: product.product.handle };
+    }
+
+    return { exists: true };
   } catch (e) {
     console.error(`❌ Proxy: Error checking product ${handle}:`, e);
-    return true; // Fail safe
+    return { exists: true }; // Fail safe
   }
 }
 async function checkCollectionExists(handle: string, locale: string) {
@@ -87,16 +94,18 @@ export async function proxy(request: NextRequest) {
 
   if (isProductPage) {
     const handle = decodeURIComponent(segments[2]);
-    const exists = await checkProductExists(handle, locale);
+    const result = await checkProductExists(handle, locale);
 
-    if (!exists) {
+    if (!result.exists) {
       console.log(`🚫 Proxy: Product ${handle} not found. Returning 404.`);
-      const url = new URL(request.url);
-      url.pathname = `/${locale}/404`; // Standard path for not found
+      return NextResponse.rewrite(new URL('/404', request.url), { status: 404 });
+    }
 
-      const response = NextResponse.rewrite(url, { status: 404 });
-      response.headers.set('x-middleware-skip', 'true');
-      return NextResponse.rewrite(new URL('/404', url), { status: 404 });
+    if (result.canonicalHandle && result.canonicalHandle !== handle) {
+      console.log(`🔀 Proxy: Product ${handle} → ${result.canonicalHandle} (locale handle redirect)`);
+      const url = new URL(request.url);
+      url.pathname = `/${locale}/product/${result.canonicalHandle}`;
+      return NextResponse.redirect(url, { status: 301 });
     }
   }
 

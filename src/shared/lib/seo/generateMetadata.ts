@@ -122,6 +122,7 @@ export function generateProductMetadata(
   },
   locale: string,
   slug: string,
+  alternateHandle?: string | null,
 ): Metadata {
   const isUk = locale === 'uk';
 
@@ -143,11 +144,25 @@ export function generateProductMetadata(
     ? `Купити ${baseTitle} в інтернет-магазині MioMio. Фото, характеристики, доступні розміри та актуальна наявність. Доставка по Україні ✔️`
     : `Купить ${baseTitle} в интернет-магазине MioMio. Фото, характеристики, доступные размеры и актуальное наличие. Доставка по Украине ✔️`);
 
-  return generatePageMetadata(
+  const ukSlug = isUk ? slug : (alternateHandle || slug);
+  const ruSlug = isUk ? (alternateHandle || slug) : slug;
+
+  const metadata = generatePageMetadata(
     { title, description, image: product.featuredImage?.url },
     locale,
     `/product/${slug}`,
   );
+
+  metadata.alternates = {
+    ...metadata.alternates,
+    languages: {
+      uk: `${BASE_URL}/uk/product/${ukSlug}`,
+      ru: `${BASE_URL}/ru/product/${ruSlug}`,
+      'x-default': `${BASE_URL}/uk/product/${ukSlug}`,
+    },
+  };
+
+  return metadata;
 }
 
 export function generateCollectionMetadata(

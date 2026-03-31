@@ -11,13 +11,13 @@ export async function GET() {
   const products = await getSitemapProducts();
 
   const entries = products.map((p) => ({
-    url: `${BASE_URL}/ru/product/${p.handle}`,
+    url: `${BASE_URL}/ru/product/${p.ruHandle}`,
     lastModified: formatDate(p.updatedAt),
     changeFrequency: 'daily',
     priority: 0.8,
     alternates: {
       uk: `${BASE_URL}/uk/product/${p.handle}`,
-      ru: `${BASE_URL}/ru/product/${p.handle}`,
+      ru: `${BASE_URL}/ru/product/${p.ruHandle}`,
       'x-default': `${BASE_URL}/uk/product/${p.handle}`,
     },
   }));
