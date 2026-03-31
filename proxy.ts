@@ -84,7 +84,7 @@ async function checkCollectionExists(handle: string, locale: string) {
 }
 
 export async function proxy(request: NextRequest) {
-  const host = request.headers.get('host') || '';
+  const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || '';
   const isProductionHost =
     host === 'miomio.com.ua' || host === 'www.miomio.com.ua';
 
