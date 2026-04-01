@@ -1,6 +1,7 @@
 import { fetchRedirects } from '@/shared/sanity/lib/fetchRedirects';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
+
 const nextConfig: NextConfig = {
   experimental: {
     viewTransition: true,
