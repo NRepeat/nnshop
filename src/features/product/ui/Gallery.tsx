@@ -115,7 +115,7 @@ const Gallery = ({
                             src={image.url}
                             alt={image.altText || getProductAlt(product || { title: '' })}
                             fill
-                            className="object-contain rounded max-h-[60vh]"
+                            className="object-contain rounded max-h-[60vh] transition-opacity duration-300"
                             onClick={(e) => {
                               // eslint-disable-next-line @typescript-eslint/no-explicit-any
                               open(e as any);
@@ -124,8 +124,8 @@ const Gallery = ({
                             fetchPriority={index === 0 ? 'high' : 'auto'}
                             loading={index < 3 ? 'eager' : 'lazy'}
                             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 40vw"
-                            placeholder={index === 0 ? 'empty' : 'blur'}
-                            blurDataURL={index === 0 ? undefined : BLUR_DATA_URL}
+                            placeholder="blur"
+                            blurDataURL={BLUR_DATA_URL}
                           />
                         </div>
                       )}

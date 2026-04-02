@@ -12,11 +12,22 @@ import {
   detectGenderFromHandle,
 } from '@entities/collection/lib/resolve-handle';
 import { generateCollectionMetadata } from '@shared/lib/seo/generateMetadata';
+import { stripInvisible } from '@shared/lib/seo/generateMetadata';
 import { setRequestLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
 import { COLLECTION_IS_BRAND_QUERY } from '@shared/sanity/lib/query';
 import { redirect, notFound } from 'next/navigation';
 import { isDevEmail, isDevOnlyHandle } from '@shared/lib/dev-access';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@shared/ui/breadcrumb';
+import { EnableScrollHide } from '@shared/ui/EnableScrollHide';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -112,13 +123,14 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   if (isDevOnlyHandle(resolvedHandle) && !(await isDevEmail())) {
     notFound();
   }
-  const [sanityCollection, { collection }] = await Promise.all([
+  const [sanityCollection, { collection }, t] = await Promise.all([
     sanityFetch({
       query: COLLECTION_IS_BRAND_QUERY,
       params: { handle: resolvedHandle },
       tags: [`collection:${resolvedHandle}`],
     }),
     getCollection({ handle: resolvedHandle, first: 1, locale }),
+    getTranslations('Header'),
   ]);
 
   if (sanityCollection?.isBrand) {
@@ -138,11 +150,49 @@ export default async function CollectionPage({ params, searchParams }: Props) {
     }
   }
 
+  const displayTitle = stripInvisible(
+    sanityCollection?.customTitle?.[locale as 'uk' | 'ru'] ||
+      collection.collection?.title ||
+      '',
+  );
+
   return (
     <div className="container mb-10">
-      <Suspense fallback={<CollectionGridSkeleton />}>
-        <CollectionGrid params={params} searchParams={searchParams} />
-      </Suspense>
+      <div className="flex flex-col mt-8">
+        <Breadcrumb className="mb-4 md:mb-8">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`/${locale}`}>
+                {t('nav.home')}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`/${locale}/${gender}`}>
+                {gender === 'man' ? t('nav.man') : t('nav.woman')}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{displayTitle}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
+        <EnableScrollHide />
+
+        {displayTitle && (
+          <h1 className="text-2xl font-bold mb-4">{displayTitle}</h1>
+        )}
+
+        <Suspense fallback={<CollectionGridSkeleton />}>
+          <CollectionGrid
+            params={params}
+            searchParams={searchParams}
+            displayTitle={displayTitle}
+          />
+        </Suspense>
+      </div>
     </div>
   );
 }

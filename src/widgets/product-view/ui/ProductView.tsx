@@ -3,7 +3,7 @@ import { getInventoryLevels } from '@entities/product/api/getInventoryLevels';
 import { ProductViewProvider } from './ProductViewProvider';
 import { getTranslations } from 'next-intl/server';
 import {
-  getMetaobject,
+  getMetaobjectsBatch,
   ProductMEtaobjectType,
 } from '@entities/metaobject/api/get-metaobject';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
@@ -254,11 +254,56 @@ export async function ProductView({
 
 function ProductInfoSkeleton() {
   return (
-    <div className="animate-pulse space-y-4">
-      <div className="h-8 bg-muted rounded w-3/4" />
-      <div className="h-6 bg-muted rounded w-1/2" />
-      <div className="h-10 bg-muted rounded w-1/4" />
-      <div className="h-24 bg-muted rounded w-full" />
+    <div className="animate-pulse flex flex-col gap-[30px] w-full">
+      {/* Vendor + title + sku + price */}
+      <div className="space-y-2">
+        <div className="h-7 bg-muted rounded w-40" />
+        <div className="h-5 bg-muted rounded w-3/4" />
+        <div className="h-4 bg-muted rounded w-32" />
+        <div className="flex items-center gap-3 mt-1">
+          <div className="h-4 bg-muted rounded w-16 line-through" />
+          <div className="h-7 bg-muted rounded w-24" />
+          <div className="h-5 bg-muted rounded w-12" />
+        </div>
+      </div>
+
+      {/* Size selector */}
+      <div className="space-y-3">
+        <div className="flex justify-between">
+          <div className="h-4 bg-muted rounded w-16" />
+          <div className="h-4 bg-muted rounded w-32" />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <div key={i} className="h-11 w-14 bg-muted rounded" />
+          ))}
+        </div>
+      </div>
+
+      {/* Description */}
+      <div className="space-y-2">
+        <div className="h-4 bg-muted rounded w-full" />
+        <div className="h-4 bg-muted rounded w-full" />
+        <div className="h-4 bg-muted rounded w-5/6" />
+        <div className="h-4 bg-muted rounded w-full" />
+        <div className="h-4 bg-muted rounded w-3/5" />
+        <div className="h-4 bg-muted rounded w-24 mt-1" />
+      </div>
+
+      {/* Add to cart */}
+      <div className="h-12 bg-muted rounded w-full" />
+
+      {/* Quick order + price subscribe */}
+      <div className="flex gap-0 w-full">
+        <div className="h-12 bg-muted rounded-l w-1/2" />
+        <div className="h-12 bg-muted rounded-r w-1/2" />
+      </div>
+
+      {/* Accordion */}
+      <div className="border-t pt-0 space-y-0">
+        <div className="h-12 bg-muted rounded w-full" />
+        <div className="h-12 bg-muted rounded w-full mt-px" />
+      </div>
     </div>
   );
 }
@@ -282,15 +327,14 @@ async function AsyncProductInfoSection({ product, locale }: any) {
   const parsedAttributeIDs: string[] = attributesJsonIds
     ? JSON.parse(attributesJsonIds as string)
     : [];
+
   const variantIds = product.variants.edges.map((e: any) => e.node.id);
 
-  const [boundProducts, attributesResults, inventoryLevels] = await Promise.all(
-    [
-      getReletedProducts(boundProductsData, locale),
-      Promise.all(parsedAttributeIDs.map((id) => getMetaobject(id))),
-      getInventoryLevels(variantIds),
-    ],
-  );
+  const [boundProducts, attributesResults, inventoryLevels] = await Promise.all([
+    getReletedProducts(boundProductsData, locale),
+    getMetaobjectsBatch(parsedAttributeIDs),
+    getInventoryLevels(variantIds),
+  ]);
 
   const attributes = attributesResults.filter(
     (attr): attr is ProductMEtaobjectType => attr !== null,

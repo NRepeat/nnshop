@@ -19,7 +19,7 @@ export const ProductViewSkeleton = ({ handle }: { handle?: string }) => {
           <div className="max-w-[600px] w-full flex flex-col gap-2">
             {/* Main image */}
             <Skeleton
-              className="w-full aspect-square max-h-[60vh] rounded"
+              className="w-full aspect-square max-h-[60vh] rounded bg-white"
               style={handle ? { viewTransitionName: `product-img-${handle}` } : undefined}
             />
             {/* Thumbnails */}
@@ -45,7 +45,7 @@ export const ProductViewSkeleton = ({ handle }: { handle?: string }) => {
           <div className="space-y-3">
             <Skeleton className="h-4 w-12" />
             <div className="flex flex-wrap gap-2">
-              {Array.from({ length: 5 }).map((_, i) => (
+              {Array.from({ length: 7 }).map((_, i) => (
                 <Skeleton key={i} className="h-11 w-14 rounded" />
               ))}
             </div>
@@ -61,11 +61,14 @@ export const ProductViewSkeleton = ({ handle }: { handle?: string }) => {
             </div>
           </div>
 
-          {/* Description */}
+          {/* Description — matches max-h-[110px] collapsed + "show more" */}
           <div className="space-y-2">
             <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-4/6" />
+            <Skeleton className="h-4 w-20 mt-1" />
           </div>
 
           {/* Add to cart */}

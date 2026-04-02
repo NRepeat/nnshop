@@ -247,10 +247,10 @@ export const ProductCard = ({
                 <CarouselContent className="[&>div]:-ml-0 ">
                   {productImages.map((image, index) => (
                     <CarouselItem key={index} className=" relative">
-                      <div className="relative w-full h-full aspect-square flex justify-center items-center rounded-t overflow-hidden">
+                      <div className="relative w-full h-full aspect-square flex justify-center items-center rounded-t overflow-hidden bg-neutral-100">
                         <Image
                           key={index}
-                          className="object-cover w-full h-full"
+                          className="object-cover w-full h-full transition-opacity duration-300"
                           src={image.url}
                           alt={image.altText || getProductAlt(product)}
                           priority={priority && index === 0}
@@ -320,9 +320,9 @@ export const ProductCard = ({
                   {t('new')}
                 </Badge>
               )}
-              <div className="relative aspect-square md:h-full w-full flex justify-center items-center rounded-t overflow-hidden">
+              <div className="relative aspect-square md:h-full w-full flex justify-center items-center rounded-t overflow-hidden bg-neutral-100">
                 <Image
-                  className="object-cover w-full h-full"
+                  className="object-cover w-full h-full transition-opacity duration-300"
                   src={
                     productImages[0]?.url || product.featuredImage?.url || ''
                   }

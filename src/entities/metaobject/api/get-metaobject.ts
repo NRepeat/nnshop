@@ -50,3 +50,40 @@ export const getMetaobject = async (
     return null;
   }
 };
+
+const GET_METAOBJECTS_BATCH_QUERY = `#graphql
+  query GetMetaobjectsBatch($ids: [ID!]!) {
+    nodes(ids: $ids) {
+      ... on Metaobject {
+        id
+        handle
+        type
+        fields {
+          key
+          value
+        }
+      }
+    }
+  }
+`;
+
+export const getMetaobjectsBatch = async (
+  ids: string[],
+): Promise<ProductMEtaobjectType[]> => {
+  'use cache'
+  if (!ids.length) return [];
+  try {
+    const res = await storefrontClient.request<
+      { nodes: ProductMEtaobjectType[] },
+      { ids: string[] }
+    >({
+      query: GET_METAOBJECTS_BATCH_QUERY,
+      variables: { ids },
+    });
+
+    return (res.nodes ?? []).map((node) => node || null);
+  } catch (err) {
+    console.error('Error fetching metaobjects batch:', err);
+    return [];
+  }
+};

@@ -65,8 +65,10 @@ function getEffectivePrice(product: {
 export const CollectionGrid = async ({
   params,
   searchParams,
+  displayTitle: externalDisplayTitle,
 }: {
   params: Promise<{ locale: string; slug: string; gender: string }>;
+  displayTitle?: string;
   searchParams: Promise<SearchParams>;
 }) => {
   const [awaitedParams, awaitedSearchParams, t, tCollection] =
@@ -128,7 +130,7 @@ export const CollectionGrid = async ({
     }
   }
 
-  const displayTitle = stripInvisible(
+  const displayTitle = externalDisplayTitle || stripInvisible(
     sanityCollection?.customTitle?.[locale as 'uk' | 'ru'] ||
       collection.collection?.title ||
       '',
@@ -258,34 +260,9 @@ export const CollectionGrid = async ({
         ])}
       />
       <JsonLd data={generateItemListJsonLd(rawProducts, locale)} />
-      <div className=" flex flex-col  mt-8">
-        <Breadcrumb className="mb-4 md:mb-8">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`/${locale}`}>
-                {t('nav.home')}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`/${locale}/${gender}`}>
-                {gender === 'man' ? t('nav.man') : t('nav.woman')}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{displayTitle}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
-        <EnableScrollHide />
-
+      <div className="flex flex-col">
         <div className="w-full border-b border-muted pb-4 flex flex-col lg:flex-row justify-between lg:items-end gap-6">
           <div className="flex flex-col gap-3.5 w-full">
-            {displayTitle && (
-              <h1 className="text-2xl font-bold">{displayTitle}</h1>
-            )}
             {collection.collection?.products.filters && (
               <Suspense fallback={null}>
                 <ActiveFiltersCarousel

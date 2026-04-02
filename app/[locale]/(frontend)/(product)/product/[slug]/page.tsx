@@ -16,7 +16,6 @@ import { generateProductMetadata } from '@shared/lib/seo/generateMetadata';
 import { generateProductJsonLd } from '@shared/lib/seo/jsonld';
 import { JsonLd } from '@shared/ui/JsonLd';
 import { connection } from 'next/server';
-import { ProductViewSkeleton } from '@widgets/product-view/ui/ProductViewSkeleton';
 import { getAllProductHandles } from '@entities/product/api/getAllProductsHandlers';
 import { locales } from '@shared/i18n/routing';
 
@@ -73,32 +72,10 @@ export default async function ProductPage({ params, searchParams }: Props) {
   }
 
   return (
-    <Suspense fallback={<ProductViewSkeleton handle={handle} />}>
-      <ProductContent
-        product={product}
-        handle={handle}
-        locale={locale}
-        searchParams={searchParams}
-      />
-    </Suspense>
-  );
-}
-
-const ProductContent = async ({
-  product,
-  handle,
-  locale,
-  searchParams,
-}: {
-  product: any;
-  handle: string;
-  locale: string;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) => {
-  await connection();
-  return (
     <>
-      <JsonLd data={generateProductJsonLd(product, locale)} />
+      <Suspense fallback={null}>
+        <ProductJsonLd product={product} locale={locale} />
+      </Suspense>
       <ProductSessionView
         handle={handle}
         locale={locale}
@@ -120,6 +97,11 @@ const ProductContent = async ({
       </ProductSessionView>
     </>
   );
+}
+
+const ProductJsonLd = async ({ product, locale }: { product: any; locale: string }) => {
+  await connection();
+  return <JsonLd data={generateProductJsonLd(product, locale)} />;
 };
 
 const ProductSession = async ({
