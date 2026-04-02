@@ -20,18 +20,22 @@ import clsx from 'clsx';
 const BLUR_DATA_URL =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYGBgAAAABAABJjarzgAAAABJRU5ErkJggg==';
 
+
 const Gallery = ({
   images,
   children,
   quiqView,
   product,
+  firstImageBlur,
 }: {
   images: ShoipifyImage[];
   productId: string;
   children?: React.ReactNode;
   quiqView?: boolean;
   product?: { title: string };
+  firstImageBlur?: string;
 }) => {
+  const [firstImageLoaded, setFirstImageLoaded] = useState(false);
   const [mainApi, setMainApi] = useState<CarouselApi>();
   const [secApi, setSecApi] = useState<CarouselApi>();
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -108,14 +112,28 @@ const Gallery = ({
                     >
                       {({ ref, open }) => (
                         <div
-                          className="relative w-full aspect-square flex items-center justify-center max-h-[60vh] bg-white"
+                          className="relative w-full aspect-square flex items-center justify-center max-h-[60vh] bg-white overflow-hidden"
                           ref={ref}
                         >
+                          {index === 0 && firstImageBlur && !firstImageLoaded && (
+                            <div
+                              aria-hidden
+                              className="absolute inset-0 z-0"
+                              style={{
+                                backgroundImage: `url(${firstImageBlur})`,
+                                backgroundSize: 'contain',
+                                backgroundPosition: 'center',
+                                backgroundRepeat: 'no-repeat',
+                                filter: 'blur(20px)',
+                                transform: 'scale(1.1)',
+                              }}
+                            />
+                          )}
                           <Image
                             src={image.url}
                             alt={image.altText || getProductAlt(product || { title: '' })}
                             fill
-                            className="object-contain rounded max-h-[60vh] transition-opacity duration-300"
+                            className="object-contain rounded max-h-[60vh] relative z-10"
                             onClick={(e) => {
                               // eslint-disable-next-line @typescript-eslint/no-explicit-any
                               open(e as any);
@@ -124,8 +142,9 @@ const Gallery = ({
                             fetchPriority={index === 0 ? 'high' : 'auto'}
                             loading={index < 3 ? 'eager' : 'lazy'}
                             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 40vw"
-                            placeholder="blur"
-                            blurDataURL={BLUR_DATA_URL}
+                            placeholder={index > 0 ? 'blur' : 'empty'}
+                            blurDataURL={index > 0 ? BLUR_DATA_URL : undefined}
+                            onLoad={index === 0 ? () => setFirstImageLoaded(true) : undefined}
                           />
                         </div>
                       )}

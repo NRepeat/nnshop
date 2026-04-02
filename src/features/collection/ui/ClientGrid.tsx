@@ -2,19 +2,10 @@
 
 import { ProductCard } from '@entities/product/ui/ProductCard';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useGridStore } from '@shared/store/use-grid-store';
 import { cn } from '@shared/lib/utils';
-
-const container = {
-  show: { transition: { staggerChildren: 0.04 } },
-};
-
-const item = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { duration: 0.25 } },
-  exit: { opacity: 0, transition: { duration: 0.15 } },
-};
+import { useRef } from 'react';
 
 export const ClientGrid = ({
   products,
@@ -24,42 +15,56 @@ export const ClientGrid = ({
   hasNextPage?: boolean;
 }) => {
   const cols = useGridStore((s) => s.cols);
-  const lgCols = cols === '3' ? 5 : 4;
+  const prevCountRef = useRef(products.length);
+  const prevCount = prevCountRef.current;
 
-  const displayProducts = products;
+  // Update ref after render
+  if (prevCountRef.current !== products.length) {
+    prevCountRef.current = products.length;
+  }
 
   return (
-    <motion.div
-      variants={container}
-      initial={false}
-      animate="show"
+    <div
       className={cn(
         'grid gap-1 md:gap-4 mt-2',
         cols === '3'
-          ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-5'
-          : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
+          ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+          : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-3',
       )}
     >
       <AnimatePresence>
-        {displayProducts.map((product, index) => (
-          <motion.div
-            key={product.id}
-            className="col-span-1"
-            variants={item}
-            exit="exit"
-          >
-            <ProductCard
-              withQuick
-              addToCard
-              product={product}
-              className="hover:shadow pt-0 px-0 rounded"
-              withCarousel
-              isFav={product.isFav}
-              priority={index < 4}
-            />
-          </motion.div>
-        ))}
+        {products.map((product, index) => {
+          const isNew = index >= prevCount;
+          return (
+            <motion.div
+              key={product.id}
+              className="col-span-1"
+              initial={isNew ? { opacity: 0, y: 15 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, transition: { duration: 0.15 } }}
+              transition={
+                isNew
+                  ? {
+                      duration: 0.3,
+                      ease: 'easeOut',
+                      delay: (index - prevCount) * 0.04,
+                    }
+                  : undefined
+              }
+            >
+              <ProductCard
+                withQuick
+                addToCard
+                product={product}
+                className="hover:shadow pt-0 px-0 rounded"
+                withCarousel
+                isFav={product.isFav}
+                priority={index < 4}
+              />
+            </motion.div>
+          );
+        })}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 };

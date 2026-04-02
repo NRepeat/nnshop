@@ -26,6 +26,7 @@ import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 import { DEFAULT_GENDER } from '@shared/config/shop';
 import { SITE_URL } from '@shared/config/brand';
 import { GenderSync } from './GenderSync';
+import { getBlurDataUrl } from '@shared/lib/image/getBlurDataUrl';
 import { GA4ViewItemEvent } from '@shared/lib/analytics/GA4ViewItemEvent';
 
 // Maps custom.gender metaobject handles → app gender keys
@@ -158,6 +159,9 @@ export async function ProductView({
   ];
 
   const images = product.images.edges.map((edge) => edge.node).filter(Boolean);
+  const firstImageBlur = images[0]?.url
+    ? await getBlurDataUrl(images[0].url)
+    : '';
 
   return (
     <div className="container space-y-16 my-8 h-fit min-h-screen">
@@ -223,13 +227,12 @@ export async function ProductView({
           productId={product.id}
           quiqView={quiqView}
           product={product}
+          firstImageBlur={firstImageBlur}
         >
           {children}
         </Gallery>
 
-        <Suspense fallback={<ProductInfoSkeleton />}>
-          <AsyncProductInfoSection product={product} locale={locale} />
-        </Suspense>
+        <AsyncProductInfoSection product={product} locale={locale} />
       </div>
 
       <Suspense

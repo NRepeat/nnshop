@@ -112,7 +112,10 @@ const CartSheet = async ({ locale }: { locale: string }) => {
         <Button variant="ghost" size="icon" aria-label="Shopping cart">
           <ShoppingCart className="h-4 w-4" />
           {mockProducts && mockProducts.length > 0 && (
-            <Badge className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums top-0 right-0 absolute">
+            <Badge
+              key={totalQuantity}
+              className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums top-0 right-0 absolute animate-[cart-bump_0.3s_ease]"
+            >
               {totalQuantity}
             </Badge>
           )}

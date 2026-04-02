@@ -1,5 +1,6 @@
 'use client';
 import { useQueryState } from 'nuqs';
+import { useEffect } from 'react';
 import { Product as ShopifyProduct } from '@shared/lib/shopify/types/storefront.types';
 import { ProductMEtaobjectType } from '@entities/metaobject/api/get-metaobject';
 import { VariantInventory } from '@entities/product/api/getInventoryLevels';
@@ -31,7 +32,32 @@ export function ProductViewProvider({
   );
   const sizeOptions = product.options.find((o) => isSizeOption(o.name))?.values;
 
-  const [size, setSize] = useQueryState('size', { shallow: true, scroll: false });
+  const [size, _setSize] = useQueryState('size', { shallow: true, scroll: false });
+
+  // Remember last selected size in localStorage
+  const setSize = (value: string) => {
+    _setSize(value);
+    try { localStorage.setItem('lastSize', value); } catch {}
+  };
+
+  // Auto-select last size if no size in URL and a matching variant exists
+  useEffect(() => {
+    if (size) return;
+    try {
+      const lastSize = localStorage.getItem('lastSize');
+      if (!lastSize) return;
+      const hasMatch = product.variants.edges.some((edge) =>
+        edge.node.selectedOptions.some(
+          (opt) =>
+            SIZE_NAMES.includes(opt.name.toLowerCase()) &&
+            opt.value.toLowerCase() === lastSize &&
+            edge.node.availableForSale,
+        ),
+      );
+      if (hasMatch) _setSize(lastSize);
+    } catch {}
+  }, []);
+
   let selectedVariant = undefined;
 
   if (size) {

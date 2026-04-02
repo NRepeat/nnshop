@@ -30,6 +30,7 @@ import type { PAGE_QUERYResult, SliderBlock } from '@shared/sanity/types';
 import { AnnouncementTicker } from '@entities/announcement-bar/AnnouncementTicker';
 import { HEADER_QUERY } from '@shared/sanity/lib/query';
 import { sanityFetch } from '@shared/sanity/lib/sanityFetch';
+import { FadeInView } from '@shared/ui/FadeInView';
 
 type PageContent = NonNullable<
   NonNullable<PAGE_QUERYResult>['content']
@@ -256,9 +257,17 @@ export const HeroPageBuilder = async ({ gender, locale, slug }: HeroPageProps) =
 
   return (
     <div className="flex flex-col">
-      {(content as PageContent[]).map((block, index) =>
-        renderBlock(block, locale, gender, index === 0, tickerText),
-      )}
+      {(content as PageContent[]).map((block, index) => {
+        const node = renderBlock(block, locale, gender, index === 0, tickerText);
+        if (!node) return null;
+        // First block (hero) renders without animation for instant LCP
+        if (index === 0) return node;
+        return (
+          <FadeInView key={(block as any)._key || index}>
+            {node}
+          </FadeInView>
+        );
+      })}
     </div>
   );
 };

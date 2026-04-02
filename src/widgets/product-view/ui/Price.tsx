@@ -8,10 +8,12 @@ export const ProductPrice = ({
   product,
   selectedVariant,
   sale,
+  compact,
 }: {
   product: ShopifyProduct;
   selectedVariant?: ProductVariant;
   sale: string;
+  compact?: boolean;
 }) => {
   // Базовая цена (берем либо вариант, либо из диапазона продукта)
   const basePriceObj =
@@ -43,26 +45,31 @@ export const ProductPrice = ({
 
   const currency = getCurrencySymbol(basePriceObj.currencyCode);
 
+  const priceSize = compact ? 'text-base' : 'text-lg';
+  const strikeSize = compact ? 'text-xs' : 'text-sm';
+
   return (
     <div className="flex flex-col gap-1">
       {strikethroughPrice ? (
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="line-through text-gray-500 text-sm">
+          <span className={`line-through text-gray-500 ${strikeSize}`}>
             {strikethroughPrice.toFixed(0)} {currency}
           </span>
-          <span className="text-red-600 font-bold text-lg">
+          <span className={`text-red-600 font-bold ${priceSize}`}>
             {finalPrice.toFixed(0)} {currency}
           </span>
-          <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
-            -
-            {discountPercent > 0
-              ? discountPercent
-              : Math.round(100 - (finalPrice / strikethroughPrice) * 100)}
-            %
-          </span>
+          {!compact && (
+            <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded">
+              -
+              {discountPercent > 0
+                ? discountPercent
+                : Math.round(100 - (finalPrice / strikethroughPrice) * 100)}
+              %
+            </span>
+          )}
         </div>
       ) : (
-        <span className="font-bold text-lg">
+        <span className={`font-bold ${priceSize}`}>
           {finalPrice.toFixed(0)} {currency}
         </span>
       )}

@@ -29,7 +29,9 @@ import { CrossedLine } from '@shared/ui/crossed-line';
 import { compareSizes } from '@shared/lib/sort-sizes';
 import { QuickBuyModal } from '@features/product/quick-buy/ui/QuickBuyModal';
 import { PriceSubscribeModal } from '@features/product/ui/PriceSubscribeModal';
-import { useState, useRef, useEffect, useMemo, useTransition } from 'react';
+import { useState, useRef, useEffect, useMemo, useTransition, useCallback } from 'react';
+import { StickyAddToCart } from './StickyAddToCart';
+import { ViewingNow } from './ViewingNow';
 import { vendorToHandle } from '@shared/lib/utils/vendorToHandle';
 import { Bell } from 'lucide-react';
 import DOMPurifyLib from 'dompurify';
@@ -106,6 +108,7 @@ export const ProductInfo = ({
   const [, startSizeTransition] = useTransition();
   const descRef = useRef<HTMLDivElement>(null);
   const [cleanHtml, setCleanHtml] = useState(product.descriptionHtml);
+  const addToCartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const purify = typeof DOMPurifyLib === 'function' ? DOMPurifyLib(window) : DOMPurifyLib;
@@ -169,6 +172,7 @@ export const ProductInfo = ({
             selectedVariant={selectedVariant}
             sale={sale}
           />
+          <ViewingNow handle={product.handle} />
         </section>
       </div>
       {/* Выбор размера */}
@@ -323,19 +327,21 @@ export const ProductInfo = ({
         </div>
       )}
       <div className="flex gap-4 flex-nowrap flex-col w-full">
-        {sortedSizeOptions && sortedSizeOptions.length > 0 ? (
-          <AddToCartButton
-            product={product}
-            variant="default"
-            selectedVariant={selectedVariant}
-          />
-        ) : (
-          <AddToCartButton
-            product={product}
-            variant="default"
-            selectedVariant={product.variants.edges[0].node}
-          />
-        )}
+        <div ref={addToCartRef}>
+          {sortedSizeOptions && sortedSizeOptions.length > 0 ? (
+            <AddToCartButton
+              product={product}
+              variant="default"
+              selectedVariant={selectedVariant}
+            />
+          ) : (
+            <AddToCartButton
+              product={product}
+              variant="default"
+              selectedVariant={product.variants.edges[0].node}
+            />
+          )}
+        </div>
         <ButtonGroup className="w-full">
           <Button
             variant="outline"
@@ -406,6 +412,11 @@ export const ProductInfo = ({
           </AccordionContent>
         </AccordionItem>
       </Accordion>
+      <StickyAddToCart
+        product={product}
+        selectedVariant={selectedVariant}
+        triggerRef={addToCartRef}
+      />
     </div>
   );
 };

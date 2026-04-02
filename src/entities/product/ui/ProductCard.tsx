@@ -247,7 +247,7 @@ export const ProductCard = ({
                 <CarouselContent className="[&>div]:-ml-0 ">
                   {productImages.map((image, index) => (
                     <CarouselItem key={index} className=" relative">
-                      <div className="relative w-full h-full aspect-square flex justify-center items-center rounded-t overflow-hidden bg-neutral-100">
+                      <div className="relative w-full h-full aspect-square flex justify-center items-center rounded-t overflow-hidden animate-shimmer">
                         <Image
                           key={index}
                           className="object-cover w-full h-full transition-opacity duration-300"
@@ -320,7 +320,7 @@ export const ProductCard = ({
                   {t('new')}
                 </Badge>
               )}
-              <div className="relative aspect-square md:h-full w-full flex justify-center items-center rounded-t overflow-hidden bg-neutral-100">
+              <div className="relative aspect-square md:h-full w-full flex justify-center items-center rounded-t overflow-hidden animate-shimmer">
                 <Image
                   className="object-cover w-full h-full transition-opacity duration-300"
                   src={
