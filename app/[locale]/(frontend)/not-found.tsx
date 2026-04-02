@@ -1,6 +1,12 @@
 import { Button } from '@shared/ui/button';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@shared/i18n/navigation';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+  alternates: { canonical: null, languages: {} },
+};
 
 export default async function NotFoundPage() {
   let locale = 'uk';

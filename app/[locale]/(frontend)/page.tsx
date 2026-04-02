@@ -20,12 +20,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const page = await getRootPage(locale);
   const isUk = locale === 'uk';
 
+  const defaultDescription = isUk
+    ? 'Mio Mio — інтернет-магазин італійського одягу та взуття. Широкий вибір стильного взуття для чоловіків та жінок. Доставка по Україні ✔️'
+    : 'Mio Mio — интернет-магазин итальянской одежды и обуви. Широкий выбор стильной обуви для мужчин и женщин. Доставка по Украине ✔️';
+
   return generatePageMetadata(
     {
-      title: isUk 
-        ? 'Mio Mio — інтернет-магазин італійського одягу та взуття' 
+      title: isUk
+        ? 'Mio Mio — інтернет-магазин італійського одягу та взуття'
         : 'Mio Mio — интернет-магазин итальянской одежды и обуви',
-      description: page?.seo?.description || undefined,
+      description: page?.seo?.description || defaultDescription,
     },
     locale,
     '/',

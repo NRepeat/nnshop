@@ -202,13 +202,11 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 3.3 Missing Locale Prefix (root and locale-only paths handled by i18n middleware)
+  // 3.3 Missing Locale Prefix → hard 404
   if (segments.length > 0) {
     const hasLocale = routing.locales.includes(segments[0]);
     if (!hasLocale) {
-      url.pathname = cleanSlug(`/uk${url.pathname}`);
-      segments = url.pathname.split('/').filter(Boolean);
-      changed = true;
+      return new NextResponse(null, { status: 404 });
     }
   }
 
@@ -257,6 +255,17 @@ export async function proxy(request: NextRequest) {
     }
   
     request.headers.set('x-pathname', pathname);
+
+    // Brand page: check collection exists in Shopify before rendering
+    if (secondSegment === 'brand' && segments.length >= 3) {
+      const handle = decodeURIComponent(segments[2]);
+      const exists = await checkCollectionExists(handle, locale);
+
+      if (!exists) {
+        console.log(`🚫 Proxy: Brand ${handle} not found. Returning 404.`);
+        return NextResponse.rewrite(new URL('/404', request.url), { status: 404 });
+      }
+    }
 
     if (isGender && segments.length >= 3) {
       const handle = decodeURIComponent(segments[2]);

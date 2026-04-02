@@ -57,6 +57,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BrandPage({ params, searchParams }: Props) {
+  const { slug, locale } = await params;
+  const decodedSlug = decodeURIComponent(slug);
+
+  // Check collection existence outside Suspense so notFound() returns HTTP 404
+  const { collection } = await getCollection({
+    handle: decodedSlug,
+    first: 1,
+    locale,
+  });
+
+  if (!collection?.collection) {
+    notFound();
+  }
+
   return (
     <div className="container">
       <Suspense fallback={<CollectionGridSkeleton />}>
