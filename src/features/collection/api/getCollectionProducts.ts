@@ -49,7 +49,8 @@ export async function getCollectionProducts({
         productId: { in: rawProducts.map((p) => p.id) },
       },
       select: { productId: true },
-    });
+      cacheStrategy: { ttl: 60, swr: 120 },
+    } as any);
     favoriteProductIds = new Set(favorites.map((f) => f.productId));
   }
 

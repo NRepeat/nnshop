@@ -9,7 +9,8 @@ const getUser = async () => {
     if (!session) return null;
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-    });
+      cacheStrategy: { ttl: 30, swr: 60 },
+    } as any);
     if (!user) return null;
     if (user.isAnonymous) return null;
     return user;

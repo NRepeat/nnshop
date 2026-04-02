@@ -151,7 +151,8 @@ export const getCart = async ({
         userId: userId,
         completed: false,
       },
-    });
+      cacheStrategy: { ttl: 15, swr: 30 },
+    } as any);
     if (!sessionCart) {
       return {
         success: false,

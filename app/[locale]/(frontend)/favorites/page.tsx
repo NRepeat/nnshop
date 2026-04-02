@@ -47,9 +47,10 @@ const FavoritesPageSession = async ({
     redirect('/auth/sign-in');
   }
 
-  const favoriteProducts = await prisma.favoriteProduct.findMany({
+  const favoriteProducts: { id: string; userId: string; productId: string }[] = await prisma.favoriteProduct.findMany({
     where: { userId: session.user.id },
-  });
+    cacheStrategy: { ttl: 60, swr: 120 },
+  } as any);
 
   const breadcrumbItems = [
     { label: tHeader('home'), href: '/' },

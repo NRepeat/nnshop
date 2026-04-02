@@ -15,10 +15,11 @@ export async function getCompletedSteps(): Promise<CheckoutStep[]> {
 
     const userId = session.user.id;
 
+    const cacheOpts = { cacheStrategy: { ttl: 30, swr: 60 } } as any;
     const [contactInfo, deliveryInfo, paymentInfo] = await Promise.all([
-      prisma.contactInformation.findUnique({ where: { userId } }),
-      prisma.deliveryInformation.findUnique({ where: { userId } }),
-      prisma.paymentInformation.findUnique({ where: { userId } }),
+      prisma.contactInformation.findUnique({ where: { userId }, ...cacheOpts }),
+      prisma.deliveryInformation.findUnique({ where: { userId }, ...cacheOpts }),
+      prisma.paymentInformation.findUnique({ where: { userId }, ...cacheOpts }),
     ]);
 
     const completedSteps: CheckoutStep[] = [];
