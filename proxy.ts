@@ -95,10 +95,11 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // Skip internal and checked requests
+  // Skip internal, API, and checked requests
   if (
     pathname.includes('_next') ||
     pathname.includes('favicon') ||
+    pathname.startsWith('/api/') ||
     request.headers.get('x-middleware-skip') === 'true'
   ) {
     return NextResponse.next();
