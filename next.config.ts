@@ -4,7 +4,7 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const nextConfig: NextConfig = {
   experimental: {
-    cpus: 2,
+    // cpus: 2,
   },
   trailingSlash: false,
   output: 'standalone',
