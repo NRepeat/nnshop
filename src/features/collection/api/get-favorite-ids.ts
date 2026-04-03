@@ -13,7 +13,6 @@ export async function getFavoriteProductIds(productIds: string[]): Promise<strin
   const favorites = await prisma.favoriteProduct.findMany({
     where: { userId: session.user.id, productId: { in: productIds } },
     select: { productId: true },
-    cacheStrategy: { ttl: 60, swr: 120 },
-  } as any);
+  });
   return favorites.map((f) => f.productId);
 }

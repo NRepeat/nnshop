@@ -3,9 +3,7 @@ import {
   NavigationMenuContent,
   NavigationMenuItem,
 } from '@shared/ui/navigation-menu';
-import { DEFAULT_GENDER, GENDERS } from '@shared/config/shop';
 import { getCollectionImages } from '../api/getCollectionImages';
-import { headers } from 'next/headers';
 import { NavigationClient } from './NavigationClient';
 import { Skeleton } from '@shared/ui/skeleton';
 import { NavigationItemClient } from './NavigationItemClient';
@@ -15,6 +13,7 @@ import { NavigationContentLink } from './NavigationContentLink';
 import { Button } from '@shared/ui/button';
 import { getTranslations } from 'next-intl/server';
 import { cleanSlug } from '@shared/lib/utils/cleanSlug';
+import { GenderNavigationSwitch } from './GenderNavigationSwitch';
 
 type NavImage = {
   _key?: string | null;
@@ -72,26 +71,20 @@ type NavDropdowns = {
 
 export const CurrentNavigationSession = async ({
   locale,
-  gender,
   navDropdowns,
 }: {
   locale: string;
   gender?: string;
   navDropdowns?: NavDropdowns;
 }) => {
-  const headersList = await headers();
-  const headerGender = headersList.get('x-gender');
-  const currentGender =
-    gender ||
-    (headerGender && GENDERS.includes(headerGender as any)
-      ? headerGender
-      : null) ||
-    DEFAULT_GENDER;
   return (
-    <Navigation
-      gender={currentGender}
-      locale={locale}
-      navDropdowns={navDropdowns}
+    <GenderNavigationSwitch
+      womanNav={
+        <Navigation gender="woman" locale={locale} navDropdowns={navDropdowns} />
+      }
+      manNav={
+        <Navigation gender="man" locale={locale} navDropdowns={navDropdowns} />
+      }
     />
   );
 };

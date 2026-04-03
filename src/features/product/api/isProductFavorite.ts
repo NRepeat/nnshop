@@ -25,8 +25,7 @@ export const isProductFavorite = async (
         productId,
       },
     },
-    cacheStrategy: { ttl: 60, swr: 120 },
-  } as any);
+  });
 
   
   return !!existingFavorite;

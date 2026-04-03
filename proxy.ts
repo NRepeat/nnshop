@@ -256,6 +256,9 @@ export async function proxy(request: NextRequest) {
     }
   
     request.headers.set('x-pathname', pathname);
+    if (isGender) {
+      request.headers.set('x-gender', secondSegment);
+    }
 
     // Brand page: check collection exists in Shopify before rendering
     if (secondSegment === 'brand' && segments.length >= 3) {
