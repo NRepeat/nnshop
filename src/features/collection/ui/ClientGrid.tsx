@@ -18,11 +18,11 @@ export const ClientGrid = ({
   const prevCountRef = useRef(products.length);
   const prevCount = prevCountRef.current;
 
-  // Update ref after render
+  // Update ref after render 
   if (prevCountRef.current !== products.length) {
     prevCountRef.current = products.length;
   }
-
+ 
   return (
     <div
       className={cn(

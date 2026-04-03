@@ -59,7 +59,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Homepage uses gender-based tags ('man', 'woman') and 'homepage'
-    if (body.type === 'homePage' || body.type === 'homepage') {
+    // Sanity document type is 'page', so we also match that
+    if (body.type === 'homePage' || body.type === 'homepage' || body.type === 'page') {
       console.log('[Revalidate] Revalidating homepage');
       revalidateTag('homepage', 'max');
       revalidatedTags.push('homepage');
