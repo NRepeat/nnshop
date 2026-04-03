@@ -1343,8 +1343,10 @@ export const PROMOTION_BANNER_QUERY = defineQuery(
     enabled,
     image,
     "imageAlt": coalesce(image.alt[$language], image.alt.uk, image.alt.ru),
+    desktopImage,
+    "desktopImageAlt": coalesce(desktopImage.alt[$language], desktopImage.alt.uk, desktopImage.alt.ru),
     "title": coalesce(title[$language], title.uk, title.ru),
-    "description": coalesce(description[$language], description.uk, description.ru),
+    "description": coalesce(description[$language], description.uk, description.ru)[],
     discountCode,
     actionButton {
       "label": coalesce(label[$language], label.uk, label.ru),

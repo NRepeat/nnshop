@@ -16,8 +16,23 @@ export const promotionBannerType = defineType({
     }),
     defineField({
       name: 'image',
-      title: 'Image',
+      title: 'Mobile Image',
       type: 'image',
+      description: 'Vertical image for mobile popup.',
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt text',
+          type: 'localizedString',
+        }),
+      ],
+    }),
+    defineField({
+      name: 'desktopImage',
+      title: 'Desktop Image',
+      type: 'image',
+      description: 'Horizontal image for desktop popup. Falls back to mobile image if empty.',
       options: { hotspot: true },
       fields: [
         defineField({
@@ -36,7 +51,7 @@ export const promotionBannerType = defineType({
     defineField({
       name: 'description',
       title: 'Description',
-      type: 'localizedString',
+      type: 'localizedSimpleBlockContent',
     }),
     defineField({
       name: 'discountCode',

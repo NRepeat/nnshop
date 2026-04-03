@@ -29,6 +29,7 @@ import { collectionsCarousel } from './blocks/collectionsCarouselWithActionButto
 import { localizedString } from './localizedStringType';
 import { localizedText } from './localizedText';
 import { localizedBlockContent } from './localizedBlockContentType';
+import { localizedSimpleBlockContent } from './localizedSimpleBlockContentType';
 import { sliderBlock } from './blocks/slider';
 import { similarProducts } from './blocks/similarProducts';
 import { contentPageBlock } from './blocks/contentPageBlock';
@@ -69,6 +70,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     ...shopifySchemaTypes,
     localizedText,
     localizedBlockContent,
+    localizedSimpleBlockContent,
     sliderBlock,
     collectionsCarousel,
     productCarousel,

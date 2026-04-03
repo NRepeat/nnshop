@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@shared/ui/dialog';
+import { PortableText } from 'next-sanity';
 import { cn } from '@shared/lib/utils';
 import { Link } from '@shared/i18n/navigation';
 import { resolveCollectionLink } from '@shared/lib/shopify/resolve-shopify-link';
@@ -20,8 +21,10 @@ type BannerData = {
   _id: string;
   imageUrl?: string | null;
   imageAlt?: string | null;
+  desktopImageUrl?: string | null;
+  desktopImageAlt?: string | null;
   title?: string | null;
-  description?: string | null;
+  description?: any[] | null;
   discountCode?: string | null;
   actionButton?: {
     label?: string | null;
@@ -259,34 +262,55 @@ export function SessionBannerClient({
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent
           showCloseButton
-          className="p-0 gap-0 w-[350px]  sm:w-full   sm:max-w-[650px] overflow-hidden rounded border-0"
+          className={cn(
+            'p-0 gap-0 w-[350px] sm:w-full overflow-hidden rounded border-0',
+            data.desktopImageUrl ? 'sm:max-w-[850px]' : 'sm:max-w-[650px]',
+          )}
         >
-          <div className="flex flex-col sm:flex-row   sm:min-h-[420px] ">
+          <div className="flex flex-col sm:flex-row sm:min-h-[420px]">
             {/* Image panel */}
-            {data.imageUrl && (
-              <div className="relative sm:w-[55%] bg-gradient-to-b from-[#E9EBF3] via-[#F0F2F9] to-[#F7FAFE]  h-[380px] sm:h-[500px]  shrink-0 overflow-hidden">
-                <Image
-                  src={data.imageUrl}
-                  alt={data.imageAlt ?? ''}
-                  fill
-                  className="object-contain w-full sm:object-cover"
-                  sizes="(max-width: 640px) 100vw, 320px"
-                />
+            {(data.imageUrl || data.desktopImageUrl) && (
+              <div className="relative sm:w-[55%] bg-gradient-to-b from-[#E9EBF3] via-[#F0F2F9] to-[#F7FAFE] h-[460px] sm:h-auto shrink-0 overflow-hidden">
+                {/* Mobile image */}
+                {data.imageUrl && (
+                  <Image
+                    src={data.imageUrl}
+                    alt={data.imageAlt ?? ''}
+                    fill
+                    className={cn(
+                      'object-cover',
+                      data.desktopImageUrl ? 'sm:hidden' : '',
+                    )}
+                    sizes="(max-width: 640px) 100vw, 320px"
+                  />
+                )}
+                {/* Desktop image */}
+                {data.desktopImageUrl && (
+                  <Image
+                    src={data.desktopImageUrl}
+                    alt={data.desktopImageAlt ?? data.imageAlt ?? ''}
+                    fill
+                    className="hidden sm:block object-cover"
+                    sizes="360px"
+                  />
+                )}
               </div>
             )}
 
             {/* Content panel */}
-            <div className="flex flex-col justify-center gap-6 p-8 sm:p-10 flex-1">
+            <div className="flex flex-col justify-center gap-4 p-5 sm:gap-6 sm:p-10 flex-1">
               {/* Text */}
               <div className="flex flex-col gap-3">
                 {data.title && (
-                  <DialogTitle className="text-2xl font-semibold leading-tight">
+                  <DialogTitle className="text-2xl sm:text-3xl font-semibold leading-tight">
                     {data.title}
                   </DialogTitle>
                 )}
-                {data.description && (
-                  <DialogDescription className="text-md text-muted-foreground leading-relaxed">
-                    {data.description}
+                {data.description && data.description.length > 0 && (
+                  <DialogDescription asChild className="text-md text-muted-foreground leading-relaxed">
+                    <div>
+                      <PortableText value={data.description} />
+                    </div>
                   </DialogDescription>
                 )}
               </div>

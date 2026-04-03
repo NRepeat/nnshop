@@ -15,9 +15,13 @@ export async function SessionBanner({ locale }: { locale: string }) {
     ? urlFor(data.image).width(600).auto('format').quality(80).url()
     : null;
 
+  const desktopImageUrl = data.desktopImage
+    ? urlFor(data.desktopImage).width(800).auto('format').quality(80).url()
+    : null;
+
   return (
     <SessionBannerClient
-      data={{ ...(data as any), imageUrl }}
+      data={{ ...(data as any), imageUrl, desktopImageUrl }}
       locale={locale}
       gender={gender}
     />
