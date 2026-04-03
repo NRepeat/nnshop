@@ -4,21 +4,16 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const nextConfig: NextConfig = {
   experimental: {
-    viewTransition: true,
     cpus: 2,
   },
   trailingSlash: false,
   output: 'standalone',
-  productionBrowserSourceMaps: false,
+  productionBrowserSourceMaps: true,
   serverExternalPackages: [],
   typescript: {
     ignoreBuildErrors: false,
   },
-  logging: {
-    fetches: {
-      fullUrl: false,
-    },
-  },
+
   cacheComponents: true,
   allowedDevOrigins: [
     'http://localhost:3000',
@@ -75,7 +70,7 @@ const nextConfig: NextConfig = {
               }
               destination = url.toString();
             }
-          } catch  {
+          } catch {
             // Fallback to original if URL is malformed
           }
         }
