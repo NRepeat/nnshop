@@ -291,7 +291,7 @@ export function SessionBannerClient({
                     alt={data.desktopImageAlt ?? data.imageAlt ?? ''}
                     fill
                     className="hidden sm:block object-cover"
-                    sizes="360px"
+                    sizes="(max-width: 640px) 0px, 50vw"
                   />
                 )}
               </div>

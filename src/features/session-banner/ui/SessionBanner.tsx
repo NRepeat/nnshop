@@ -12,11 +12,11 @@ export async function SessionBanner({ locale }: { locale: string }) {
   if (!data) return null;
 
   const imageUrl = data.image
-    ? urlFor(data.image).width(600).auto('format').quality(80).url()
+    ? urlFor(data.image).width(900).auto('format').quality(85).url()
     : null;
 
   const desktopImageUrl = data.desktopImage
-    ? urlFor(data.desktopImage).width(800).auto('format').quality(80).url()
+    ? urlFor(data.desktopImage).width(1600).auto('format').quality(85).url()
     : null;
 
   return (
