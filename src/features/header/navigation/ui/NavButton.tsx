@@ -50,7 +50,7 @@ export const NavButton = ({
 
   const isRootPage = pathname === '/';
 
-  const isActive = isRootPage
+  const isActive = isRootPage || isBrandPage
     ? false
     : optimisticSlug
       ? optimisticSlug === slug
@@ -58,9 +58,7 @@ export const NavButton = ({
 
   const toPath = useMemo(() => {
     if (isBrandPage) {
-      const params = new URLSearchParams(searchParams.toString());
-      const qs = params.toString();
-      return `/brand/${segments[1]}${qs ? `?${qs}` : ''}`;
+      return `/${slug}`;
     }
     const currentHandle = segments[1];
     if (!currentHandle) return `/${slug}`;
