@@ -59,7 +59,8 @@ export const NavButton = ({
   const toPath = useMemo(() => {
     if (isBrandPage) {
       const params = new URLSearchParams(searchParams.toString());
-      return `/brand/${segments[1]}?${params.toString()}`;
+      const qs = params.toString();
+      return `/brand/${segments[1]}${qs ? `?${qs}` : ''}`;
     }
     const currentHandle = segments[1];
     if (!currentHandle) return `/${slug}`;

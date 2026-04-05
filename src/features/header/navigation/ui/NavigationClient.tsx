@@ -36,7 +36,7 @@ export const NavigationClient = ({
         value={value}
         onValueChange={setValue}
         skipDelayDuration={100}
-        delayDuration={0}
+        delayDuration={200}
         className="w-full navigation-menu-wrapper "
         viewport={true}
       >
