@@ -105,6 +105,30 @@ export default function IPaymentForm({
         return;
       }
 
+      // 4a-2. NovaPay: create order + session, then redirect to NovaPay payment page.
+      if (
+        data.paymentMethod === 'pay-now' &&
+        data.paymentProvider === 'novapay'
+      ) {
+        console.log('[PaymentForm] NovaPay: calling API route');
+        const res = await fetch('/api/checkout/novapay-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ locale, amount, currency }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          console.error('[PaymentForm] NovaPay API error:', err);
+          toast.error(err.error || t('errorSavingPaymentInformation'));
+          setIsLoading(false);
+          return;
+        }
+        const { paymentUrl } = await res.json();
+        console.log('[PaymentForm] NovaPay: redirecting to', paymentUrl);
+        window.location.href = paymentUrl;
+        return;
+      }
+
       // 4b. All other methods: create order via server action
       const orderResult = await createOrder(
         completeCheckoutData,

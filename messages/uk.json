@@ -540,7 +540,10 @@
     "paypalDescription": "Оплатити через PayPal",
     "stripeDescription": "Обробка платежів Stripe",
     "liqpay": "LiqPay",
-    "liqpayDescription": "Онлайн оплата карткою через LiqPay"
+    "liqpayDescription": "Онлайн оплата карткою через LiqPay",
+    "novapay": "NovaPay",
+    "novapayDescription": "Онлайн оплата карткою через NovaPay",
+    "currentlyUnavailable": "Тимчасово недоступно"
   },
   "ReceiptPage": {
     "title": "Підсумок замовлення",

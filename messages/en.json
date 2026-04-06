@@ -461,7 +461,12 @@
     "orderPaymentFor": "Order payment for",
     "choosePaymentProvider": "Choose Payment Provider",
     "bankTransferDescription": "Transfer to our bank account",
-    "selectPaymentProviderDescription": "Select the payment provider you would like to use."
+    "selectPaymentProviderDescription": "Select the payment provider you would like to use.",
+    "liqpay": "LiqPay",
+    "liqpayDescription": "Online card payment via LiqPay",
+    "novapay": "NovaPay",
+    "novapayDescription": "Online card payment via NovaPay",
+    "currentlyUnavailable": "Currently unavailable"
   },
   "ReceiptPage": {
     "title": "Order Summary",
