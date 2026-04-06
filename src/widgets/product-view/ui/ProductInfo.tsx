@@ -40,6 +40,16 @@ import { Popover, PopoverContent, PopoverTrigger } from '@shared/ui/popover';
 import { ButtonGroup, ButtonGroupSeparator } from '@shared/ui/button-group';
 import { stripInvisible } from '@shared/lib/seo/generateMetadata';
 
+const META_FIELD_ORDER: Record<string, number> = {
+  'Матеріал': 1,
+  'Склад': 1,
+  'Підкладка': 2,
+  'Сезон': 3,
+  'Країна': 4,
+  'Каблук': 5,
+  'Висота підошви': 6,
+};
+
 const DetailsContent = ({
   attributes,
   locale,
@@ -54,17 +64,19 @@ const DetailsContent = ({
     )
     .flatMap((attr) => {
       if (!attr) return [];
+      const ukTitle = attr.fields.find((f) => f.key === 'title')?.value;
       const title =
         locale === 'ru'
           ? attr.fields.find((f) => f.key === 'ru_title')?.value
-          : attr.fields.find((f) => f.key === 'title')?.value;
+          : ukTitle;
       const value =
         locale === 'ru'
           ? attr.fields.find((f) => f.key === 'ru_translation')?.value
           : attr.fields.find((f) => f.key === 'atribute_payload')?.value;
       if (!title || !value) return [];
-      return [{ id: attr.id, title, value }];
-    });
+      return [{ id: attr.id, title, value, sortKey: META_FIELD_ORDER[ukTitle ?? ''] ?? 99 }];
+    })
+    .sort((a, b) => a.sortKey - b.sortKey);
 
   return (
     <div className="text-sm text-gray-600 grid grid-cols-[auto_1fr] gap-x-8 gap-y-2">

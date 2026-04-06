@@ -414,7 +414,8 @@
         "category": "Категория",
         "brand": "Бренд",
         "material": "Материал",
-        "pidkladka": "Подкладка"
+        "pidkladka": "Подкладка",
+        "kabluk": "Каблук"
       }
     },
     "sort": {

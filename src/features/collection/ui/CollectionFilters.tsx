@@ -10,6 +10,7 @@ import { NuqsColorFilter } from './NuqsColorFilter';
 import { NuqsListFilter } from './NuqsListFilter';
 import { NuqsPriceRangeFilter } from './NuqsPriceRangeFilter';
 import { NuqsButtonFilter } from './NuqsButtonFilter';
+import { NuqsRangeListFilter } from './NuqsRangeListFilter';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { useParams } from 'next/navigation';
@@ -28,8 +29,13 @@ const FILTER_LABEL_KEYS: Record<string, string> = {
   'filter.p.m.custom.brand': 'filters.labels.brand',
   'filter.p.m.custom.material': 'filters.labels.material',
   'filter.p.m.custom.pidkladka': 'filters.labels.pidkladka',
+  'filter.p.m.custom.kabluk': 'filters.labels.kabluk',
   'filter.p.vendor': 'filters.labels.brand',
 };
+
+const RANGE_SLIDER_FILTERS = new Set([
+  'filter.p.m.custom.kabluk',
+]);
 
 export function CollectionFilters({ filters, initialFilters, hideVendor }: Props) {
   const t = useTranslations('CollectionPage');
@@ -90,6 +96,14 @@ export function CollectionFilters({ filters, initialFilters, hideVendor }: Props
                         filter={filter}
                         showCount={false}
                         isSizeFilter={true}
+                        initialFilter={initialFilter}
+                      />
+                    );
+                  }
+                  if (RANGE_SLIDER_FILTERS.has(filter.id)) {
+                    return (
+                      <NuqsRangeListFilter
+                        filter={filter}
                         initialFilter={initialFilter}
                       />
                     );
