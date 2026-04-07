@@ -207,9 +207,13 @@ export async function proxy(request: NextRequest) {
   if (segments.length > 0) {
     const hasLocale = routing.locales.includes(segments[0]);
     if (!hasLocale) {
-      const redirectUrl = request.nextUrl.clone();
-      redirectUrl.pathname = `/${routing.defaultLocale}${url.pathname}`;
-      return NextResponse.redirect(redirectUrl, { status: 301 });
+      url.pathname = `/${routing.defaultLocale}${url.pathname}`;
+      if (isProductionHost) {
+        url.host = 'www.miomio.com.ua';
+        url.port = '';
+        url.protocol = 'https:';
+      }
+      return NextResponse.redirect(url, { status: 301 });
     }
   }
 
