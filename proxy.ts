@@ -203,11 +203,12 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 3.3 Missing Locale Prefix → hard 404
+  // 3.3 Missing Locale Prefix → redirect to default locale
   if (segments.length > 0) {
     const hasLocale = routing.locales.includes(segments[0]);
     if (!hasLocale) {
-      return new NextResponse(null, { status: 404 });
+      url.pathname = `/${routing.defaultLocale}${url.pathname}`;
+      return NextResponse.redirect(url, { status: 301 });
     }
   }
 
