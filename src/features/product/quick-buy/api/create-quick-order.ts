@@ -17,6 +17,7 @@ type QuickOrderInput = {
   discountPercentage?: number;
   price: string;
   currencyCode: string;
+  sku?: string;
 };
 
 type OrderResult = {
@@ -237,7 +238,7 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
           price: finalPrice.toFixed(2),
           product_id: 0,
           variant_id: numericVariantId,
-          sku: '',
+          sku: orderData.sku || '',
         }],
         shipping_lines: [],
         applied_discount: null,

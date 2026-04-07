@@ -168,6 +168,8 @@ export const QuickBuyModal = ({
     const variantPrice = selectedVariant?.price?.amount || '0';
     const variantCurrency = selectedVariant?.price?.currencyCode || DEFAULT_CURRENCY_CODE;
 
+    const sku = product.variants.edges[0]?.node.sku || undefined;
+
     startTransition(async () => {
       const result = await createQuickOrder({
         variantId,
@@ -180,6 +182,7 @@ export const QuickBuyModal = ({
           discountPercentage > 0 ? discountPercentage : undefined,
         price: variantPrice,
         currencyCode: variantCurrency,
+        sku,
       });
 
       if (result.success) {
