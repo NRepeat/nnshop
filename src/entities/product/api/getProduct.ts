@@ -30,7 +30,17 @@ export const PRODUCT_METAFIELDS_FRAGMENT = `#graphql
         {key: "rozmir", namespace: "custom"},
         {key: "sezon", namespace: "custom"},
         {key: "pidkladka", namespace: "custom"},
-        {key: "gender", namespace: "custom"}
+        {key: "gender", namespace: "custom"},
+        {key: "atr-material", namespace: "custom"},
+        {key: "atr-sclad", namespace: "custom"},
+        {key: "atr-pidkladka", namespace: "custom"},
+        {key: "atr-sezon", namespace: "custom"},
+        {key: "atr-pidoshva", namespace: "custom"},
+        {key: "atr-cabluk", namespace: "custom"},
+        {key: "atr-visota-pidoshva", namespace: "custom"},
+        {key: "atr-carian-brendy", namespace: "custom"},
+        {key: "atr-kraina-virobniztva", namespace: "custom"},
+        {key: "atr-osoblivosty", namespace: "custom"}
       ]
     ) {
       id

@@ -61,12 +61,16 @@ export function BrandGrid({ barnds, locale, gender }: BrandGridProps) {
           plugins={[Autoplay({ active: true, delay: 1800, playOnInit: true })]}
         >
           <CarouselContent className="-ml-2">
-            {Array.from({ length: Math.ceil(barnds.length / 2) }).map(
-              (_, i) => (
+            {(() => {
+              // Pad with duplicates so every column has 2 brands (no empty slots)
+              const padded = barnds.length % 2 !== 0
+                ? [...barnds, barnds[0]]
+                : barnds;
+              return Array.from({ length: padded.length / 2 }).map((_, i) => (
                 <CarouselItem key={i} className="pl-8 basis-1/3">
                   <div className="flex flex-col gap-y-8">
-                    {barnds.slice(i * 2, i * 2 + 2).map((brand) => (
-                      <Link href={getBrandHref(brand)} key={brand._key}>
+                    {padded.slice(i * 2, i * 2 + 2).map((brand, j) => (
+                      <Link href={getBrandHref(brand)} key={`${brand._key}-${j}`}>
                         <div className="group relative flex h-16 w-full max-w-[160px] items-center justify-center transition-all duration-300 hover:opacity-60 mx-auto">
                           {brand.asset ? (
                             <Image
@@ -86,8 +90,8 @@ export function BrandGrid({ barnds, locale, gender }: BrandGridProps) {
                     ))}
                   </div>
                 </CarouselItem>
-              ),
-            )}
+              ));
+            })()}
           </CarouselContent>
         </Carousel>
       </div>

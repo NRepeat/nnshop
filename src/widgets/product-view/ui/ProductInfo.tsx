@@ -50,14 +50,31 @@ const META_FIELD_ORDER: Record<string, number> = {
   'Висота підошви': 6,
 };
 
+// New direct metafield attributes: key → { uk title, ru title, sort order }
+const ATR_METAFIELD_MAP: Record<string, { uk: string; ru: string; order: number }> = {
+  'atr-material':           { uk: 'Матеріал',             ru: 'Материал',                order: 1 },
+  'atr-sclad':              { uk: 'Склад',                ru: 'Состав',                  order: 1 },
+  'atr-pidkladka':          { uk: 'Підкладка',            ru: 'Подкладка',               order: 2 },
+  'atr-sezon':              { uk: 'Сезон',                ru: 'Сезон',                   order: 3 },
+  'atr-pidoshva':           { uk: 'Підошва',              ru: 'Подошва',                 order: 4 },
+  'atr-cabluk':             { uk: 'Каблук',               ru: 'Каблук',                  order: 5 },
+  'atr-visota-pidoshva':    { uk: 'Висота підошви',       ru: 'Высота подошвы',          order: 6 },
+  'atr-carian-brendy':      { uk: 'Країна бренду',        ru: 'Страна бренда',           order: 7 },
+  'atr-kraina-virobniztva': { uk: 'Країна виробництва',   ru: 'Страна производства',     order: 8 },
+  'atr-osoblivosty':        { uk: 'Особливості',          ru: 'Особенности',             order: 9 },
+};
+
 const DetailsContent = ({
   attributes,
+  product,
   locale,
 }: {
   attributes: ProductMEtaobjectType[];
+  product: ShopifyProduct;
   locale: string;
 }) => {
-  const rows = attributes
+  // Legacy metaobject-based attributes
+  const metaobjectRows = attributes
     .filter(
       (attr) =>
         attr?.fields.find((f) => f.key === 'title')?.value !== 'Особливості',
@@ -75,8 +92,34 @@ const DetailsContent = ({
           : attr.fields.find((f) => f.key === 'atribute_payload')?.value;
       if (!title || !value) return [];
       return [{ id: attr.id, title, value, sortKey: META_FIELD_ORDER[ukTitle ?? ''] ?? 99 }];
-    })
-    .sort((a, b) => a.sortKey - b.sortKey);
+    });
+
+  // Collect UK titles already covered by metaobject rows
+  const coveredTitles = new Set(
+    metaobjectRows.map((r) => r.title),
+  );
+
+  // New direct metafield attributes (list: [uk_value, ru_value]) — only if not already in metaobjects
+  const directRows = (product.metafields ?? [])
+    .filter((m): m is NonNullable<typeof m> => m != null && m.key in ATR_METAFIELD_MAP)
+    .flatMap((m) => {
+      const config = ATR_METAFIELD_MAP[m.key];
+      if (!config) return [];
+      const title = locale === 'ru' ? config.ru : config.uk;
+      if (coveredTitles.has(config.uk) || coveredTitles.has(title)) return [];
+      try {
+        const values: string[] = JSON.parse(m.value);
+        const ukValue = values[0];
+        const ruValue = values[1] ?? ukValue;
+        const value = locale === 'ru' ? ruValue : ukValue;
+        if (!value) return [];
+        return [{ id: `atr-${m.key}`, title, value, sortKey: config.order }];
+      } catch {
+        return [];
+      }
+    });
+
+  const rows = [...metaobjectRows, ...directRows].sort((a, b) => a.sortKey - b.sortKey);
 
   return (
     <div className="text-sm text-gray-600 grid grid-cols-[auto_1fr] gap-x-8 gap-y-2">
@@ -408,7 +451,7 @@ export const ProductInfo = ({
             {t('details')}
           </AccordionTrigger>
           <AccordionContent>
-            <DetailsContent attributes={attributes} locale={locale} />
+            <DetailsContent attributes={attributes} product={product} locale={locale} />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="shipping">
