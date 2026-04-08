@@ -48,6 +48,14 @@ export function GA4PurchaseEvent({
       items,
     });
 
+    // Google Ads conversion tracking
+    window.gtag('event', 'conversion', {
+      send_to: 'AW-18024337537/TJVzCOvA4YocEIGh1pJD',
+      value,
+      currency,
+      transaction_id: transactionId,
+    });
+
     sessionStorage.setItem(dedupKey, '1');
   }, [transactionId, value, currency, items]);
 

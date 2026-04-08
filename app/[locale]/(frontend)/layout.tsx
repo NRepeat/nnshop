@@ -161,6 +161,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           {`
             gtag('js', new Date());
             gtag('config', 'G-05RL9JZJKK', { send_page_view: false });
+            gtag('config', 'AW-18024337537');
           `}
         </Script>
         <Script
