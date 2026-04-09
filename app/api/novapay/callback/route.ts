@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
     // Find order by NovaPay session ID stored in PaymentInformation.description
     const paymentInfo = await prisma.paymentInformation.findFirst({
       where: { description: { contains: sessionId } },
-      include: { user: { include: { orders: true } } },
+      include: { user: true },
     });
 
     if (!paymentInfo) {
@@ -94,12 +94,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }
 
-    const order = paymentInfo.user?.orders?.[0];
+    // Find the correct order using shopifyOrderId from metadata (not user's first order)
+    const metadataOrderId = postback.metadata?.shopifyOrderId as string | undefined;
+    const order = metadataOrderId
+      ? await prisma.order.findFirst({ where: { shopifyOrderId: metadataOrderId } })
+      : await prisma.order.findFirst({ where: { userId: paymentInfo.userId }, orderBy: { createdAt: 'desc' } });
+
     if (!order?.shopifyOrderId) {
       console.warn(`[novapay/callback] no order found for session ${sessionId}`);
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
+    console.log(`[novapay/callback] found order: ${order.orderName} (${order.shopifyOrderId}), draft=${order.draft}`);
     const shopifyOrderId = order.shopifyOrderId;
     const paymentAmount = postback.payments?.[0]?.amount ?? paymentInfo.amount;
 
