@@ -45,7 +45,6 @@ export const paymentProviders: {
   {
     id: 'novapay',
     name: 'NovaPay',
-    disabled: true,
     icon: (
       <Image
         width={40}

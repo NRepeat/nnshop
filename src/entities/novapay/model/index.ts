@@ -1,6 +1,8 @@
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 
-const NOVAPAY_API_BASE = 'https://api-qecom.novapay.ua/v1';
+const NOVAPAY_API_BASE = 'https://api-ecom.novapay.ua/v1';
 
 export interface NovaPayProduct {
   description: string;
@@ -130,8 +132,14 @@ export class NovaPay {
   private async request<T>(path: string, body: Record<string, unknown>): Promise<T> {
     const jsonBody = JSON.stringify(body);
     const xSign = this.sign(jsonBody);
+    const url = `${NOVAPAY_API_BASE}${path}`;
 
-    const res = await fetch(`${NOVAPAY_API_BASE}${path}`, {
+    console.log(`[NovaPay] → ${path}`);
+    console.log(`[NovaPay] merchant_id: ${body.merchant_id}`);
+    console.log(`[NovaPay] body: ${jsonBody}`);
+    console.log(`[NovaPay] x-sign: ${xSign.substring(0, 40)}...`);
+
+    const res = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -141,6 +149,8 @@ export class NovaPay {
     });
 
     const data = await res.json();
+
+    console.log(`[NovaPay] ← ${res.status}`, JSON.stringify(data));
 
     if (!res.ok) {
       const err = data as NovaPayError;
@@ -197,13 +207,19 @@ export class NovaPay {
   }
 }
 
+function readKeyFile(filename: string): string {
+  const filePath = path.resolve(process.cwd(), filename);
+  return fs.readFileSync(filePath, 'utf-8');
+}
+
 export function createNovaPay(): NovaPay {
   const merchantId = process.env.NOVAPAY_MERCHANT_ID;
-  const privateKey = process.env.NOVAPAY_PRIVATE_KEY;
-  const novaPayPublicKey = process.env.NOVAPAY_PUBLIC_KEY;
+
+  const privateKey = process.env.NOVAPAY_PRIVATE_KEY || readKeyFile('keys/novapay/rsa_private_key.pem');
+  const novaPayPublicKey = process.env.NOVAPAY_PUBLIC_KEY || readKeyFile('keys/novapay/novapay_public_key.pem');
 
   if (!merchantId || !privateKey || !novaPayPublicKey) {
-    throw new Error('NOVAPAY_MERCHANT_ID, NOVAPAY_PRIVATE_KEY, and NOVAPAY_PUBLIC_KEY must be set');
+    throw new Error('NOVAPAY_MERCHANT_ID must be set, and RSA keys must be provided via env or .pem files');
   }
 
   return new NovaPay(merchantId, privateKey, novaPayPublicKey);
