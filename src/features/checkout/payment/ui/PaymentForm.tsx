@@ -105,6 +105,30 @@ export default function IPaymentForm({
         return;
       }
 
+      // 4a-1b. PayParts (PrivatBank installments): create order + payment, redirect to PrivatBank
+      if (
+        data.paymentMethod === 'pay-now' &&
+        data.paymentProvider === 'liqpay-payparts'
+      ) {
+        console.log('[PaymentForm] PayParts: calling API route');
+        const res = await fetch('/api/checkout/payparts-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ locale, amount, currency }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          console.error('[PaymentForm] PayParts API error:', err);
+          toast.error(err.error || t('errorSavingPaymentInformation'));
+          setIsLoading(false);
+          return;
+        }
+        const { paymentUrl } = await res.json();
+        console.log('[PaymentForm] PayParts: redirecting to', paymentUrl);
+        window.location.href = paymentUrl;
+        return;
+      }
+
       // 4a-2. NovaPay: create order + session, then redirect to NovaPay payment page.
       if (
         data.paymentMethod === 'pay-now' &&

@@ -81,6 +81,8 @@ export default function PaymentProviderButton({
             {/* @ts-ignore */}
             {provider.id === 'liqpay' && t('liqpayDescription')}
             {/* @ts-ignore */}
+            {provider.id === 'liqpay-payparts' && t('liqpay-paypartsDescription')}
+            {/* @ts-ignore */}
             {provider.id === 'novapay' && t('novapayDescription')}
             {/* @ts-ignore */}
             {provider.id === 'credit-card' && t('creditCardDescription')}

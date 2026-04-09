@@ -17,7 +17,7 @@ export const paymentMethods: {
   {
     id: 'pay-now',
     name: 'Pay Now',
-    availableMethods: ['bank-transfer', 'liqpay', 'novapay'],
+    availableMethods: ['bank-transfer', 'liqpay', 'liqpay-payparts', 'novapay'],
     icon: <CreditCard />,
   },
 ] as const;
@@ -28,6 +28,20 @@ export const paymentProviders: {
   icon: React.ReactNode;
   disabled?: boolean;
 }[] = [
+  {
+    id: 'novapay',
+    name: 'NovaPay',
+    icon: (
+      <Image
+        width={40}
+        height={40}
+        src="/images/novapay-logo.svg"
+        alt="NovaPay"
+        className="w-5 h-5 object-contain"
+        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+      />
+    ),
+  },
   {
     id: 'liqpay',
     name: 'LiqPay',
@@ -43,14 +57,15 @@ export const paymentProviders: {
     ),
   },
   {
-    id: 'novapay',
-    name: 'NovaPay',
+    id: 'liqpay-payparts',
+    name: 'Оплата частинами',
+    disabled: true,
     icon: (
       <Image
         width={40}
         height={40}
-        src="/images/novapay-logo.svg"
-        alt="NovaPay"
+        src="https://static.liqpay.ua/buttons/logo-white.svg"
+        alt="Оплата частинами"
         className="w-5 h-5 object-contain"
         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
       />

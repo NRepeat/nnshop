@@ -542,6 +542,8 @@
     "stripeDescription": "Обробка платежів Stripe",
     "liqpay": "LiqPay",
     "liqpayDescription": "Онлайн оплата карткою через LiqPay",
+    "liqpay-payparts": "Оплата частинами",
+    "liqpay-paypartsDescription": "Розстрочка від ПриватБанку",
     "novapay": "NovaPay",
     "novapayDescription": "Онлайн оплата карткою через NovaPay",
     "currentlyUnavailable": "Тимчасово недоступно"

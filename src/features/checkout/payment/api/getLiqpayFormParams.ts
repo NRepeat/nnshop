@@ -10,6 +10,7 @@ interface LiqpayFormParamsInput {
   currency: string;
   checkoutData?: Omit<CheckoutData, 'paymentInfo'> | null;
   lineItems?: { title: string; quantity: number; variantId?: number; price?: number }[];
+  payparts?: boolean;
 }
 
 export async function getLiqpayFormParams(input: LiqpayFormParamsInput): Promise<{
@@ -66,9 +67,9 @@ export async function getLiqpayFormParams(input: LiqpayFormParamsInput): Promise
       : undefined;
 
   const liqpay = new LiqPay(publicKey, privateKey);
-  const { data, signature } = liqpay.cnbObject({
+  const liqpayParams = {
     version: 3,
-    action: 'hold',
+    action: input.payparts ? 'payparts' : 'hold',
     amount: roundedAmount,
     currency,
     description,
@@ -80,7 +81,9 @@ export async function getLiqpayFormParams(input: LiqpayFormParamsInput): Promise
     product_description,
     product_url: baseUrl,
     ...(rro_info ? { rro_info } : {}),
-  });
+  };
+  console.log('[getLiqpayFormParams]', JSON.stringify(liqpayParams));
+  const { data, signature } = liqpay.cnbObject(liqpayParams);
 
   return { data, signature, checkoutUrl: 'https://www.liqpay.ua/api/3/checkout' };
 }

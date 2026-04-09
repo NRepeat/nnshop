@@ -8,6 +8,7 @@ export const getPaymentSchema = (t: (key: string) => string) =>
     paymentProvider: z.enum([
       'bank-transfer',
       'liqpay',
+      'liqpay-payparts',
       'novapay',
       'after-delivered',
     ]),

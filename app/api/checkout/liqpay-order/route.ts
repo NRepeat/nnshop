@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { locale, currency, amount } = body;
+    const { locale, currency, amount, payparts } = body;
 
     // 1. Get complete checkout data (same as payment page guard)
     const completeCheckoutData = await getCompleteCheckoutData(session);
@@ -72,10 +72,10 @@ export async function POST(req: NextRequest) {
     await savePaymentInfo(
       {
         paymentMethod: 'pay-now',
-        paymentProvider: 'liqpay',
+        paymentProvider: payparts ? 'liqpay-payparts' : 'liqpay',
         amount: liqpayAmount,
         currency: liqpayCurrency,
-        description: `LiqPay order ${createdOrder.name}`,
+        description: `LiqPay${payparts ? ' payparts' : ''} order ${createdOrder.name}`,
       },
       createdOrder.id,
     );
@@ -91,6 +91,7 @@ export async function POST(req: NextRequest) {
         title: e.node.title,
         quantity: e.node.quantity,
       })),
+      payparts,
     });
 
     console.log('[liqpay-order] params ready for order:', createdOrder.id);
