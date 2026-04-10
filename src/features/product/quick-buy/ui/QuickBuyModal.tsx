@@ -168,11 +168,13 @@ export const QuickBuyModal = ({
     const variantPrice = selectedVariant?.price?.amount || '0';
     const variantCurrency = selectedVariant?.price?.currencyCode || DEFAULT_CURRENCY_CODE;
 
-    const sku = product.variants.edges[0]?.node.sku || undefined;
+    const sku = selectedVariant?.sku || undefined;
+    const productImage = product.featuredImage?.url || product.images?.edges?.[0]?.node?.url || undefined;
 
     startTransition(async () => {
       const result = await createQuickOrder({
         variantId,
+        productId: product.id,
         quantity: 1,
         name: values.name,
         phone: values.phone,
@@ -183,6 +185,7 @@ export const QuickBuyModal = ({
         price: variantPrice,
         currencyCode: variantCurrency,
         sku,
+        imageUrl: productImage,
       });
 
       if (result.success) {

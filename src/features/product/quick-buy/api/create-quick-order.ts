@@ -9,6 +9,7 @@ import { captureServerEvent, captureServerError } from '@shared/lib/posthog/post
 
 type QuickOrderInput = {
   variantId: string;
+  productId: string;
   quantity: number;
   name: string;
   phone: string;
@@ -18,6 +19,7 @@ type QuickOrderInput = {
   price: string;
   currencyCode: string;
   sku?: string;
+  imageUrl?: string;
 };
 
 type OrderResult = {
@@ -200,6 +202,7 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
     try {
       const numericOrderId = createdOrder.id.replace('gid://shopify/Order/', '');
       const numericVariantId = Number(orderData.variantId.replace('gid://shopify/ProductVariant/', '') || 0);
+      const numericProductId = Number(orderData.productId.replace('gid://shopify/Product/', '') || 0);
 
       const webhookPayload = {
         id: Number(numericOrderId),
@@ -236,9 +239,10 @@ export async function createQuickOrder(orderData: QuickOrderInput): Promise<{
           variant_title: orderData.selectedSize || '',
           quantity: orderData.quantity,
           price: finalPrice.toFixed(2),
-          product_id: 0,
+          product_id: numericProductId,
           variant_id: numericVariantId,
           sku: orderData.sku || '',
+          ...(orderData.imageUrl ? { image: orderData.imageUrl } : {}),
         }],
         shipping_lines: [],
         applied_discount: null,
