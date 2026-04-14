@@ -76,7 +76,7 @@ export async function getLiqpayFormParams(input: LiqpayFormParamsInput): Promise
     order_id: orderId,
     server_url: `${baseUrl}/api/liqpay/callback`,
     result_url: `${baseUrl}/checkout/success/${orderId}`,
-    language: 'uk',
+    language: 'uk' as const,
     product_name,
     product_description,
     product_url: baseUrl,
