@@ -48,8 +48,8 @@ export async function POST(req: NextRequest) {
 
     // 3. Create Shopify order (draft, no receipt, skip process-order)
     const orderResult = await createOrder(completeCheckoutData, locale, false, 'pay-now', {
-      skipProcessOrder: true,
       draftInDb: true,
+      paymentGatewayName: 'novapay',
     });
     if (!orderResult.success || !orderResult.order) {
       return NextResponse.json(

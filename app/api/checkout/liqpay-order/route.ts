@@ -51,8 +51,8 @@ export async function POST(req: NextRequest) {
     //    Saved as draft: true in DB — hold_wait callback confirms payment and flips to false.
     //    process-order (keyCRM + eSputnik) is skipped here; fired in hold_wait instead.
     const orderResult = await createOrder(completeCheckoutData, locale, false, 'pay-now', {
-      skipProcessOrder: true,
       draftInDb: true,
+      paymentGatewayName: 'liqpay',
     });
     if (!orderResult.success || !orderResult.order) {
       return NextResponse.json(

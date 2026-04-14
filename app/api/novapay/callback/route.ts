@@ -188,9 +188,11 @@ export async function POST(request: NextRequest) {
           headers: internalHeaders,
           body: JSON.stringify({
             orderName: order.orderName,
+            shopifyOrderId,
             amount: paymentAmount,
             currency: paymentInfo.currency,
             paymentMethod: 'novapay',
+            shop: SHOPIFY_STORE_DOMAIN,
           }),
         }).catch((err) => console.error('[novapay/callback] confirm-payment failed:', err));
       } catch {}
