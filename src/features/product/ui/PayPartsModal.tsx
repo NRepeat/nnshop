@@ -72,7 +72,7 @@ export function PayPartsModal({
                   key={count}
                   type="button"
                   onClick={() => handleSelect(count)}
-                  className={`w-16 h-16 rounded-lg border-2 text-xl font-bold transition-all ${
+                  className={`w-16 h-16 rounded border-2 text-xl font-bold transition-all ${
                     partsCount === count
                       ? 'bg-primary'
                       : 'border-gray-300 bg-white text-gray-700 hover:text-white hover:border-gray-400'
@@ -85,7 +85,7 @@ export function PayPartsModal({
           </div>
 
           {/* Payment breakdown */}
-          <div className="flex items-center justify-between px-4 py-5 bg-gray-50 rounded-lg">
+          <div className="flex items-center justify-between px-4 py-5 bg-gray-50 rounded">
             <span className="text-gray-600">{t('youPay')}</span>
             <div className="text-right">
               <p className="text-2xl font-bold">

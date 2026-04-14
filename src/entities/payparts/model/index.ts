@@ -17,6 +17,15 @@ export interface CreatePaymentParams {
   products: PayPartsProduct[];
   responseUrl: string;
   redirectUrl: string;
+  advancePaymentDisabled?: boolean;
+}
+
+export interface ConfirmCancelResponse {
+  state: 'SUCCESS' | 'FAIL';
+  storeId: string;
+  orderId: string;
+  message?: string;
+  signature: string;
 }
 
 export interface CreatePaymentResponse {
@@ -31,7 +40,7 @@ export interface CreatePaymentResponse {
 export interface PayPartsCallback {
   storeId: string;
   orderId: string;
-  paymentState: 'CREATED' | 'CANCELED' | 'SUCCESS' | 'FAIL' | 'CLIENT_WAIT' | 'PP_CREATION' | 'LOCKED';
+  paymentState: 'CREATED' | 'CANCELED' | 'SUCCESS' | 'FAIL' | 'CLIENT_WAIT' | 'OTP_WAITING' | 'PP_CREATION' | 'LOCKED' | 'WAIT_LIQPAY';
   message?: string;
   iban?: string;
   signature: string;
@@ -96,7 +105,15 @@ export class PayParts {
   }
 
   /**
-   * Create a payment and get redirect token.
+   * Build signature for confirm/cancel request.
+   */
+  private signConfirmCancel(orderId: string): string {
+    const raw = this.password + this.storeId + orderId + this.password;
+    return sha1Base64(raw);
+  }
+
+  /**
+   * Create a standard payment and get redirect token.
    */
   async createPayment(params: Omit<CreatePaymentParams, 'storeId' | 'signature'>): Promise<CreatePaymentResponse> {
     const fullParams: CreatePaymentParams = {
@@ -124,6 +141,98 @@ export class PayParts {
 
     if (data.state !== 'SUCCESS' || !data.token) {
       throw new Error(`PayParts error: ${data.message || data.state}`);
+    }
+
+    return data;
+  }
+
+  /**
+   * Create a hold payment (two-stage). After LOCKED callback, shop must confirm or cancel.
+   */
+  async createHoldPayment(params: Omit<CreatePaymentParams, 'storeId' | 'signature'>): Promise<CreatePaymentResponse> {
+    const fullParams: CreatePaymentParams = {
+      ...params,
+      storeId: this.storeId,
+    };
+
+    const signature = this.signCreatePayment(fullParams);
+    const body = { ...fullParams, signature };
+
+    console.log(`[PayParts] → /payment/hold orderId=${params.orderId} amount=${params.amount}`);
+
+    const res = await fetch(`${PAYPARTS_API_BASE}/payment/hold`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Accept-Encoding': 'UTF-8',
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data: CreatePaymentResponse = await res.json();
+    console.log(`[PayParts] ← ${data.state}`, data.token ? `token=${data.token}` : data.message);
+
+    if (data.state !== 'SUCCESS' || !data.token) {
+      throw new Error(`PayParts hold error: ${data.message || data.state}`);
+    }
+
+    return data;
+  }
+
+  /**
+   * Confirm a held payment (captures the hold).
+   */
+  async confirmPayment(orderId: string): Promise<ConfirmCancelResponse> {
+    const signature = this.signConfirmCancel(orderId);
+    const body = { storeId: this.storeId, orderId, signature };
+
+    console.log(`[PayParts] → /payment/confirm orderId=${orderId}`);
+
+    const res = await fetch(`${PAYPARTS_API_BASE}/payment/confirm`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Accept-Encoding': 'UTF-8',
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data: ConfirmCancelResponse = await res.json();
+    console.log(`[PayParts] ← confirm ${data.state}`, data.message || '');
+
+    if (data.state !== 'SUCCESS') {
+      throw new Error(`PayParts confirm error: ${data.message || data.state}`);
+    }
+
+    return data;
+  }
+
+  /**
+   * Cancel a held payment (releases the hold).
+   */
+  async cancelPayment(orderId: string): Promise<ConfirmCancelResponse> {
+    const signature = this.signConfirmCancel(orderId);
+    const body = { storeId: this.storeId, orderId, signature };
+
+    console.log(`[PayParts] → /payment/cancel orderId=${orderId}`);
+
+    const res = await fetch(`${PAYPARTS_API_BASE}/payment/cancel`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Accept-Encoding': 'UTF-8',
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data: ConfirmCancelResponse = await res.json();
+    console.log(`[PayParts] ← cancel ${data.state}`, data.message || '');
+
+    if (data.state !== 'SUCCESS') {
+      throw new Error(`PayParts cancel error: ${data.message || data.state}`);
     }
 
     return data;

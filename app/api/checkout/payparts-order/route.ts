@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { locale, currency, amount, partsCount = 4 } = body;
+    const { locale, currency, amount, partsCount = 3 } = body;
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
     // 1. Get complete checkout data
@@ -77,14 +77,22 @@ export async function POST(req: NextRequest) {
       price: Math.round(item.price * 100) / 100,
     })) || [{ name: 'Замовлення', count: 1, price: paypartsAmount }];
 
-    const paymentResult = await payparts.createPayment({
+    // PayParts requires amount === sum(product.price * product.count)
+    const productsTotal = products.reduce(
+      (sum: number, p: { price: number; count: number }) => sum + Math.round(p.price * p.count * 100) / 100,
+      0,
+    );
+    const finalAmount = Math.round(productsTotal * 100) / 100;
+
+    const paymentResult = await payparts.createHoldPayment({
       orderId,
-      amount: Math.round(paypartsAmount * 100) / 100,
-      partsCount,
+      amount: finalAmount,
+      partsCount: Math.min(partsCount, 3),
       merchantType: 'PP',
       products,
       responseUrl: `${baseUrl}/api/payparts/callback`,
       redirectUrl: `${baseUrl}/checkout/success/${orderId}`,
+      advancePaymentDisabled: true,
     });
 
     const paymentUrl = payparts.getPaymentUrl(paymentResult.token!);

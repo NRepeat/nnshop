@@ -2,6 +2,7 @@ import { createPayParts, type PayPartsCallback } from '@entities/payparts/model'
 import resetCartSession from '@features/cart/api/resetCartSession';
 import { cancelShopifyOrder } from '@features/order/api/cancelShopifyOrder';
 import { prisma } from '@shared/lib/prisma';
+import { adminClient } from '@shared/lib/shopify/admin-client';
 import { captureServerEvent, captureServerError } from '@shared/lib/posthog/posthog-server';
 import { PRICE_APP_URL, INTERNAL_API_SECRET, SHOPIFY_STORE_DOMAIN } from '@shared/config/shop';
 import { NextRequest, NextResponse } from 'next/server';

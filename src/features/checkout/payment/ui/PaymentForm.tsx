@@ -292,7 +292,7 @@ export default function IPaymentForm({
         )}
 
         {selectedPaymentProviderValue === 'liqpay-payparts' && (
-          <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded">
             <div className="text-sm">
               <span className="font-medium text-green-800">
                 {partsCount} {t('parts')}
