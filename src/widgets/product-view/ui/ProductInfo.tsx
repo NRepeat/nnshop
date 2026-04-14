@@ -39,6 +39,7 @@ import { VariantInventory } from '@entities/product/api/getInventoryLevels';
 import { Popover, PopoverContent, PopoverTrigger } from '@shared/ui/popover';
 import { ButtonGroup, ButtonGroupSeparator } from '@shared/ui/button-group';
 import { stripInvisible } from '@shared/lib/seo/generateMetadata';
+import { PayPartsModal } from '@features/product/ui/PayPartsModal';
 
 const META_FIELD_ORDER: Record<string, number> = {
   'Матеріал': 1,
@@ -226,6 +227,14 @@ export const ProductInfo = ({
             product={product}
             selectedVariant={selectedVariant}
             sale={sale}
+          />
+          <PayPartsModal
+            price={parseFloat(
+              (selectedVariant?.price || product.priceRange?.maxVariantPrice)?.amount || '0',
+            )}
+            currencyCode={
+              (selectedVariant?.price || product.priceRange?.maxVariantPrice)?.currencyCode || 'UAH'
+            }
           />
           <ViewingNow handle={product.handle} />
         </section>

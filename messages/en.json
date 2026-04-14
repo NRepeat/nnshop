@@ -466,7 +466,27 @@
     "liqpayDescription": "Online card payment via LiqPay",
     "novapay": "NovaPay",
     "novapayDescription": "Online card payment via NovaPay",
-    "currentlyUnavailable": "Currently unavailable"
+    "currentlyUnavailable": "Currently unavailable",
+    "numberOfParts": "Number of payments",
+    "parts": "payments",
+    "partLabel": "payment"
+  },
+  "PayParts": {
+    "title": "PAY IN PARTS",
+    "payInParts": "Pay in parts: {count} payments of {amount} {currency}",
+    "numberOfPayments": "Number of payments (months)",
+    "youPay": "You pay:",
+    "payments": "payments",
+    "perPayment": "{amount} {currency} each",
+    "noAdvancePayment": "No advance payment!",
+    "noAdvancePaymentDesc": "You simply receive the product.",
+    "noPaperwork": "No paperwork or bank visits!",
+    "noPaperworkDesc": "You simply apply on the website and sign the contract online.",
+    "noHiddenFees": "No hidden fees or insurance!",
+    "noHiddenFeesDesc": "You see the monthly installment fee upfront.",
+    "earlyRepayment": "Early repayment without extra charges!",
+    "earlyRepaymentDesc": "The fee is charged only for the current month.",
+    "earlyRepaymentNote": "Early repayment of the installment is available at any time."
   },
   "ReceiptPage": {
     "title": "Order Summary",

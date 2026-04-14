@@ -74,7 +74,7 @@ export async function createOrder(
   locale: string = 'uk',
   sendReceipt: boolean = false,
   paymentMethod?: string,
-  options: { skipProcessOrder?: boolean; draftInDb?: boolean } = {},
+  options: { skipProcessOrder?: boolean; draftInDb?: boolean; paymentGatewayName?: string } = {},
 ): Promise<{
   success: boolean;
   order?: OrderResult;
@@ -426,7 +426,7 @@ export async function createOrder(
         financial_status: 'pending',
         note: order.note || '',
         note_attributes: [],
-        payment_gateway_names: [paymentMethod === 'pay-now' ? 'liqpay' : 'manual'],
+        payment_gateway_names: [options.paymentGatewayName || (paymentMethod === 'pay-now' ? 'liqpay' : 'manual')],
         customer: {
           first_name: completeCheckoutData.contactInfo.name || '',
           last_name: completeCheckoutData.contactInfo.lastName || '',

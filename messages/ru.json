@@ -546,7 +546,27 @@
     "liqpay-paypartsDescription": "Рассрочка от ПриватБанка",
     "novapay": "NovaPay",
     "novapayDescription": "Онлайн оплата картой через NovaPay",
-    "currentlyUnavailable": "Временно недоступно"
+    "currentlyUnavailable": "Временно недоступно",
+    "numberOfParts": "Количество платежей",
+    "parts": "платежа",
+    "partLabel": "платёж"
+  },
+  "PayParts": {
+    "title": "ОПЛАТА ЧАСТЯМИ",
+    "payInParts": "Оплата частями: {count} платежа по {amount} {currency}",
+    "numberOfPayments": "Количество платежей (месяцев)",
+    "youPay": "Вы платите:",
+    "payments": "платежа",
+    "perPayment": "по {amount} {currency}",
+    "noAdvancePayment": "Без первоначального взноса!",
+    "noAdvancePaymentDesc": "Вы просто получаете товар.",
+    "noPaperwork": "Никаких бумаг и походов в банк!",
+    "noPaperworkDesc": "Вы просто оставляете заявку на сайте и подписываете договор онлайн.",
+    "noHiddenFees": "Без дополнительных скрытых платежей и страхования!",
+    "noHiddenFeesDesc": "Вы заранее видите ежемесячную комиссию за рассрочку.",
+    "earlyRepayment": "Досрочное погашение без дополнительных начислений!",
+    "earlyRepaymentDesc": "Комиссия начисляется только за текущий месяц.",
+    "earlyRepaymentNote": "В любой момент доступно досрочное погашение рассрочки."
   },
   "ReceiptPage": {
     "title": "Итог заказа",

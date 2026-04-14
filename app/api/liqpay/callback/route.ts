@@ -353,7 +353,7 @@ export async function POST(request: NextRequest) {
         console.error('[LiqPay callback] Failed to mark order as paid in Shopify:', markError);
       }
 
-      // Confirm payment in keyCRM + send eSputnik CONFIRMED (fire-and-forget)
+      // Confirm payment in KeyCRM + queue eSputnik (backend builds payload)
       try {
         const internalHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
         if (INTERNAL_API_SECRET) internalHeaders['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
@@ -362,9 +362,11 @@ export async function POST(request: NextRequest) {
           headers: internalHeaders,
           body: JSON.stringify({
             orderName: order.orderName,
+            shopifyOrderId,
             amount: paymentData.amount,
             currency: paymentData.currency,
             paymentMethod: 'liqpay',
+            shop: SHOPIFY_STORE_DOMAIN,
           }),
         }).catch((err) => {
           console.error('[LiqPay callback] confirm-payment call failed:', err);

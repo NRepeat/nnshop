@@ -17,6 +17,8 @@ import { paymentMethods, paymentProviders } from '../lib/constants';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import resetCartSession from '@features/cart/api/resetCartSession';
 import { createOrder } from '@features/order/api/create';
+import { PayPartsModal } from '@features/product/ui/PayPartsModal';
+
 interface PaymentFormProps {
   defaultValues?: PaymentInfo | null;
   amount: number;
@@ -55,6 +57,7 @@ export default function IPaymentForm({
   const selectedPaymentMethodValue = form.watch('paymentMethod');
   const selectedPaymentProviderValue = form.watch('paymentProvider');
   const [isLoading, setIsLoading] = useState(false);
+  const [partsCount, setPartsCount] = useState(3);
   const [liqpayParams, setLiqpayParams] = useState<{
     data: string;
     signature: string;
@@ -114,7 +117,7 @@ export default function IPaymentForm({
         const res = await fetch('/api/checkout/payparts-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ locale, amount, currency }),
+          body: JSON.stringify({ locale, amount, currency, partsCount }),
         });
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
@@ -286,6 +289,25 @@ export default function IPaymentForm({
               )
             }
           />
+        )}
+
+        {selectedPaymentProviderValue === 'liqpay-payparts' && (
+          <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="text-sm">
+              <span className="font-medium text-green-800">
+                {partsCount} {t('parts')}
+              </span>
+              <span className="text-green-700 ml-1">
+                — {Math.ceil(amount / partsCount)} {currency}/{t('partLabel')}
+              </span>
+            </div>
+            <PayPartsModal
+              price={amount}
+              currencyCode={currency}
+              initialPartsCount={partsCount}
+              onPartsCountChange={setPartsCount}
+            />
+          </div>
         )}
 
         <div className="space-y-3">
