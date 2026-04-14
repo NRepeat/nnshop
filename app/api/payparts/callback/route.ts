@@ -2,7 +2,6 @@ import { createPayParts, type PayPartsCallback } from '@entities/payparts/model'
 import resetCartSession from '@features/cart/api/resetCartSession';
 import { cancelShopifyOrder } from '@features/order/api/cancelShopifyOrder';
 import { prisma } from '@shared/lib/prisma';
-import { adminClient } from '@shared/lib/shopify/admin-client';
 import { captureServerEvent, captureServerError } from '@shared/lib/posthog/posthog-server';
 import { PRICE_APP_URL, INTERNAL_API_SECRET, SHOPIFY_STORE_DOMAIN } from '@shared/config/shop';
 import { NextRequest, NextResponse } from 'next/server';
@@ -20,7 +19,11 @@ const ORDER_MARK_AS_PAID_MUTATION = `
  * POST /api/payparts/callback
  *
  * Receives PrivatBank "Оплата частинами" callbacks.
- * Handles SUCCESS (payment complete) and FAIL/CANCELED statuses.
+ * KeyCRM order is already created at checkout time.
+ * This handler:
+ *  - LOCKED: flips draft, resets cart (hold confirmed by client)
+ *  - SUCCESS: marks paid in Shopify, confirms in KeyCRM, sends eSputnik
+ *  - FAIL/CANCELED: cancels Shopify order
  */
 export async function POST(request: NextRequest) {
   try {
@@ -55,9 +58,8 @@ export async function POST(request: NextRequest) {
 
     const paymentInfo = order.user?.paymentInformation;
 
-    // ── SUCCESS: payment complete ──────────────────────────────────────
-    if (callback.paymentState === 'SUCCESS') {
-      // Flip draft → false
+    // ── LOCKED: hold confirmed by client, awaiting shop confirmation ──
+    if (callback.paymentState === 'LOCKED') {
       if (order.draft) {
         await prisma.order.update({
           where: { id: order.id },
@@ -65,7 +67,27 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      // Update payment description
+      if (paymentInfo) {
+        await prisma.paymentInformation.update({
+          where: { id: paymentInfo.id },
+          data: { description: `PayParts LOCKED: orderId=${callback.orderId}` },
+        });
+      }
+
+      try { await resetCartSession(order.id); } catch { /* non-blocking */ }
+
+      return NextResponse.json({ message: 'Payment locked, awaiting confirmation' });
+    }
+
+    // ── SUCCESS: payment complete (direct charge or after hold confirm) ──
+    if (callback.paymentState === 'SUCCESS') {
+      if (order.draft) {
+        await prisma.order.update({
+          where: { id: order.id },
+          data: { draft: false },
+        });
+      }
+
       if (paymentInfo) {
         await prisma.paymentInformation.update({
           where: { id: paymentInfo.id },
@@ -91,7 +113,7 @@ export async function POST(request: NextRequest) {
         console.error('[payparts/callback] orderMarkAsPaid failed:', err);
       }
 
-      // Fire process-order to keyCRM + confirm payment (fire-and-forget)
+      // Confirm payment in KeyCRM + queue eSputnik (backend builds payload)
       try {
         const internalHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
         if (INTERNAL_API_SECRET) internalHeaders['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
@@ -100,9 +122,11 @@ export async function POST(request: NextRequest) {
           headers: internalHeaders,
           body: JSON.stringify({
             orderName: order.orderName,
+            shopifyOrderId,
             amount: paymentInfo?.amount,
             currency: paymentInfo?.currency ?? 'UAH',
             paymentMethod: 'payparts',
+            shop: SHOPIFY_STORE_DOMAIN,
           }),
         }).catch((err) => console.error('[payparts/callback] confirm-payment failed:', err));
       } catch {}
@@ -134,7 +158,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: `Payment ${callback.paymentState}` });
     }
 
-    // Other statuses (CREATED, CLIENT_WAIT, PP_CREATION, LOCKED)
+    // Other statuses (CREATED, CLIENT_WAIT, OTP_WAITING, PP_CREATION, WAIT_LIQPAY)
     console.log(`[payparts/callback] intermediate state=${callback.paymentState}`);
     return NextResponse.json({ message: 'Callback received' });
 
