@@ -1,6 +1,6 @@
 const GENDER_SUFFIXES: Record<string, string[]> = {
-  man: ['cholovichi', 'cholovicha', 'cholovichyj', 'choloviche'],
-  woman: ['zhinochi', 'zhinocha', 'zhinochyj', 'zhinoche'],
+  man: ['cholovichi', 'cholovicha', 'cholovichyj', 'choloviche', 'muzhskie', 'muzhskaya', 'muzhskoj'],
+  woman: ['zhinochi', 'zhinocha', 'zhinochyj', 'zhinoche', 'zhenskie', 'zhenskaya', 'zhenskij'],
 };
 
 const ALL_GENDER_SUFFIXES = Object.values(GENDER_SUFFIXES).flat();

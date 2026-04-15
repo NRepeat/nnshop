@@ -5,8 +5,9 @@ export function stripInvisible(str: string): string {
   return str
     .replace(
       /[\u200b\u200c\u200d\ufeff\u00ad\u034f\u115f\u1160\u17b4\u17b5\u180b-\u180e\u2060-\u206f\ufe00-\ufe0f]/g,
-      '',
+      ' ',
     )
+    .replace(/\s{2,}/g, ' ')
     .trim();
 }
 
@@ -152,6 +153,11 @@ export function generateProductMetadata(
     locale,
     `/product/${slug}`,
   );
+
+  // Product pages must use og:type "product" (not "website")
+  if (metadata.openGraph) {
+    (metadata.openGraph as any).type = 'product';
+  }
 
   metadata.alternates = {
     ...metadata.alternates,

@@ -120,7 +120,8 @@ export async function ProductView({
     );
   }
 
-  const displayCategory = categoryName || selectedCollection?.title;
+  // Prefer collection title (translated by Shopify API) over productType (always Ukrainian)
+  const displayCategory = selectedCollection?.title || categoryName;
   const collectionHandle = cleanSlug(selectedCollection?.handle);
 
   const genderLabel = isUnisex

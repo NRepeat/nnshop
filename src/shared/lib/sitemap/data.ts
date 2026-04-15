@@ -75,8 +75,8 @@ export interface SitemapPost {
 // ---------------------------------------------------------------------------
 
 const GENDER_SLUG_PATTERNS: Record<string, string[]> = {
-  man: ['cholov'],
-  woman: ['zhinoch'],
+  man: ['cholov', 'muzhsk'],
+  woman: ['zhinoch', 'zhensk'],
 };
 
 function getGenderFromHandle(handle: string): string {
