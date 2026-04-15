@@ -103,9 +103,13 @@ export async function ProductView({
 
   if (!selectedCollection && categoryName) {
     // Try to find a collection that matches the product category (productType)
+    // Normalize Ukrainian і/ї → и for cross-locale matching (productType is always Ukrainian)
+    const normalize = (s: string) =>
+      s.toLowerCase().replace(/і/g, 'и').replace(/ї/g, 'и');
+    const normalizedCategory = normalize(categoryName);
     selectedCollection = allCollections.find(
       (c) =>
-        c.title.toLowerCase() === categoryName.toLowerCase() ||
+        normalize(c.title) === normalizedCategory ||
         c.handle.toLowerCase().includes(categoryName.toLowerCase()),
     );
   }
