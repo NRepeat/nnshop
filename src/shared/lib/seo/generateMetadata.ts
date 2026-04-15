@@ -154,11 +154,6 @@ export function generateProductMetadata(
     `/product/${slug}`,
   );
 
-  // Product pages must use og:type "product" (not "website")
-  if (metadata.openGraph) {
-    (metadata.openGraph as any).type = 'product';
-  }
-
   metadata.alternates = {
     ...metadata.alternates,
     languages: {
