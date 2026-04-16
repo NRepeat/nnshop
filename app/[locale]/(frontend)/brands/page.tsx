@@ -89,7 +89,7 @@ const BrandsList = async ({ locale }: { locale: string }) => {
                   href={`/brand/${vendorToHandle(brand)}`}
                   className="text-sm hover:text-primary hover:underline transition-colors py-1"
                 >
-                  {brand}s
+                  {brand}
                 </LocaleLink>
               ))}
             </div>
