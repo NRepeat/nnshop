@@ -1,4 +1,5 @@
 import { fetchRedirects } from '@/shared/sanity/lib/fetchRedirects';
+import { gscFixRedirects } from '@/shared/sanity/lib/gscRedirects';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
@@ -38,7 +39,7 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     const redirectsData = await fetchRedirects();
-    return redirectsData
+    const sanityRedirects = redirectsData
       .filter(
         (redirect) =>
           redirect.source &&
@@ -81,6 +82,8 @@ const nextConfig: NextConfig = {
           permanent: redirect.permanent!,
         };
       });
+
+    return [...sanityRedirects, ...gscFixRedirects];
   },
   async rewrites() {
     return [
