@@ -11,6 +11,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { getCurrencySymbol } from '@shared/lib/utils/getCurrencySymbol';
 import { Button } from '@shared/ui/button';
+import Image from 'next/image';
 
 interface PayPartsModalProps {
   price: number;
@@ -48,8 +49,15 @@ export function PayPartsModal({
       <DialogTrigger asChild>
         <button
           type="button"
-          className="text-start cursor-pointer text-sm hover:text-green-800 underline underline-offset-2 transition-colors"
+          className="text-start cursor-pointer text-sm hover:text-green-800 underline underline-offset-2 transition-colors inline-flex items-center gap-1.5"
         >
+          <Image
+            width={20}
+            height={20}
+            src="/images/payparts-logo.png"
+            alt=""
+            className="w-5 h-5 object-contain"
+          />
           {triggerLabel}
         </button>
       </DialogTrigger>

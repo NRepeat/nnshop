@@ -229,9 +229,13 @@ export const ProductInfo = ({
             sale={sale}
           />
           <PayPartsModal
-            price={parseFloat(
-              (selectedVariant?.price || product.priceRange?.maxVariantPrice)?.amount || '0',
-            )}
+            price={(() => {
+              const base = parseFloat(
+                (selectedVariant?.price || product.priceRange?.maxVariantPrice)?.amount || '0',
+              );
+              const discount = parseFloat(sale) || 0;
+              return discount > 0 ? base * (1 - discount / 100) : base;
+            })()}
             currencyCode={
               (selectedVariant?.price || product.priceRange?.maxVariantPrice)?.currencyCode || 'UAH'
             }
