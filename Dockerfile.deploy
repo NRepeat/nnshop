@@ -9,11 +9,13 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY --chown=node:node public ./public
-COPY --chown=node:node .next/standalone ./
-COPY --chown=node:node .next/static ./.next/static
-COPY --chown=node:node keys ./keys
-RUN rm -f .env .env.local .env.production .env.server && mkdir -p .next/cache && chown -R node:node .next
+COPY public ./public
+COPY .next/standalone ./
+COPY .next/static ./.next/static
+COPY keys ./keys
+RUN rm -f .env .env.local .env.production .env.server && \
+    mkdir -p .next/cache && \
+    chown -R node:node .next/cache
 
 USER node
 EXPOSE 3000

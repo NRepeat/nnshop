@@ -11,6 +11,17 @@ export function hasGenderedSuffix(slug: string): boolean {
   return parts.some((part) => ALL_GENDER_SUFFIXES.includes(part));
 }
 
+const UKRAINIAN_GENDER_SUFFIXES = [
+  'cholovichi', 'cholovicha', 'cholovichyj', 'choloviche',
+  'zhinochi', 'zhinocha', 'zhinochyj', 'zhinoche',
+];
+
+/** Проверяет, есть ли в слаге именно украинский гендерный маркер */
+export function hasUkrainianGenderedSuffix(slug: string): boolean {
+  const parts = slug.split('-');
+  return parts.some((part) => UKRAINIAN_GENDER_SUFFIXES.includes(part));
+}
+
 /** Определяет гендер на основе частей слага */
 export function detectGenderFromHandle(slug: string): 'man' | 'woman' | null {
   const parts = slug.split('-');

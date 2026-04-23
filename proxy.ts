@@ -3,7 +3,7 @@ import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { cleanSlug } from '@shared/lib/utils/cleanSlug';
 
-import { hasGenderedSuffix } from '@entities/collection/lib/resolve-handle';
+import { hasUkrainianGenderedSuffix } from '@entities/collection/lib/resolve-handle';
 import { storefrontClient } from '@shared/lib/shopify/client';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import {
@@ -196,7 +196,7 @@ export async function proxy(request: NextRequest) {
     allowedGenders.includes(segments[1])
   ) {
     const slug = segments[2];
-    if (hasGenderedSuffix(slug)) {
+    if (hasUkrainianGenderedSuffix(slug)) {
       url.pathname = `/uk/${segments[1]}/${slug}`;
       segments = url.pathname.split('/').filter(Boolean);
       changed = true;

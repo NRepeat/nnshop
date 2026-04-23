@@ -92,9 +92,9 @@ export function SplitImage(props: SplitGridProps) {
       : null;
 
   const ImageComponent = image ? (
-    <div className="group relative w-full overflow-hidden rounded bg-gray-100 aspect-[4/5]">
+    <div className="group relative w-full overflow-hidden rounded bg-gray-100 aspect-square">
       <Image
-        className="transition-transform object-cover duration-700 ease-in-out group-hover:scale-105"
+        className="transition-transform object-cover w-full duration-700 ease-in-out group-hover:scale-105"
         src={urlFor(image).auto('format').quality(80).url()}
         fill
         alt={(props as any).imageAlt || localizedTitle || ''}
