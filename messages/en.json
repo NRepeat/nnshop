@@ -630,9 +630,12 @@
   "SizeChartDialog": {
     "shoes": {
       "title": "Shoe size chart",
+      "titleWomen": "Women's shoe size chart",
+      "titleMen": "Men's shoe size chart",
       "description": "To measure your shoe size:<br/>Place your foot on a sheet of paper.<br/>Draw the outline of the foot on it.<br/>Mark two lines that coincide with the toe and the heel.<br/>Measure the distance between the heel and the longest toe.<br/>Use the measurements you have obtained and compare with the size table to determine your shoe size.",
-      "eu": "EU",
-      "cm": "cm"
+      "eu": "Size",
+      "insoleLength": "Insole length, cm",
+      "footLength": "Foot length, cm"
     },
     "clothing": {
       "title": "Clothing size chart",

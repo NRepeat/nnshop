@@ -12,28 +12,43 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import type { Product } from '@shared/lib/shopify/types/storefront.types';
 
-/**
- * Size chart categories based on Shopify Standard Product Taxonomy
- * @see https://shopify.github.io/product-taxonomy/releases/unstable/
- *
- * - shoes:    aa-8 (Apparel & Accessories > Shoes)
- * - clothing: aa-1 (Apparel & Accessories > Clothing)
- */
 type SizeChartCategory = 'shoes' | 'clothing';
+type Gender = 'man' | 'woman' | 'unisex';
 
 const SHOE_KEYWORDS = [
   // Ukrainian
   'взуття', 'кросівк', 'кед', 'черевик', 'ботильйон', 'туфл', 'мокасин',
   'сандал', 'босоніж', 'сабо', 'мюл', 'балетк', 'шльопанц', "в'єтнамк",
-  'лофер', 'чобот', 'угг', 'сліпон',
+  'лофер', 'чобот', 'угг', 'сліпон', 'оксфорд',
   // Russian
   'обувь', 'кроссовк', 'кед', 'ботинк', 'ботильон', 'туфл', 'мокасин',
   'сандал', 'босонож', 'сабо', 'мюл', 'балетк', 'шлепанц', 'вьетнамк',
-  'лофер', 'сапог', 'угг', 'слипон',
+  'лофер', 'сапог', 'угг', 'слипон', 'оксфорд',
   // English
   'shoe', 'sneaker', 'boot', 'sandal', 'loafer', 'mule', 'slipper',
-  'pump', 'flat', 'moccasin', 'clog',
+  'pump', 'flat', 'moccasin', 'clog', 'oxford',
 ];
+
+const GENDER_HANDLE_MAP: Record<string, Gender> = {
+  choloviche: 'man',
+  zhinoche: 'woman',
+  uniseks: 'unisex',
+};
+
+function resolveGender(product: any): Gender {
+  const refs = product?.genderMetafield?.references?.edges ?? [];
+  if (refs.length === 0) return 'woman';
+  const handles: string[] = refs
+    .map((e: any) => e.node?.handle)
+    .filter(Boolean);
+  const hasMen = handles.some((h) => GENDER_HANDLE_MAP[h] === 'man');
+  const hasWomen = handles.some((h) => GENDER_HANDLE_MAP[h] === 'woman');
+  const hasUnisex = handles.some((h) => GENDER_HANDLE_MAP[h] === 'unisex');
+  if (hasUnisex || (hasMen && hasWomen)) return 'unisex';
+  if (hasMen) return 'man';
+  if (hasWomen) return 'woman';
+  return 'woman';
+}
 
 function getSizeChartCategory(productType?: string): SizeChartCategory {
   if (!productType) return 'clothing';
@@ -42,45 +57,77 @@ function getSizeChartCategory(productType?: string): SizeChartCategory {
   return isShoes ? 'shoes' : 'clothing';
 }
 
-const ShoesSizeChart = ({ t }: { t: (key: string) => string }) => (
-  <div className="flex flex-col gap-6">
-    <div className="flex">
-      <DialogHeader>
-        <DialogTitle className="text-center text-3xl font-light font-serif">
-          {t('shoes.title')}
-        </DialogTitle>
-      </DialogHeader>
-    </div>
+const WOMEN_SHOE_SIZES: [string, string, string][] = [
+  ['35', '23', '22,5'],
+  ['35,5', '23,3', '22,7'],
+  ['36', '23,5', '23'],
+  ['36,5', '23,8', '23,5'],
+  ['37', '24,5', '24'],
+  ['37,5', '24,8', '24,3'],
+  ['38', '25', '24,5'],
+  ['38,5', '25,3', '24,8'],
+  ['39', '25,5', '25'],
+  ['39,5', '25,8', '25,3'],
+  ['40', '26', '25,5'],
+  ['40,5', '26,3', '25,8'],
+  ['41', '26,5', '26'],
+];
 
-    <div className="flex-col flex">
-      <div className='flex'>
-      {/* @ts-ignore */}
-        <div dangerouslySetInnerHTML={{ __html: t.raw('shoes.description') }} />
-        <div className="hidden md:flex  flex-col items-center justify-center border border-black p-8 aspect-square md:aspect-auto h-full max-h-[250px]">
-          <Image
-            src="https://www.agl.com/static/version1767785856/frontend/GDL/agl-noshop/en_US/images/size_guide.gif"
-            width={280}
-            height={180}
-            alt="Size guide animation"
-            className="object-contain"
-            unoptimized
-          />
-        </div>
+const MEN_SHOE_SIZES: [string, string, string][] = [
+  ['39', '25,5', '25'],
+  ['39,5', '25,8', '25,3'],
+  ['40', '26', '25,5'],
+  ['40,5', '26,5', '25,8'],
+  ['41', '27', '26'],
+  ['41,5', '27,5', '26,5'],
+  ['42', '28', '27'],
+  ['42,5', '28,3', '27,5'],
+  ['43', '29', '28'],
+  ['43,5', '29,3', '28,5'],
+  ['44', '29,5', '28,8'],
+  ['44,5', '29,8', '29'],
+  ['45', '30', '29,5'],
+  ['45,5', '30,5', '29,7'],
+  ['46', '31', '30,2'],
+  ['46,5', '31,5', '30,5'],
+  ['47', '32', '31'],
+];
+
+function getShoeSizes(gender: Gender) {
+  if (gender === 'man') return { data: MEN_SHOE_SIZES, titleKey: 'shoes.titleMen' as const };
+  if (gender === 'unisex') return { data: [...WOMEN_SHOE_SIZES, ...MEN_SHOE_SIZES.filter(r => parseFloat(r[0].replace(',', '.')) > 41)], titleKey: 'shoes.title' as const };
+  return { data: WOMEN_SHOE_SIZES, titleKey: 'shoes.titleWomen' as const };
+}
+
+const ShoesSizeChart = ({ t, gender }: { t: (key: string) => string; gender: Gender }) => {
+  const { data, titleKey } = getShoeSizes(gender);
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex">
+        <DialogHeader>
+          <DialogTitle className="text-center text-3xl font-light font-serif">
+            {t(titleKey)}
+          </DialogTitle>
+        </DialogHeader>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-1 gap-8 items-start mt-2">
-        {/* <div className=" hidden md:flex flex-col items-center justify-center border border-black p-8 aspect-square md:aspect-auto h-full max-h-[250px]">
-          <Image
-            src="https://www.agl.com/static/version1767785856/frontend/GDL/agl-noshop/en_US/images/size_guide.gif"
-            width={280}
-            height={180}
-            alt="Size guide animation"
-            className="object-contain"
-            unoptimized
-          />
-        </div> */}
+      <div className="flex-col flex">
+        <div className='flex'>
+        {/* @ts-ignore */}
+          <div dangerouslySetInnerHTML={{ __html: t.raw('shoes.description') }} />
+          <div className="hidden md:flex flex-col items-center justify-center border border-black p-8 aspect-square md:aspect-auto h-full max-h-[250px]">
+            <Image
+              src="https://www.agl.com/static/version1767785856/frontend/GDL/agl-noshop/en_US/images/size_guide.gif"
+              width={280}
+              height={180}
+              alt="Size guide animation"
+              className="object-contain"
+              unoptimized
+            />
+          </div>
+        </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto mt-2">
           <table className="w-full border-collapse border border-gray-300 text-center text-[13px]">
             <thead>
               <tr className="bg-white">
@@ -88,26 +135,15 @@ const ShoesSizeChart = ({ t }: { t: (key: string) => string }) => (
                   {t('shoes.eu')}
                 </th>
                 <th className="border border-gray-300 p-2 font-medium">
-                  {t('shoes.cm')}
+                  {t('shoes.insoleLength')}
+                </th>
+                <th className="border border-gray-300 p-2 font-medium">
+                  {t('shoes.footLength')}
                 </th>
               </tr>
             </thead>
             <tbody className="text-gray-600">
-              {[
-                ['35', '21.5'],
-                ['35,5', '22'],
-                ['36', '22'],
-                ['36,5', '22.5'],
-                ['37', '23'],
-                ['37,5', '23.5'],
-                ['38', '24'],
-                ['38,5', '24'],
-                ['39', '24.5'],
-                ['39,5', '25'],
-                ['40', '25.5'],
-                ['40,5', '26'],
-                ['41', '26'],
-              ].map((row, idx) => (
+              {data.map((row, idx) => (
                 <tr key={idx}>
                   {row.map((cell, cIdx) => (
                     <td key={cIdx} className="border border-gray-300 p-2">
@@ -121,8 +157,8 @@ const ShoesSizeChart = ({ t }: { t: (key: string) => string }) => (
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const ClothingSizeChart = ({ t }: { t: (key: string) => string }) => (
   <div className="flex flex-col gap-6">
@@ -170,23 +206,15 @@ const ClothingSizeChart = ({ t }: { t: (key: string) => string }) => (
   </div>
 );
 
-const SIZE_CHART_COMPONENTS: Record<
-  SizeChartCategory,
-  React.FC<{ t: (key: string) => string }>
-> = {
-  shoes: ShoesSizeChart,
-  clothing: ClothingSizeChart,
-};
-
 export const SizeChartDialog = ({
-  productType,
+  product,
 }: {
-  productType?: Product['productType'];
+  product: Product;
 }) => {
   const t = useTranslations('SizeChartDialog');
   const tProduct = useTranslations('ProductPage');
-  const category = getSizeChartCategory(productType);
-  const ChartComponent = SIZE_CHART_COMPONENTS[category];
+  const category = getSizeChartCategory(product.productType);
+  const gender = resolveGender(product);
 
   return (
     <Dialog>
@@ -200,7 +228,11 @@ export const SizeChartDialog = ({
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto" aria-describedby={undefined}>
-        <ChartComponent t={t} />
+        {category === 'shoes' ? (
+          <ShoesSizeChart t={t} gender={gender} />
+        ) : (
+          <ClothingSizeChart t={t} />
+        )}
       </DialogContent>
     </Dialog>
   );

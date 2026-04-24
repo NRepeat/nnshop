@@ -248,7 +248,7 @@ export const ProductInfo = ({
         <section className="w-full space-y-3">
           <div className="flex justify-between items-center">
             <span className="font-serif text-base">{t('size')}</span>
-            <SizeChartDialog productType={product.productType} />
+            <SizeChartDialog product={product} />
           </div>
           <div className="flex flex-wrap gap-2">
             {sortedSizeOptions.map((s) => {
