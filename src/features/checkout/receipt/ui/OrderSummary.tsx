@@ -15,6 +15,7 @@ import {
   AccordionTrigger,
 } from '@shared/ui/accordion';
 import { DiscountCodeInput } from '@features/cart/ui/DiscountCodeInput';
+import { OrderTotal } from './OrderTotal';
 
 interface OrderSummaryProps {
   locale: string;
@@ -85,23 +86,32 @@ function OrderItemCard({
             {item.sizeLabel}: {item.size} &times; {item.quantity}
           </p>
         )}
-
       </div>
 
       {/* Total Price */}
       <div className="flex-shrink-0 text-right">
         {item.sale > 0 ? (
           <div className="flex flex-col items-end gap-0.5">
-            <span className="text-xs line-through text-gray-400">{formatPrice(item.price)} {currencySymbol}</span>
-            <span className="text-sm font-medium text-red-600">{formatPrice(item.discountedPrice)} {currencySymbol}</span>
+            <span className="text-xs line-through text-gray-400">
+              {formatPrice(item.price)} {currencySymbol}
+            </span>
+            <span className="text-sm font-medium text-red-600">
+              {formatPrice(item.discountedPrice)} {currencySymbol}
+            </span>
           </div>
         ) : item.compareAtPrice ? (
           <div className="flex flex-col items-end gap-0.5">
-            <span className="text-xs line-through text-gray-400">{formatPrice(item.compareAtPrice)} {currencySymbol}</span>
-            <span className="text-sm font-medium text-red-600">{formatPrice(item.price)} {currencySymbol}</span>
+            <span className="text-xs line-through text-gray-400">
+              {formatPrice(item.compareAtPrice)} {currencySymbol}
+            </span>
+            <span className="text-sm font-medium text-red-600">
+              {formatPrice(item.price)} {currencySymbol}
+            </span>
           </div>
         ) : (
-          <span className="text-sm font-medium">{formatPrice(item.discountedPrice)} {currencySymbol}</span>
+          <span className="text-sm font-medium">
+            {formatPrice(item.discountedPrice)} {currencySymbol}
+          </span>
         )}
       </div>
     </div>
@@ -138,10 +148,12 @@ export async function OrderSummary({
     const product = line.merchandise.product;
     const sale =
       Number(
-        product.metafields?.find((m) => m?.key === DISCOUNT_METAFIELD_KEY)?.value || '0',
+        product.metafields?.find((m) => m?.key === DISCOUNT_METAFIELD_KEY)
+          ?.value || '0',
       ) || 0;
     const price = Number(line.cost.amountPerQuantity.amount);
-    const compareAtAmount = (line.cost as any).compareAtAmountPerQuantity?.amount;
+    const compareAtAmount = (line.cost as any).compareAtAmountPerQuantity
+      ?.amount;
     const compareAtPrice = compareAtAmount ? Number(compareAtAmount) : null;
     const discountedPrice = price - (price * sale) / 100;
     const totalPrice =
@@ -165,7 +177,8 @@ export async function OrderSummary({
       handle: product.handle,
       image: line.merchandise.image?.url || null,
       price,
-      compareAtPrice: compareAtPrice && compareAtPrice > price ? compareAtPrice : null,
+      compareAtPrice:
+        compareAtPrice && compareAtPrice > price ? compareAtPrice : null,
       discountedPrice,
       quantity: line.quantity,
       totalPrice,
@@ -179,7 +192,10 @@ export async function OrderSummary({
 
   // Calculate totals with discounts
   const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
-  const shopifySubtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const shopifySubtotal = items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
 
   // Get discount codes from cart
   const discountCodes = cart.discountCodes || [];
@@ -188,11 +204,16 @@ export async function OrderSummary({
   // product-level automatic discounts (automatic line discounts only appear at line level)
   const cartDiscountTotal = [
     ...(cart.discountAllocations || []),
-    ...cart.lines.edges.flatMap((e) => (e.node.discountAllocations as any[]) || []),
+    ...cart.lines.edges.flatMap(
+      (e) => (e.node.discountAllocations as any[]) || [],
+    ),
   ].reduce((sum, d) => sum + Number(d.discountedAmount.amount), 0);
 
   // discountRate > 0 covers both code-based and automatic discounts
-  const discountRate = cartDiscountTotal > 0 && shopifySubtotal > 0 ? cartDiscountTotal / shopifySubtotal : 0;
+  const discountRate =
+    cartDiscountTotal > 0 && shopifySubtotal > 0
+      ? cartDiscountTotal / shopifySubtotal
+      : 0;
   const discountAmount = subtotal * discountRate;
   const totalAmount = Math.max(0, subtotal - discountAmount);
   const grandTotal = totalAmount;
@@ -213,33 +234,28 @@ export async function OrderSummary({
       {/* Totals */}
       <div className="border-t border-gray-200 mt-2 pt-3 px-4 pb-4 space-y-2">
         {cartDiscountTotal > 0 && (
-          <>
-            <div className="flex justify-between text-sm ">
-              <div className="flex flex-col gap-1">
-                <span>{t('discount')}</span>
-                {discountCodes
-                  .filter((d) => d.applicable)
-                  .map((discount) => (
-                    <span key={discount.code} className="text-xs font-medium">
-                      {discount.code}
-                    </span>
-                  ))}
-              </div>
-              <span className='text-green-600'>
-                -{formatPrice(discountAmount)}{" "}
-                {currencySymbol}
-              </span>
+          <div className="flex justify-between text-sm ">
+            <div className="flex flex-col gap-1">
+              <span>{t('discount')}</span>
+              {discountCodes
+                .filter((d) => d.applicable)
+                .map((discount) => (
+                  <span key={discount.code} className="text-xs font-medium">
+                    {discount.code}
+                  </span>
+                ))}
             </div>
-          </>
+            <span className="text-green-600">
+              -{formatPrice(discountAmount)} {currencySymbol}
+            </span>
+          </div>
         )}
 
-        <div className="flex justify-between text-base font-medium pt-2 border-t border-gray-100">
-          <span className="text-gray-900">{t('total')}</span>
-          <span className="text-gray-900">
-            {formatPrice(grandTotal)}{" "}
-            {currencySymbol}
-          </span>
-        </div>
+        <OrderTotal
+          title={t('total')}
+          grandTotal={grandTotal}
+          currencySymbol={currencySymbol}
+        />
       </div>
     </>
   );
@@ -261,10 +277,11 @@ export async function OrderSummary({
                 <p className="text-sm font-medium text-gray-900">
                   {t('products_title')}
                 </p>
-                <p className="text-xs text-gray-500">
-                  {formatPrice(grandTotal)}{" "}
-                  {currencySymbol}
-                </p>
+                <OrderTotal
+                  grandTotal={grandTotal}
+                  currencySymbol={currencySymbol}
+                  isMobile
+                />
               </div>
             </div>
           </AccordionTrigger>

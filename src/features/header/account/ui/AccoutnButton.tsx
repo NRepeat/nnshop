@@ -74,6 +74,11 @@ export const AccountButton = async ({
               {t('favorites')}
             </Link>
           </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link href="/bonuses" className="w-full">
+              {t('bonuses')}
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <SignOutButton />
         </DropdownMenuContent>

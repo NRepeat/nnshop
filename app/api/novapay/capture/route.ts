@@ -32,12 +32,19 @@ export async function POST(request: NextRequest) {
   const { orderName } = body;
   const rawId: string | undefined = body.shopifyOrderId;
   const shopifyOrderId = rawId
-    ? rawId.startsWith('gid://') ? rawId : `gid://shopify/Order/${rawId}`
+    ? rawId.startsWith('gid://')
+      ? rawId
+      : `gid://shopify/Order/${rawId}`
     : undefined;
-  console.log(`[novapay/capture] request: shopifyOrderId=${shopifyOrderId} orderName=${orderName}`);
+  console.log(
+    `[novapay/capture] request: shopifyOrderId=${shopifyOrderId} orderName=${orderName}`,
+  );
 
   if (!orderName && !shopifyOrderId) {
-    return NextResponse.json({ error: 'Missing orderName or shopifyOrderId' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Missing orderName or shopifyOrderId' },
+      { status: 400 },
+    );
   }
 
   const order = await prisma.order.findFirst({
@@ -62,31 +69,47 @@ export async function POST(request: NextRequest) {
 
   // Idempotency guards
   if (desc.includes('paid') || desc.includes('captured')) {
-    return NextResponse.json({ message: 'Already captured', orderName: order.orderName });
+    return NextResponse.json({
+      message: 'Already captured',
+      orderName: order.orderName,
+    });
   }
   if (desc.includes('capturing')) {
-    return NextResponse.json({ message: 'Capture in progress', orderName: order.orderName });
+    return NextResponse.json({
+      message: 'Capture in progress',
+      orderName: order.orderName,
+    });
   }
 
   // Extract session ID from description: "NovaPay holded: session=xxx" or "NovaPay session: xxx"
   const sessionMatch = desc.match(/session[=:]?\s*([a-f0-9-]+)/i);
   if (!sessionMatch) {
     console.error(`[novapay/capture] cannot extract session ID from: ${desc}`);
-    return NextResponse.json({ error: 'Session ID not found' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Session ID not found' },
+      { status: 400 },
+    );
   }
   const sessionId = sessionMatch[1];
 
   // If not yet in holded state, mark as capture_pending
   if (!desc.includes('holded')) {
-    console.log(`[novapay/capture] not yet holded for ${order.orderName} — marking capture_pending`);
+    console.log(
+      `[novapay/capture] not yet holded for ${order.orderName} — marking capture_pending`,
+    );
     if (paymentInfo) {
       await prisma.paymentInformation.update({
         where: { id: paymentInfo.id },
-        data: { description: `capture_pending: ${new Date().toISOString()} session=${sessionId}` },
+        data: {
+          description: `capture_pending: ${new Date().toISOString()} session=${sessionId}`,
+        },
       });
     }
     return NextResponse.json(
-      { status: 'pending', message: 'Payment not yet holded, marked capture_pending' },
+      {
+        status: 'pending',
+        message: 'Payment not yet holded, marked capture_pending',
+      },
       { status: 202 },
     );
   }
@@ -95,33 +118,50 @@ export async function POST(request: NextRequest) {
   if (paymentInfo) {
     await prisma.paymentInformation.update({
       where: { id: paymentInfo.id },
-      data: { description: `NovaPay capturing: ${new Date().toISOString()} session=${sessionId}` },
+      data: {
+        description: `NovaPay capturing: ${new Date().toISOString()} session=${sessionId}`,
+      },
     });
   }
 
   // Call NovaPay complete-hold
   try {
     const novapay = createNovaPay();
-    const amount = paymentInfo?.amount ? Math.round(paymentInfo.amount * 100) / 100 : undefined;
+    const amount = paymentInfo?.amount
+      ? Math.round(paymentInfo.amount * 100) / 100
+      : undefined;
     await novapay.completeHold(sessionId, amount);
-    console.log(`[novapay/capture] complete-hold success for session=${sessionId}`);
+    console.log(
+      `[novapay/capture] complete-hold success for session=${sessionId}`,
+    );
   } catch (err) {
     console.error('[novapay/capture] complete-hold failed:', err);
     if (paymentInfo) {
-      await prisma.paymentInformation.update({
-        where: { id: paymentInfo.id },
-        data: { description: `NovaPay capture_failed: ${err} session=${sessionId}` },
-      }).catch(() => {});
+      await prisma.paymentInformation
+        .update({
+          where: { id: paymentInfo.id },
+          data: {
+            description: `NovaPay capture_failed: ${err} session=${sessionId}`,
+          },
+        })
+        .catch(() => {});
     }
-    return NextResponse.json({ error: 'NovaPay complete-hold failed' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'NovaPay complete-hold failed' },
+      { status: 500 },
+    );
   }
 
   // Update DB
   if (paymentInfo) {
-    await prisma.paymentInformation.update({
-      where: { id: paymentInfo.id },
-      data: { description: `NovaPay captured: session=${sessionId}` },
-    }).catch((err) => console.error('[novapay/capture] DB update failed:', err));
+    await prisma.paymentInformation
+      .update({
+        where: { id: paymentInfo.id },
+        data: { description: `NovaPay captured: session=${sessionId}` },
+      })
+      .catch((err) =>
+        console.error('[novapay/capture] DB update failed:', err),
+      );
   }
 
   // Mark as paid in Shopify
@@ -137,7 +177,9 @@ export async function POST(request: NextRequest) {
         console.error(`[novapay/capture] orderMarkAsPaid errors: ${msg}`);
       }
     } else {
-      console.log(`[novapay/capture] Shopify order marked as paid: ${order.shopifyOrderId}`);
+      console.log(
+        `[novapay/capture] Shopify order marked as paid: ${order.shopifyOrderId}`,
+      );
     }
   } catch (err) {
     console.error('[novapay/capture] orderMarkAsPaid failed:', err);
@@ -145,8 +187,11 @@ export async function POST(request: NextRequest) {
 
   // Confirm in keyCRM + eSputnik (fire-and-forget)
   try {
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (INTERNAL_API_SECRET) headers['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (INTERNAL_API_SECRET)
+      headers['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
     fetch(`${PRICE_APP_URL}/api/internal/confirm-payment`, {
       method: 'POST',
       headers,
@@ -156,7 +201,9 @@ export async function POST(request: NextRequest) {
         currency: paymentInfo?.currency ?? 'UAH',
         paymentMethod: 'novapay',
       }),
-    }).catch((err) => console.error('[novapay/capture] confirm-payment failed:', err));
+    }).catch((err) =>
+      console.error('[novapay/capture] confirm-payment failed:', err),
+    );
   } catch {}
 
   return NextResponse.json({ message: 'Captured', orderName: order.orderName });

@@ -26,17 +26,22 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { locale, currency, amount, payparts } = body;
+    const { locale, currency, amount, payparts, bonusSpend } = body;
 
     // 1. Get complete checkout data (same as payment page guard)
     const completeCheckoutData = await getCompleteCheckoutData(session);
     if (!completeCheckoutData) {
-      return NextResponse.json({ error: 'Checkout data missing' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Checkout data missing' },
+        { status: 400 },
+      );
     }
 
     // 2. Fetch cart for rro_info price data (before order creation, cart still exists)
     const cartData = await getCart({ userId: session.user.id, locale });
-    const cartLineItems = (cartData && 'cart' in cartData ? cartData.cart : null)?.lines?.edges?.map((e: any) => {
+    const cartLineItems = (
+      cartData && 'cart' in cartData ? cartData.cart : null
+    )?.lines?.edges?.map((e: any) => {
       const variantGid: string = e.node.merchandise.id;
       const numericId = parseInt(variantGid.split('/').pop() || '0', 10);
       return {
@@ -50,10 +55,17 @@ export async function POST(req: NextRequest) {
     // 3. Create the Shopify order with sendReceipt: false (no Shopify email).
     //    Saved as draft: true in DB — hold_wait callback confirms payment and flips to false.
     //    process-order (keyCRM + eSputnik) is skipped here; fired in hold_wait instead.
-    const orderResult = await createOrder(completeCheckoutData, locale, false, 'pay-now', {
-      draftInDb: true,
-      paymentGatewayName: 'liqpay',
-    });
+    const orderResult = await createOrder(
+      completeCheckoutData,
+      locale,
+      false,
+      'pay-now',
+      {
+        draftInDb: true,
+        paymentGatewayName: 'liqpay',
+        bonusSpend: Number(bonusSpend || 0),
+      },
+    );
     if (!orderResult.success || !orderResult.order) {
       return NextResponse.json(
         { error: orderResult.errors?.[0] || 'Failed to create order' },
@@ -64,9 +76,12 @@ export async function POST(req: NextRequest) {
     console.log('[liqpay-order] order created (draft):', createdOrder.id);
 
     // Use Shopify's confirmed order total so LiqPay amount matches the order exactly.
-    const shopifyTotal = parseFloat(createdOrder.totalPriceSet.shopMoney.amount);
+    const shopifyTotal = parseFloat(
+      createdOrder.totalPriceSet.shopMoney.amount,
+    );
     const liqpayAmount = shopifyTotal > 0 ? shopifyTotal : amount;
-    const liqpayCurrency = createdOrder.totalPriceSet.shopMoney.currencyCode || currency;
+    const liqpayCurrency =
+      createdOrder.totalPriceSet.shopMoney.currencyCode || currency;
 
     // 4. Save payment info
     await savePaymentInfo(
@@ -87,17 +102,25 @@ export async function POST(req: NextRequest) {
       amount: liqpayAmount,
       currency: liqpayCurrency,
       checkoutData: completeCheckoutData,
-      lineItems: cartLineItems ?? createdOrder.lineItems?.edges?.map((e: any) => ({
-        title: e.node.title,
-        quantity: e.node.quantity,
-      })),
+      lineItems:
+        cartLineItems ??
+        createdOrder.lineItems?.edges?.map((e: any) => ({
+          title: e.node.title,
+          quantity: e.node.quantity,
+        })),
       payparts,
     });
 
     console.log('[liqpay-order] params ready for order:', createdOrder.id);
-    return NextResponse.json({ data: params.data, signature: params.signature });
+    return NextResponse.json({
+      data: params.data,
+      signature: params.signature,
+    });
   } catch (error) {
     console.error('[liqpay-order] error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
   }
 }

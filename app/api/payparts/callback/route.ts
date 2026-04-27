@@ -1,10 +1,20 @@
-import { createPayParts, type PayPartsCallback } from '@entities/payparts/model';
+import {
+  createPayParts,
+  type PayPartsCallback,
+} from '@entities/payparts/model';
 import resetCartSession from '@features/cart/api/resetCartSession';
 import { cancelShopifyOrder } from '@features/order/api/cancelShopifyOrder';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
-import { captureServerEvent, captureServerError } from '@shared/lib/posthog/posthog-server';
-import { PRICE_APP_URL, INTERNAL_API_SECRET, SHOPIFY_STORE_DOMAIN } from '@shared/config/shop';
+import {
+  captureServerEvent,
+  captureServerError,
+} from '@shared/lib/posthog/posthog-server';
+import {
+  PRICE_APP_URL,
+  INTERNAL_API_SECRET,
+  SHOPIFY_STORE_DOMAIN,
+} from '@shared/config/shop';
 import { NextRequest, NextResponse } from 'next/server';
 
 const ORDER_MARK_AS_PAID_MUTATION = `
@@ -31,7 +41,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const callback: PayPartsCallback = body;
 
-    console.log(`[payparts/callback] state=${callback.paymentState} orderId=${callback.orderId}`);
+    console.log(
+      `[payparts/callback] state=${callback.paymentState} orderId=${callback.orderId}`,
+    );
 
     // Verify signature
     const payparts = createPayParts();
@@ -53,7 +65,9 @@ export async function POST(request: NextRequest) {
     });
 
     if (!order) {
-      console.warn(`[payparts/callback] order not found for ${callback.orderId}`);
+      console.warn(
+        `[payparts/callback] order not found for ${callback.orderId}`,
+      );
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
@@ -75,9 +89,15 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      try { await resetCartSession(order.id); } catch { /* non-blocking */ }
+      try {
+        await resetCartSession(order.id);
+      } catch {
+        /* non-blocking */
+      }
 
-      return NextResponse.json({ message: 'Payment locked, awaiting confirmation' });
+      return NextResponse.json({
+        message: 'Payment locked, awaiting confirmation',
+      });
     }
 
     // ── SUCCESS: payment complete (direct charge or after hold confirm) ──
@@ -96,7 +116,11 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      try { await resetCartSession(order.id); } catch { /* non-blocking */ }
+      try {
+        await resetCartSession(order.id);
+      } catch {
+        /* non-blocking */
+      }
 
       // Mark as paid in Shopify
       try {
@@ -106,9 +130,15 @@ export async function POST(request: NextRequest) {
         });
         const userErrors = result?.orderMarkAsPaid?.userErrors || [];
         if (userErrors.length > 0) {
-          console.error('[payparts/callback] orderMarkAsPaid errors:', userErrors);
+          console.error(
+            '[payparts/callback] orderMarkAsPaid errors:',
+            userErrors,
+          );
         } else {
-          console.log('[payparts/callback] order marked as paid:', shopifyOrderId);
+          console.log(
+            '[payparts/callback] order marked as paid:',
+            shopifyOrderId,
+          );
         }
       } catch (err) {
         console.error('[payparts/callback] orderMarkAsPaid failed:', err);
@@ -116,8 +146,11 @@ export async function POST(request: NextRequest) {
 
       // Confirm payment in KeyCRM + queue eSputnik (backend builds payload)
       try {
-        const internalHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
-        if (INTERNAL_API_SECRET) internalHeaders['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
+        const internalHeaders: Record<string, string> = {
+          'Content-Type': 'application/json',
+        };
+        if (INTERNAL_API_SECRET)
+          internalHeaders['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
         fetch(`${PRICE_APP_URL}/api/internal/confirm-payment`, {
           method: 'POST',
           headers: internalHeaders,
@@ -129,7 +162,9 @@ export async function POST(request: NextRequest) {
             paymentMethod: 'payparts',
             shop: SHOPIFY_STORE_DOMAIN,
           }),
-        }).catch((err) => console.error('[payparts/callback] confirm-payment failed:', err));
+        }).catch((err) =>
+          console.error('[payparts/callback] confirm-payment failed:', err),
+        );
       } catch {}
 
       await captureServerEvent(order.userId, 'payment_completed', {
@@ -144,11 +179,16 @@ export async function POST(request: NextRequest) {
     }
 
     // ── FAIL / CANCELED ────────────────────────────────────────────────
-    if (callback.paymentState === 'FAIL' || callback.paymentState === 'CANCELED') {
+    if (
+      callback.paymentState === 'FAIL' ||
+      callback.paymentState === 'CANCELED'
+    ) {
       if (paymentInfo) {
         await prisma.paymentInformation.update({
           where: { id: paymentInfo.id },
-          data: { description: `PayParts ${callback.paymentState}: ${callback.message || ''}` },
+          data: {
+            description: `PayParts ${callback.paymentState}: ${callback.message || ''}`,
+          },
         });
       }
 
@@ -160,9 +200,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Other statuses (CREATED, CLIENT_WAIT, OTP_WAITING, PP_CREATION, WAIT_LIQPAY)
-    console.log(`[payparts/callback] intermediate state=${callback.paymentState}`);
+    console.log(
+      `[payparts/callback] intermediate state=${callback.paymentState}`,
+    );
     return NextResponse.json({ message: 'Callback received' });
-
   } catch (error) {
     await captureServerError(error, {
       service: 'api',

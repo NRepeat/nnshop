@@ -8,12 +8,22 @@
 // it does NOT affect Server Action CSRF protection.
 'use server';
 import { getCart } from '@entities/cart/api/get';
-import { DISCOUNT_METAFIELD_KEY, DEFAULT_CURRENCY_CODE, DEFAULT_COUNTRY_CODE, PRICE_APP_URL, SHOPIFY_STORE_DOMAIN, INTERNAL_API_SECRET } from '@shared/config/shop';
+import {
+  DISCOUNT_METAFIELD_KEY,
+  DEFAULT_CURRENCY_CODE,
+  DEFAULT_COUNTRY_CODE,
+  PRICE_APP_URL,
+  SHOPIFY_STORE_DOMAIN,
+  INTERNAL_API_SECRET,
+} from '@shared/config/shop';
 import { auth } from '@features/auth/lib/auth';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { headers } from 'next/headers';
-import { captureServerEvent, captureServerError } from '@shared/lib/posthog/posthog-server';
+import {
+  captureServerEvent,
+  captureServerError,
+} from '@shared/lib/posthog/posthog-server';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import { GetCartQuery } from '@shared/lib/shopify/types/storefront.generated';
 import { formatPhoneForShopify } from '@features/checkout/schema/contactInfoSchema';
@@ -74,7 +84,12 @@ export async function createOrder(
   locale: string = 'uk',
   sendReceipt: boolean = false,
   paymentMethod?: string,
-  options: { skipProcessOrder?: boolean; draftInDb?: boolean; paymentGatewayName?: string } = {},
+  options: {
+    skipProcessOrder?: boolean;
+    draftInDb?: boolean;
+    paymentGatewayName?: string;
+    bonusSpend?: number;
+  } = {},
 ): Promise<{
   success: boolean;
   order?: OrderResult;
@@ -83,10 +98,13 @@ export async function createOrder(
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
-      await captureServerError(new Error('Session not found during order creation'), {
-        service: 'checkout',
-        action: 'create_order_no_session',
-      });
+      await captureServerError(
+        new Error('Session not found during order creation'),
+        {
+          service: 'checkout',
+          action: 'create_order_no_session',
+        },
+      );
       return {
         success: false,
         errors: ['Session not found'],
@@ -98,11 +116,14 @@ export async function createOrder(
       locale,
     })) as GetCartQuery | null;
     if (!result || !result.cart) {
-      await captureServerError(new Error('Cart not found during order creation'), {
-        service: 'checkout',
-        action: 'create_order_no_cart',
-        userId: session.user.id,
-      });
+      await captureServerError(
+        new Error('Cart not found during order creation'),
+        {
+          service: 'checkout',
+          action: 'create_order_no_cart',
+          userId: session.user.id,
+        },
+      );
       return {
         success: false,
         errors: ['Cart  NOT FOUND'],
@@ -121,7 +142,8 @@ export async function createOrder(
       };
     }
 
-    const currencyCode = cart.cost.totalAmount.currencyCode || DEFAULT_CURRENCY_CODE;
+    const currencyCode =
+      cart.cost.totalAmount.currencyCode || DEFAULT_CURRENCY_CODE;
 
     // Calculate znizka-discounted subtotal (same logic as Payment.tsx)
     let localTotal = 0;
@@ -148,15 +170,27 @@ export async function createOrder(
     // product-level automatic discounts (automatic line discounts only appear at line level)
     const cartDiscountTotal = [
       ...((cart as any).discountAllocations || []),
-      ...cart.lines.edges.flatMap((e: any) => (e.node.discountAllocations as any[]) || []),
-    ].reduce((sum: number, d: any) => sum + Number(d.discountedAmount.amount), 0);
+      ...cart.lines.edges.flatMap(
+        (e: any) => (e.node.discountAllocations as any[]) || [],
+      ),
+    ].reduce(
+      (sum: number, d: any) => sum + Number(d.discountedAmount.amount),
+      0,
+    );
     // Shopify calculates the discount on original prices; derive rate and apply to sale subtotal
-    const discountRate = cartDiscountTotal > 0 && shopifySubtotal > 0
-      ? cartDiscountTotal / shopifySubtotal
-      : 0;
+    const discountRate =
+      cartDiscountTotal > 0 && shopifySubtotal > 0
+        ? cartDiscountTotal / shopifySubtotal
+        : 0;
     const goodsTotal = localTotal * (1 - discountRate);
     // Discount amount = difference between znizka subtotal and final amount after cart discount
-    const orderDiscountAmount = localTotal - goodsTotal;
+    let orderDiscountAmount = localTotal - goodsTotal;
+
+    // Apply bonus points spend as an additional discount
+    const bonusSpend = options.bonusSpend || 0;
+    if (bonusSpend > 0) {
+      orderDiscountAmount += bonusSpend;
+    }
 
     const lineItems = cart.lines.edges
       .map((edge: any) => {
@@ -173,8 +207,9 @@ export async function createOrder(
         // Get discount percentage from metafield
         const sale =
           Number(
-            product.metafields?.find((m: any) => m?.key === DISCOUNT_METAFIELD_KEY)?.value ||
-              '0',
+            product.metafields?.find(
+              (m: any) => m?.key === DISCOUNT_METAFIELD_KEY,
+            )?.value || '0',
           ) || 0;
 
         const item: any = {
@@ -202,14 +237,20 @@ export async function createOrder(
       financialStatus: 'PENDING',
     };
 
-    // Apply cart/automatic discount at order level via discountCode (orderCreate supports one discount)
+    // Apply cart/automatic discount + bonusSpend at order level via discountCode
     if (orderDiscountAmount > 0) {
-      const discountCode = applicableDiscounts.length > 0
-        ? applicableDiscounts[0].code
-        : 'AUTOMATIC';
+      const discountTitle =
+        bonusSpend > 0
+          ? applicableDiscounts.length > 0
+            ? `${applicableDiscounts[0].code} + BONUS`
+            : 'BONUS'
+          : applicableDiscounts.length > 0
+            ? applicableDiscounts[0].code
+            : 'AUTOMATIC';
+
       order.discountCode = {
         itemFixedDiscountCode: {
-          code: discountCode,
+          code: discountTitle,
           amountSet: {
             shopMoney: {
               amount: orderDiscountAmount.toFixed(2),
@@ -251,7 +292,9 @@ export async function createOrder(
         ? getPickupPoint(completeCheckoutData.deliveryInfo.selfPickupPoint)
         : null;
       shippingAddress = {
-        address1: point ? `Самовивіз: ${point.name}, ${point.address}` : 'Самовивіз',
+        address1: point
+          ? `Самовивіз: ${point.name}, ${point.address}`
+          : 'Самовивіз',
         city: point?.city || 'Запоріжжя',
         country: DEFAULT_COUNTRY_CODE,
         firstName: completeCheckoutData.contactInfo.name || '',
@@ -301,8 +344,9 @@ export async function createOrder(
       noteLines.push(
         `Промокод: ${applicableDiscounts.map((d) => d.code).join(', ')}`,
       );
-    } else if (cartDiscountTotal > 0) {
-      // noteLines.push(`Автоматична знижка: -${Math.round(cartDiscountTotal)} ${currencyCode}`);
+    }
+    if (bonusSpend > 0) {
+      noteLines.push(`Списано бонусів: -${bonusSpend} ${currencyCode}`);
     }
 
     if (deliveryMethod === 'selfPickup') {
@@ -357,12 +401,15 @@ export async function createOrder(
     const userErrors = orderResponse.orderCreate.userErrors;
 
     if (userErrors.length > 0) {
-      await captureServerError(new Error('Shopify Order Creation Failed (Admin API)'), {
-        service: 'checkout',
-        action: 'create_order_shopify_error',
-        userId: session.user.id,
-        extra: { userErrors },
-      });
+      await captureServerError(
+        new Error('Shopify Order Creation Failed (Admin API)'),
+        {
+          service: 'checkout',
+          action: 'create_order_shopify_error',
+          userId: session.user.id,
+          extra: { userErrors },
+        },
+      );
       return {
         success: false,
         errors: userErrors.map((error) => error.message),
@@ -370,11 +417,14 @@ export async function createOrder(
     }
 
     if (!createdOrder) {
-      await captureServerError(new Error('Shopify Order Creation Failed - No Order (Admin API)'), {
-        service: 'checkout',
-        action: 'create_order_no_order',
-        userId: session.user.id,
-      });
+      await captureServerError(
+        new Error('Shopify Order Creation Failed - No Order (Admin API)'),
+        {
+          service: 'checkout',
+          action: 'create_order_no_order',
+          userId: session.user.id,
+        },
+      );
       return {
         success: false,
         errors: ['Failed to create order - no order returned'],
@@ -388,15 +438,64 @@ export async function createOrder(
         where: { userId: session.user.id, draft: true },
       });
 
-      await prisma.order.create({
+      const dbOrder = await prisma.order.create({
         data: {
           shopifyOrderId: createdOrder.id,
           orderName: createdOrder.name,
           userId: session.user.id,
           draft: options.draftInDb ?? false,
-          usedDiscountCodes: applicableDiscounts.map((d) => d.code.toUpperCase()),
+          usedDiscountCodes: [
+            ...applicableDiscounts.map((d) => d.code.toUpperCase()),
+            ...(bonusSpend > 0 ? ['BONUS'] : []),
+          ],
         },
       });
+
+      // Record bonus spend in DB
+      if (bonusSpend > 0) {
+        const { triggerBonus } = await import('@shared/lib/bonus');
+        triggerBonus(dbOrder.id, 'SPEND', bonusSpend).catch((err) =>
+          console.error('[createOrder] triggerBonus SPEND failed:', err),
+        );
+      }
+
+      // Ensure loyalty card exists
+      try {
+        const existingCard = await prisma.loyaltyCards.findFirst({
+          where: { userId: session.user.id },
+        });
+
+        if (!existingCard) {
+          const phone = completeCheckoutData.contactInfo.phone;
+          const name =
+            `${completeCheckoutData.contactInfo.name} ${completeCheckoutData.contactInfo.lastName}`.trim();
+
+          // Double check if phone is already taken by another card
+          const cardWithPhone = await prisma.loyaltyCards.findUnique({
+            where: { phone },
+          });
+
+          if (!cardWithPhone) {
+            await prisma.loyaltyCards.create({
+              data: {
+                id: crypto.randomUUID(),
+                userId: session.user.id,
+                phone,
+                name,
+                bonusBalance: 0,
+              },
+            });
+            console.log(
+              `[createOrder] Loyalty card created for user ${session.user.id}`,
+            );
+          }
+        }
+      } catch (cardError) {
+        console.error(
+          '[createOrder] Failed to ensure loyalty card:',
+          cardError,
+        );
+      }
     } catch (dbError) {
       await captureServerError(dbError, {
         service: 'checkout',
@@ -415,7 +514,10 @@ export async function createOrder(
       return { success: true, order: createdOrder };
     }
     try {
-      const numericOrderId = createdOrder.id.replace('gid://shopify/Order/', '');
+      const numericOrderId = createdOrder.id.replace(
+        'gid://shopify/Order/',
+        '',
+      );
       const webhookPayload = {
         id: Number(numericOrderId),
         name: createdOrder.name,
@@ -426,7 +528,10 @@ export async function createOrder(
         financial_status: 'pending',
         note: order.note || '',
         note_attributes: [],
-        payment_gateway_names: [options.paymentGatewayName || (paymentMethod === 'pay-now' ? 'liqpay' : 'manual')],
+        payment_gateway_names: [
+          options.paymentGatewayName ||
+            (paymentMethod === 'pay-now' ? 'liqpay' : 'manual'),
+        ],
         customer: {
           first_name: completeCheckoutData.contactInfo.name || '',
           last_name: completeCheckoutData.contactInfo.lastName || '',
@@ -453,37 +558,58 @@ export async function createOrder(
             const product = variant.product;
             return {
               title: product.title || '',
-              variant_title: variant.title !== 'Default Title' ? variant.title : '',
+              variant_title:
+                variant.title !== 'Default Title' ? variant.title : '',
               quantity: line.quantity,
               price: line.cost.amountPerQuantity.amount,
-              product_id: Number(product.id?.replace('gid://shopify/Product/', '') || 0),
-              variant_id: Number(variant.id?.replace('gid://shopify/ProductVariant/', '') || 0),
+              product_id: Number(
+                product.id?.replace('gid://shopify/Product/', '') || 0,
+              ),
+              variant_id: Number(
+                variant.id?.replace('gid://shopify/ProductVariant/', '') || 0,
+              ),
               sku: '',
             };
           }),
         shipping_lines: [],
         // Pre-calculated discount — itali-shop-app uses this instead of parsing note + Shopify API
-        applied_discount: orderDiscountAmount > 0 ? {
-          type: applicableDiscounts.length > 0 ? 'discount_code' : 'automatic',
-          title: applicableDiscounts.length > 0
-            ? applicableDiscounts.map((d) => d.code).join(', ')
-            : 'Автоматична знижка',
-          amount: orderDiscountAmount.toFixed(2),
-        } : null,
+        applied_discount:
+          orderDiscountAmount > 0
+            ? {
+                type:
+                  applicableDiscounts.length > 0
+                    ? 'discount_code'
+                    : 'automatic',
+                title:
+                  applicableDiscounts.length > 0
+                    ? applicableDiscounts.map((d) => d.code).join(', ')
+                    : 'Автоматична знижка',
+                amount: orderDiscountAmount.toFixed(2),
+              }
+            : null,
       };
 
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (INTERNAL_API_SECRET) headers['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (INTERNAL_API_SECRET)
+        headers['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
 
       fetch(`${PRICE_APP_URL}/api/internal/process-order`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ payload: webhookPayload, shop: SHOPIFY_STORE_DOMAIN }),
+        body: JSON.stringify({
+          payload: webhookPayload,
+          shop: SHOPIFY_STORE_DOMAIN,
+        }),
       }).catch((err) => {
         console.error('[createOrder] internal process-order call failed:', err);
       });
     } catch (internalErr) {
-      console.error('[createOrder] failed to build internal process-order payload:', internalErr);
+      console.error(
+        '[createOrder] failed to build internal process-order payload:',
+        internalErr,
+      );
     }
 
     await captureServerEvent(session.user.id, 'order_placed', {

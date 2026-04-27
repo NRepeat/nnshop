@@ -5,8 +5,15 @@ import { cancelShopifyOrder } from '@features/order/api/cancelShopifyOrder';
 import { PaymentInfo } from '@features/checkout/payment/schema/paymentSchema';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
-import { captureServerEvent, captureServerError } from '@shared/lib/posthog/posthog-server';
-import { PRICE_APP_URL, INTERNAL_API_SECRET, SHOPIFY_STORE_DOMAIN } from '@shared/config/shop';
+import {
+  captureServerEvent,
+  captureServerError,
+} from '@shared/lib/posthog/posthog-server';
+import {
+  PRICE_APP_URL,
+  INTERNAL_API_SECRET,
+  SHOPIFY_STORE_DOMAIN,
+} from '@shared/config/shop';
 import { NextRequest, NextResponse } from 'next/server';
 
 const ORDER_MARK_AS_PAID_MUTATION = `
@@ -84,7 +91,9 @@ export async function POST(request: NextRequest) {
           ? rawOrderId
           : `gid://shopify/Order/${rawOrderId}`;
 
-        const order = await prisma.order.findUnique({ where: { shopifyOrderId } });
+        const order = await prisma.order.findUnique({
+          where: { shopifyOrderId },
+        });
         if (order) {
           const paymentInfo: PaymentInfo = {
             amount: paymentData.amount,
@@ -110,22 +119,34 @@ export async function POST(request: NextRequest) {
 
           // Fire process-order to keyCRM + eSputnik (first time order enters CRM)
           try {
-            const shopifyData = await adminClient.client.request<any, { id: string }>({
+            const shopifyData = await adminClient.client.request<
+              any,
+              { id: string }
+            >({
               query: GET_ORDER_FOR_PROCESS_ORDER,
               variables: { id: shopifyOrderId },
             });
             const shopifyOrder = shopifyData?.order;
             if (shopifyOrder) {
-              const numericOrderId = shopifyOrderId.replace('gid://shopify/Order/', '');
-              const totalDiscount = Number(shopifyOrder.totalDiscountsSet?.shopMoney?.amount ?? 0);
-              const currency = shopifyOrder.totalPriceSet?.shopMoney?.currencyCode ?? paymentData.currency;
+              const numericOrderId = shopifyOrderId.replace(
+                'gid://shopify/Order/',
+                '',
+              );
+              const totalDiscount = Number(
+                shopifyOrder.totalDiscountsSet?.shopMoney?.amount ?? 0,
+              );
+              const currency =
+                shopifyOrder.totalPriceSet?.shopMoney?.currencyCode ??
+                paymentData.currency;
 
               let customerEmail = '';
               let customerPhone = '';
               let shippingAddr: Record<string, string | null> | null = null;
               try {
                 const [contactInfo, deliveryInfo] = await Promise.all([
-                  prisma.contactInformation.findUnique({ where: { userId: order.userId } }),
+                  prisma.contactInformation.findUnique({
+                    where: { userId: order.userId },
+                  }),
                   prisma.deliveryInformation.findUnique({
                     where: { userId: order.userId },
                     include: { novaPoshtaDepartment: true },
@@ -134,10 +155,14 @@ export async function POST(request: NextRequest) {
                 if (contactInfo) {
                   customerEmail = contactInfo.email;
                   customerPhone = contactInfo.phone;
-                  const address = deliveryInfo?.address ||
-                    deliveryInfo?.novaPoshtaDepartment?.shortName || '';
-                  const city = deliveryInfo?.city ||
-                    deliveryInfo?.novaPoshtaDepartment?.city || '';
+                  const address =
+                    deliveryInfo?.address ||
+                    deliveryInfo?.novaPoshtaDepartment?.shortName ||
+                    '';
+                  const city =
+                    deliveryInfo?.city ||
+                    deliveryInfo?.novaPoshtaDepartment?.city ||
+                    '';
                   shippingAddr = {
                     first_name: contactInfo.name,
                     last_name: contactInfo.lastName,
@@ -179,14 +204,23 @@ export async function POST(request: NextRequest) {
                     return {
                       title: node.title,
                       variant_title:
-                        variant?.title && variant.title !== 'Default Title' ? variant.title : '',
+                        variant?.title && variant.title !== 'Default Title'
+                          ? variant.title
+                          : '',
                       quantity: node.quantity,
-                      price: node.originalUnitPriceSet?.shopMoney?.amount || '0',
+                      price:
+                        node.originalUnitPriceSet?.shopMoney?.amount || '0',
                       product_id: Number(
-                        variant?.product?.id?.replace('gid://shopify/Product/', '') || 0,
+                        variant?.product?.id?.replace(
+                          'gid://shopify/Product/',
+                          '',
+                        ) || 0,
                       ),
                       variant_id: Number(
-                        variant?.id?.replace('gid://shopify/ProductVariant/', '') || 0,
+                        variant?.id?.replace(
+                          'gid://shopify/ProductVariant/',
+                          '',
+                        ) || 0,
                       ),
                       sku: '',
                     };
@@ -194,7 +228,11 @@ export async function POST(request: NextRequest) {
                 shipping_lines: [],
                 applied_discount:
                   totalDiscount > 0
-                    ? { type: 'total', title: 'Знижка', amount: totalDiscount.toFixed(2) }
+                    ? {
+                        type: 'total',
+                        title: 'Знижка',
+                        amount: totalDiscount.toFixed(2),
+                      }
                     : null,
               };
 
@@ -202,18 +240,28 @@ export async function POST(request: NextRequest) {
                 'Content-Type': 'application/json',
               };
               if (INTERNAL_API_SECRET)
-                internalHeaders['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
+                internalHeaders['Authorization'] =
+                  `Bearer ${INTERNAL_API_SECRET}`;
 
               fetch(`${PRICE_APP_URL}/api/internal/process-order`, {
                 method: 'POST',
                 headers: internalHeaders,
-                body: JSON.stringify({ payload: webhookPayload, shop: SHOPIFY_STORE_DOMAIN }),
+                body: JSON.stringify({
+                  payload: webhookPayload,
+                  shop: SHOPIFY_STORE_DOMAIN,
+                }),
               }).catch((err) => {
-                console.error('[LiqPay callback] process-order call failed:', err);
+                console.error(
+                  '[LiqPay callback] process-order call failed:',
+                  err,
+                );
               });
             }
           } catch (fetchErr) {
-            console.error('[LiqPay callback] failed to fetch order for process-order:', fetchErr);
+            console.error(
+              '[LiqPay callback] failed to fetch order for process-order:',
+              fetchErr,
+            );
           }
         }
       }
@@ -249,8 +297,15 @@ export async function POST(request: NextRequest) {
             orderId: order.id,
           };
           await savePaymentInfo(paymentInfo, shopifyOrderId);
-          await prisma.order.update({ where: { id: order.id }, data: { draft: false } });
-          try { await resetCartSession(order.id); } catch { /* non-blocking */ }
+          await prisma.order.update({
+            where: { id: order.id },
+            data: { draft: false },
+          });
+          try {
+            await resetCartSession(order.id);
+          } catch {
+            /* non-blocking */
+          }
         }
 
         // If CRM confirmed the order while payment was still in wait_secure,
@@ -258,18 +313,28 @@ export async function POST(request: NextRequest) {
         if (order) {
           const desc = order.user?.paymentInformation?.description ?? '';
           if (desc.startsWith('capture_pending')) {
-            console.log(`[callback hold_wait] capture_pending detected for ${shopifyOrderId} — triggering auto-capture`);
+            console.log(
+              `[callback hold_wait] capture_pending detected for ${shopifyOrderId} — triggering auto-capture`,
+            );
             const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? '';
             const secret = process.env.INTERNAL_API_SECRET;
-            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            const headers: Record<string, string> = {
+              'Content-Type': 'application/json',
+            };
             if (secret) headers['Authorization'] = `Bearer ${secret}`;
             fetch(`${siteUrl}/api/liqpay/capture`, {
               method: 'POST',
               headers,
               body: JSON.stringify({ shopifyOrderId }),
             })
-              .then((r) => console.log(`[callback hold_wait] auto-capture response: ${r.status}`))
-              .catch((err) => console.error('[callback hold_wait] auto-capture failed:', err));
+              .then((r) =>
+                console.log(
+                  `[callback hold_wait] auto-capture response: ${r.status}`,
+                ),
+              )
+              .catch((err) =>
+                console.error('[callback hold_wait] auto-capture failed:', err),
+              );
           }
         }
       }
@@ -279,11 +344,14 @@ export async function POST(request: NextRequest) {
     if (paymentData.status === 'success' || paymentData.status === 'sandbox') {
       const rawOrderId = paymentData.order_id;
       if (!rawOrderId) {
-        await captureServerError(new Error('LiqPay callback missing order_id'), {
-          service: 'api',
-          action: 'liqpay_callback_no_order_id',
-          extra: { paymentData },
-        });
+        await captureServerError(
+          new Error('LiqPay callback missing order_id'),
+          {
+            service: 'api',
+            action: 'liqpay_callback_no_order_id',
+            extra: { paymentData },
+          },
+        );
         return NextResponse.json(
           { error: 'Invalid order id' },
           { status: 400 },
@@ -300,11 +368,14 @@ export async function POST(request: NextRequest) {
         where: { shopifyOrderId },
       });
       if (!order) {
-        await captureServerError(new Error('LiqPay callback order not found in DB'), {
-          service: 'api',
-          action: 'liqpay_callback_order_not_found',
-          extra: { shopifyOrderId },
-        });
+        await captureServerError(
+          new Error('LiqPay callback order not found in DB'),
+          {
+            service: 'api',
+            action: 'liqpay_callback_order_not_found',
+            extra: { shopifyOrderId },
+          },
+        );
         return NextResponse.json({ error: 'Order not found' }, { status: 404 });
       }
 
@@ -320,7 +391,10 @@ export async function POST(request: NextRequest) {
 
       // Flip draft → false in case hold_wait was skipped (sandbox / direct charge)
       if (order.draft) {
-        await prisma.order.update({ where: { id: order.id }, data: { draft: false } });
+        await prisma.order.update({
+          where: { id: order.id },
+          data: { draft: false },
+        });
       }
 
       try {
@@ -345,18 +419,30 @@ export async function POST(request: NextRequest) {
         });
         const userErrors = result?.orderMarkAsPaid?.userErrors || [];
         if (userErrors.length > 0) {
-          console.error('[LiqPay callback] orderMarkAsPaid errors:', userErrors);
+          console.error(
+            '[LiqPay callback] orderMarkAsPaid errors:',
+            userErrors,
+          );
         } else {
-          console.log('[LiqPay callback] order marked as paid in Shopify:', shopifyOrderId);
+          console.log(
+            '[LiqPay callback] order marked as paid in Shopify:',
+            shopifyOrderId,
+          );
         }
       } catch (markError) {
-        console.error('[LiqPay callback] Failed to mark order as paid in Shopify:', markError);
+        console.error(
+          '[LiqPay callback] Failed to mark order as paid in Shopify:',
+          markError,
+        );
       }
 
       // Confirm payment in KeyCRM + queue eSputnik (backend builds payload)
       try {
-        const internalHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
-        if (INTERNAL_API_SECRET) internalHeaders['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
+        const internalHeaders: Record<string, string> = {
+          'Content-Type': 'application/json',
+        };
+        if (INTERNAL_API_SECRET)
+          internalHeaders['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
         fetch(`${PRICE_APP_URL}/api/internal/confirm-payment`, {
           method: 'POST',
           headers: internalHeaders,
@@ -404,7 +490,9 @@ export async function POST(request: NextRequest) {
         const shopifyOrderId = rawOrderId.includes('gid://')
           ? rawOrderId
           : `gid://shopify/Order/${rawOrderId}`;
-        const order = await prisma.order.findUnique({ where: { shopifyOrderId } });
+        const order = await prisma.order.findUnique({
+          where: { shopifyOrderId },
+        });
         if (order?.draft) {
           await cancelShopifyOrder(order.id, shopifyOrderId);
         }

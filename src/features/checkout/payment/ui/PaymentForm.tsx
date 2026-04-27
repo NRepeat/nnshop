@@ -16,8 +16,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { paymentMethods, paymentProviders } from '../lib/constants';
 import { CheckoutData } from '@features/checkout/schema/checkoutDataSchema';
 import resetCartSession from '@features/cart/api/resetCartSession';
+import { useBonusStore } from '@shared/store/use-bonus-store';
 import { createOrder } from '@features/order/api/create';
 import { PayPartsModal } from '@features/product/ui/PayPartsModal';
+import { Coins } from 'lucide-react';
+import { Checkbox } from '@shared/ui/checkbox';
+import { Input } from '@shared/ui/input';
+import { Label } from '@shared/ui/label';
+import clsx from 'clsx';
 
 interface PaymentFormProps {
   defaultValues?: PaymentInfo | null;
@@ -27,6 +33,8 @@ interface PaymentFormProps {
   liqpayPublicKey?: string;
   liqpayPrivateKey?: string;
   completeCheckoutData: Omit<CheckoutData, 'paymentInfo'> | null;
+  bonusBalance?: number;
+  eligibleAmount?: number;
 }
 
 export default function IPaymentForm({
@@ -35,9 +43,29 @@ export default function IPaymentForm({
   currency = DEFAULT_CURRENCY_CODE,
   locale,
   completeCheckoutData,
+  bonusBalance = 0,
+  eligibleAmount = 0,
 }: PaymentFormProps) {
   const router = useRouter();
   const t = useTranslations('PaymentForm');
+  const bonusSpend = useBonusStore((state) => state.bonusSpend);
+  const setBonusSpend = useBonusStore((state) => state.setBonusSpend);
+  const [isBonusApplied, setIsBonusApplied] = useState(false);
+
+  // Reset bonus spend when unmounting
+  useEffect(() => {
+    return () => setBonusSpend(0);
+  }, [setBonusSpend]);
+
+  const bonusLimitFromBalance = Math.floor(bonusBalance * 0.5);
+  const maxBonusAllowed = Math.floor(
+    Math.min(bonusLimitFromBalance, eligibleAmount),
+  );
+
+  const finalAmount = isBonusApplied
+    ? Math.max(0, amount - bonusSpend)
+    : amount;
+
   const paymentSchema = getPaymentSchema(t);
   const form = useForm<PaymentInfo>({
     //@ts-ignore
@@ -49,11 +77,17 @@ export default function IPaymentForm({
     defaultValues: {
       paymentMethod: defaultValues?.paymentMethod || 'pay-now',
 
-      amount: amount,
+      amount: finalAmount,
       currency: currency || defaultValues?.currency,
       description: defaultValues?.description || 'Order payment',
     },
   });
+
+  // Update form amount when bonusSpend or isBonusApplied changes
+  useEffect(() => {
+    form.setValue('amount', finalAmount);
+  }, [finalAmount, form]);
+
   const selectedPaymentMethodValue = form.watch('paymentMethod');
   const selectedPaymentProviderValue = form.watch('paymentProvider');
   const [isLoading, setIsLoading] = useState(false);
@@ -79,8 +113,12 @@ export default function IPaymentForm({
       '[PaymentForm] submit:',
       data.paymentMethod,
       data.paymentProvider,
+      'bonusSpend:',
+      isBonusApplied ? bonusSpend : 0,
     );
     setIsLoading(true);
+    const appliedBonus = isBonusApplied ? bonusSpend : 0;
+
     try {
       // 4a. LiqPay: use a regular API fetch instead of server actions.
       // Server actions trigger RSC refresh which races against the form POST to
@@ -93,7 +131,12 @@ export default function IPaymentForm({
         const res = await fetch('/api/checkout/liqpay-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ locale, amount, currency }),
+          body: JSON.stringify({
+            locale,
+            amount: finalAmount,
+            currency,
+            bonusSpend: appliedBonus,
+          }),
         });
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
@@ -117,7 +160,13 @@ export default function IPaymentForm({
         const res = await fetch('/api/checkout/payparts-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ locale, amount, currency, partsCount }),
+          body: JSON.stringify({
+            locale,
+            amount: finalAmount,
+            currency,
+            partsCount,
+            bonusSpend: appliedBonus,
+          }),
         });
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
@@ -141,7 +190,12 @@ export default function IPaymentForm({
         const res = await fetch('/api/checkout/novapay-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ locale, amount, currency }),
+          body: JSON.stringify({
+            locale,
+            amount: finalAmount,
+            currency,
+            bonusSpend: appliedBonus,
+          }),
         });
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
@@ -162,6 +216,7 @@ export default function IPaymentForm({
         locale,
         false,
         data.paymentMethod,
+        { bonusSpend: appliedBonus },
       );
 
       if (!orderResult.success || !orderResult.order) {
@@ -181,7 +236,7 @@ export default function IPaymentForm({
         ''
       ).replace('#', '');
 
-      await savePaymentInfo(data, createdOrder.id);
+      await savePaymentInfo({ ...data, amount: finalAmount }, createdOrder.id);
 
       // 4b. All other methods: reset cart, then redirect to success page.
       // Safe to reset here because we're navigating away immediately after.
@@ -298,17 +353,164 @@ export default function IPaymentForm({
                 {partsCount} {t('parts')}
               </span>
               <span className="text-green-700 ml-1">
-                — {Math.ceil(amount / partsCount)} {currency}/{t('partLabel')}
+                — {Math.ceil(finalAmount / partsCount)} {currency}/
+                {t('partLabel')}
               </span>
             </div>
             <PayPartsModal
-              price={amount}
+              price={finalAmount}
               currencyCode={currency}
               initialPartsCount={partsCount}
               onPartsCountChange={setPartsCount}
             />
           </div>
         )}
+
+        {/* Bonus section — Professional UI */}
+        <div
+          className={clsx(
+            'relative flex flex-col w-full p-4 rounded border transition-all text-left space-y-4',
+            {
+              'border-primary bg-primary/5': isBonusApplied && bonusBalance > 0,
+              'border-gray-200 hover:border-gray-300':
+                !isBonusApplied || bonusBalance === 0,
+            },
+          )}
+        >
+          <div className="flex items-center gap-4">
+            <div
+              className={clsx(
+                'w-10 h-10 rounded flex items-center justify-center shrink-0',
+                {
+                  'bg-primary/10': isBonusApplied && bonusBalance > 0,
+                  'bg-gray-100': !isBonusApplied || bonusBalance === 0,
+                },
+              )}
+            >
+              <Coins
+                className={clsx('w-5 h-5', {
+                  'text-primary': isBonusApplied && bonusBalance > 0,
+                  'text-gray-600': !isBonusApplied || bonusBalance === 0,
+                })}
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3
+                className={clsx('font-medium text-sm', {
+                  'text-primary': isBonusApplied && bonusBalance > 0,
+                  'text-gray-900': !isBonusApplied || bonusBalance === 0,
+                })}
+              >
+                {t('bonuses_title', 'Використати бонуси')}
+              </h3>
+              {bonusBalance > 0 ? (
+                <div className="space-y-1">
+                  <p className="text-xs text-gray-500">
+                    {t('bonuses_available', 'Доступно')}: {bonusBalance}{' '}
+                    {currency}
+                  </p>
+                  <p className="text-[10px] text-gray-400 leading-tight">
+                    {t(
+                      'bonuses_limit_hint',
+                      'Можна використати не більше 50% від залишку та тільки на товари зі знижкою до 40%',
+                    )}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-xs text-gray-400 italic">
+                  {t(
+                    'bonuses_empty_balance',
+                    'У вас поки що немає доступних бонусів',
+                  )}
+                </p>
+              )}
+            </div>
+            {bonusBalance > 0 && (
+              <div className="flex items-center space-x-2 px-2">
+                <Checkbox
+                  id="use-bonuses"
+                  checked={isBonusApplied}
+                  onCheckedChange={(checked) =>
+                    setIsBonusApplied(checked as boolean)
+                  }
+                  className="w-5 h-5"
+                />
+                <Label
+                  htmlFor="use-bonuses"
+                  className="text-xs font-medium cursor-pointer select-none"
+                >
+                  {t('bonuses_apply', 'Застосувати')}
+                </Label>
+              </div>
+            )}
+          </div>
+          {isBonusApplied && bonusBalance > 0 && (
+            <div className="pt-4 border-t border-primary/10 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                <div className="flex-1 max-w-[200px] relative">
+                  <Input
+                    type="number"
+                    min="0"
+                    max={maxBonusAllowed}
+                    value={bonusSpend === 0 ? '' : bonusSpend}
+                    placeholder="0"
+                    onChange={(e) => {
+                      const rawValue = e.target.value;
+                      if (rawValue === '') {
+                        setBonusSpend(0);
+                        return;
+                      }
+                      const parsed = parseInt(rawValue, 10);
+                      if (isNaN(parsed)) return;
+                      const val = Math.min(
+                        maxBonusAllowed,
+                        Math.max(0, parsed),
+                      );
+                      setBonusSpend(val);
+                    }}
+                    className="h-10 pr-12 font-medium border-primary/20 focus:border-primary"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-400">
+                    {currency}
+                  </span>
+                </div>
+                <div className="flex-1">
+                  <div className="space-y-1">
+                    <p className="text-xs text-gray-500">
+                      {t('bonuses_balance_limit', 'Ліміт за балансом (50%)')}:{' '}
+                      <span className="font-semibold text-gray-700">
+                        {bonusLimitFromBalance} {currency}
+                      </span>
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {t(
+                        'bonuses_order_limit',
+                        'Доступно для цього замовлення',
+                      )}
+                      :{' '}
+                      <span className="font-semibold text-gray-700">
+                        {Math.floor(eligibleAmount)} {currency}
+                      </span>
+                    </p>
+                    <p className="text-[10px] text-gray-400 italic leading-tight mt-1">
+                      *{' '}
+                      {t(
+                        'bonuses_logic_hint_updated',
+                        'Ви можете використати до 50% своїх бонусів, але не більше суми товарів зі знижкою до 40% у поточному кошику',
+                      )}
+                    </p>
+                    {bonusSpend > 0 && (
+                      <p className="text-xs text-primary font-semibold mt-2">
+                        {t('bonuses_discount_applied', 'Буде списано')}: -
+                        {bonusSpend} {currency}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="space-y-3">
           <Button
@@ -337,7 +539,9 @@ export default function IPaymentForm({
                     d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
                   />
                 </svg>
-                <span>{t('completePayment')}</span>
+                <span>
+                  {t('completePayment')} {finalAmount.toFixed(2)} {currency}
+                </span>
               </div>
             )}
           </Button>

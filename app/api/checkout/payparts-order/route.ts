@@ -25,25 +25,34 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { locale, currency, amount, partsCount = 3 } = body;
+    const { locale, currency, amount, partsCount = 3, bonusSpend } = body;
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
     // 1. Get complete checkout data
     const completeCheckoutData = await getCompleteCheckoutData(session);
     if (!completeCheckoutData) {
-      return NextResponse.json({ error: 'Checkout data missing' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Checkout data missing' },
+        { status: 400 },
+      );
     }
 
     // 2. Fetch cart for product details
     const cartData = await getCart({ userId: session.user.id, locale });
-    const cartLineItems = (cartData && 'cart' in cartData ? cartData.cart : null)?.lines?.edges?.map((e: any) => {
+    const cartLineItems = (
+      cartData && 'cart' in cartData ? cartData.cart : null
+    )?.lines?.edges?.map((e: any) => {
       const basePrice = parseFloat(e.node.cost.amountPerQuantity.amount);
-      const sale = Number(
-        e.node.merchandise.product?.metafields?.find(
-          (m: any) => m?.key === DISCOUNT_METAFIELD_KEY,
-        )?.value || '0',
-      ) || 0;
-      const price = sale > 0 ? Math.round(basePrice * (1 - sale / 100) * 100) / 100 : basePrice;
+      const sale =
+        Number(
+          e.node.merchandise.product?.metafields?.find(
+            (m: any) => m?.key === DISCOUNT_METAFIELD_KEY,
+          )?.value || '0',
+        ) || 0;
+      const price =
+        sale > 0
+          ? Math.round(basePrice * (1 - sale / 100) * 100) / 100
+          : basePrice;
       return {
         title: e.node.merchandise.product?.title || e.node.merchandise.title,
         quantity: e.node.quantity as number,
@@ -52,10 +61,17 @@ export async function POST(req: NextRequest) {
     });
 
     // 3. Create Shopify order (draft, no receipt)
-    const orderResult = await createOrder(completeCheckoutData, locale, false, 'pay-now', {
-      draftInDb: true,
-      paymentGatewayName: 'payparts',
-    });
+    const orderResult = await createOrder(
+      completeCheckoutData,
+      locale,
+      false,
+      'pay-now',
+      {
+        draftInDb: true,
+        paymentGatewayName: 'payparts',
+        bonusSpend: Number(bonusSpend || 0),
+      },
+    );
     if (!orderResult.success || !orderResult.order) {
       return NextResponse.json(
         { error: orderResult.errors?.[0] || 'Failed to create order' },
@@ -89,7 +105,8 @@ export async function POST(req: NextRequest) {
 
     // PayParts requires amount === sum(product.price * product.count)
     const productsTotal = products.reduce(
-      (sum: number, p: { price: number; count: number }) => sum + Math.round(p.price * p.count * 100) / 100,
+      (sum: number, p: { price: number; count: number }) =>
+        sum + Math.round(p.price * p.count * 100) / 100,
       0,
     );
     const finalAmount = Math.round(productsTotal * 100) / 100;
@@ -123,6 +140,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ paymentUrl, token: paymentResult.token });
   } catch (error) {
     console.error('[payparts-order] error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
   }
 }

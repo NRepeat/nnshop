@@ -8,29 +8,58 @@ datasource db {
 }
 
 model User {
-  id                  String               @id
+  id                  String                  @id
   name                String
   email               String
-  emailVerified       Boolean              @default(false)
+  emailVerified       Boolean                 @default(false)
   image               String?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @default(now()) @updatedAt
-  preferredGender     String?              @default("woman")
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @default(now()) @updatedAt
+  preferredGender     String?                 @default("woman")
   sessions            Session[]
   accounts            Account[]
   orders              Order[]
   isAnonymous         Boolean?
   cart                Cart[]
-  shopifyToken        String?              @default("")
+  shopifyToken        String?                 @default("")
   contactInformation  ContactInformation?
   deliveryInformation DeliveryInformation?
   paymentInformation  PaymentInformation?
   favoriteProducts    FavoriteProduct[]
   recentlyViewed      RecentlyViewedProduct[]
-  gaClientId          String?              // GA4 _ga cookie client_id, updated on each visit
+  gaClientId          String? // GA4 _ga cookie client_id, updated on each visit
+  loyaltyCards        LoyaltyCards[]
 
   @@unique([email])
   @@map("user")
+}
+
+enum BonusMoveType {
+  ACCRUAL
+  SPEND
+  EXPIRY
+}
+
+model BonusMovements {
+  id            String        @id
+  loyaltyCardId String
+  date          DateTime
+  type          BonusMoveType
+  amount        Float
+  createdAt     DateTime      @default(now())
+  loyalty_cards LoyaltyCards  @relation(fields: [loyaltyCardId], references: [id])
+}
+
+model LoyaltyCards {
+  id              String           @id
+  name            String
+  phone           String           @unique
+  userId          String
+  bonusBalance    Float            @default(0)
+  lastAccrualDate DateTime?
+  allExpireBy     DateTime?
+  bonus_movements BonusMovements[]
+  user            User             @relation(fields: [userId], references: [id])
 }
 
 model ContactInformation {

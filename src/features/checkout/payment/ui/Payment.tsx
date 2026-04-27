@@ -11,6 +11,7 @@ import {
   DISCOUNT_METAFIELD_KEY,
   DEFAULT_CURRENCY_CODE,
 } from '@shared/config/shop';
+import { prisma } from '@shared/lib/prisma';
 
 export default async function Payment({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'CheckoutPage' });
@@ -39,6 +40,18 @@ export default async function Payment({ locale }: { locale: string }) {
     if (!cartResult?.cart || !cartResult.cart.lines.edges.length) {
       redirect('/cart');
     }
+
+    let bonusBalance = 0;
+    try {
+      const loyaltyCard = await prisma.loyaltyCards.findFirst({
+        where: { userId: session.user.id },
+      });
+      bonusBalance = loyaltyCard?.bonusBalance ?? 0;
+    } catch (e) {
+      console.error('Error fetching loyalty card:', e);
+    }
+
+    let eligibleAmount = 0;
     {
       currency = cartResult.cart.cost.totalAmount.currencyCode;
       const lines = cartResult.cart.lines.edges;
@@ -56,6 +69,11 @@ export default async function Payment({ locale }: { locale: string }) {
         const discountedPrice = sale > 0 ? price * (1 - sale / 100) : price;
         localTotal += discountedPrice * line.quantity;
         shopifySubtotal += price * line.quantity;
+
+        // Bonus rules: eligible if discount <= 40%
+        if (sale <= 40) {
+          eligibleAmount += discountedPrice * line.quantity;
+        }
       }
       // Sum cart-level + line-level discountAllocations to capture both order-level and
       // product-level automatic discounts (automatic line discounts only appear at line level)
@@ -76,6 +94,9 @@ export default async function Payment({ locale }: { locale: string }) {
           : 0;
       const discountAmount = localTotal * discountRate;
       cartAmount = Math.max(0, localTotal - discountAmount);
+
+      // Adjust eligibleAmount by the cart-level discount rate too
+      eligibleAmount = eligibleAmount * (1 - discountRate);
     }
     if (cartAmount <= 0) {
       redirect('/cart');
@@ -100,6 +121,8 @@ export default async function Payment({ locale }: { locale: string }) {
           liqpayPublicKey={liqpayPublicKey}
           liqpayPrivateKey={liqpayPrivateKey}
           completeCheckoutData={completeCheckoutData}
+          bonusBalance={bonusBalance}
+          eligibleAmount={eligibleAmount}
         />
       </div>
     );

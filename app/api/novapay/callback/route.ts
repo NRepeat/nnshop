@@ -4,8 +4,15 @@ import { savePaymentInfo } from '@features/checkout/payment/api/savePaymentInfo'
 import { cancelShopifyOrder } from '@features/order/api/cancelShopifyOrder';
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
-import { captureServerEvent, captureServerError } from '@shared/lib/posthog/posthog-server';
-import { PRICE_APP_URL, INTERNAL_API_SECRET, SHOPIFY_STORE_DOMAIN } from '@shared/config/shop';
+import {
+  captureServerEvent,
+  captureServerError,
+} from '@shared/lib/posthog/posthog-server';
+import {
+  PRICE_APP_URL,
+  INTERNAL_API_SECRET,
+  SHOPIFY_STORE_DOMAIN,
+} from '@shared/config/shop';
 import { NextRequest, NextResponse } from 'next/server';
 
 const ORDER_MARK_AS_PAID_MUTATION = `
@@ -56,7 +63,9 @@ export async function POST(request: NextRequest) {
     const rawBody = await request.text();
     const xSign = request.headers.get('x-sign');
 
-    console.log(`[novapay/callback] received postback, x-sign: ${xSign ? 'present' : 'missing'}`);
+    console.log(
+      `[novapay/callback] received postback, x-sign: ${xSign ? 'present' : 'missing'}`,
+    );
     console.log(`[novapay/callback] body: ${rawBody}`);
 
     if (!xSign) {
@@ -70,7 +79,9 @@ export async function POST(request: NextRequest) {
 
     // TODO: re-enable signature verification after getting correct NovaPay public key
     if (!signatureValid) {
-      console.warn(`[novapay/callback] ⚠️ signature invalid — skipping verification for dev`);
+      console.warn(
+        `[novapay/callback] ⚠️ signature invalid — skipping verification for dev`,
+      );
       // await captureServerError(new Error('Invalid NovaPay signature'), {
       //   service: 'api',
       //   action: 'novapay_callback_invalid_signature',
@@ -90,22 +101,35 @@ export async function POST(request: NextRequest) {
     });
 
     if (!paymentInfo) {
-      console.warn(`[novapay/callback] no payment found for session ${sessionId}`);
+      console.warn(
+        `[novapay/callback] no payment found for session ${sessionId}`,
+      );
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }
 
     // Find the correct order using shopifyOrderId from metadata (not user's first order)
-    const metadataOrderId = postback.metadata?.shopifyOrderId as string | undefined;
+    const metadataOrderId = postback.metadata?.shopifyOrderId as
+      | string
+      | undefined;
     const order = metadataOrderId
-      ? await prisma.order.findFirst({ where: { shopifyOrderId: metadataOrderId } })
-      : await prisma.order.findFirst({ where: { userId: paymentInfo.userId }, orderBy: { createdAt: 'desc' } });
+      ? await prisma.order.findFirst({
+          where: { shopifyOrderId: metadataOrderId },
+        })
+      : await prisma.order.findFirst({
+          where: { userId: paymentInfo.userId },
+          orderBy: { createdAt: 'desc' },
+        });
 
     if (!order?.shopifyOrderId) {
-      console.warn(`[novapay/callback] no order found for session ${sessionId}`);
+      console.warn(
+        `[novapay/callback] no order found for session ${sessionId}`,
+      );
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    console.log(`[novapay/callback] found order: ${order.orderName} (${order.shopifyOrderId}), draft=${order.draft}`);
+    console.log(
+      `[novapay/callback] found order: ${order.orderName} (${order.shopifyOrderId}), draft=${order.draft}`,
+    );
     const shopifyOrderId = order.shopifyOrderId;
     const paymentAmount = postback.payments?.[0]?.amount ?? paymentInfo.amount;
 
@@ -124,7 +148,11 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      try { await resetCartSession(order.id); } catch { /* non-blocking */ }
+      try {
+        await resetCartSession(order.id);
+      } catch {
+        /* non-blocking */
+      }
 
       // Fire process-order to keyCRM + eSputnik
       await fireProcessOrder(shopifyOrderId, order, paymentInfo);
@@ -132,16 +160,22 @@ export async function POST(request: NextRequest) {
       // Check if capture_pending (CRM confirmed before hold arrived)
       const desc = paymentInfo.description ?? '';
       if (desc.startsWith('capture_pending')) {
-        console.log(`[novapay/callback] capture_pending for ${shopifyOrderId} — auto-capturing`);
+        console.log(
+          `[novapay/callback] capture_pending for ${shopifyOrderId} — auto-capturing`,
+        );
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? '';
         const secret = process.env.INTERNAL_API_SECRET;
-        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+        };
         if (secret) headers['Authorization'] = `Bearer ${secret}`;
         fetch(`${siteUrl}/api/novapay/capture`, {
           method: 'POST',
           headers,
           body: JSON.stringify({ shopifyOrderId }),
-        }).catch((err) => console.error('[novapay/callback] auto-capture failed:', err));
+        }).catch((err) =>
+          console.error('[novapay/callback] auto-capture failed:', err),
+        );
       }
 
       return NextResponse.json({ message: 'Hold received' });
@@ -161,7 +195,11 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      try { await resetCartSession(order.id); } catch { /* non-blocking */ }
+      try {
+        await resetCartSession(order.id);
+      } catch {
+        /* non-blocking */
+      }
 
       // Mark as paid in Shopify
       try {
@@ -171,9 +209,15 @@ export async function POST(request: NextRequest) {
         });
         const userErrors = result?.orderMarkAsPaid?.userErrors || [];
         if (userErrors.length > 0) {
-          console.error('[novapay/callback] orderMarkAsPaid errors:', userErrors);
+          console.error(
+            '[novapay/callback] orderMarkAsPaid errors:',
+            userErrors,
+          );
         } else {
-          console.log('[novapay/callback] order marked as paid in Shopify:', shopifyOrderId);
+          console.log(
+            '[novapay/callback] order marked as paid in Shopify:',
+            shopifyOrderId,
+          );
         }
       } catch (err) {
         console.error('[novapay/callback] Failed to mark order as paid:', err);
@@ -181,8 +225,11 @@ export async function POST(request: NextRequest) {
 
       // Confirm payment in keyCRM + eSputnik (fire-and-forget)
       try {
-        const internalHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
-        if (INTERNAL_API_SECRET) internalHeaders['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
+        const internalHeaders: Record<string, string> = {
+          'Content-Type': 'application/json',
+        };
+        if (INTERNAL_API_SECRET)
+          internalHeaders['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
         fetch(`${PRICE_APP_URL}/api/internal/confirm-payment`, {
           method: 'POST',
           headers: internalHeaders,
@@ -194,7 +241,9 @@ export async function POST(request: NextRequest) {
             paymentMethod: 'novapay',
             shop: SHOPIFY_STORE_DOMAIN,
           }),
-        }).catch((err) => console.error('[novapay/callback] confirm-payment failed:', err));
+        }).catch((err) =>
+          console.error('[novapay/callback] confirm-payment failed:', err),
+        );
       } catch {}
 
       await captureServerEvent(order.userId, 'payment_completed', {
@@ -206,7 +255,10 @@ export async function POST(request: NextRequest) {
         novapay_session_id: sessionId,
       });
 
-      return NextResponse.json({ message: 'Payment completed', orderId: order.id });
+      return NextResponse.json({
+        message: 'Payment completed',
+        orderId: order.id,
+      });
     }
 
     // ── voided / expired / failed: cancel order ──────────────────────────────
@@ -224,9 +276,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Other statuses (processing, hold_confirmed, processing_hold_completion, processing_void)
-    console.log(`[novapay/callback] intermediate status=${status} for session=${sessionId}, no action`);
+    console.log(
+      `[novapay/callback] intermediate status=${status} for session=${sessionId}, no action`,
+    );
     return NextResponse.json({ message: 'Callback received' });
-
   } catch (error) {
     await captureServerError(error, {
       service: 'api',
@@ -254,15 +307,21 @@ async function fireProcessOrder(
     if (!shopifyOrder) return;
 
     const numericOrderId = shopifyOrderId.replace('gid://shopify/Order/', '');
-    const totalDiscount = Number(shopifyOrder.totalDiscountsSet?.shopMoney?.amount ?? 0);
-    const currency = shopifyOrder.totalPriceSet?.shopMoney?.currencyCode ?? paymentInfo.currency;
+    const totalDiscount = Number(
+      shopifyOrder.totalDiscountsSet?.shopMoney?.amount ?? 0,
+    );
+    const currency =
+      shopifyOrder.totalPriceSet?.shopMoney?.currencyCode ??
+      paymentInfo.currency;
 
     let customerEmail = '';
     let customerPhone = '';
     let shippingAddr: Record<string, string | null> | null = null;
     try {
       const [contactInfo, deliveryInfo] = await Promise.all([
-        prisma.contactInformation.findUnique({ where: { userId: order.userId } }),
+        prisma.contactInformation.findUnique({
+          where: { userId: order.userId },
+        }),
         prisma.deliveryInformation.findUnique({
           where: { userId: order.userId },
           include: { novaPoshtaDepartment: true },
@@ -271,10 +330,12 @@ async function fireProcessOrder(
       if (contactInfo) {
         customerEmail = contactInfo.email;
         customerPhone = contactInfo.phone;
-        const address = deliveryInfo?.address ||
-          deliveryInfo?.novaPoshtaDepartment?.shortName || '';
-        const city = deliveryInfo?.city ||
-          deliveryInfo?.novaPoshtaDepartment?.city || '';
+        const address =
+          deliveryInfo?.address ||
+          deliveryInfo?.novaPoshtaDepartment?.shortName ||
+          '';
+        const city =
+          deliveryInfo?.city || deliveryInfo?.novaPoshtaDepartment?.city || '';
         shippingAddr = {
           first_name: contactInfo.name,
           last_name: contactInfo.lastName,
@@ -286,7 +347,9 @@ async function fireProcessOrder(
           phone: contactInfo.phone,
         };
       }
-    } catch { /* non-blocking */ }
+    } catch {
+      /* non-blocking */
+    }
 
     const webhookPayload = {
       id: Number(numericOrderId),
@@ -313,29 +376,44 @@ async function fireProcessOrder(
           const variant = node.variant;
           return {
             title: node.title,
-            variant_title: variant?.title && variant.title !== 'Default Title' ? variant.title : '',
+            variant_title:
+              variant?.title && variant.title !== 'Default Title'
+                ? variant.title
+                : '',
             quantity: node.quantity,
             price: node.originalUnitPriceSet?.shopMoney?.amount || '0',
-            product_id: Number(variant?.product?.id?.replace('gid://shopify/Product/', '') || 0),
-            variant_id: Number(variant?.id?.replace('gid://shopify/ProductVariant/', '') || 0),
+            product_id: Number(
+              variant?.product?.id?.replace('gid://shopify/Product/', '') || 0,
+            ),
+            variant_id: Number(
+              variant?.id?.replace('gid://shopify/ProductVariant/', '') || 0,
+            ),
             sku: '',
           };
         }),
       shipping_lines: [],
-      applied_discount: totalDiscount > 0
-        ? { type: 'total', title: 'Знижка', amount: totalDiscount.toFixed(2) }
-        : null,
+      applied_discount:
+        totalDiscount > 0
+          ? { type: 'total', title: 'Знижка', amount: totalDiscount.toFixed(2) }
+          : null,
     };
 
-    const internalHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (INTERNAL_API_SECRET) internalHeaders['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
+    const internalHeaders: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (INTERNAL_API_SECRET)
+      internalHeaders['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
 
     fetch(`${PRICE_APP_URL}/api/internal/process-order`, {
       method: 'POST',
       headers: internalHeaders,
-      body: JSON.stringify({ payload: webhookPayload, shop: SHOPIFY_STORE_DOMAIN }),
-    }).catch((err) => console.error('[novapay/callback] process-order call failed:', err));
-
+      body: JSON.stringify({
+        payload: webhookPayload,
+        shop: SHOPIFY_STORE_DOMAIN,
+      }),
+    }).catch((err) =>
+      console.error('[novapay/callback] process-order call failed:', err),
+    );
   } catch (err) {
     console.error('[novapay/callback] fireProcessOrder failed:', err);
   }

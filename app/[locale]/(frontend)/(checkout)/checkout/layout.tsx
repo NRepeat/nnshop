@@ -66,7 +66,7 @@ async function CheckoutLayoutContent({
   const completedSteps = await getCompletedSteps();
 
   return (
-    <div className="container mb-6 h-fit min-h-screen">
+    <div className="container mb-24 h-fit min-h-screen">
       <div className="flex flex-col mt-8 space-y-8">
         <CheckoutStepper completedSteps={completedSteps} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">

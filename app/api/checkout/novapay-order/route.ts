@@ -24,18 +24,23 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { locale, currency, amount } = body;
+    const { locale, currency, amount, bonusSpend } = body;
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
     // 1. Get complete checkout data
     const completeCheckoutData = await getCompleteCheckoutData(session);
     if (!completeCheckoutData) {
-      return NextResponse.json({ error: 'Checkout data missing' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Checkout data missing' },
+        { status: 400 },
+      );
     }
 
     // 2. Fetch cart for product details
     const cartData = await getCart({ userId: session.user.id, locale });
-    const cartLineItems = (cartData && 'cart' in cartData ? cartData.cart : null)?.lines?.edges?.map((e: any) => {
+    const cartLineItems = (
+      cartData && 'cart' in cartData ? cartData.cart : null
+    )?.lines?.edges?.map((e: any) => {
       const variantGid: string = e.node.merchandise.id;
       const numericId = parseInt(variantGid.split('/').pop() || '0', 10);
       return {
@@ -47,10 +52,17 @@ export async function POST(req: NextRequest) {
     });
 
     // 3. Create Shopify order (draft, no receipt, skip process-order)
-    const orderResult = await createOrder(completeCheckoutData, locale, false, 'pay-now', {
-      draftInDb: true,
-      paymentGatewayName: 'novapay',
-    });
+    const orderResult = await createOrder(
+      completeCheckoutData,
+      locale,
+      false,
+      'pay-now',
+      {
+        draftInDb: true,
+        paymentGatewayName: 'novapay',
+        bonusSpend: Number(bonusSpend || 0),
+      },
+    );
     if (!orderResult.success || !orderResult.order) {
       return NextResponse.json(
         { error: orderResult.errors?.[0] || 'Failed to create order' },
@@ -61,9 +73,12 @@ export async function POST(req: NextRequest) {
     console.log('[novapay-order] order created (draft):', createdOrder.id);
 
     // Use Shopify's confirmed total so NovaPay amount matches the order exactly
-    const shopifyTotal = parseFloat(createdOrder.totalPriceSet.shopMoney.amount);
+    const shopifyTotal = parseFloat(
+      createdOrder.totalPriceSet.shopMoney.amount,
+    );
     const novapayAmount = shopifyTotal > 0 ? shopifyTotal : amount;
-    const novapayCurrency = createdOrder.totalPriceSet.shopMoney.currencyCode || currency;
+    const novapayCurrency =
+      createdOrder.totalPriceSet.shopMoney.currencyCode || currency;
 
     // 4. Create NovaPay session + add payment with hold
     const novapay = createNovaPay();
@@ -116,9 +131,15 @@ export async function POST(req: NextRequest) {
       createdOrder.id,
     );
 
-    return NextResponse.json({ paymentUrl: paymentResult.url, sessionId: sessionResult.id });
+    return NextResponse.json({
+      paymentUrl: paymentResult.url,
+      sessionId: sessionResult.id,
+    });
   } catch (error) {
     console.error('[novapay-order] error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
   }
 }

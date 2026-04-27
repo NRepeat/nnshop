@@ -33,10 +33,15 @@ export async function POST(request: NextRequest) {
       ? rawId
       : `gid://shopify/Order/${rawId}`
     : undefined;
-  console.log(`[payparts/capture] request: shopifyOrderId=${shopifyOrderId} orderName=${orderName}`);
+  console.log(
+    `[payparts/capture] request: shopifyOrderId=${shopifyOrderId} orderName=${orderName}`,
+  );
 
   if (!orderName && !shopifyOrderId) {
-    return NextResponse.json({ error: 'Missing orderName or shopifyOrderId' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Missing orderName or shopifyOrderId' },
+      { status: 400 },
+    );
   }
 
   const order = await prisma.order.findFirst({
@@ -47,22 +52,36 @@ export async function POST(request: NextRequest) {
   });
 
   if (!order?.shopifyOrderId) {
-    console.warn(`[payparts/capture] order not found: shopifyOrderId=${shopifyOrderId} orderName=${orderName}`);
+    console.warn(
+      `[payparts/capture] order not found: shopifyOrderId=${shopifyOrderId} orderName=${orderName}`,
+    );
     return NextResponse.json({ error: 'Order not found' }, { status: 404 });
   }
 
   const paymentInfo = order.user?.paymentInformation;
   const desc = paymentInfo?.description ?? '';
-  console.log(`[payparts/capture] DB order: ${order.orderName} (${order.shopifyOrderId}), desc=${desc}`);
+  console.log(
+    `[payparts/capture] DB order: ${order.orderName} (${order.shopifyOrderId}), desc=${desc}`,
+  );
 
   // ── Idempotency guards ──────────────────────────────────────────────────
   if (desc.includes('captured') || desc.includes('PayParts paid')) {
-    console.log(`[payparts/capture] already captured for ${order.orderName}, skipping`);
-    return NextResponse.json({ message: 'Already captured', orderName: order.orderName });
+    console.log(
+      `[payparts/capture] already captured for ${order.orderName}, skipping`,
+    );
+    return NextResponse.json({
+      message: 'Already captured',
+      orderName: order.orderName,
+    });
   }
   if (desc.includes('capturing')) {
-    console.warn(`[payparts/capture] capture already in progress for ${order.orderName}, skipping`);
-    return NextResponse.json({ message: 'Capture in progress', orderName: order.orderName });
+    console.warn(
+      `[payparts/capture] capture already in progress for ${order.orderName}, skipping`,
+    );
+    return NextResponse.json({
+      message: 'Capture in progress',
+      orderName: order.orderName,
+    });
   }
 
   // ── Soft lock ───────────────────────────────────────────────────────────
@@ -71,7 +90,9 @@ export async function POST(request: NextRequest) {
       where: { id: paymentInfo.id },
       data: { description: `capturing: ${new Date().toISOString()}` },
     });
-    console.log(`[payparts/capture] DB marked as "capturing" for ${order.orderName}`);
+    console.log(
+      `[payparts/capture] DB marked as "capturing" for ${order.orderName}`,
+    );
   }
 
   const numericOrderId = order.shopifyOrderId!.split('/').pop()!;
@@ -84,21 +105,34 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error('[payparts/capture] confirmPayment failed:', err);
     if (paymentInfo) {
-      await prisma.paymentInformation.update({
-        where: { id: paymentInfo.id },
-        data: { description: `capture_failed: ${err instanceof Error ? err.message : String(err)} (${new Date().toISOString()})` },
-      }).catch(() => {});
+      await prisma.paymentInformation
+        .update({
+          where: { id: paymentInfo.id },
+          data: {
+            description: `capture_failed: ${err instanceof Error ? err.message : String(err)} (${new Date().toISOString()})`,
+          },
+        })
+        .catch(() => {});
     }
-    return NextResponse.json({ error: 'PayParts confirm failed' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'PayParts confirm failed' },
+      { status: 500 },
+    );
   }
 
   // ── Mark as captured in DB ──────────────────────────────────────────────
   if (paymentInfo) {
-    await prisma.paymentInformation.update({
-      where: { id: paymentInfo.id },
-      data: { description: `captured: orderId=${numericOrderId}` },
-    }).catch((err) => console.error('[payparts/capture] failed to update DB status:', err));
-    console.log(`[payparts/capture] DB marked as "captured" for ${order.orderName}`);
+    await prisma.paymentInformation
+      .update({
+        where: { id: paymentInfo.id },
+        data: { description: `captured: orderId=${numericOrderId}` },
+      })
+      .catch((err) =>
+        console.error('[payparts/capture] failed to update DB status:', err),
+      );
+    console.log(
+      `[payparts/capture] DB marked as "captured" for ${order.orderName}`,
+    );
   }
 
   // ── Mark as paid in Shopify ─────────────────────────────────────────────
@@ -114,7 +148,9 @@ export async function POST(request: NextRequest) {
         console.error(`[payparts/capture] orderMarkAsPaid errors: ${msg}`);
       }
     } else {
-      console.log(`[payparts/capture] Shopify order ${order.shopifyOrderId} marked as paid`);
+      console.log(
+        `[payparts/capture] Shopify order ${order.shopifyOrderId} marked as paid`,
+      );
     }
   } catch (err) {
     console.error('[payparts/capture] orderMarkAsPaid failed:', err);
@@ -122,8 +158,11 @@ export async function POST(request: NextRequest) {
 
   // ── Confirm in keyCRM (fire-and-forget) ─────────────────────────────────
   try {
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (INTERNAL_API_SECRET) headers['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (INTERNAL_API_SECRET)
+      headers['Authorization'] = `Bearer ${INTERNAL_API_SECRET}`;
     fetch(`${PRICE_APP_URL}/api/internal/confirm-payment`, {
       method: 'POST',
       headers,
@@ -134,8 +173,12 @@ export async function POST(request: NextRequest) {
         paymentMethod: 'payparts',
       }),
     })
-      .then((r) => console.log(`[payparts/capture] confirm-payment response: ${r.status}`))
-      .catch((err) => console.error('[payparts/capture] confirm-payment failed:', err));
+      .then((r) =>
+        console.log(`[payparts/capture] confirm-payment response: ${r.status}`),
+      )
+      .catch((err) =>
+        console.error('[payparts/capture] confirm-payment failed:', err),
+      );
   } catch {}
 
   console.log(`[payparts/capture] done: ${order.orderName}`);
