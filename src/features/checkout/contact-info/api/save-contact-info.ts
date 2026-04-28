@@ -5,6 +5,7 @@ import { updateCartBuyerIdentity } from '@entities/cart/api/shopify-cart-buyer-i
 import { prisma } from '@shared/lib/prisma';
 import { headers } from 'next/headers';
 import { captureServerError } from '@shared/lib/posthog/posthog-server';
+import { ensureLoyaltyCardForUser } from '@features/bonus/lib/link-card';
 import z from 'zod';
 
 const saveContactInfo = async (data: z.infer<typeof contactInfoSchema>) => {
@@ -62,6 +63,22 @@ const saveContactInfo = async (data: z.infer<typeof contactInfoSchema>) => {
         phone: formattedPhone,
         countryCode: data.countryCode,
       });
+    }
+
+    // Loyalty card lifecycle:
+    //   - registered users: link existing seeded card by phone, or create new card.
+    //   - anonymous users: skipped — bonuses can't accrue without a real account.
+    if (!session.user.isAnonymous) {
+      try {
+        const fullName = [data.name, data.lastName].filter(Boolean).join(' ');
+        await ensureLoyaltyCardForUser(
+          data.phone,
+          session.user.id,
+          fullName || undefined,
+        );
+      } catch (err) {
+        console.error('[save-contact-info] ensureLoyaltyCardForUser failed:', err);
+      }
     }
 
     return transaction;

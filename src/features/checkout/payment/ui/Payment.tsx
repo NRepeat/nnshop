@@ -41,14 +41,17 @@ export default async function Payment({ locale }: { locale: string }) {
       redirect('/cart');
     }
 
+    const isAnonymousUser = Boolean(session.user.isAnonymous);
     let bonusBalance = 0;
-    try {
-      const loyaltyCard = await prisma.loyaltyCards.findFirst({
-        where: { userId: session.user.id },
-      });
-      bonusBalance = loyaltyCard?.bonusBalance ?? 0;
-    } catch (e) {
-      console.error('Error fetching loyalty card:', e);
+    if (!isAnonymousUser) {
+      try {
+        const loyaltyCard = await prisma.loyaltyCards.findFirst({
+          where: { userId: session.user.id },
+        });
+        bonusBalance = loyaltyCard?.bonusBalance ?? 0;
+      } catch (e) {
+        console.error('Error fetching loyalty card:', e);
+      }
     }
 
     let eligibleAmount = 0;
@@ -123,6 +126,7 @@ export default async function Payment({ locale }: { locale: string }) {
           completeCheckoutData={completeCheckoutData}
           bonusBalance={bonusBalance}
           eligibleAmount={eligibleAmount}
+          showBonusCard={!isAnonymousUser}
         />
       </div>
     );

@@ -1,6 +1,9 @@
 'use server';
 
+import { revalidateTag } from 'next/cache';
 import { prisma } from '../../../shared/lib/prisma';
+import { ensureLoyaltyCardForUser } from '../../bonus/lib/link-card';
+import { CART_TAGS } from '@shared/lib/cached-fetch';
 
 export const linkAnonymousDataToUser = async ({
   anonymousUserId,
@@ -65,7 +68,54 @@ export const linkAnonymousDataToUser = async ({
         where: { userId: anonymousUserId },
         data: { userId: newUserId },
       });
+
+      // If the anonymous session just completed an order (post-checkout login
+      // via the bonus modal), also close out any pre-existing active cart on
+      // the linked-into account so the user lands on a clean cart, not a stale
+      // one carried over from a previous session.
+      const anonHasCompletedCart = await tx.cart.findFirst({
+        where: { userId: anonymousUserId, completed: true },
+        select: { id: true },
+      });
+      if (anonHasCompletedCart) {
+        await tx.cart.updateMany({
+          where: { userId: newUserId, completed: false },
+          data: { completed: true },
+        });
+      }
     });
+
+    // Loyalty card: link/create card now that the user has a real account.
+    // Only orders that already migrated above (Order.userId now = newUserId) qualify
+    // for bonus accrual — accrueBonusForOrder finds the card via the user relation.
+    try {
+      const contact = await prisma.contactInformation.findUnique({
+        where: { userId: newUserId },
+        select: { phone: true, name: true, lastName: true },
+      });
+      if (contact?.phone) {
+        const fullName = [contact.name, contact.lastName].filter(Boolean).join(' ');
+        await ensureLoyaltyCardForUser(
+          contact.phone,
+          newUserId,
+          fullName || undefined,
+        );
+      }
+    } catch (cardErr) {
+      console.error('[linkAnonymousData] loyalty card ensure failed', {
+        step: 'ensure-loyalty-card',
+        error: cardErr instanceof Error ? cardErr.message : String(cardErr),
+      });
+    }
+
+    // Invalidate cart caches so the UI reflects the merged/closed state.
+    try {
+      revalidateTag(CART_TAGS.CART, { expire: 0 });
+      revalidateTag(CART_TAGS.CART_ITEMS, { expire: 0 });
+      revalidateTag(CART_TAGS.CART_SESSION, { expire: 0 });
+    } catch {
+      // revalidateTag throws if called outside request context — ignore.
+    }
   } catch (error) {
     console.error('[linkAnonymousData] transaction failed', {
       step: 'prisma-link-anonymous-data',

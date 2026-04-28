@@ -1,15 +1,20 @@
 'use client';
-import { authClient } from '../lib/auth-client';
 import { useRouter } from '@shared/i18n/navigation';
 import { useEffect } from 'react';
+import { signOutPreservingCart } from '../lib/sign-out-preserve-cart';
 
 export const SignOut = () => {
   const router = useRouter();
 
   useEffect(() => {
-    authClient.signOut().then(() => {
-      router.push('/woman');
-    });
+    signOutPreservingCart()
+      .catch((err) => {
+        console.error('[SignOut] preserve-cart failed', err);
+      })
+      .finally(() => {
+        router.push('/woman');
+        router.refresh();
+      });
   }, [router]);
 
   return <></>;

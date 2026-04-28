@@ -83,6 +83,18 @@ async function checkCollectionExists(handle: string, locale: string) {
   }
 }
 
+const CANONICAL_HOST = 'www.miomio.com.ua';
+
+function forceCanonicalHost(url: URL, host: string) {
+  const isLocalDev =
+    host.startsWith('localhost') || host.startsWith('127.0.0.1');
+  if (!isLocalDev) {
+    url.host = CANONICAL_HOST;
+    url.port = '';
+    url.protocol = 'https:';
+  }
+}
+
 export async function proxy(request: NextRequest) {
   const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || '';
   const isProductionHost =
@@ -125,11 +137,7 @@ export async function proxy(request: NextRequest) {
       const targetHandle = result.canonicalHandle || handle;
       console.log(`🔀 Proxy: Product /${locale}/product/${handle} → /${targetLocale}/product/${targetHandle}`);
       const redirectUrl = new URL(request.url);
-      if (isProductionHost) {
-        redirectUrl.host = 'www.miomio.com.ua';
-        redirectUrl.port = '';
-        redirectUrl.protocol = 'https:';
-      }
+      forceCanonicalHost(redirectUrl, host);
       redirectUrl.pathname = `/${targetLocale}/product/${targetHandle}`;
       return NextResponse.redirect(redirectUrl, { status: 301 });
     }
@@ -146,14 +154,13 @@ export async function proxy(request: NextRequest) {
 
   // 1. Canonical Host & Protocol Normalization
   const protocol = request.headers.get('x-forwarded-proto') || 'https';
-  const canonicalHost = 'www.miomio.com.ua';
 
   // Strip internal port (e.g. :3000) when behind a reverse proxy
   if (isProductionHost) {
     url.port = '';
     url.protocol = 'https:';
-    if (host !== canonicalHost) {
-      url.host = canonicalHost;
+    if (host !== CANONICAL_HOST) {
+      url.host = CANONICAL_HOST;
       changed = true;
     }
     if (protocol === 'http') {
@@ -208,17 +215,14 @@ export async function proxy(request: NextRequest) {
     const hasLocale = routing.locales.includes(segments[0]);
     if (!hasLocale) {
       url.pathname = `/${routing.defaultLocale}${url.pathname}`;
-      if (isProductionHost) {
-        url.host = 'www.miomio.com.ua';
-        url.port = '';
-        url.protocol = 'https:';
-      }
+      forceCanonicalHost(url, host);
       return NextResponse.redirect(url, { status: 301 });
     }
   }
 
   // Perform single 301 redirect if any canonical part changed
   if (changed) {
+    forceCanonicalHost(url, host);
     return NextResponse.redirect(url, { status: 301 });
   }
 

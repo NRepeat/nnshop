@@ -19,6 +19,8 @@ import {
 import { connection } from 'next/server';
 import { GA4PurchaseEvent } from '@shared/lib/analytics/GA4PurchaseEvent';
 import { OrderProcessing } from './OrderProcessing';
+import { BonusSignupModal } from './BonusSignupModal';
+import { ACCRUAL_RATE } from '@features/bonus/lib/accrue';
 
 export const Thank = async ({
   params,
@@ -99,6 +101,15 @@ export const Thank = async ({
       }).format(new Date(dbOrder.createdAt))
     : null;
 
+  // Anonymous users miss bonus accrual at delivery. Estimate potential bonus
+  // (5% of order total, rounded down) and show a signup CTA modal.
+  const isAnonymousUser = Boolean(session.user.isAnonymous);
+  const orderTotalNumeric = total ? Number(total.amount) : 0;
+  const potentialBonus = isAnonymousUser
+    ? Math.floor(orderTotalNumeric * ACCRUAL_RATE)
+    : 0;
+  const bonusCurrencyCode = total?.currencyCode ?? 'UAH';
+
   return (
     <>
       {total && (
@@ -115,6 +126,14 @@ export const Thank = async ({
             quantity: item.quantity,
             price: Number(item.variant?.price?.amount ?? 0),
           }))}
+        />
+      )}
+      {isAnonymousUser && potentialBonus > 0 && (
+        <BonusSignupModal
+          potentialBonus={potentialBonus}
+          currency={currencySymbol}
+          signUpHref={`/auth/sign-up?returnTo=${encodeURIComponent(`/checkout/success/${searchId}`)}`}
+          signInHref={`/auth/sign-in?returnTo=${encodeURIComponent(`/checkout/success/${searchId}`)}`}
         />
       )}
       <Card className="w-full max-w-full p-0 shadow-none border-none">

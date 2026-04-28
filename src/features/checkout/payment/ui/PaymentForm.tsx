@@ -35,6 +35,7 @@ interface PaymentFormProps {
   completeCheckoutData: Omit<CheckoutData, 'paymentInfo'> | null;
   bonusBalance?: number;
   eligibleAmount?: number;
+  showBonusCard?: boolean;
 }
 
 export default function IPaymentForm({
@@ -45,6 +46,7 @@ export default function IPaymentForm({
   completeCheckoutData,
   bonusBalance = 0,
   eligibleAmount = 0,
+  showBonusCard = true,
 }: PaymentFormProps) {
   const router = useRouter();
   const t = useTranslations('PaymentForm');
@@ -366,7 +368,8 @@ export default function IPaymentForm({
           </div>
         )}
 
-        {/* Bonus section — Professional UI */}
+        {/* Bonus section — hidden for anonymous (not signed-up) users */}
+        {showBonusCard && (
         <div
           className={clsx(
             'relative flex flex-col w-full p-4 rounded border transition-all text-left space-y-4',
@@ -511,6 +514,7 @@ export default function IPaymentForm({
             </div>
           )}
         </div>
+        )}
 
         <div className="space-y-3">
           <Button
