@@ -404,27 +404,21 @@ export default function IPaymentForm({
                   'text-gray-900': !isBonusApplied || bonusBalance === 0,
                 })}
               >
-                {t('bonuses_title', 'Використати бонуси')}
+                {t('bonuses_title')}
               </h3>
               {bonusBalance > 0 ? (
                 <div className="space-y-1">
                   <p className="text-xs text-gray-500">
-                    {t('bonuses_available', 'Доступно')}: {bonusBalance}{' '}
+                    {t('bonuses_available')}: {bonusBalance}{' '}
                     {currency}
                   </p>
                   <p className="text-[10px] text-gray-400 leading-tight">
-                    {t(
-                      'bonuses_limit_hint',
-                      'Можна використати не більше 50% від залишку та тільки на товари зі знижкою до 40%',
-                    )}
+                    {t('bonuses_limit_hint')}
                   </p>
                 </div>
               ) : (
                 <p className="text-xs text-gray-400 italic">
-                  {t(
-                    'bonuses_empty_balance',
-                    'У вас поки що немає доступних бонусів',
-                  )}
+                  {t('bonuses_empty_balance')}
                 </p>
               )}
             </div>
@@ -442,7 +436,7 @@ export default function IPaymentForm({
                   htmlFor="use-bonuses"
                   className="text-xs font-medium cursor-pointer select-none"
                 >
-                  {t('bonuses_apply', 'Застосувати')}
+                  {t('bonuses_apply')}
                 </Label>
               </div>
             )}
@@ -480,31 +474,24 @@ export default function IPaymentForm({
                 <div className="flex-1">
                   <div className="space-y-1">
                     <p className="text-xs text-gray-500">
-                      {t('bonuses_balance_limit', 'Ліміт за балансом (50%)')}:{' '}
+                      {t('bonuses_balance_limit')}:{' '}
                       <span className="font-semibold text-gray-700">
                         {bonusLimitFromBalance} {currency}
                       </span>
                     </p>
                     <p className="text-xs text-gray-500">
-                      {t(
-                        'bonuses_order_limit',
-                        'Доступно для цього замовлення',
-                      )}
+                      {t('bonuses_order_limit')}
                       :{' '}
                       <span className="font-semibold text-gray-700">
                         {Math.floor(eligibleAmount)} {currency}
                       </span>
                     </p>
                     <p className="text-[10px] text-gray-400 italic leading-tight mt-1">
-                      *{' '}
-                      {t(
-                        'bonuses_logic_hint_updated',
-                        'Ви можете використати до 50% своїх бонусів, але не більше суми товарів зі знижкою до 40% у поточному кошику',
-                      )}
+                      * {t('bonuses_logic_hint_updated')}
                     </p>
                     {bonusSpend > 0 && (
                       <p className="text-xs text-primary font-semibold mt-2">
-                        {t('bonuses_discount_applied', 'Буде списано')}: -
+                        {t('bonuses_discount_applied')}: -
                         {bonusSpend} {currency}
                       </p>
                     )}
