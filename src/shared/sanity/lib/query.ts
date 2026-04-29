@@ -617,7 +617,8 @@ export const HOME_PAGE =
               "videoDescriptionColor": videoDescriptionColor.hex,
               videoLinkUrl,
               "videoCollection": videoCollection->{
-                "handle": store.slug.current
+                "handle": coalesce(handles[$language], handles.uk, store.slug.current),
+                handles
               },
               videoOverlay {
                 opacity,

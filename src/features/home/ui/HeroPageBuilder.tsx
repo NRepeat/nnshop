@@ -81,7 +81,7 @@ const renderBlock = (
               className="md:hidden bg-foreground text-background py-3 overflow-hidden border-y border-white/10"
             />
           )}
-          <HeroBanner {...hero} gender={gender} isFirst={isFirst} />
+          <HeroBanner {...hero} gender={gender} locale={locale} isFirst={isFirst} />
         </Fragment>
       );
     }

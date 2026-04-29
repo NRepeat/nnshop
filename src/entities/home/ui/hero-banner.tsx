@@ -31,7 +31,11 @@ type HeroSliderProps = HeroSliderBase & {
   videoTitleColor?: string | null;
   videoDescriptionColor?: string | null;
   videoLinkUrl?: string | null;
-  videoCollection?: { handle?: string | null } | null;
+  videoCollection?: {
+    handle?: string | null;
+    handles?: { uk?: string | null; ru?: string | null } | null;
+  } | null;
+  locale?: string;
   videoOverlay?: {
     color?: { hex?: string | null } | null;
     opacity?: number | null;
@@ -520,16 +524,16 @@ export const HeroBanner = (props: HeroSliderProps) => {
           overlay={props.videoOverlay}
           compact={compact}
           isFirst={isFirst}
-          href={
-            props.videoLinkUrl
-              ? sanitizeString(props.videoLinkUrl)
-              : props.videoCollection?.handle
-                ? `/${gender ?? ''}/${sanitizeString(props.videoCollection.handle)}`.replace(
-                    '//',
-                    '/',
-                  )
-                : null
-          }
+          href={(() => {
+            if (props.videoLinkUrl) return sanitizeString(props.videoLinkUrl);
+            const localeKey = props.locale === 'ru' ? 'ru' : 'uk';
+            const handle =
+              props.videoCollection?.handles?.[localeKey] ||
+              props.videoCollection?.handles?.uk ||
+              props.videoCollection?.handle;
+            if (!handle) return null;
+            return `/${gender ?? ''}/${sanitizeString(handle)}`.replace('//', '/');
+          })()}
         />
       ) : (
         <ImageSlider
