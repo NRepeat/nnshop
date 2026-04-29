@@ -97,7 +97,7 @@ function CardsTable({ rows }: { rows: Row[] }) {
   );
 }
 
-async function ResultsCard({ searchParams }: PageProps) {
+async function SearchAndResults({ searchParams }: PageProps) {
   const { q = '' } = await searchParams;
   const trimmed = q.trim();
   const rows: Row[] = trimmed
@@ -105,62 +105,62 @@ async function ResultsCard({ searchParams }: PageProps) {
     : await getTopCards(50);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          {trimmed ? `Результаты поиска: "${trimmed}"` : 'Топ карт по балансу'}
-        </CardTitle>
-        <CardDescription>
-          {trimmed
-            ? `Найдено: ${rows.length}`
-            : 'Показаны 50 карт с наибольшим балансом. Используйте поиск для других карт.'}
-        </CardDescription>
-      </CardHeader>
-      <CardsTable rows={rows} />
-    </Card>
+    <>
+      <div className="flex flex-col gap-2">
+        <h2 className="text-lg font-semibold">Найти карту</h2>
+        <p className="text-sm text-muted-foreground">
+          Введите телефон в любом формате (0991234567, +380991234567) или имя клиента
+        </p>
+        <form
+          className="flex flex-wrap items-center gap-2 mt-2"
+          action="/admin/bonuses"
+        >
+          <div className="relative flex-1 min-w-64 max-w-xl">
+            <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Input
+              type="text"
+              name="q"
+              defaultValue={q}
+              placeholder="Телефон или имя"
+              className="pl-9 h-10"
+              aria-label="Поиск карты по телефону или имени"
+            />
+          </div>
+          <Button type="submit" className="h-10">
+            Найти
+          </Button>
+          {trimmed && (
+            <Button type="button" variant="ghost" asChild className="h-10">
+              <Link href="/admin/bonuses">Сбросить</Link>
+            </Button>
+          )}
+        </form>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {trimmed ? `Результаты поиска: "${trimmed}"` : 'Топ карт по балансу'}
+          </CardTitle>
+          <CardDescription>
+            {trimmed
+              ? `Найдено: ${rows.length}`
+              : 'Показаны 50 карт с наибольшим балансом. Используйте поиск для других карт.'}
+          </CardDescription>
+        </CardHeader>
+        <CardsTable rows={rows} />
+      </Card>
+    </>
   );
 }
 
-export default async function BonusesAdminPage({ searchParams }: PageProps) {
-  const { q = '' } = await searchParams;
-
+export default function BonusesAdminPage({ searchParams }: PageProps) {
   return (
     <>
       <SiteHeader title="Бонусные карты" />
       <div className="flex flex-col gap-6 p-4 lg:p-6">
-        <div className="flex flex-col gap-2">
-          <h2 className="text-lg font-semibold">Найти карту</h2>
-          <p className="text-sm text-muted-foreground">
-            Введите телефон в любом формате (0991234567, +380991234567) или имя клиента
-          </p>
-          <form
-            className="flex flex-wrap items-center gap-2 mt-2"
-            action="/admin/bonuses"
-          >
-            <div className="relative flex-1 min-w-64 max-w-xl">
-              <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-              <Input
-                type="text"
-                name="q"
-                defaultValue={q}
-                placeholder="Телефон или имя"
-                className="pl-9 h-10"
-                aria-label="Поиск карты по телефону или имени"
-              />
-            </div>
-            <Button type="submit" className="h-10">
-              Найти
-            </Button>
-            {q && (
-              <Button type="button" variant="ghost" asChild className="h-10">
-                <Link href="/admin/bonuses">Сбросить</Link>
-              </Button>
-            )}
-          </form>
-        </div>
-
         <Suspense fallback={<ResultsCardSkeleton />}>
-          <ResultsCard searchParams={searchParams} />
+          <SearchAndResults searchParams={searchParams} />
         </Suspense>
       </div>
     </>

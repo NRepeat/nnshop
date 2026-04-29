@@ -11,6 +11,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           // Service pages — no crawl budget
           '/api/',
+          '/admin/',
           '/studio/',
           '/uk/auth/',
           '/ru/auth/',
