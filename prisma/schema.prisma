@@ -38,6 +38,7 @@ enum BonusMoveType {
   ACCRUAL
   SPEND
   EXPIRY
+  ADJUSTMENT
 }
 
 model BonusMovements {
@@ -46,6 +47,8 @@ model BonusMovements {
   date          DateTime
   type          BonusMoveType
   amount        Float
+  note          String?
+  actorUserId   String?
   createdAt     DateTime      @default(now())
   loyalty_cards LoyaltyCards  @relation(fields: [loyaltyCardId], references: [id])
 }

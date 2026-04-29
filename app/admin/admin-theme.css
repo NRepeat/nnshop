@@ -1,0 +1,26 @@
+.admin-theme,
+.admin-theme *,
+.admin-theme *::before,
+.admin-theme *::after {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html.admin-theme,
+.admin-theme {
+  --radius: 0 !important;
+  --radius-sm: 0 !important;
+  --radius-md: 0 !important;
+  --radius-lg: 0 !important;
+  --radius-xl: 0 !important;
+  --primary: oklch(21.64% 0.049 276.34) !important;
+  --primary-foreground: oklch(0.985 0 0) !important;
+  --ring: oklch(21.64% 0.049 276.34) !important;
+  --sidebar-primary: oklch(21.64% 0.049 276.34) !important;
+  --sidebar-primary-foreground: oklch(0.985 0 0) !important;
+  --sidebar-ring: oklch(21.64% 0.049 276.34) !important;
+  --accent: oklch(0.95 0.03 262.881) !important;
+  --accent-foreground: oklch(0.3 0.15 262.881) !important;
+  --sidebar-accent: oklch(0.95 0.03 262.881) !important;
+  --sidebar-accent-foreground: oklch(0.3 0.15 262.881) !important;
+}
