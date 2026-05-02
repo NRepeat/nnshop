@@ -59,14 +59,27 @@ export function useScrollMemory() {
     return () => cancelAnimationFrame(rafId);
   }, [key]);
 
-  // Save on scroll (throttled).
+  // Save on scroll (throttled) AND on pointerdown/touchstart (capture phase).
+  //
+  // The pointerdown capture is critical: Next.js <Link scroll={true}> (default)
+  // calls window.scrollTo(0, 0) BEFORE pushing the new route. That triggers
+  // our onScroll listener with scrollY=0 and clobbers the saved position.
+  // pointerdown in capture phase fires earlier than the Link's click handler,
+  // so we snapshot the real position right before the navigation can null it.
   useEffect(() => {
     if (typeof window === 'undefined') return;
     let lastSave = 0;
     let pending: number | null = null;
     const flush = () => {
       pending = null;
-      sessionStorage.setItem(keyRef.current, String(window.scrollY));
+      const y = window.scrollY;
+      // Don't overwrite a non-zero saved value with 0 — that's almost always
+      // the navigation-induced scrollTo(0,0) we want to ignore.
+      if (y === 0) {
+        const prev = sessionStorage.getItem(keyRef.current);
+        if (prev && parseInt(prev, 10) > 0) return;
+      }
+      sessionStorage.setItem(keyRef.current, String(y));
       lastSave = performance.now();
     };
     const onScroll = () => {
@@ -77,12 +90,29 @@ export function useScrollMemory() {
         pending = window.setTimeout(flush, SAVE_THROTTLE_MS);
       }
     };
+    const onPointerDown = () => {
+      // Snapshot immediately — runs before any click→navigation→scrollTo(0,0).
+      const y = window.scrollY;
+      if (y > 0) sessionStorage.setItem(keyRef.current, String(y));
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('pointerdown', onPointerDown, { capture: true });
+    window.addEventListener('touchstart', onPointerDown, {
+      capture: true,
+      passive: true,
+    });
     return () => {
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('pointerdown', onPointerDown, {
+        capture: true,
+      } as EventListenerOptions);
+      window.removeEventListener('touchstart', onPointerDown, {
+        capture: true,
+      } as EventListenerOptions);
       if (pending != null) window.clearTimeout(pending);
       // Final save on unmount so navigating away captures the latest position.
-      sessionStorage.setItem(keyRef.current, String(window.scrollY));
+      const y = window.scrollY;
+      if (y > 0) sessionStorage.setItem(keyRef.current, String(y));
     };
   }, []);
 }
