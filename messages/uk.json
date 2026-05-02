@@ -783,6 +783,7 @@
     "placeholder": "Пошук...",
     "searchButton": "Пошук",
     "results": "{count, plural, one {# результат} few {# результати} many {# результатів} other {# результату}}",
+    "totalResults": "{count, plural, one {# результат} few {# результати} many {# результатів} other {# результату}}",
     "viewAll": "Переглянути всі",
     "noResults": "Нічого не знайдено",
     "tryAgain": "Спробуйте пошукати щось інше.",

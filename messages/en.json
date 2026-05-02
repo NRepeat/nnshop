@@ -612,6 +612,7 @@
     "placeholder": "Search...",
     "searchButton": "Search",
     "results": "{count, plural, one {# result} other {# results} zero {# results}}",
+    "totalResults": "{count, plural, one {# result} other {# results}}",
     "viewAll": "View all",
     "noResults": "No results found",
     "tryAgain": "Try searching for something else.",
