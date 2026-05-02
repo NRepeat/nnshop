@@ -9,6 +9,7 @@ import { Button } from '@shared/ui/button';
 import { filterProducts } from '../lib/filterProducts';
 import { getFavoriteProductIds } from '../api/get-favorite-ids';
 import { useSession } from '@features/auth/lib/client';
+import { useScrollMemory } from '@shared/lib/scroll/use-scroll-memory';
 
 export const ClientGridWrapper = ({
   initialPageInfo,
@@ -25,6 +26,11 @@ export const ClientGridWrapper = ({
   selectedSizeSlugs?: string[];
   optionGroups?: Record<string, { name: string; values: string[] }>;
 }) => {
+  // Restore scroll position when user navigates back from /product/* to
+  // collection. Sets history.scrollRestoration = 'manual' globally and
+  // uses rAF retry until DOM is tall enough for the saved position.
+  useScrollMemory();
+
   const session = useSession();
   const [favSet, setFavSet] = useState<Set<string>>(new Set());
 

@@ -14,7 +14,7 @@ import { ArrowUp } from 'lucide-react';
 import { Button } from '@shared/ui/button';
 import { getFavoriteProductIds } from '@features/collection/api/get-favorite-ids';
 import { useSession } from '@features/auth/lib/client';
-import { useScrollMemory } from '../lib/use-scroll-memory';
+import { useScrollMemory } from '@shared/lib/scroll/use-scroll-memory';
 import { loadMoreSearchProducts } from '../api/load-more-search';
 import { SearchLoadMore } from './SearchLoadMore';
 
