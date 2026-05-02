@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 20-01-PLAN.md
-last_updated: "2026-05-02T12:06:38.948Z"
+stopped_at: Completed 21-01-PLAN.md
+last_updated: "2026-05-02T12:20:25.565Z"
 last_activity: 2026-05-02
 progress:
-  total_phases: 20
+  total_phases: 21
   completed_phases: 12
   total_plans: 45
-  completed_plans: 42
+  completed_plans: 43
   percent: 100
 ---
 
@@ -56,6 +56,7 @@ Progress: [██████████] 100% (of current SEO wave)
 *Updated after each plan completion*
 | Phase 19-search-refactor-fsd-structure-quick-fixes P01 | 3min | 3 tasks | 13 files |
 | Phase 20 P01 | 12min | 2 tasks | 9 files |
+| Phase 21-search-popup-cmdk-ux-overhaul P01 | 8min | 7 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -83,9 +84,11 @@ Progress: [██████████] 100% (of current SEO wave)
 - [Phase 20]: /search uses two-call filter-defs pattern from getCollection.ts; skip when only q/sort/limit present
 - [Phase 20]: Search results page reuses collection FilterSheet/SortSelect/ActiveFiltersCarousel/ClientGrid/LoadMore without forking; LoadMore handle prop receives query string
 - [Phase 20]: SearchSortKeys lacks CREATED; created-desc silently degrades to RELEVANCE rather than forking SortSelect
+- [Phase 21-search-popup-cmdk-ux-overhaul]: Extended shadcn CommandDialog to forward shouldFilter/filter/loop, avoiding Dialog+Command fallback (R-05)
+- [Phase 21-search-popup-cmdk-ux-overhaul]: Recent searches stored under nnshop:search:recent (max 5, FIFO, case-insensitive dedupe), populated via useEffect for SSR safety
 
 ## Session Continuity
 
-Last session: 2026-05-02T12:06:29.383Z
-Stopped at: Completed 20-01-PLAN.md
+Last session: 2026-05-02T12:20:17.512Z
+Stopped at: Completed 21-01-PLAN.md
 Resume file: None

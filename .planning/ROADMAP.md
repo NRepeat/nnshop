@@ -322,3 +322,13 @@ Plans:
 
 Plans:
 - [x] TBD (run /gsd:plan-phase 20 to break down) (completed 2026-05-02)
+
+### Phase 21: Search popup — cmdk UX overhaul
+
+**Goal:** Replace SearchDialog framer-motion+plain-input UX with cmdk (Command/CommandDialog) for a docs-site-style command palette: sectioned results (Products / Brands / Recent), arrow-key navigation, recent searches in localStorage (max 5), inline loading shimmer in input, result-count display, ESC/Cmd+K shortcuts.
+**Requirements**: TBD
+**Depends on:** Phase 19, Phase 20
+**Plans:** 1/1 plans complete
+
+Plans:
+- [x] TBD (run /gsd:plan-phase 21 to break down) (completed 2026-05-02)
