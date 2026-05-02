@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 const PREFIX = 'nnshop:scroll:';
@@ -36,8 +36,28 @@ export function useScrollMemory() {
     keyRef.current = key;
   }, [key]);
 
-  // Restore on mount / key change.
-  useEffect(() => {
+  // Disable browser native scroll restoration globally — it fires at
+  // navigation-commit time when the DOM only has the SSR initial 24
+  // products and snaps the viewport to whatever max scroll the short
+  // page allows (typically the footer). Our own restore below waits for
+  // the cached state to hydrate and the DOM to grow tall enough.
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+    const prev = window.history.scrollRestoration;
+    try {
+      window.history.scrollRestoration = 'manual';
+    } catch {}
+    return () => {
+      try {
+        window.history.scrollRestoration = prev;
+      } catch {}
+    };
+  }, []);
+
+  // Restore on mount / key change. Runs in useLayoutEffect (sync after
+  // DOM commit, before paint) so the rAF loop has the latest scrollHeight
+  // at the earliest possible moment.
+  useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
     const raw = sessionStorage.getItem(key);
     if (!raw) return;

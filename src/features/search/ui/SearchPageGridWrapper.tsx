@@ -1,6 +1,12 @@
 'use client';
 import * as React from 'react';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useCallback,
+} from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ClientGrid } from '@features/collection/ui/ClientGrid';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
@@ -75,8 +81,12 @@ export function SearchPageGridWrapper({
   const [pageInfo, setPageInfo] = useState<PageInfo>(initialPageInfo);
   const [isLoading, setIsLoading] = useState(false);
 
-  // After mount: check session cache for same URL. If hit, swap state.
-  useEffect(() => {
+  // useLayoutEffect runs synchronously after DOM commit, BEFORE useEffect
+  // and BEFORE the browser paints. This means by the time useScrollMemory's
+  // rAF retry loop starts (in a useEffect below), the products array has
+  // already been swapped from the cached 96 → DOM grows tall enough for
+  // scroll restoration to land on the right card.
+  useLayoutEffect(() => {
     const cached = readCache(cacheKey);
     if (
       cached &&
