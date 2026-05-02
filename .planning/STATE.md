@@ -2,13 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: "2026-03-22T00:00:00.000Z"
+status: completed
+stopped_at: Completed 19-01-PLAN.md
+last_updated: "2026-05-02T11:41:31.337Z"
+last_activity: 2026-05-02
 progress:
-  total_phases: 18
-  completed_phases: 17
-  total_plans: 42
+  total_phases: 19
+  completed_phases: 12
+  total_plans: 45
   completed_plans: 41
+  percent: 100
 ---
 
 # Project State
@@ -25,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-02-23)
 Phase: 17 (Gender Navigation Architecture)
 Plan: 1 of 1 in current phase completed
 Status: Complete
-Last activity: 2026-03-22
+Last activity: 2026-05-02
 
 Progress: [██████████] 100% (of current SEO wave)
 
@@ -51,6 +54,7 @@ Progress: [██████████] 100% (of current SEO wave)
 - Trend: Consistent (5 plans in this session)
 
 *Updated after each plan completion*
+| Phase 19-search-refactor-fsd-structure-quick-fixes P01 | 3min | 3 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -63,6 +67,7 @@ Progress: [██████████] 100% (of current SEO wave)
 - Phase 16 added: SEO Image Alt Text — add descriptive alt text to all product and content images
 - Phase 17 added: Gender Navigation Architecture — derive gender from URL instead of cookie to fix back navigation state bug
 - Phase 18 added: SEO audit fixes (canonical, redirects, 404s, image optimization, meta-tags)
+- Phase 19 added: Search refactor — FSD structure + quick fixes (popup discount/layout, mobile header, single GraphQL source)
 
 ### Decisions
 
@@ -71,9 +76,12 @@ Progress: [██████████] 100% (of current SEO wave)
 - [Phase 17]: Removed dead components GenderProvider and SetGenderCookie that relied on cookie state.
 - [Phase 17]: Refactored all header/navigation components to use headers() for gender state, ensuring consistency during back-navigation.
 - [Phase 17]: Updated ProductView to use headers() and URL-based collection handles for breadcrumbs, maintaining context without cookies.
+- [Phase 19-search-refactor-fsd-structure-quick-fixes]: ProductCardSPP wraps internally with Link; SearchResultsGrid uses outer div + onClick to avoid nested anchors while still closing popup
+- [Phase 19-search-refactor-fsd-structure-quick-fixes]: /search page now passes locale to predictiveSearch; RU users on /ru/search get RU-localized results (popup parity)
+- [Phase 19-search-refactor-fsd-structure-quick-fixes]: Unified grid breakpoints: grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 (page's denser set adopted as default)
 
 ## Session Continuity
 
-Last session: 2026-03-22T00:00:00.000Z
-Stopped at: Completed 17-01-PLAN.md — Gender Navigation Architecture implementation
+Last session: 2026-05-02T11:41:23.865Z
+Stopped at: Completed 19-01-PLAN.md
 Resume file: None

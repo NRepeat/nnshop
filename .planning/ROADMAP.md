@@ -302,3 +302,13 @@ Plans:
 
 Plans:
 - [ ] TBD (run /gsd:plan-phase 18 to break down)
+
+### Phase 19: Search refactor — FSD structure + quick fixes
+
+**Goal:** Restructure search code into FSD module (src/features/search/), fix popup discount price (use ProductCardSPP, znizka metafields plural) and layout consistency between popup/page, make mobile dialog header responsive (icon-only button on small viewport), unify GraphQL into single source. Foundation for follow-up phases B (cmdk UX overhaul) and C (full search page with filters + pagination).
+**Requirements**: TBD
+**Depends on:** Phase 18
+**Plans:** 1/1 plans complete
+
+Plans:
+- [x] TBD (run /gsd:plan-phase 19 to break down) (completed 2026-05-02)
