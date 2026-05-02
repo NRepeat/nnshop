@@ -136,7 +136,7 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
                   (debouncedQuery.length > 0 && results === null)) &&
                   query.length > 0 && (
                     <div className="py-8 px-4">
-                      <SearchSkeleton count={8} />
+                      <SearchSkeleton />
                     </div>
                   )}
 
