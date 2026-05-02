@@ -1,13 +1,24 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@shared/ui/button';
 import { Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { SearchDialog } from './SearchDialog';
+import { SearchCommandDialog } from './SearchCommandDialog';
 
 export function SearchTrigger({ className }: { className?: string }) {
   const t = useTranslations('Search');
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setOpen((v) => !v);
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
 
   return (
     <>
@@ -16,11 +27,11 @@ export function SearchTrigger({ className }: { className?: string }) {
         variant="ghost"
         size="icon"
         aria-label={t('title')}
-        onClick={() => setIsOpen(true)}
+        onClick={() => setOpen(true)}
       >
         <Search className="w-5 h-5" />
       </Button>
-      <SearchDialog isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <SearchCommandDialog open={open} onOpenChange={setOpen} />
     </>
   );
 }
