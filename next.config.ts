@@ -6,6 +6,15 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const nextConfig: NextConfig = {
   experimental: {
     // cpus: 2,
+    // Keep dynamic-page RSC payloads in the client router cache for 60s.
+    // Without this, every back-nav from /product → /search re-fetches the
+    // page server-side (cacheComponents makes dynamic pages uncacheable
+    // by default), which loses scroll position and re-renders the grid.
+    // 60s is a safe window for typical browse-and-back behavior.
+    staleTimes: {
+      dynamic: 60,
+      static: 300,
+    },
   },
   trailingSlash: false,
   output: 'standalone',
