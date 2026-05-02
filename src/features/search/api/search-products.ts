@@ -1,4 +1,5 @@
 import { storefrontClient } from '@shared/lib/shopify/client';
+import { cacheLife, cacheTag } from 'next/cache';
 import { StorefrontLanguageCode } from '@shared/lib/clients/types';
 import {
   Filter,
@@ -28,6 +29,14 @@ type Args = {
 const RESERVED_PARAM_KEYS = new Set(['q', 'sort', 'limit', 'minPrice', 'maxPrice']);
 
 export async function searchProducts(args: Args): Promise<SearchProductsResult> {
+  'use cache';
+  // Cache by all input args (locale, query, searchParams, first, after).
+  // Same URL → same args → same cache key → instant hit on back-nav.
+  // Without this, every back from /product → /search re-fetches Shopify,
+  // Suspense fallback flashes, scroll restoration breaks.
+  cacheLife('minutes');
+  cacheTag('search', `search-${args.locale}-${args.query}`);
+
   const { query, locale, searchParams, first, after } = args;
 
   const translatedFilters: ProductFilter[] = [];

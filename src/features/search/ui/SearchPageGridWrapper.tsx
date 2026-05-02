@@ -8,6 +8,7 @@ import { ArrowUp } from 'lucide-react';
 import { Button } from '@shared/ui/button';
 import { getFavoriteProductIds } from '@features/collection/api/get-favorite-ids';
 import { useSession } from '@features/auth/lib/client';
+import { useScrollMemory } from '../lib/use-scroll-memory';
 import { loadMoreSearchProducts } from '../api/load-more-search';
 import { SearchLoadMore } from './SearchLoadMore';
 
@@ -54,9 +55,11 @@ export function SearchPageGridWrapper({
   query,
   locale,
 }: Props) {
-  // Note: scroll memory now lives in <SearchScrollMemory /> at page level,
-  // OUTSIDE the Suspense boundary, so it can intercept browser native
-  // restoration during the streaming-loading state.
+  // Scroll memory: persists scrollY in sessionStorage and restores on mount.
+  // Works alongside (not against) Next.js native scroll restoration —
+  // useEffect retries via rAF until DOM is tall enough.
+  useScrollMemory();
+
   const session = useSession();
   const searchParams = useSearchParams();
   const search = searchParams.toString();
