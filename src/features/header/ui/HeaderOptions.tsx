@@ -2,7 +2,7 @@ import { Heart, ShoppingCart } from 'lucide-react';
 import CartSheet from '../cart/ui/Sheet';
 import { CartSheetController } from '../cart/ui/CartSheetController';
 import { Button } from '@shared/ui/button';
-import { SearchSession } from '../search/ui/search-session';
+import { SearchTrigger } from '@features/search';
 import { Suspense } from 'react';
 import { AccountButton } from '../account/ui/AccoutnButton';
 import { Link } from '@shared/i18n/navigation';
@@ -10,7 +10,7 @@ import { Link } from '@shared/i18n/navigation';
 export const HeaderOptions = ({ locale }: { locale: string }) => {
   return (
     <div className="col-span-1 flex justify-end gap-1 items-center px-1">
-      <SearchSession className="h-full hidden md:block" />
+      <SearchTrigger className="h-full hidden md:block" />
       <Button
         variant="ghost"
         size="icon"
