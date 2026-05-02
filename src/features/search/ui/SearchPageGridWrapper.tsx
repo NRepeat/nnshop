@@ -1,50 +1,172 @@
 'use client';
 import * as React from 'react';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ClientGrid } from '@features/collection/ui/ClientGrid';
-import LoadMore from '@features/collection/ui/LoadMore';
 import { PageInfo, Product } from '@shared/lib/shopify/types/storefront.types';
 import { ArrowUp } from 'lucide-react';
 import { Button } from '@shared/ui/button';
 import { getFavoriteProductIds } from '@features/collection/api/get-favorite-ids';
 import { useSession } from '@features/auth/lib/client';
 import { useScrollMemory } from '../lib/use-scroll-memory';
+import { loadMoreSearchProducts } from '../api/load-more-search';
+import { SearchLoadMore } from './SearchLoadMore';
 
 type Props = {
   initialProducts: (Product & { isFav: boolean })[];
   initialPageInfo: PageInfo;
   query: string;
+  locale: string;
 };
 
-export const SearchPageGridWrapper = ({
+const CACHE_PREFIX = 'nnshop:search:';
+
+type CachedState = {
+  products: (Product & { isFav: boolean })[];
+  pageInfo: PageInfo;
+  // Saved so we can detect cache invalidation if filters/sort changed
+  // out-of-band (e.g. user navigated away then back to a different URL).
+  signature: string;
+};
+
+function readCache(key: string): CachedState | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+    return JSON.parse(raw) as CachedState;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(key: string, state: CachedState) {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.setItem(key, JSON.stringify(state));
+  } catch {
+    // sessionStorage quota or disabled — silently drop.
+  }
+}
+
+export function SearchPageGridWrapper({
   initialProducts,
   initialPageInfo,
   query,
-}: Props) => {
+  locale,
+}: Props) {
   // Restore scroll position when user navigates back from /product/* to /search.
   useScrollMemory();
 
   const session = useSession();
-  const [favSet, setFavSet] = useState<Set<string>>(new Set());
+  const searchParams = useSearchParams();
+  const search = searchParams.toString();
+  const cacheKey = `${CACHE_PREFIX}${search}`;
+  const signature = `${query}|${search}|${initialProducts.length}`;
 
-  const productIdsKey = initialProducts.map((p) => p.id).join(',');
+  // Initial state matches server-rendered HTML to avoid hydration mismatch.
+  // After hydration, useEffect below swaps to a sessionStorage cache hit if
+  // one exists for this URL (e.g. user clicked Load More 3 times then opened
+  // a product — back-nav restores all 96 products instantly).
+  const [products, setProducts] =
+    useState<(Product & { isFav: boolean })[]>(initialProducts);
+  const [pageInfo, setPageInfo] = useState<PageInfo>(initialPageInfo);
+  const [isLoading, setIsLoading] = useState(false);
 
+  // After mount: check session cache for same URL. If hit, swap state.
+  useEffect(() => {
+    const cached = readCache(cacheKey);
+    if (
+      cached &&
+      cached.signature === signature &&
+      cached.products.length > initialProducts.length
+    ) {
+      setProducts(cached.products);
+      setPageInfo(cached.pageInfo);
+    }
+    // Run only on mount per cacheKey — re-runs handled by signature reset below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cacheKey]);
+
+  // If the URL/query changes (filter, sort, q changed) — reset to fresh
+  // server-rendered initial page.
+  const prevSignatureRef = useRef(signature);
+  useEffect(() => {
+    if (prevSignatureRef.current !== signature) {
+      prevSignatureRef.current = signature;
+      setProducts(initialProducts);
+      setPageInfo(initialPageInfo);
+    }
+  }, [signature, initialProducts, initialPageInfo]);
+
+  // Persist accumulated state to sessionStorage on every change so back-nav
+  // from /product/* can hydrate without refetching.
+  useEffect(() => {
+    writeCache(cacheKey, { products, pageInfo, signature });
+  }, [cacheKey, products, pageInfo, signature]);
+
+  // Hydrate favorites for the current product set whenever it grows.
+  const productIdsKey = products.map((p) => p.id).join(',');
   useEffect(() => {
     const user = session.data?.user as
       | (NonNullable<typeof session.data>['user'] & { isAnonymous?: boolean })
       | undefined;
     if (!user || user.isAnonymous || session.isPending) return;
-    getFavoriteProductIds(initialProducts.map((p) => p.id)).then((ids) => {
-      setFavSet(new Set(ids));
+    getFavoriteProductIds(products.map((p) => p.id)).then((ids) => {
+      const favSet = new Set(ids);
+      setProducts((prev) =>
+        prev.map((p) => ({ ...p, isFav: favSet.has(p.id) })),
+      );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productIdsKey, session.data, session.isPending]);
 
-  const products = React.useMemo(
-    () => initialProducts.map((p) => ({ ...p, isFav: favSet.has(p.id) })),
-    [initialProducts, favSet],
-  );
+  // Build a plain searchParams object for the server action (cursor pagination
+  // must replay the same filters/sort).
+  const searchParamsObject = React.useMemo(() => {
+    const obj: { [k: string]: string | string[] } = {};
+    searchParams.forEach((v, k) => {
+      if (obj[k] === undefined) {
+        obj[k] = v;
+      } else if (Array.isArray(obj[k])) {
+        (obj[k] as string[]).push(v);
+      } else {
+        obj[k] = [obj[k] as string, v];
+      }
+    });
+    return obj;
+  }, [searchParams]);
 
+  const handleLoadMore = useCallback(async () => {
+    if (isLoading || !pageInfo.hasNextPage || !pageInfo.endCursor) return;
+    setIsLoading(true);
+    try {
+      const next = await loadMoreSearchProducts({
+        query,
+        locale,
+        searchParams: searchParamsObject,
+        after: pageInfo.endCursor,
+        pageSize: 24,
+      });
+      const seen = new Set(products.map((p) => p.id));
+      const fresh = next.products
+        .filter((p) => !seen.has(p.id))
+        .map((p) => ({ ...p, isFav: false }));
+      setProducts((prev) => [...prev, ...fresh]);
+      setPageInfo(next.pageInfo);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [
+    isLoading,
+    pageInfo,
+    query,
+    locale,
+    searchParamsObject,
+    products,
+  ]);
+
+  // Scroll-to-top button.
   const [showScrollTop, setShowScrollTop] = useState(false);
   useEffect(() => {
     const onScroll = () => setShowScrollTop(window.scrollY > 600);
@@ -59,14 +181,14 @@ export const SearchPageGridWrapper = ({
         <div className="flex flex-col w-full justify-between pt-0 min-h-screen h-fit">
           <ClientGrid
             products={products}
-            hasNextPage={initialPageInfo?.hasNextPage}
+            hasNextPage={pageInfo?.hasNextPage}
           />
           <div className="w-full items-center">
-            <Suspense fallback={null}>
-              {/* LoadMore's `handle` prop is unused per its current implementation
-                  (see LoadMore.tsx lines 11-20). We pass `query` to satisfy the type. */}
-              <LoadMore initialPageInfo={initialPageInfo} handle={query} />
-            </Suspense>
+            <SearchLoadMore
+              pageInfo={pageInfo}
+              isLoading={isLoading}
+              onLoadMore={handleLoadMore}
+            />
           </div>
         </div>
       </div>
@@ -81,4 +203,4 @@ export const SearchPageGridWrapper = ({
       )}
     </div>
   );
-};
+}

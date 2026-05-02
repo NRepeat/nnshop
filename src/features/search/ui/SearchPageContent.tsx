@@ -35,10 +35,10 @@ export const SearchPageContent = async ({
       ? awaitedSearchParams.q.trim()
       : '';
 
-  const limit = Math.min(
-    parseInt((awaitedSearchParams.limit as string) || '24', 10),
-    250,
-  );
+  // Initial server page size is fixed at 24. Pagination beyond that is
+  // handled client-side via Server Action (loadMoreSearchProducts) so we
+  // do not refetch the entire product list on every Load More click.
+  const limit = 24;
 
   const pageTitle = (
     <h1 className="text-3xl md:text-4xl font-bold mb-2">
@@ -134,6 +134,7 @@ export const SearchPageContent = async ({
               }
               initialPageInfo={pageInfo as PageInfo}
               query={query}
+              locale={locale}
             />
           </div>
         </div>
