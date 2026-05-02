@@ -790,7 +790,14 @@
     "title": "Поиск",
     "loading": "Загрузка результатов",
     "resultsFor": "Результаты для",
-    "errorFetchingResults": "Ошибка при получении результатов поиска."
+    "errorFetchingResults": "Ошибка при получении результатов поиска.",
+    "recentSearches": "Недавние поиски",
+    "clearRecent": "Очистить историю",
+    "noRecentSearches": "Нет недавних поисков",
+    "brands": "Бренды",
+    "products": "Товары",
+    "viewAllResults": "Посмотреть все результаты",
+    "cmdK": "Нажмите Cmd+K для поиска"
   },
   "ProductCard": {
     "new": "НОВИНКА",

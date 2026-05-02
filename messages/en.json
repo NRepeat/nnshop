@@ -619,7 +619,14 @@
     "title": "Search",
     "loading": "Loading results",
     "resultsFor": "Results for",
-    "errorFetchingResults": "Error fetching search results."
+    "errorFetchingResults": "Error fetching search results.",
+    "recentSearches": "Recent searches",
+    "clearRecent": "Clear history",
+    "noRecentSearches": "No recent searches",
+    "brands": "Brands",
+    "products": "Products",
+    "viewAllResults": "View all results",
+    "cmdK": "Press Cmd+K to search"
   },
   "ProductCard": {
     "new": "New",

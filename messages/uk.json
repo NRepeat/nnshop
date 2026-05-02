@@ -790,7 +790,14 @@
     "title": "Пошук",
     "loading": "Завантаження результатів",
     "resultsFor": "Результати для",
-    "errorFetchingResults": "Помилка під час отримання результатів пошуку."
+    "errorFetchingResults": "Помилка під час отримання результатів пошуку.",
+    "recentSearches": "Останні пошуки",
+    "clearRecent": "Очистити історію",
+    "noRecentSearches": "Немає останніх пошуків",
+    "brands": "Бренди",
+    "products": "Товари",
+    "viewAllResults": "Переглянути всі результати",
+    "cmdK": "Натисніть Cmd+K для пошуку"
   },
   "ProductCard": {
     "new": "НОВИНКА",
