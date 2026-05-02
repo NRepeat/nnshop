@@ -8,6 +8,7 @@ import { ArrowUp } from 'lucide-react';
 import { Button } from '@shared/ui/button';
 import { getFavoriteProductIds } from '@features/collection/api/get-favorite-ids';
 import { useSession } from '@features/auth/lib/client';
+import { useScrollMemory } from '../lib/use-scroll-memory';
 
 type Props = {
   initialProducts: (Product & { isFav: boolean })[];
@@ -20,6 +21,9 @@ export const SearchPageGridWrapper = ({
   initialPageInfo,
   query,
 }: Props) => {
+  // Restore scroll position when user navigates back from /product/* to /search.
+  useScrollMemory();
+
   const session = useSession();
   const [favSet, setFavSet] = useState<Set<string>>(new Set());
 
