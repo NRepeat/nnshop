@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 19-01-PLAN.md
-last_updated: "2026-05-02T11:41:31.337Z"
+stopped_at: Completed 20-01-PLAN.md
+last_updated: "2026-05-02T12:06:38.948Z"
 last_activity: 2026-05-02
 progress:
-  total_phases: 19
+  total_phases: 20
   completed_phases: 12
   total_plans: 45
-  completed_plans: 41
+  completed_plans: 42
   percent: 100
 ---
 
@@ -55,6 +55,7 @@ Progress: [██████████] 100% (of current SEO wave)
 
 *Updated after each plan completion*
 | Phase 19-search-refactor-fsd-structure-quick-fixes P01 | 3min | 3 tasks | 13 files |
+| Phase 20 P01 | 12min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -79,9 +80,12 @@ Progress: [██████████] 100% (of current SEO wave)
 - [Phase 19-search-refactor-fsd-structure-quick-fixes]: ProductCardSPP wraps internally with Link; SearchResultsGrid uses outer div + onClick to avoid nested anchors while still closing popup
 - [Phase 19-search-refactor-fsd-structure-quick-fixes]: /search page now passes locale to predictiveSearch; RU users on /ru/search get RU-localized results (popup parity)
 - [Phase 19-search-refactor-fsd-structure-quick-fixes]: Unified grid breakpoints: grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 (page's denser set adopted as default)
+- [Phase 20]: /search uses two-call filter-defs pattern from getCollection.ts; skip when only q/sort/limit present
+- [Phase 20]: Search results page reuses collection FilterSheet/SortSelect/ActiveFiltersCarousel/ClientGrid/LoadMore without forking; LoadMore handle prop receives query string
+- [Phase 20]: SearchSortKeys lacks CREATED; created-desc silently degrades to RELEVANCE rather than forking SortSelect
 
 ## Session Continuity
 
-Last session: 2026-05-02T11:41:23.865Z
-Stopped at: Completed 19-01-PLAN.md
+Last session: 2026-05-02T12:06:29.383Z
+Stopped at: Completed 20-01-PLAN.md
 Resume file: None

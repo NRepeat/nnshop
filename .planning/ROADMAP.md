@@ -312,3 +312,13 @@ Plans:
 
 Plans:
 - [x] TBD (run /gsd:plan-phase 19 to break down) (completed 2026-05-02)
+
+### Phase 20: Search page — filters, sort, pagination
+
+**Goal:** Switch /search route from Storefront `predictiveSearch` (capped at 10, no filters) to full `search` query with productFilters facets. Reuse FilterSheet + SortSelect + ActiveFiltersCarousel from collections module so search results page reaches feature parity with collection pages. Add cursor pagination via Load more button.
+**Requirements**: TBD
+**Depends on:** Phase 19
+**Plans:** 1/1 plans complete
+
+Plans:
+- [x] TBD (run /gsd:plan-phase 20 to break down) (completed 2026-05-02)
