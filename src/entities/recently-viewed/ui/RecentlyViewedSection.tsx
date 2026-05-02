@@ -7,6 +7,7 @@ import { ProductCard } from '@entities/product/ui/ProductCard';
 import { ProductCardSkeleton } from '@entities/product/ui/ProductCardSkeleton';
 import { Skeleton } from '@shared/ui/skeleton';
 import { Product } from '@shared/lib/shopify/types/storefront.types';
+import { getRecentHandles } from '../lib/storage';
 
 export const RecentlyViewedSection = () => {
   const locale = useLocale();
@@ -15,9 +16,15 @@ export const RecentlyViewedSection = () => {
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
+    const handles = getRecentHandles(10);
+    if (handles.length === 0) return;
     startTransition(async () => {
       try {
-        const res = await fetch(`/api/recently-viewed?locale=${locale}`, { cache: 'no-store' });
+        const qs = new URLSearchParams({
+          locale,
+          handles: handles.join(','),
+        });
+        const res = await fetch(`/api/recently-viewed?${qs.toString()}`);
         const data: Product[] = await res.json();
         if (Array.isArray(data) && data.length > 0) setProducts(data);
       } catch {}

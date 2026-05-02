@@ -73,7 +73,7 @@ export const POSTS_QUERY =
 
 // Get posts for specific language with English fallback - Ukrainian posts first
 export const POSTS_BY_LANGUAGE_QUERY =
-  defineQuery(`*[_type == "post" && defined(slug.current) && (language == $language || !defined(language))] | order(publishedAt desc)[0...12]{
+  defineQuery(`*[_type == "post" && defined(slug.current) && hideFromBlogList != true && (language == $language || !defined(language))] | order(publishedAt desc)[0...12]{
   _id,
   title,
   slug,
@@ -138,7 +138,7 @@ export const ALL_POSTS_DEBUG_QUERY =
 }`);
 
 export const POSTS_SLUGS_QUERY =
-  defineQuery(`*[_type == "post" && defined(slug.current)]{
+  defineQuery(`*[_type == "post" && defined(slug.current) && hideFromBlogList != true]{
   "slug": slug.current,
   language
 }`);
@@ -197,6 +197,7 @@ export const POST_BY_LANGUAGE_QUERY =
   _id,
   title,
   body,
+  hideFromBlogList,
   mainImage {
     ...,
     asset-> { _id, url, metadata { dimensions } },

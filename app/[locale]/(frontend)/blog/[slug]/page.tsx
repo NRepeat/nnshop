@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     tags: [`post:${slug}`],
   });
 
-  if (!post) {
+  if (!post || post.hideFromBlogList) {
     notFound();
   }
 
@@ -89,10 +89,10 @@ export default async function BlogPostPage({ params }: Props) {
     tags: [`post:${slug}`],
   });
 
-  if (!post) notFound();
+  if (!post || post.hideFromBlogList) notFound();
 
   return (
-    <div className="  space-y-12 my-8 h-fit min-h-screen">
+    <div className="min-h-screen py-8 md:py-12">
       <div className="container">
         <Post {...post} currentLocale={locale} />
       </div>

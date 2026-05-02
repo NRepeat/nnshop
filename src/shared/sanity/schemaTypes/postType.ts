@@ -70,6 +70,14 @@ export const postType = defineType({
       of: [{ type: 'reference', to: { type: 'post' } }],
     }),
     defineField({
+      name: 'hideFromBlogList',
+      title: 'Hide from blog list',
+      description:
+        'When checked, this post will not appear on /blog and the standalone /blog/[slug] page returns 404. Used for SEO copy embedded in collection pages.',
+      type: 'boolean',
+      initialValue: false,
+    }),
+    defineField({
       name: 'seo',
       type: 'seo',
     }),

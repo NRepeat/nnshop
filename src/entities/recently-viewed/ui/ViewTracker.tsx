@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { recordProductView } from '../api/record-view';
-import { authClient } from '@features/auth/lib/auth-client';
+import { recordView } from '../lib/storage';
 
 type ViewTrackerProps = {
   productHandle: string;
@@ -10,18 +9,10 @@ type ViewTrackerProps = {
   productTitle?: string;
 };
 
-export const ViewTracker = ({ productHandle, productId, productTitle }: ViewTrackerProps) => {
+export const ViewTracker = ({ productHandle, productId }: ViewTrackerProps) => {
   useEffect(() => {
-    const track = async () => {
-      const { data: session } = await authClient.getSession();
-      if (!session?.user) {
-        await authClient.signIn.anonymous();
-      }
-
-      recordProductView(productHandle, productId);
-    };
-    track();
-  }, [productHandle, productId, productTitle]);
+    recordView(productId, productHandle);
+  }, [productHandle, productId]);
 
   return null;
 };

@@ -123,6 +123,8 @@ export const Footer = async ({ locale }: { locale: string }) => {
       href: '/info/public-offer-agreement',
     },
     { title: t('privacy_policy'), href: '/info/privacy-policy' },
+    { title: t('bonus_program'), href: '/info/bonus-program' },
+    { title: t('blog'), href: '/blog' },
   ];
 
   const workingHours =

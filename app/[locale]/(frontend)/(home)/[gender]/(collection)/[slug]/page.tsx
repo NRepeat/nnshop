@@ -28,6 +28,7 @@ import {
   BreadcrumbSeparator,
 } from '@shared/ui/breadcrumb';
 import { EnableScrollHide } from '@shared/ui/EnableScrollHide';
+import { CollectionSeoContent } from '@widgets/collection-seo-content';
 
 export type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -192,6 +193,12 @@ export default async function CollectionPage({ params, searchParams }: Props) {
             displayTitle={displayTitle}
           />
         </Suspense>
+
+        <CollectionSeoContent
+          gender={gender}
+          handle={resolvedHandle}
+          locale={locale}
+        />
       </div>
     </div>
   );
