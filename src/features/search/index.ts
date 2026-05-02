@@ -7,3 +7,4 @@ export { predictiveSearch } from './api/predictive-search';
 export { searchProducts } from './api/search-products';
 export type { SearchProductsResult } from './api/search-products';
 export { SearchPageContent } from './ui/SearchPageContent';
+export { SearchScrollMemory } from './ui/SearchScrollMemory';
