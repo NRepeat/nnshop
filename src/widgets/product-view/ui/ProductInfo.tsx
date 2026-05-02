@@ -480,11 +480,12 @@ export const ProductInfo = ({
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      <StickyAddToCart
+      {/* Temporarily hidden — mobile sticky buy footer issue. Re-enable when fixed. */}
+      {/* <StickyAddToCart
         product={product}
         selectedVariant={selectedVariant}
         triggerRef={addToCartRef}
-      />
+      /> */}
     </div>
   );
 };

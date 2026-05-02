@@ -184,7 +184,7 @@ export async function generateGoogleMerchantXml(
         const id = variant.sku || variant.id.split('/').pop();
         const title = escapeXml(`${product.vendor} ${product.title}`);
         const description = escapeXml(product.description || product.title);
-        const link = `${baseUrl}/${locale}/product/${product.handle}?variant=${variant.id.split('/').pop()}`;
+        const link = `${baseUrl}/${locale}/product/${product.handle}`;
         const imageLink =
           variant.image?.url || product.featuredImage?.url || '';
         const availability =

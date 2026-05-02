@@ -122,46 +122,67 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
                 </Button>
               </div>
 
-              {loading && (
-                <div className="py-8">
-                  <SearchSkeleton />
-                </div>
-              )}
-
-              {!loading &&
-                results &&
-                results.products &&
-                results.products.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="py-8 px-4"
-                  >
-                    <div className="flex justify-between items-center mb-6 text-sm text-gray-500">
-                      <span>
-                        {t.rich('results', {
-                          count: results.products.length,
-                        })}
-                      </span>
-                      <Link
-                        href={`/search?q=${encodeURIComponent(debouncedQuery)}`}
-                        className="border-b border-transparent hover:border-current transition-colors"
-                        onClick={onClose}
-                      >
-                        {t('viewAll')}
-                      </Link>
+              {/* Stable content container — avoids layout jump between
+                  skeleton / results / empty states. Heights are tuned to
+                  ~2 rows of cards on every breakpoint. */}
+              <div className="min-h-[60vh] sm:min-h-[640px]">
+                {/* Show skeleton whenever:
+                    - a query is in flight (loading)
+                    - debounce hasn't matched current query yet (typing)
+                    - debounced query set but results haven't landed yet
+                    Kills both the empty-state flash and the blank gap. */}
+                {(loading ||
+                  query !== debouncedQuery ||
+                  (debouncedQuery.length > 0 && results === null)) &&
+                  query.length > 0 && (
+                    <div className="py-8 px-4">
+                      <SearchSkeleton count={8} />
                     </div>
-                    <SearchResultsGrid
-                      products={results.products as Product[]}
-                      onProductClick={onClose}
-                    />
-                  </motion.div>
-                )}
+                  )}
 
-              {!loading &&
-                results &&
-                debouncedQuery &&
-                results.products?.length === 0 && <SearchEmpty />}
+                {!loading &&
+                  debouncedQuery === query &&
+                  results &&
+                  results.products &&
+                  results.products.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="py-8 px-4"
+                    >
+                      <div className="flex justify-between items-center mb-6 text-sm text-gray-500">
+                        <span>
+                          {t.rich('results', {
+                            count: results.products.length,
+                          })}
+                        </span>
+                        <Link
+                          href={`/search?q=${encodeURIComponent(debouncedQuery)}`}
+                          className="border-b border-transparent hover:border-current transition-colors"
+                          onClick={onClose}
+                        >
+                          {t('viewAll')}
+                        </Link>
+                      </div>
+                      <SearchResultsGrid
+                        products={results.products as Product[]}
+                        onProductClick={onClose}
+                      />
+                    </motion.div>
+                  )}
+
+                {/* Empty state only when query has fully settled AND result
+                    set is truly empty — prevents flash mid-debounce. */}
+                {!loading &&
+                  debouncedQuery === query &&
+                  debouncedQuery.length > 0 &&
+                  results &&
+                  results.products?.length === 0 && (
+                    <div className="py-8 px-4">
+                      <SearchEmpty />
+                    </div>
+                  )}
+              </div>
             </div>
           </motion.div>
         </>

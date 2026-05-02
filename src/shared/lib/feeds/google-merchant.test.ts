@@ -83,7 +83,7 @@ describe('Google Merchant Feed Generator', () => {
     // Product item checks
     expect(xml).toContain('<g:id>SKU123</g:id>');
     expect(xml).toContain('<g:title>Test Brand Test Product</g:title>');
-    expect(xml).toContain('<g:link>https://www.miomio.com.ua/uk/product/test-product?variant=456</g:link>');
+    expect(xml).toContain('<g:link>https://www.miomio.com.ua/uk/product/test-product</g:link>');
     expect(xml).toContain('<g:price>90.00 UAH</g:price>'); // 100 - 10%
     expect(xml).toContain('<g:availability>in_stock</g:availability>');
     expect(xml).toContain('<g:brand>Test Brand</g:brand>');
@@ -186,7 +186,7 @@ describe('Google Merchant Feed Generator', () => {
 
     expect(xml).toContain('<title>MioMio - Итальянская обувь и одежда</title>');
     expect(xml).toContain('<g:title>Test Brand Тестовый Продукт</g:title>');
-    expect(xml).toContain('<g:link>https://www.miomio.com.ua/ru/product/test-product?variant=456</g:link>');
+    expect(xml).toContain('<g:link>https://www.miomio.com.ua/ru/product/test-product</g:link>');
     expect(xml).toContain('<g:color>Белый</g:color>');
   });
 
