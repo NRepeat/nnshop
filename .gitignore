@@ -50,8 +50,8 @@ next-env.d.ts
 .env*.local
 .claude
 .env.local
-.planning/seo audit
-.planning/seo audit/*
+.planning
+.planning/**
 .gemini
 deploy.sh
 .env.server

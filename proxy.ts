@@ -12,7 +12,6 @@ import {
 } from '@shared/lib/shopify/types/storefront.generated';
 import { GetCollectionProxy } from '@entities/collection/api/query';
 import {
-  GET_PRODUCT_QUERY,
   GET_PROXY_PRODUCT_QUERY,
 } from '@entities/product/api/getProduct';
 
