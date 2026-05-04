@@ -152,7 +152,12 @@ async function CardDetail({ params }: PageProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {card.movements.map((m) => (
+                {card.movements.map((m) => {
+                  const displayAmount =
+                    m.type === 'SPEND' || m.type === 'EXPIRY'
+                      ? -Math.abs(m.amount)
+                      : m.amount;
+                  return (
                   <TableRow key={m.id}>
                     <TableCell className="text-sm whitespace-nowrap">
                       {new Date(m.date).toLocaleString('uk-UA', {
@@ -166,10 +171,10 @@ async function CardDetail({ params }: PageProps) {
                       </Badge>
                     </TableCell>
                     <TableCell
-                      className={`text-right font-mono tabular-nums ${m.amount < 0 ? 'text-red-600' : 'text-green-700 dark:text-green-500'}`}
+                      className={`text-right font-mono tabular-nums ${displayAmount < 0 ? 'text-red-600' : 'text-green-700 dark:text-green-500'}`}
                     >
-                      {m.amount > 0 ? '+' : ''}
-                      {balanceFmt.format(m.amount)}
+                      {displayAmount > 0 ? '+' : ''}
+                      {balanceFmt.format(displayAmount)}
                     </TableCell>
                     <TableCell className="text-sm max-w-xs truncate">
                       {m.note ?? '—'}
@@ -178,7 +183,8 @@ async function CardDetail({ params }: PageProps) {
                       {m.actorEmail ?? '—'}
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           )}

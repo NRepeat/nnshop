@@ -1,12 +1,13 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { IconArrowRight, IconSearch } from '@tabler/icons-react';
+import { IconArrowRight, IconPlus, IconSearch } from '@tabler/icons-react';
 import {
   searchLoyaltyCards,
   getTopCards,
 } from '@features/admin/bonuses/actions';
 import { SiteHeader } from '@/components/site-header';
 import { ResultsCardSkeleton } from '../_skeletons';
+import { CreateCardForm } from './CreateCardForm';
 import { Input } from '@shared/ui/input';
 import { Button } from '@shared/ui/button';
 import {
@@ -136,6 +137,22 @@ async function SearchAndResults({ searchParams }: PageProps) {
           )}
         </form>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <IconPlus className="size-5" />
+            Создать карту
+          </CardTitle>
+          <CardDescription>
+            Создаст карту с stub-пользователем. Если указан баланс &gt; 0 — добавится
+            запись «Корректировка» с заметкой о начальном балансе.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <CreateCardForm />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

@@ -174,8 +174,14 @@ const BonusesPageContent = async ({
                             </span>
                           </TableCell>
                           <TableCell className="text-right font-medium">
-                            {movement.type === 'ACCRUAL' ? '+' : '-'}
-                            {movement.amount} UAH
+                            {(() => {
+                              const display =
+                                movement.type === 'SPEND' ||
+                                movement.type === 'EXPIRY'
+                                  ? -Math.abs(movement.amount)
+                                  : movement.amount;
+                              return `${display > 0 ? '+' : ''}${display} UAH`;
+                            })()}
                           </TableCell>
                         </TableRow>
                       ))}

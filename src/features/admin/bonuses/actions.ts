@@ -205,6 +205,98 @@ export async function getTopCards(limit = 10): Promise<RecentCard[]> {
   }));
 }
 
+export async function createLoyaltyCard(
+  formData: FormData,
+): Promise<{ ok: boolean; error?: string; cardId?: string }> {
+  const session = await getAdminSession();
+  if (!session) return { ok: false, error: 'UNAUTHORIZED' };
+
+  const phoneRaw = String(formData.get('phone') || '').trim();
+  const name = String(formData.get('name') || '').trim();
+  const balanceRaw = String(formData.get('initialBalance') || '').trim();
+
+  if (!phoneRaw) return { ok: false, error: 'Телефон обязателен' };
+  if (!name) return { ok: false, error: 'Имя обязательно' };
+
+  const phone = formatPhoneE164(phoneRaw);
+  if (!phone) return { ok: false, error: 'Неверный формат телефона' };
+
+  const initialBalance = balanceRaw === '' ? 0 : Number(balanceRaw);
+  if (!Number.isFinite(initialBalance) || initialBalance < 0) {
+    return { ok: false, error: 'Начальный баланс должен быть ≥ 0' };
+  }
+
+  const existing = await prisma.loyaltyCards.findUnique({
+    where: { phone },
+    select: { id: true },
+  });
+  if (existing) return { ok: false, error: 'Карта с таким телефоном уже существует' };
+
+  const phoneDigits = phone.replace(/\D/g, '');
+  const stubId = `loyalty-${phoneDigits}`;
+  const stubEmail = `loyalty-${phoneDigits}@miomio.local`;
+  const cardId = randomUUID();
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const existingUser = await tx.user.findUnique({
+        where: { id: stubId },
+        select: { id: true },
+      });
+      if (!existingUser) {
+        await tx.user.create({
+          data: {
+            id: stubId,
+            name,
+            email: stubEmail,
+            emailVerified: false,
+            isAnonymous: true,
+            contactInformation: {
+              create: {
+                name,
+                lastName: '',
+                email: stubEmail,
+                phone,
+                countryCode: 'UA',
+              },
+            },
+          },
+        });
+      }
+
+      await tx.loyaltyCards.create({
+        data: {
+          id: cardId,
+          name,
+          phone,
+          userId: stubId,
+          bonusBalance: initialBalance,
+        },
+      });
+
+      if (initialBalance > 0) {
+        await tx.bonusMovements.create({
+          data: {
+            id: randomUUID(),
+            loyaltyCardId: cardId,
+            date: new Date(),
+            type: 'ADJUSTMENT',
+            amount: initialBalance,
+            note: 'Начальный баланс при создании карты',
+            actorUserId: session.user.id,
+          },
+        });
+      }
+    });
+
+    revalidatePath('/admin/bonuses');
+    return { ok: true, cardId };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'unknown error';
+    return { ok: false, error: msg };
+  }
+}
+
 export async function adjustBonus(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await getAdminSession();
   if (!session) return { ok: false, error: 'UNAUTHORIZED' };
