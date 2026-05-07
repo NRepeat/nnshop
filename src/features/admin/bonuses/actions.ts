@@ -7,6 +7,18 @@ import { getAdminSession } from '@features/auth/lib/is-admin';
 import { formatPhoneE164 } from '@shared/lib/validation/phone';
 import { isStubUser } from '@features/bonus/lib/link-card';
 
+async function getLedgerBalances(cardIds: string[]): Promise<Map<string, number>> {
+  if (cardIds.length === 0) return new Map();
+  const rows = await prisma.$queryRaw<{ loyaltyCardId: string; balance: number | null }[]>`
+    SELECT "loyaltyCardId",
+      SUM(CASE WHEN type IN ('SPEND','EXPIRY') THEN -amount ELSE amount END) AS balance
+    FROM bonus_movements
+    WHERE "loyaltyCardId" = ANY(${cardIds}::text[]) AND date <= NOW()
+    GROUP BY "loyaltyCardId"
+  `;
+  return new Map(rows.map((r) => [r.loyaltyCardId, Number(r.balance ?? 0)]));
+}
+
 export type CardSearchResult = {
   id: string;
   name: string;
@@ -42,23 +54,26 @@ export async function searchLoyaltyCards(query: string): Promise<CardSearchResul
       id: true,
       name: true,
       phone: true,
-      bonusBalance: true,
       user: {
         select: { id: true, email: true, isAnonymous: true },
       },
     },
-    orderBy: { bonusBalance: 'desc' },
-    take: SEARCH_LIMIT,
+    take: SEARCH_LIMIT * 2,
   });
 
-  return cards.map((c) => ({
-    id: c.id,
-    name: c.name,
-    phone: c.phone,
-    bonusBalance: c.bonusBalance,
-    isStub: isStubUser(c.user),
-    userEmail: isStubUser(c.user) ? null : c.user.email,
-  }));
+  const balances = await getLedgerBalances(cards.map((c) => c.id));
+
+  return cards
+    .map((c) => ({
+      id: c.id,
+      name: c.name,
+      phone: c.phone,
+      bonusBalance: balances.get(c.id) ?? 0,
+      isStub: isStubUser(c.user),
+      userEmail: isStubUser(c.user) ? null : c.user.email,
+    }))
+    .sort((a, b) => b.bonusBalance - a.bonusBalance)
+    .slice(0, SEARCH_LIMIT);
 }
 
 export type CardDetail = {
@@ -157,14 +172,18 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const since = new Date();
   since.setDate(since.getDate() - 30);
 
-  const [totalCards, stubCards, balanceAgg, recentMovements30d] = await Promise.all([
+  const [totalCards, stubCards, balanceRows, recentMovements30d] = await Promise.all([
     prisma.loyaltyCards.count(),
     prisma.loyaltyCards.count({
       where: {
         user: { isAnonymous: true, id: { startsWith: 'loyalty-' } },
       },
     }),
-    prisma.loyaltyCards.aggregate({ _sum: { bonusBalance: true } }),
+    prisma.$queryRaw<{ total: number | null }[]>`
+      SELECT SUM(CASE WHEN type IN ('SPEND','EXPIRY') THEN -amount ELSE amount END) AS total
+      FROM bonus_movements
+      WHERE date <= NOW()
+    `,
     prisma.bonusMovements.count({ where: { date: { gte: since } } }),
   ]);
 
@@ -172,7 +191,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     totalCards,
     registeredCards: totalCards - stubCards,
     stubCards,
-    totalBalance: balanceAgg._sum.bonusBalance ?? 0,
+    totalBalance: Number(balanceRows[0]?.total ?? 0),
     recentMovements30d,
   };
 }
@@ -190,26 +209,44 @@ export async function getTopCards(limit = 10): Promise<RecentCard[]> {
   const session = await getAdminSession();
   if (!session) throw new Error('UNAUTHORIZED');
 
-  const cards = await prisma.loyaltyCards.findMany({
-    select: {
-      id: true,
-      name: true,
-      phone: true,
-      bonusBalance: true,
-      user: { select: { id: true, email: true, isAnonymous: true } },
-    },
-    orderBy: { bonusBalance: 'desc' },
-    take: limit,
-  });
+  const topRows = await prisma.$queryRaw<{ loyaltyCardId: string; balance: number | null }[]>`
+    SELECT "loyaltyCardId",
+      SUM(CASE WHEN type IN ('SPEND','EXPIRY') THEN -amount ELSE amount END) AS balance
+    FROM bonus_movements
+    WHERE date <= NOW()
+    GROUP BY "loyaltyCardId"
+    ORDER BY balance DESC NULLS LAST
+    LIMIT ${limit}
+  `;
 
-  return cards.map((c) => ({
-    id: c.id,
-    name: c.name,
-    phone: c.phone,
-    bonusBalance: c.bonusBalance,
-    isStub: isStubUser(c.user),
-    userEmail: isStubUser(c.user) ? null : c.user.email,
-  }));
+  const ids = topRows.map((r) => r.loyaltyCardId);
+  const cards = ids.length
+    ? await prisma.loyaltyCards.findMany({
+        where: { id: { in: ids } },
+        select: {
+          id: true,
+          name: true,
+          phone: true,
+          user: { select: { id: true, email: true, isAnonymous: true } },
+        },
+      })
+    : [];
+  const cardMap = new Map(cards.map((c) => [c.id, c]));
+
+  return topRows
+    .map((r) => {
+      const c = cardMap.get(r.loyaltyCardId);
+      if (!c) return null;
+      return {
+        id: c.id,
+        name: c.name,
+        phone: c.phone,
+        bonusBalance: Number(r.balance ?? 0),
+        isStub: isStubUser(c.user),
+        userEmail: isStubUser(c.user) ? null : c.user.email,
+      };
+    })
+    .filter((x): x is RecentCard => x !== null);
 }
 
 export async function createLoyaltyCard(
