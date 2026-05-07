@@ -157,14 +157,24 @@ export async function accrueBonusForOrder(orderId: string): Promise<AccrueResult
 
   const now = new Date();
   const expireBy = new Date(now.getTime() + ONE_YEAR_MS);
+  const expiryMovementId = `${order.id}:${BonusMoveType.EXPIRY}`;
 
-  const [, updatedCard] = await prisma.$transaction([
+  const [, , updatedCard] = await prisma.$transaction([
     prisma.bonusMovements.create({
       data: {
         id: movementId,
         loyaltyCardId: card.id,
         date: now,
         type: BonusMoveType.ACCRUAL,
+        amount: accrual,
+      },
+    }),
+    prisma.bonusMovements.create({
+      data: {
+        id: expiryMovementId,
+        loyaltyCardId: card.id,
+        date: expireBy,
+        type: BonusMoveType.EXPIRY,
         amount: accrual,
       },
     }),

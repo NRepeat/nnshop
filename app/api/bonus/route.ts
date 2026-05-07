@@ -164,7 +164,10 @@ export async function POST(req: NextRequest) {
   }
 
   const now = new Date();
-  const [, updatedCard] = await prisma.$transaction([
+  const offsetExpiryId = `${order.id}:EXPIRY-OFFSET`;
+  const offsetExpiryDate = card.allExpireBy ?? new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+
+  const [, , updatedCard] = await prisma.$transaction([
     prisma.bonusMovements.create({
       data: {
         id: movementId,
@@ -172,6 +175,15 @@ export async function POST(req: NextRequest) {
         date: now,
         type: BonusMoveType.SPEND,
         amount: spend,
+      },
+    }),
+    prisma.bonusMovements.create({
+      data: {
+        id: offsetExpiryId,
+        loyaltyCardId: card.id,
+        date: offsetExpiryDate,
+        type: BonusMoveType.EXPIRY,
+        amount: -spend,
       },
     }),
     prisma.loyaltyCards.update({
