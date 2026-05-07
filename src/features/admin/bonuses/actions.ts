@@ -16,7 +16,7 @@ async function getLedgerBalances(cardIds: string[]): Promise<Map<string, number>
     WHERE "loyaltyCardId" = ANY(${cardIds}::text[]) AND date <= NOW()
     GROUP BY "loyaltyCardId"
   `;
-  return new Map(rows.map((r) => [r.loyaltyCardId, Number(r.balance ?? 0)]));
+  return new Map(rows.map((r) => [r.loyaltyCardId, Math.max(0, Number(r.balance ?? 0))]));
 }
 
 export type CardSearchResult = {
@@ -143,7 +143,7 @@ export async function getCardDetail(cardId: string): Promise<CardDetail | null> 
     id: card.id,
     name: card.name,
     phone: card.phone,
-    bonusBalance: ledgerBalance,
+    bonusBalance: Math.max(0, ledgerBalance),
     isStub: isStubUser(card.user),
     userEmail: isStubUser(card.user) ? null : card.user.email,
     movements: card.bonus_movements.map((m) => ({
@@ -180,9 +180,14 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       },
     }),
     prisma.$queryRaw<{ total: number | null }[]>`
-      SELECT SUM(CASE WHEN type IN ('SPEND','EXPIRY') THEN -amount ELSE amount END) AS total
-      FROM bonus_movements
-      WHERE date <= NOW()
+      SELECT SUM(GREATEST(card_balance, 0)) AS total
+      FROM (
+        SELECT "loyaltyCardId",
+          SUM(CASE WHEN type IN ('SPEND','EXPIRY') THEN -amount ELSE amount END) AS card_balance
+        FROM bonus_movements
+        WHERE date <= NOW()
+        GROUP BY "loyaltyCardId"
+      ) t
     `,
     prisma.bonusMovements.count({ where: { date: { gte: since } } }),
   ]);
@@ -211,7 +216,7 @@ export async function getTopCards(limit = 10): Promise<RecentCard[]> {
 
   const topRows = await prisma.$queryRaw<{ loyaltyCardId: string; balance: number | null }[]>`
     SELECT "loyaltyCardId",
-      SUM(CASE WHEN type IN ('SPEND','EXPIRY') THEN -amount ELSE amount END) AS balance
+      GREATEST(SUM(CASE WHEN type IN ('SPEND','EXPIRY') THEN -amount ELSE amount END), 0) AS balance
     FROM bonus_movements
     WHERE date <= NOW()
     GROUP BY "loyaltyCardId"

@@ -107,11 +107,12 @@ const BonusesPageContent = async ({
 
   const allMovements = loyaltyCard?.bonus_movements || [];
   const now = new Date();
-  const balance = allMovements.reduce((sum, m) => {
+  const rawBalance = allMovements.reduce((sum, m) => {
     if (m.date > now) return sum;
     if (m.type === 'SPEND' || m.type === 'EXPIRY') return sum - m.amount;
     return sum + m.amount;
   }, 0);
+  const balance = Math.max(0, rawBalance);
 
   // Hide reversal pairs (same day + same type + opposite-sign equal amounts)
   const reversalPaired = new Set<string>();
