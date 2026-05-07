@@ -117,11 +117,18 @@ export async function getCardDetail(cardId: string): Promise<CardDetail | null> 
     : [];
   const actorMap = new Map(actors.map((a) => [a.id, a.email]));
 
+  const now = new Date();
+  const ledgerBalance = card.bonus_movements.reduce((sum, m) => {
+    if (m.date > now) return sum;
+    const sign = m.type === 'SPEND' || m.type === 'EXPIRY' ? -1 : 1;
+    return sum + sign * Math.abs(m.amount);
+  }, 0);
+
   return {
     id: card.id,
     name: card.name,
     phone: card.phone,
-    bonusBalance: card.bonusBalance,
+    bonusBalance: ledgerBalance,
     isStub: isStubUser(card.user),
     userEmail: isStubUser(card.user) ? null : card.user.email,
     movements: card.bonus_movements.map((m) => ({
@@ -315,18 +322,28 @@ export async function adjustBonus(formData: FormData): Promise<{ ok: boolean; er
     await prisma.$transaction(async (tx) => {
       const card = await tx.loyaltyCards.findUnique({
         where: { id: cardId },
-        select: { id: true, bonusBalance: true },
+        select: { id: true },
       });
       if (!card) throw new Error('card not found');
 
-      const newBalance = card.bonusBalance + amount;
+      const now = new Date();
+      const movements = await tx.bonusMovements.findMany({
+        where: { loyaltyCardId: cardId, date: { lte: now } },
+        select: { type: true, amount: true },
+      });
+      const currentBalance = movements.reduce((sum, m) => {
+        const sign = m.type === 'SPEND' || m.type === 'EXPIRY' ? -1 : 1;
+        return sum + sign * Math.abs(m.amount);
+      }, 0);
+
+      const newBalance = currentBalance + amount;
       if (newBalance < 0) throw new Error('balance cannot go negative');
 
       await tx.bonusMovements.create({
         data: {
           id: randomUUID(),
           loyaltyCardId: cardId,
-          date: new Date(),
+          date: now,
           type: 'ADJUSTMENT',
           amount,
           note: note || null,

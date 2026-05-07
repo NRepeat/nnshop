@@ -105,8 +105,13 @@ const BonusesPageContent = async ({
     { label: t('title'), href: '/bonuses', isCurrent: true },
   ];
 
-  const balance = loyaltyCard?.bonusBalance || 0;
   const movements = loyaltyCard?.bonus_movements || [];
+  const now = new Date();
+  const balance = movements.reduce((sum, m) => {
+    if (m.date > now) return sum;
+    const sign = m.type === 'SPEND' || m.type === 'EXPIRY' ? -1 : 1;
+    return sum + sign * Math.abs(m.amount);
+  }, 0);
 
   return (
     <div className="container">
