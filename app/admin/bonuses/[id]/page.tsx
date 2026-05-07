@@ -155,7 +155,7 @@ async function CardDetail({ params }: PageProps) {
                 {card.movements.map((m) => {
                   const displayAmount =
                     m.type === 'SPEND' || m.type === 'EXPIRY'
-                      ? -Math.abs(m.amount)
+                      ? -m.amount
                       : m.amount;
                   return (
                   <TableRow key={m.id}>
