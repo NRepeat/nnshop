@@ -109,8 +109,8 @@ const BonusesPageContent = async ({
   const now = new Date();
   const balance = movements.reduce((sum, m) => {
     if (m.date > now) return sum;
-    const sign = m.type === 'SPEND' || m.type === 'EXPIRY' ? -1 : 1;
-    return sum + sign * Math.abs(m.amount);
+    if (m.type === 'SPEND' || m.type === 'EXPIRY') return sum - Math.abs(m.amount);
+    return sum + m.amount;
   }, 0);
 
   return (

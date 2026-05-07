@@ -120,8 +120,8 @@ export async function getCardDetail(cardId: string): Promise<CardDetail | null> 
   const now = new Date();
   const ledgerBalance = card.bonus_movements.reduce((sum, m) => {
     if (m.date > now) return sum;
-    const sign = m.type === 'SPEND' || m.type === 'EXPIRY' ? -1 : 1;
-    return sum + sign * Math.abs(m.amount);
+    if (m.type === 'SPEND' || m.type === 'EXPIRY') return sum - Math.abs(m.amount);
+    return sum + m.amount;
   }, 0);
 
   return {
@@ -332,8 +332,8 @@ export async function adjustBonus(formData: FormData): Promise<{ ok: boolean; er
         select: { type: true, amount: true },
       });
       const currentBalance = movements.reduce((sum, m) => {
-        const sign = m.type === 'SPEND' || m.type === 'EXPIRY' ? -1 : 1;
-        return sum + sign * Math.abs(m.amount);
+        if (m.type === 'SPEND' || m.type === 'EXPIRY') return sum - Math.abs(m.amount);
+        return sum + m.amount;
       }, 0);
 
       const newBalance = currentBalance + amount;
