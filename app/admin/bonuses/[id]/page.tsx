@@ -47,6 +47,12 @@ const TYPE_LABEL: Record<string, string> = {
   ADJUSTMENT: 'Корректировка',
 };
 
+const REVERSAL_LABEL: Record<string, string> = {
+  ACCRUAL: 'Сторно начисления',
+  SPEND: 'Сторно списания',
+  EXPIRY: 'Сторно сгорания',
+};
+
 const TYPE_VARIANT: Record<
   string,
   'default' | 'secondary' | 'outline' | 'destructive'
@@ -56,6 +62,23 @@ const TYPE_VARIANT: Record<
   EXPIRY: 'destructive',
   ADJUSTMENT: 'secondary',
 };
+
+function isReversal(type: string, amount: number): boolean {
+  return amount < 0 && (type === 'ACCRUAL' || type === 'SPEND' || type === 'EXPIRY');
+}
+
+function labelFor(type: string, amount: number): string {
+  if (isReversal(type, amount)) return REVERSAL_LABEL[type] ?? type;
+  return TYPE_LABEL[type] ?? type;
+}
+
+function variantFor(
+  type: string,
+  amount: number,
+): 'default' | 'secondary' | 'outline' | 'destructive' {
+  if (isReversal(type, amount)) return 'secondary';
+  return TYPE_VARIANT[type] ?? 'secondary';
+}
 
 async function CardDetail({ params }: PageProps) {
   const { id } = await params;
@@ -166,8 +189,8 @@ async function CardDetail({ params }: PageProps) {
                       })}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={TYPE_VARIANT[m.type] ?? 'secondary'}>
-                        {TYPE_LABEL[m.type] ?? m.type}
+                      <Badge variant={variantFor(m.type, m.amount)}>
+                        {labelFor(m.type, m.amount)}
                       </Badge>
                     </TableCell>
                     <TableCell

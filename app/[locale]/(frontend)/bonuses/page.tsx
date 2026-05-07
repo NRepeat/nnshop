@@ -105,13 +105,35 @@ const BonusesPageContent = async ({
     { label: t('title'), href: '/bonuses', isCurrent: true },
   ];
 
-  const movements = loyaltyCard?.bonus_movements || [];
+  const allMovements = loyaltyCard?.bonus_movements || [];
   const now = new Date();
-  const balance = movements.reduce((sum, m) => {
+  const balance = allMovements.reduce((sum, m) => {
     if (m.date > now) return sum;
     if (m.type === 'SPEND' || m.type === 'EXPIRY') return sum - m.amount;
     return sum + m.amount;
   }, 0);
+
+  // Hide reversal pairs (same day + same type + opposite-sign equal amounts)
+  const reversalPaired = new Set<string>();
+  const groups = new Map<string, typeof allMovements>();
+  for (const m of allMovements) {
+    const key = `${new Date(m.date).toISOString().slice(0, 10)}|${m.type}|${Math.abs(m.amount)}`;
+    const arr = groups.get(key) ?? [];
+    arr.push(m);
+    groups.set(key, arr);
+  }
+  for (const arr of groups.values()) {
+    const pos = arr.filter((m) => m.amount > 0);
+    const neg = arr.filter((m) => m.amount < 0);
+    const pairs = Math.min(pos.length, neg.length);
+    for (let i = 0; i < pairs; i++) {
+      reversalPaired.add(pos[i].id);
+      reversalPaired.add(neg[i].id);
+    }
+  }
+  const movements = allMovements.filter(
+    (m) => !reversalPaired.has(m.id) && m.date <= now,
+  );
 
   return (
     <div className="container">
