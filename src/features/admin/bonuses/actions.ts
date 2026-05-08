@@ -11,7 +11,11 @@ async function getLedgerBalances(cardIds: string[]): Promise<Map<string, number>
   if (cardIds.length === 0) return new Map();
   const rows = await prisma.$queryRaw<{ loyaltyCardId: string; balance: number | null }[]>`
     SELECT "loyaltyCardId",
-      SUM(CASE WHEN type IN ('SPEND','EXPIRY') THEN -amount ELSE amount END) AS balance
+      SUM(CASE
+        WHEN type = 'SPEND' THEN -ABS(amount)
+        WHEN type = 'EXPIRY' THEN 0
+        ELSE amount
+      END) AS balance
     FROM "BonusMovements"
     WHERE "loyaltyCardId" = ANY(${cardIds}::text[]) AND date <= NOW()
     GROUP BY "loyaltyCardId"
@@ -135,7 +139,8 @@ export async function getCardDetail(cardId: string): Promise<CardDetail | null> 
   const now = new Date();
   const ledgerBalance = card.bonus_movements.reduce((sum, m) => {
     if (m.date > now) return sum;
-    if (m.type === 'SPEND' || m.type === 'EXPIRY') return sum - m.amount;
+    if (m.type === 'EXPIRY') return sum;
+    if (m.type === 'SPEND') return sum - Math.abs(m.amount);
     return sum + m.amount;
   }, 0);
 
@@ -183,7 +188,11 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       SELECT SUM(GREATEST(card_balance, 0)) AS total
       FROM (
         SELECT "loyaltyCardId",
-          SUM(CASE WHEN type IN ('SPEND','EXPIRY') THEN -amount ELSE amount END) AS card_balance
+          SUM(CASE
+            WHEN type = 'SPEND' THEN -ABS(amount)
+            WHEN type = 'EXPIRY' THEN 0
+            ELSE amount
+          END) AS card_balance
         FROM "BonusMovements"
         WHERE date <= NOW()
         GROUP BY "loyaltyCardId"
@@ -216,7 +225,11 @@ export async function getTopCards(limit = 10): Promise<RecentCard[]> {
 
   const topRows = await prisma.$queryRaw<{ loyaltyCardId: string; balance: number | null }[]>`
     SELECT "loyaltyCardId",
-      GREATEST(SUM(CASE WHEN type IN ('SPEND','EXPIRY') THEN -amount ELSE amount END), 0) AS balance
+      GREATEST(SUM(CASE
+        WHEN type = 'SPEND' THEN -ABS(amount)
+        WHEN type = 'EXPIRY' THEN 0
+        ELSE amount
+      END), 0) AS balance
     FROM "BonusMovements"
     WHERE date <= NOW()
     GROUP BY "loyaltyCardId"
@@ -374,7 +387,8 @@ export async function adjustBonus(formData: FormData): Promise<{ ok: boolean; er
         select: { type: true, amount: true },
       });
       const currentBalance = movements.reduce((sum, m) => {
-        if (m.type === 'SPEND' || m.type === 'EXPIRY') return sum - m.amount;
+        if (m.type === 'EXPIRY') return sum;
+        if (m.type === 'SPEND') return sum - Math.abs(m.amount);
         return sum + m.amount;
       }, 0);
 

@@ -109,7 +109,8 @@ const BonusesPageContent = async ({
   const now = new Date();
   const rawBalance = allMovements.reduce((sum, m) => {
     if (m.date > now) return sum;
-    if (m.type === 'SPEND' || m.type === 'EXPIRY') return sum - m.amount;
+    if (m.type === 'EXPIRY') return sum;
+    if (m.type === 'SPEND') return sum - Math.abs(m.amount);
     return sum + m.amount;
   }, 0);
   const balance = Math.max(0, rawBalance);
