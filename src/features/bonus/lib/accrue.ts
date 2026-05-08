@@ -1,6 +1,7 @@
 import { prisma } from '@shared/lib/prisma';
 import { adminClient } from '@shared/lib/shopify/admin-client';
 import { BonusMoveType } from '~/generated/prisma/enums';
+import { computeFifoBalance } from './balance';
 
 /**
  * Loyalty rules:
@@ -157,10 +158,9 @@ export async function accrueBonusForOrder(orderId: string): Promise<AccrueResult
 
   const now = new Date();
   const expireBy = new Date(now.getTime() + ONE_YEAR_MS);
-  const expiryMovementId = `${order.id}:${BonusMoveType.EXPIRY}`;
 
-  const [, , updatedCard] = await prisma.$transaction([
-    prisma.bonusMovements.create({
+  const updatedCard = await prisma.$transaction(async (tx) => {
+    await tx.bonusMovements.create({
       data: {
         id: movementId,
         loyaltyCardId: card.id,
@@ -168,25 +168,21 @@ export async function accrueBonusForOrder(orderId: string): Promise<AccrueResult
         type: BonusMoveType.ACCRUAL,
         amount: accrual,
       },
-    }),
-    prisma.bonusMovements.create({
-      data: {
-        id: expiryMovementId,
-        loyaltyCardId: card.id,
-        date: expireBy,
-        type: BonusMoveType.EXPIRY,
-        amount: accrual,
-      },
-    }),
-    prisma.loyaltyCards.update({
+    });
+    const movements = await tx.bonusMovements.findMany({
+      where: { loyaltyCardId: card.id },
+      select: { date: true, type: true, amount: true },
+    });
+    const newBalance = computeFifoBalance(movements, now);
+    return tx.loyaltyCards.update({
       where: { id: card.id },
       data: {
-        bonusBalance: { increment: accrual },
+        bonusBalance: newBalance,
         lastAccrualDate: now,
         allExpireBy: expireBy,
       },
-    }),
-  ]);
+    });
+  });
 
   return {
     ok: true,

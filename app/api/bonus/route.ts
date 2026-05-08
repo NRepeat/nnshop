@@ -11,6 +11,7 @@ import {
   SPEND_LIMIT_RATIO,
   type ShopifyOrderForBonus,
 } from '@features/bonus/lib/accrue';
+import { computeFifoBalance } from '@features/bonus/lib/balance';
 
 export async function POST(req: NextRequest) {
   let body: {
@@ -164,11 +165,8 @@ export async function POST(req: NextRequest) {
   }
 
   const now = new Date();
-  const offsetExpiryId = `${order.id}:EXPIRY-OFFSET`;
-  const offsetExpiryDate = card.allExpireBy ?? new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
-
-  const [, , updatedCard] = await prisma.$transaction([
-    prisma.bonusMovements.create({
+  const updatedCard = await prisma.$transaction(async (tx) => {
+    await tx.bonusMovements.create({
       data: {
         id: movementId,
         loyaltyCardId: card.id,
@@ -176,21 +174,17 @@ export async function POST(req: NextRequest) {
         type: BonusMoveType.SPEND,
         amount: spend,
       },
-    }),
-    prisma.bonusMovements.create({
-      data: {
-        id: offsetExpiryId,
-        loyaltyCardId: card.id,
-        date: offsetExpiryDate,
-        type: BonusMoveType.EXPIRY,
-        amount: -spend,
-      },
-    }),
-    prisma.loyaltyCards.update({
+    });
+    const movements = await tx.bonusMovements.findMany({
+      where: { loyaltyCardId: card.id },
+      select: { date: true, type: true, amount: true },
+    });
+    const newBalance = computeFifoBalance(movements, now);
+    return tx.loyaltyCards.update({
       where: { id: card.id },
-      data: { bonusBalance: { decrement: spend } },
-    }),
-  ]);
+      data: { bonusBalance: newBalance },
+    });
+  });
 
   return NextResponse.json({
     message: 'spent',

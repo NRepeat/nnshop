@@ -6,26 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { getAdminSession } from '@features/auth/lib/is-admin';
 import { formatPhoneE164 } from '@shared/lib/validation/phone';
 import { isStubUser } from '@features/bonus/lib/link-card';
-
-async function getLedgerBalances(cardIds: string[]): Promise<Map<string, number>> {
-  if (cardIds.length === 0) return new Map();
-  const rows = await prisma.$queryRaw<{ loyaltyCardId: string; balance: number | null }[]>`
-    SELECT bm."loyaltyCardId",
-      CASE
-        WHEN lc."allExpireBy" IS NOT NULL AND lc."allExpireBy" < NOW() THEN 0
-        ELSE SUM(CASE
-          WHEN bm.type = 'SPEND' THEN -ABS(bm.amount)
-          WHEN bm.type = 'EXPIRY' THEN 0
-          ELSE bm.amount
-        END)
-      END AS balance
-    FROM "BonusMovements" bm
-    JOIN "LoyaltyCards" lc ON lc.id = bm."loyaltyCardId"
-    WHERE bm."loyaltyCardId" = ANY(${cardIds}::text[]) AND bm.date <= NOW()
-    GROUP BY bm."loyaltyCardId", lc."allExpireBy"
-  `;
-  return new Map(rows.map((r) => [r.loyaltyCardId, Math.max(0, Number(r.balance ?? 0))]));
-}
+import { computeFifoBalance } from '@features/bonus/lib/balance';
 
 export type CardSearchResult = {
   id: string;
@@ -62,26 +43,21 @@ export async function searchLoyaltyCards(query: string): Promise<CardSearchResul
       id: true,
       name: true,
       phone: true,
-      user: {
-        select: { id: true, email: true, isAnonymous: true },
-      },
+      bonusBalance: true,
+      user: { select: { id: true, email: true, isAnonymous: true } },
     },
-    take: SEARCH_LIMIT * 2,
+    orderBy: { bonusBalance: 'desc' },
+    take: SEARCH_LIMIT,
   });
 
-  const balances = await getLedgerBalances(cards.map((c) => c.id));
-
-  return cards
-    .map((c) => ({
-      id: c.id,
-      name: c.name,
-      phone: c.phone,
-      bonusBalance: balances.get(c.id) ?? 0,
-      isStub: isStubUser(c.user),
-      userEmail: isStubUser(c.user) ? null : c.user.email,
-    }))
-    .sort((a, b) => b.bonusBalance - a.bonusBalance)
-    .slice(0, SEARCH_LIMIT);
+  return cards.map((c) => ({
+    id: c.id,
+    name: c.name,
+    phone: c.phone,
+    bonusBalance: c.bonusBalance,
+    isStub: isStubUser(c.user),
+    userEmail: isStubUser(c.user) ? null : c.user.email,
+  }));
 }
 
 export type CardDetail = {
@@ -112,7 +88,6 @@ export async function getCardDetail(cardId: string): Promise<CardDetail | null> 
       name: true,
       phone: true,
       bonusBalance: true,
-      allExpireBy: true,
       user: { select: { id: true, email: true, isAnonymous: true } },
       bonus_movements: {
         orderBy: { date: 'desc' },
@@ -141,22 +116,13 @@ export async function getCardDetail(cardId: string): Promise<CardDetail | null> 
     : [];
   const actorMap = new Map(actors.map((a) => [a.id, a.email]));
 
-  const now = new Date();
-  const expired = card.allExpireBy != null && card.allExpireBy < now;
-  const ledgerBalance = expired
-    ? 0
-    : card.bonus_movements.reduce((sum, m) => {
-        if (m.date > now) return sum;
-        if (m.type === 'EXPIRY') return sum;
-        if (m.type === 'SPEND') return sum - Math.abs(m.amount);
-        return sum + m.amount;
-      }, 0);
+  const ledgerBalance = computeFifoBalance(card.bonus_movements);
 
   return {
     id: card.id,
     name: card.name,
     phone: card.phone,
-    bonusBalance: Math.max(0, ledgerBalance),
+    bonusBalance: ledgerBalance,
     isStub: isStubUser(card.user),
     userEmail: isStubUser(card.user) ? null : card.user.email,
     movements: card.bonus_movements.map((m) => ({
@@ -185,31 +151,14 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const since = new Date();
   since.setDate(since.getDate() - 30);
 
-  const [totalCards, stubCards, balanceRows, recentMovements30d] = await Promise.all([
+  const [totalCards, stubCards, balanceAgg, recentMovements30d] = await Promise.all([
     prisma.loyaltyCards.count(),
     prisma.loyaltyCards.count({
       where: {
         user: { isAnonymous: true, id: { startsWith: 'loyalty-' } },
       },
     }),
-    prisma.$queryRaw<{ total: number | null }[]>`
-      SELECT SUM(GREATEST(card_balance, 0)) AS total
-      FROM (
-        SELECT bm."loyaltyCardId",
-          CASE
-            WHEN lc."allExpireBy" IS NOT NULL AND lc."allExpireBy" < NOW() THEN 0
-            ELSE SUM(CASE
-              WHEN bm.type = 'SPEND' THEN -ABS(bm.amount)
-              WHEN bm.type = 'EXPIRY' THEN 0
-              ELSE bm.amount
-            END)
-          END AS card_balance
-        FROM "BonusMovements" bm
-        JOIN "LoyaltyCards" lc ON lc.id = bm."loyaltyCardId"
-        WHERE bm.date <= NOW()
-        GROUP BY bm."loyaltyCardId", lc."allExpireBy"
-      ) t
-    `,
+    prisma.loyaltyCards.aggregate({ _sum: { bonusBalance: true } }),
     prisma.bonusMovements.count({ where: { date: { gte: since } } }),
   ]);
 
@@ -217,7 +166,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     totalCards,
     registeredCards: totalCards - stubCards,
     stubCards,
-    totalBalance: Number(balanceRows[0]?.total ?? 0),
+    totalBalance: balanceAgg._sum.bonusBalance ?? 0,
     recentMovements30d,
   };
 }
@@ -235,55 +184,26 @@ export async function getTopCards(limit = 10): Promise<RecentCard[]> {
   const session = await getAdminSession();
   if (!session) throw new Error('UNAUTHORIZED');
 
-  const topRows = await prisma.$queryRaw<{ loyaltyCardId: string; balance: number | null }[]>`
-    SELECT bm."loyaltyCardId",
-      GREATEST(
-        CASE
-          WHEN lc."allExpireBy" IS NOT NULL AND lc."allExpireBy" < NOW() THEN 0
-          ELSE SUM(CASE
-            WHEN bm.type = 'SPEND' THEN -ABS(bm.amount)
-            WHEN bm.type = 'EXPIRY' THEN 0
-            ELSE bm.amount
-          END)
-        END,
-        0
-      ) AS balance
-    FROM "BonusMovements" bm
-    JOIN "LoyaltyCards" lc ON lc.id = bm."loyaltyCardId"
-    WHERE bm.date <= NOW()
-    GROUP BY bm."loyaltyCardId", lc."allExpireBy"
-    ORDER BY balance DESC NULLS LAST
-    LIMIT ${limit}
-  `;
+  const cards = await prisma.loyaltyCards.findMany({
+    select: {
+      id: true,
+      name: true,
+      phone: true,
+      bonusBalance: true,
+      user: { select: { id: true, email: true, isAnonymous: true } },
+    },
+    orderBy: { bonusBalance: 'desc' },
+    take: limit,
+  });
 
-  const ids = topRows.map((r) => r.loyaltyCardId);
-  const cards = ids.length
-    ? await prisma.loyaltyCards.findMany({
-        where: { id: { in: ids } },
-        select: {
-          id: true,
-          name: true,
-          phone: true,
-          user: { select: { id: true, email: true, isAnonymous: true } },
-        },
-      })
-    : [];
-  const cardMap = new Map(cards.map((c) => [c.id, c]));
-
-  return topRows
-    .map((r) => {
-      const c = cardMap.get(r.loyaltyCardId);
-      if (!c) return null;
-      return {
-        id: c.id,
-        name: c.name,
-        phone: c.phone,
-        bonusBalance: Number(r.balance ?? 0),
-        isStub: isStubUser(c.user),
-        userEmail: isStubUser(c.user) ? null : c.user.email,
-      };
-    })
-    .filter((x): x is RecentCard => x !== null);
+  return cards.map((c) => ({
+    id: c.id,
+    name: c.name,
+    phone: c.phone,
+    bonusBalance: c.bonusBalance,
+    isStub: isStubUser(c.user),
+    userEmail: isStubUser(c.user) ? null : c.user.email,
+  }));
 }
 
 export async function createLoyaltyCard(
@@ -396,26 +316,11 @@ export async function adjustBonus(formData: FormData): Promise<{ ok: boolean; er
     await prisma.$transaction(async (tx) => {
       const card = await tx.loyaltyCards.findUnique({
         where: { id: cardId },
-        select: { id: true, allExpireBy: true },
+        select: { id: true },
       });
       if (!card) throw new Error('card not found');
 
       const now = new Date();
-      const expired = card.allExpireBy != null && card.allExpireBy < now;
-      const movements = expired
-        ? []
-        : await tx.bonusMovements.findMany({
-            where: { loyaltyCardId: cardId, date: { lte: now } },
-            select: { type: true, amount: true },
-          });
-      const currentBalance = movements.reduce((sum, m) => {
-        if (m.type === 'EXPIRY') return sum;
-        if (m.type === 'SPEND') return sum - Math.abs(m.amount);
-        return sum + m.amount;
-      }, 0);
-
-      const newBalance = currentBalance + amount;
-      if (newBalance < 0) throw new Error('balance cannot go negative');
 
       await tx.bonusMovements.create({
         data: {
@@ -428,6 +333,13 @@ export async function adjustBonus(formData: FormData): Promise<{ ok: boolean; er
           actorUserId: session.user.id,
         },
       });
+
+      const movements = await tx.bonusMovements.findMany({
+        where: { loyaltyCardId: cardId },
+        select: { date: true, type: true, amount: true },
+      });
+      const newBalance = computeFifoBalance(movements, now);
+      if (newBalance < 0) throw new Error('balance cannot go negative');
 
       await tx.loyaltyCards.update({
         where: { id: cardId },
