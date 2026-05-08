@@ -12,7 +12,7 @@ async function getLedgerBalances(cardIds: string[]): Promise<Map<string, number>
   const rows = await prisma.$queryRaw<{ loyaltyCardId: string; balance: number | null }[]>`
     SELECT "loyaltyCardId",
       SUM(CASE WHEN type IN ('SPEND','EXPIRY') THEN -amount ELSE amount END) AS balance
-    FROM bonus_movements
+    FROM "BonusMovements"
     WHERE "loyaltyCardId" = ANY(${cardIds}::text[]) AND date <= NOW()
     GROUP BY "loyaltyCardId"
   `;
@@ -184,7 +184,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       FROM (
         SELECT "loyaltyCardId",
           SUM(CASE WHEN type IN ('SPEND','EXPIRY') THEN -amount ELSE amount END) AS card_balance
-        FROM bonus_movements
+        FROM "BonusMovements"
         WHERE date <= NOW()
         GROUP BY "loyaltyCardId"
       ) t
@@ -217,7 +217,7 @@ export async function getTopCards(limit = 10): Promise<RecentCard[]> {
   const topRows = await prisma.$queryRaw<{ loyaltyCardId: string; balance: number | null }[]>`
     SELECT "loyaltyCardId",
       GREATEST(SUM(CASE WHEN type IN ('SPEND','EXPIRY') THEN -amount ELSE amount END), 0) AS balance
-    FROM bonus_movements
+    FROM "BonusMovements"
     WHERE date <= NOW()
     GROUP BY "loyaltyCardId"
     ORDER BY balance DESC NULLS LAST
