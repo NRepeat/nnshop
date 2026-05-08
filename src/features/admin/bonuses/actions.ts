@@ -10,15 +10,19 @@ import { isStubUser } from '@features/bonus/lib/link-card';
 async function getLedgerBalances(cardIds: string[]): Promise<Map<string, number>> {
   if (cardIds.length === 0) return new Map();
   const rows = await prisma.$queryRaw<{ loyaltyCardId: string; balance: number | null }[]>`
-    SELECT "loyaltyCardId",
-      SUM(CASE
-        WHEN type = 'SPEND' THEN -ABS(amount)
-        WHEN type = 'EXPIRY' THEN 0
-        ELSE amount
-      END) AS balance
-    FROM "BonusMovements"
-    WHERE "loyaltyCardId" = ANY(${cardIds}::text[]) AND date <= NOW()
-    GROUP BY "loyaltyCardId"
+    SELECT bm."loyaltyCardId",
+      CASE
+        WHEN lc."allExpireBy" IS NOT NULL AND lc."allExpireBy" < NOW() THEN 0
+        ELSE SUM(CASE
+          WHEN bm.type = 'SPEND' THEN -ABS(bm.amount)
+          WHEN bm.type = 'EXPIRY' THEN 0
+          ELSE bm.amount
+        END)
+      END AS balance
+    FROM "BonusMovements" bm
+    JOIN "LoyaltyCards" lc ON lc.id = bm."loyaltyCardId"
+    WHERE bm."loyaltyCardId" = ANY(${cardIds}::text[]) AND bm.date <= NOW()
+    GROUP BY bm."loyaltyCardId", lc."allExpireBy"
   `;
   return new Map(rows.map((r) => [r.loyaltyCardId, Math.max(0, Number(r.balance ?? 0))]));
 }
@@ -108,6 +112,7 @@ export async function getCardDetail(cardId: string): Promise<CardDetail | null> 
       name: true,
       phone: true,
       bonusBalance: true,
+      allExpireBy: true,
       user: { select: { id: true, email: true, isAnonymous: true } },
       bonus_movements: {
         orderBy: { date: 'desc' },
@@ -137,12 +142,15 @@ export async function getCardDetail(cardId: string): Promise<CardDetail | null> 
   const actorMap = new Map(actors.map((a) => [a.id, a.email]));
 
   const now = new Date();
-  const ledgerBalance = card.bonus_movements.reduce((sum, m) => {
-    if (m.date > now) return sum;
-    if (m.type === 'EXPIRY') return sum;
-    if (m.type === 'SPEND') return sum - Math.abs(m.amount);
-    return sum + m.amount;
-  }, 0);
+  const expired = card.allExpireBy != null && card.allExpireBy < now;
+  const ledgerBalance = expired
+    ? 0
+    : card.bonus_movements.reduce((sum, m) => {
+        if (m.date > now) return sum;
+        if (m.type === 'EXPIRY') return sum;
+        if (m.type === 'SPEND') return sum - Math.abs(m.amount);
+        return sum + m.amount;
+      }, 0);
 
   return {
     id: card.id,
@@ -187,15 +195,19 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     prisma.$queryRaw<{ total: number | null }[]>`
       SELECT SUM(GREATEST(card_balance, 0)) AS total
       FROM (
-        SELECT "loyaltyCardId",
-          SUM(CASE
-            WHEN type = 'SPEND' THEN -ABS(amount)
-            WHEN type = 'EXPIRY' THEN 0
-            ELSE amount
-          END) AS card_balance
-        FROM "BonusMovements"
-        WHERE date <= NOW()
-        GROUP BY "loyaltyCardId"
+        SELECT bm."loyaltyCardId",
+          CASE
+            WHEN lc."allExpireBy" IS NOT NULL AND lc."allExpireBy" < NOW() THEN 0
+            ELSE SUM(CASE
+              WHEN bm.type = 'SPEND' THEN -ABS(bm.amount)
+              WHEN bm.type = 'EXPIRY' THEN 0
+              ELSE bm.amount
+            END)
+          END AS card_balance
+        FROM "BonusMovements" bm
+        JOIN "LoyaltyCards" lc ON lc.id = bm."loyaltyCardId"
+        WHERE bm.date <= NOW()
+        GROUP BY bm."loyaltyCardId", lc."allExpireBy"
       ) t
     `,
     prisma.bonusMovements.count({ where: { date: { gte: since } } }),
@@ -224,15 +236,22 @@ export async function getTopCards(limit = 10): Promise<RecentCard[]> {
   if (!session) throw new Error('UNAUTHORIZED');
 
   const topRows = await prisma.$queryRaw<{ loyaltyCardId: string; balance: number | null }[]>`
-    SELECT "loyaltyCardId",
-      GREATEST(SUM(CASE
-        WHEN type = 'SPEND' THEN -ABS(amount)
-        WHEN type = 'EXPIRY' THEN 0
-        ELSE amount
-      END), 0) AS balance
-    FROM "BonusMovements"
-    WHERE date <= NOW()
-    GROUP BY "loyaltyCardId"
+    SELECT bm."loyaltyCardId",
+      GREATEST(
+        CASE
+          WHEN lc."allExpireBy" IS NOT NULL AND lc."allExpireBy" < NOW() THEN 0
+          ELSE SUM(CASE
+            WHEN bm.type = 'SPEND' THEN -ABS(bm.amount)
+            WHEN bm.type = 'EXPIRY' THEN 0
+            ELSE bm.amount
+          END)
+        END,
+        0
+      ) AS balance
+    FROM "BonusMovements" bm
+    JOIN "LoyaltyCards" lc ON lc.id = bm."loyaltyCardId"
+    WHERE bm.date <= NOW()
+    GROUP BY bm."loyaltyCardId", lc."allExpireBy"
     ORDER BY balance DESC NULLS LAST
     LIMIT ${limit}
   `;
@@ -377,15 +396,18 @@ export async function adjustBonus(formData: FormData): Promise<{ ok: boolean; er
     await prisma.$transaction(async (tx) => {
       const card = await tx.loyaltyCards.findUnique({
         where: { id: cardId },
-        select: { id: true },
+        select: { id: true, allExpireBy: true },
       });
       if (!card) throw new Error('card not found');
 
       const now = new Date();
-      const movements = await tx.bonusMovements.findMany({
-        where: { loyaltyCardId: cardId, date: { lte: now } },
-        select: { type: true, amount: true },
-      });
+      const expired = card.allExpireBy != null && card.allExpireBy < now;
+      const movements = expired
+        ? []
+        : await tx.bonusMovements.findMany({
+            where: { loyaltyCardId: cardId, date: { lte: now } },
+            select: { type: true, amount: true },
+          });
       const currentBalance = movements.reduce((sum, m) => {
         if (m.type === 'EXPIRY') return sum;
         if (m.type === 'SPEND') return sum - Math.abs(m.amount);
